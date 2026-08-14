@@ -24,13 +24,13 @@ export const site = {
   metaTitle: "Misura — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
   metaDescription:
     "Misura diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
-  tagline: "Software que ordena tu operación y hace crecer tu negocio.",
+  tagline: "Software a medida para que tu empresa funcione mejor.",
 };
 
 export const footer = {
   navTitle: "Navegación",
   servicesTitle: "Servicios",
-  tagline: "Gestión · Ventas · Páginas Web",
+  tagline: "Desarrollado por Misura",
 };
 
 export const nav: NavItem[] = [
@@ -100,7 +100,7 @@ export const explore = {
       description:
         "Empezá a digitalizar tu empresa con un sistema hecho a tu medida.",
       href: "/contacto",
-      cta: "INICIAR PROYECTO",
+      cta: "Iniciar proyecto",
     },
   ],
 };
@@ -118,7 +118,7 @@ export const about: {
 export const hero = {
   title: "Software a medida para que tu empresa funcione mejor.",
   lead:
-    "Misura desarrolla software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
+    "En Misura desarrollamos software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
   ctaPrimary: { label: "Iniciar proyecto", href: "/contacto" },
   ctaSecondary: { label: "Ver proyectos", href: "/proyectos" },
 } satisfies {

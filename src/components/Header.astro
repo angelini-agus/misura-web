@@ -18,11 +18,12 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 )}
 <header class="sticky top-0 z-50 border-b border-green bg-cream">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
-    <a
-      href="/"
-      class="font-display text-lg font-semibold tracking-tight text-green underline-offset-4 hover:underline"
-    >
-      {site.name}
+    <a href="/" class="inline-flex items-center">
+      <img
+        src="/logo-misura.svg"
+        alt={site.name}
+        class="h-11 w-auto"
+      />
     </a>
     <div class="flex items-center gap-5 md:gap-8">
       <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
@@ -40,7 +41,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
       </nav>
       <a
         href={headerCta.href}
-        class="inline-flex items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream transition-colors hover:bg-green-dark"
+        class="inline-flex items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold tracking-wide text-cream transition-colors hover:bg-green-dark"
       >
         {headerCta.label}
       </a>
