@@ -1,0 +1,53 @@
+---
+import { faq, faqHeading, isPending } from "../lib/content";
+import PlusIcon from "./ui/PlusIcon.astro";
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faq
+    .filter((item) => !isPending(item.answer))
+    .map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+};
+---
+
+<section id="preguntas" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {faqHeading.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {faqHeading.title}
+      </h2>
+    </div>
+    <div class="mt-12 max-w-3xl border-t border-green">
+      {faq.map((item) => (
+        <details class="group border-b border-green">
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 font-display text-lg font-medium transition-colors hover:text-green-dark"
+          >
+            {item.question}
+            <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
+          </summary>
+          <p class="pb-6 leading-relaxed text-green/80">{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(faqSchema)}
+/>

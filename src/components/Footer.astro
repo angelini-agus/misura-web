@@ -1,0 +1,47 @@
+---
+import { footer, nav, services, site } from "../lib/content";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-12 md:px-6">
+    <div class="flex flex-col gap-10 md:flex-row md:justify-between">
+      <div class="max-w-xs">
+        <p class="font-display text-lg font-semibold tracking-tight">{site.name}</p>
+        <p class="mt-2 text-sm leading-relaxed text-green/70">{site.tagline}</p>
+      </div>
+      <nav class="flex flex-col gap-2 text-sm" aria-label="Navegación">
+        <p class="text-xs uppercase tracking-[0.2em] text-green/60">
+          {footer.navTitle}
+        </p>
+        {nav.map((item) => (
+          <a href={item.href} class="w-fit underline-offset-4 hover:underline">
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      <nav class="flex flex-col gap-2 text-sm" aria-label="Servicios">
+        <p class="text-xs uppercase tracking-[0.2em] text-green/60">
+          {footer.servicesTitle}
+        </p>
+        {services.items.map((service) => (
+          <a
+            href={`#${service.id}`}
+            class="w-fit underline-offset-4 hover:underline"
+          >
+            {service.name}
+          </a>
+        ))}
+      </nav>
+    </div>
+    <div
+      class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-green pt-6 text-xs text-green/60 sm:flex-row"
+    >
+      <p>
+        © {year} {site.name}
+      </p>
+      <p>{footer.tagline}</p>
+    </div>
+  </div>
+</footer>

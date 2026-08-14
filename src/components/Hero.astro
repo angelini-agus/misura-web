@@ -1,0 +1,51 @@
+---
+import { hero } from "../lib/content";
+import ArrowRightIcon from "./ui/ArrowRightIcon.astro";
+import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
+---
+
+<section id="inicio" class="scroll-mt-24">
+  <div
+    class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-14 px-4 py-16 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
+  >
+    <div>
+      <h1
+        data-reveal
+        class="font-display max-w-xl text-4xl font-medium leading-[1.1] tracking-tight sm:text-5xl md:text-[3.4rem]"
+      >
+        {hero.title}
+      </h1>
+      <ul class="mt-10 max-w-md">
+        {hero.services.map((service, index) => (
+          <li
+            data-reveal
+            style={{ transitionDelay: `${index * 60}ms` }}
+          >
+            <a
+              href={service.href}
+              class="group flex items-center justify-between border-b-2 border-green py-4 transition-colors hover:bg-green hover:text-cream"
+            >
+              <span class="font-display text-lg font-medium sm:text-xl">
+                {service.name}
+              </span>
+              <ArrowRightIcon class="h-5 w-5 transition-transform duration-150 ease-out pointer-fine:group-hover:translate-x-1" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a
+        data-reveal
+        style={{ transitionDelay: "180ms" }}
+        href={hero.cta.href}
+        class="mt-10 inline-block border-b-4 border-green pb-1.5 text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:text-green-dark"
+      >
+        {hero.cta.label}
+      </a>
+    </div>
+    <BwImagePlaceholder
+      data-reveal
+      style={{ transitionDelay: "120ms" }}
+      class="aspect-[4/5] w-full rounded-[42%_58%_55%_45%/55%_45%_50%_50%]"
+    />
+  </div>
+</section>

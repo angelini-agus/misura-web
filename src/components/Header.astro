@@ -1,0 +1,53 @@
+---
+import { nav, site } from "../lib/content";
+import MenuIcon from "./ui/MenuIcon.astro";
+---
+
+<a
+  href="#contenido"
+  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:border-2 focus:border-green focus:bg-cream focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+>
+  Saltar al contenido
+</a>
+<div class="bg-green text-center text-xs tracking-[0.2em] text-cream">
+  <p class="px-4 py-2.5 uppercase">{site.announcement}</p>
+</div>
+<header class="sticky top-0 z-50 border-b border-green bg-cream">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
+    <a
+      href="#inicio"
+      class="font-display text-lg font-semibold tracking-tight underline-offset-4 hover:underline"
+    >
+      {site.name}
+    </a>
+    <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
+      {nav.map((item) => (
+        <a
+          href={item.href}
+          class="text-sm underline-offset-4 hover:underline active:underline"
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <details class="md:hidden">
+      <summary class="flex cursor-pointer list-none items-center gap-2 border border-green px-3 py-1.5 text-sm transition-transform duration-150 ease-out active:scale-[0.97]">
+        {site.menuLabel}
+        <MenuIcon class="h-4 w-4" />
+      </summary>
+      <nav
+        class="absolute inset-x-4 top-full z-50 mt-2 flex flex-col gap-4 border border-green bg-cream p-4"
+        aria-label="Navegación móvil"
+      >
+        {nav.map((item) => (
+          <a
+            href={item.href}
+            class="text-sm underline-offset-4 hover:underline active:underline"
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </details>
+  </div>
+</header>

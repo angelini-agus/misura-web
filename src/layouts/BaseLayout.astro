@@ -1,0 +1,84 @@
+---
+import "@fontsource-variable/plus-jakarta-sans";
+import "../styles/global.css";
+import { site } from "../lib/content";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: string;
+  ogUrl?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+
+const {
+  title = site.metaTitle,
+  description = site.metaDescription,
+  ogType = "website",
+  ogUrl,
+  ogImage = "/og-image.png",
+  canonical = ogUrl,
+} = Astro.props;
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.name,
+  url: ogUrl,
+  description: site.metaDescription,
+};
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_AR" />
+    {ogUrl && <meta property="og:url" content={ogUrl} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(organizationSchema)}
+    />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body class="flex min-h-full flex-col antialiased">
+    <slot />
+    <script>
+      const targets = document.querySelectorAll("[data-reveal]");
+      if (!("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("is-visible"));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        targets.forEach((el) => observer.observe(el));
+      }
+    </script>
+  </body>
+</html>

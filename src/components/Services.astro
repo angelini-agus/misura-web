@@ -1,0 +1,47 @@
+---
+import { services } from "../lib/content";
+import DatabaseIcon from "./ui/DatabaseIcon.astro";
+import UsersIcon from "./ui/UsersIcon.astro";
+import GlobeIcon from "./ui/GlobeIcon.astro";
+
+const icons = {
+  erp: DatabaseIcon,
+  crm: UsersIcon,
+  landing: GlobeIcon,
+} as const;
+---
+
+<section id="servicios" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {services.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {services.title}
+      </h2>
+      <p class="mt-4 leading-relaxed text-green/80">{services.subtitle}</p>
+    </div>
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {services.items.map((service, index) => {
+        const Icon = icons[service.id];
+        return (
+          <article
+            id={service.id}
+            data-reveal
+            style={{ transitionDelay: `${index * 60}ms` }}
+            class="flex scroll-mt-24 flex-col border border-green p-6"
+          >
+            <Icon class="h-8 w-8" />
+            <h3 class="font-display mt-6 text-xl font-medium">{service.name}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-green/80">
+              {service.description}
+            </p>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>

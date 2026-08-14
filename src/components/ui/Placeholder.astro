@@ -1,0 +1,16 @@
+---
+interface Props {
+  label?: string;
+  inverse?: boolean;
+}
+
+const { label = "PENDIENTE", inverse = false } = Astro.props;
+---
+
+<span
+  class={`inline-flex items-center rounded-sm border-2 border-dashed px-2 py-1 font-mono text-xs uppercase tracking-widest ${
+    inverse ? "border-cream text-cream" : "border-green text-green/70"
+  }`}
+>
+  {label}
+</span>

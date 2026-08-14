@@ -1,0 +1,29 @@
+---
+interface Props {
+  label?: string;
+  class?: string;
+  "data-reveal"?: boolean;
+  style?: string | Record<string, string>;
+}
+
+const {
+  label = "Imagen [PENDIENTE]",
+  class: className = "",
+  "data-reveal": dataReveal,
+  style,
+} = Astro.props;
+---
+
+<div
+  class={`relative overflow-hidden bw-placeholder ${className}`}
+  data-reveal={dataReveal}
+  style={style}
+  role="img"
+  aria-label="Imagen pendiente"
+>
+  <span
+    class="absolute inset-0 flex items-center justify-center px-4 text-center font-mono text-xs uppercase tracking-widest text-green"
+  >
+    {label}
+  </span>
+</div>
