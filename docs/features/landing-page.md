@@ -43,7 +43,7 @@ Ver AGENTS.md del proyecto.
 - **Navegación:** menú desktop + menú mobile con `<details>` nativo (sin JS);
   scroll suave con `scroll-smooth` y `scroll-mt-24`. FAQ como acordeones
   `<details>` con ícono Plus que rota.
-- **Contacto:** CTA "INICIAR PROYECTO" → `mailto:` o `wa.me` si hay datos; si
+- **Contacto:** CTA "Iniciar proyecto" → `mailto:` o `wa.me` si hay datos; si
   no, `<Placeholder inverse>`. Email/WhatsApp `[PENDIENTE]`.
 - **Imágenes:** B/N; mientras no existan recursos reales, placeholders CSS.
 - **Estructura final:** Header → Hero → Servicios → Nosotros → Diferenciales →

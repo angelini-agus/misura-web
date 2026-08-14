@@ -5,11 +5,13 @@ import ShareButton from "./ShareButton.astro";
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-green">
+<footer class="border-t border-green bg-cream">
   <div class="mx-auto max-w-6xl px-4 pt-12 pb-24 md:px-6 md:pb-12">
     <div class="flex flex-col gap-10 md:flex-row md:justify-between">
       <div class="max-w-xs">
-        <p class="font-display text-lg font-semibold tracking-tight">{site.name}</p>
+        <p class="font-display text-lg font-semibold tracking-tight text-green">
+          {site.name}
+        </p>
         <p class="mt-2 text-sm leading-relaxed text-green/70">{site.tagline}</p>
       </div>
       <nav class="flex flex-col gap-2 text-sm" aria-label="Navegación">
@@ -17,7 +19,10 @@ const year = new Date().getFullYear();
           {footer.navTitle}
         </p>
         {nav.map((item) => (
-          <a href={item.href} class="w-fit underline-offset-4 hover:underline">
+          <a
+            href={item.href}
+            class="w-fit text-green underline-offset-4 hover:underline"
+          >
             {item.label}
           </a>
         ))}
@@ -28,8 +33,8 @@ const year = new Date().getFullYear();
         </p>
         {services.items.map((service) => (
           <a
-            href={`#${service.id}`}
-            class="w-fit underline-offset-4 hover:underline"
+            href={`/proyectos?cat=${service.id}`}
+            class="w-fit text-green underline-offset-4 hover:underline"
           >
             {service.name}
           </a>

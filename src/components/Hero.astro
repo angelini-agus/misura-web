@@ -1,6 +1,5 @@
 ---
 import { hero } from "../lib/content";
-import ArrowRightIcon from "./ui/ArrowRightIcon.astro";
 import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
 import Button from "./ui/Button.astro";
 ---
@@ -23,49 +22,18 @@ import Button from "./ui/Button.astro";
       >
         {hero.lead}
       </p>
-      <div data-reveal style={{ transitionDelay: "120ms" }} class="mt-7">
-        <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
-      </div>
       <div
         data-reveal
-        style={{ transitionDelay: "180ms" }}
-        class="mt-10 border border-green p-6"
+        style={{ transitionDelay: "120ms" }}
+        class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
       >
-        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-          {hero.takeawayLabel}
-        </p>
-        <ul class="mt-4 space-y-2">
-          {hero.takeaways.map((takeaway) => (
-            <li class="text-sm leading-relaxed text-green/80">{takeaway}</li>
-          ))}
-        </ul>
+        <Button href={hero.ctaPrimary.href} class="w-full sm:w-auto">
+          {hero.ctaPrimary.label}
+        </Button>
+        <Button href={hero.ctaSecondary.href} variant="outline" class="w-full sm:w-auto">
+          {hero.ctaSecondary.label}
+        </Button>
       </div>
-      <ul class="mt-10 max-w-md">
-        {hero.services.map((service, index) => (
-          <li
-            data-reveal
-            style={{ transitionDelay: `${index * 60}ms` }}
-          >
-            <a
-              href={service.href}
-              class="group flex items-center justify-between border-b-2 border-green py-4 transition-colors hover:bg-green hover:text-cream"
-            >
-              <span class="font-display text-lg font-medium sm:text-xl">
-                {service.name}
-              </span>
-              <ArrowRightIcon class="h-5 w-5 transition-transform duration-150 ease-out pointer-fine:group-hover:translate-x-1" />
-            </a>
-          </li>
-        ))}
-      </ul>
-      <a
-        data-reveal
-        style={{ transitionDelay: "180ms" }}
-        href={hero.cta.href}
-        class="mt-10 inline-block border-b-4 border-green pb-1.5 text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:text-green-dark"
-      >
-        {hero.cta.label}
-      </a>
     </div>
     <BwImagePlaceholder
       data-reveal

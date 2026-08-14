@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
+import { pages } from "../lib/content";
+---
+
+<BaseLayout
+  title={pages.contacto.title}
+  description={pages.contacto.description}
+>
+  <Header />
+  <main id="contenido" class="flex-1" tabindex="-1">
+    <Contact />
+  </main>
+  <Footer />
+</BaseLayout>

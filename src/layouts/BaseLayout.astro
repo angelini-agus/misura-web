@@ -28,7 +28,7 @@ const organizationSchema = {
   url: site.url,
   description: site.metaDescription,
   email: contact.email,
-  telephone: contact.whatsapp,
+  telephone: "[PENDIENTE: teléfono de contacto]",
   address: {
     "@type": "PostalAddress",
     streetAddress: "[PENDIENTE: dirección de Misura]",
@@ -45,7 +45,7 @@ gtag('config', '${gaId}');`
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth h-full">
+<html lang="es" class="scroll-smooth h-full bg-cream">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -81,7 +81,7 @@ gtag('config', '${gaId}');`
       document.documentElement.classList.add("js");
     </script>
   </head>
-  <body class="flex min-h-full flex-col antialiased">
+  <body class="flex min-h-full flex-col bg-cream antialiased">
     <slot />
     <script>
       const targets = document.querySelectorAll("[data-reveal]");

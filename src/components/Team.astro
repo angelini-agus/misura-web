@@ -5,8 +5,8 @@ import teamPlaceholder from "../assets/team-placeholder.png";
 import Placeholder from "./ui/Placeholder.astro";
 ---
 
-<section id="equipo" class="scroll-mt-24 border-t border-green">
-  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+<section id="nosotros" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-24">
     <div class="max-w-xl" data-reveal>
       <p class="text-xs font-semibold uppercase tracking-[0.2em]">
         {team.eyebrow}
@@ -18,10 +18,10 @@ import Placeholder from "./ui/Placeholder.astro";
       </h2>
       <p class="mt-4 leading-relaxed text-green/80">{team.description}</p>
     </div>
-    <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
       {team.members.map((member, index) => (
         <article
-          class="flex flex-col border border-green"
+          class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >
@@ -29,16 +29,16 @@ import Placeholder from "./ui/Placeholder.astro";
             src={teamPlaceholder}
             alt={member.name}
             widths={[400]}
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
             class="aspect-[4/5] w-full object-cover grayscale"
             loading="lazy"
           />
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
             <h3 class="font-display text-xl font-medium">{member.name}</h3>
-            <p class="font-mono text-xs uppercase tracking-widest text-green/70">
+            <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
               {member.role}
             </p>
-            <p class="mt-1 text-sm leading-relaxed text-green/80">
+            <p class="mt-1 text-sm leading-relaxed text-cream/80">
               {member.description}
             </p>
             <div class="mt-auto flex flex-wrap gap-3 pt-4">
@@ -48,12 +48,12 @@ import Placeholder from "./ui/Placeholder.astro";
                 return href && !isPending(href) ? (
                   <a
                     href={href}
-                    class="text-sm underline underline-offset-4 hover:text-green-dark"
+                    class="text-sm text-cream underline underline-offset-4 hover:text-cream-dark"
                   >
                     {label}
                   </a>
                 ) : (
-                  <Placeholder label={`${label} [PENDIENTE]`} />
+                  <Placeholder inverse label={`${label} [PENDIENTE]`} />
                 );
               })}
             </div>

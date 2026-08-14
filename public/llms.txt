@@ -8,23 +8,22 @@ Misura diseña y desarrolla software para PYMEs y empresas: ERP, CRM y landing p
 
 ## Servicios
 
-- **ERP a medida**: ventas, stock, compras y facturación en una sola herramienta, construida alrededor de los procesos de cada empresa y no al revés.
-- **CRM**: seguimiento de clientes y oportunidades para que ninguna venta se pierda en el camino y el equipo trabaje con la misma información.
-- **Landing pages**: páginas enfocadas en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida.
+- **Sistemas de Gestión (ERP)**: ventas, stock, compras y facturación en una sola herramienta, construida alrededor de los procesos de cada empresa y no al revés.
+- **Herramientas de Ventas (CRM)**: seguimiento de clientes y oportunidades para que ninguna venta se pierda en el camino y el equipo trabaje con la misma información.
+- **Páginas Web**: páginas enfocadas en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida.
+
+Todo el software es específico y 100% personalizado, potenciado con Inteligencia Artificial para automatizar y optimizar procesos.
 
 ## A quién apunta
 
 PYMEs y empresas. Hoy el foco está en PYMEs de comercio y servicios. [PENDIENTE: ampliar rubros y referencias reales]
 
-## Estructura de la página
+## Estructura del sitio
 
-- `#inicio` — Hero: propuesta de valor, TL:DR, servicios y CTA.
-- `#servicios` — ERP a medida, CRM y landing pages.
-- `#nosotros` — Quiénes somos. [PENDIENTE: texto real de la empresa]
-- `#diferenciales` — Desarrollo a medida, soporte continuo y stack moderno.
-- `#portfolio` — Proyectos. [PENDIENTE: casos reales]
-- `#preguntas` — Preguntas frecuentes.
-- `#contacto` — Contacto para iniciar un proyecto.
+- `/` (Inicio) — Hero, servicios (ERP, CRM, landing), menciones de clientes, diferenciales, preguntas frecuentes y CTAs.
+- `/nosotros` — Personas detrás de Misura. [PENDIENTE: integrantes reales]
+- `/proyectos` — Casos de éxito con filtros por categoría (ERP, CRM, Landing) y tecnologías. [PENDIENTE: casos reales]
+- `/contacto` — Formulario de contacto asíncrono y datos de la empresa.
 
 ## Contacto
 

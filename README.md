@@ -1,11 +1,11 @@
 # Misura — Web
 
-Sitio institucional de una sola página para **Misura**, desarrollado con
+Sitio institucional multipágina (MPA) para **Misura**, desarrollado con
 **Astro + TypeScript + Tailwind CSS v4**.
 
-Landing estática con JS mínimo en cliente (reveal de animaciones y botón
-"compartir") y secciones ancladas para las tres líneas de servicio:
-**ERP, CRM y Landing pages**.
+Sitio estático con JS mínimo en cliente (reveal de animaciones, filtro de
+proyectos, botón "compartir" y formulario de contacto asíncrono). Rutas:
+**`/`** (Inicio), **`/nosotros`**, **`/proyectos`**, **`/contacto`**.
 
 ## Comandos
 
@@ -56,13 +56,13 @@ métodos:
 ```
 src/
   components/      # un .astro por sección (+ ui/)
-  layouts/         # BaseLayout.astro (SEO)
+  layouts/         # BaseLayout.astro (shell + SEO por página)
   lib/             # content.ts (textos) y types.ts
-  pages/           # index.astro
+  pages/           # index.astro, nosotros.astro, proyectos.astro, contacto.astro
   styles/          # global.css (tokens de paleta)
 ```
 
 ## Dirección de arte
 
-Fondo crema `#F6EFE8`, verde oscuro `#0E3B33`, diseño plano con bordes sólidos.
+Fondo crema `#F1E8DB`, verde oscuro `#0E3B33`, diseño plano con bordes sólidos.
 Ver `AGENTS.md`.

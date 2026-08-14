@@ -2,7 +2,7 @@
 import { headerCta, nav, site } from "../lib/content";
 import MenuIcon from "./ui/MenuIcon.astro";
 
-const headerNav = nav.filter((item) => item.href !== "#contacto");
+const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 ---
 
 <a
@@ -11,27 +11,28 @@ const headerNav = nav.filter((item) => item.href !== "#contacto");
 >
   Saltar al contenido
 </a>
-<div class="bg-green text-center text-xs tracking-[0.2em] text-cream">
-  <p class="px-4 py-2.5 uppercase">{site.announcement}</p>
-</div>
+{pathname === "/" && (
+  <div class="bg-green text-center text-xs tracking-[0.2em] text-cream">
+    <p class="px-4 py-2.5 uppercase">{site.announcement}</p>
+  </div>
+)}
 <header class="sticky top-0 z-50 border-b border-green bg-cream">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
     <a
-      href="#inicio"
-      class="font-display text-lg font-semibold tracking-tight underline-offset-4 hover:underline"
+      href="/"
+      class="font-display text-lg font-semibold tracking-tight text-green underline-offset-4 hover:underline"
     >
       {site.name}
     </a>
     <div class="flex items-center gap-5 md:gap-8">
-      <nav
-        id="nav"
-        class="hidden items-center gap-7 md:flex"
-        aria-label="Navegación principal"
-      >
-        {headerNav.map((item) => (
+      <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">
+        {nav.map((item) => (
           <a
             href={item.href}
-            class="border-b-2 border-transparent text-sm underline-offset-4 hover:underline active:underline"
+            aria-current={pathname === item.href ? "page" : undefined}
+            class={`border-b-2 ${
+              pathname === item.href ? "border-green" : "border-transparent"
+            } text-sm text-green underline-offset-4 hover:underline active:underline`}
           >
             {item.label}
           </a>
@@ -39,23 +40,24 @@ const headerNav = nav.filter((item) => item.href !== "#contacto");
       </nav>
       <a
         href={headerCta.href}
-        class="inline-flex items-center border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream transition-colors hover:bg-green-dark"
+        class="inline-flex items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-cream transition-colors hover:bg-green-dark"
       >
         {headerCta.label}
       </a>
       <details class="md:hidden">
-        <summary class="flex cursor-pointer list-none items-center gap-2 border border-green px-3 py-1.5 text-sm transition-transform duration-150 ease-out active:scale-[0.97]">
+        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-green px-3 py-1.5 text-sm text-green transition-transform duration-150 ease-out active:scale-[0.97]">
           {site.menuLabel}
           <MenuIcon class="h-4 w-4" />
         </summary>
         <nav
-          class="absolute inset-x-4 top-full z-50 mt-2 flex flex-col gap-4 border border-green bg-cream p-4"
+          class="absolute inset-x-4 top-full z-50 mt-2 flex flex-col gap-4 rounded-md border border-green bg-cream p-4"
           aria-label="Navegación móvil"
         >
-          {headerNav.map((item) => (
+          {nav.map((item) => (
             <a
               href={item.href}
-              class="text-sm underline-offset-4 hover:underline active:underline"
+              aria-current={pathname === item.href ? "page" : undefined}
+              class="text-sm text-green underline-offset-4 hover:underline active:underline"
             >
               {item.label}
             </a>
@@ -65,43 +67,3 @@ const headerNav = nav.filter((item) => item.href !== "#contacto");
     </div>
   </div>
 </header>
-
-<script>
-  if ("IntersectionObserver" in window) {
-    const nav = document.getElementById("nav");
-    if (nav) {
-      const links = nav.querySelectorAll("a[href^='#']");
-      const sections: Element[] = [];
-      const linkBySection = new Map<Element, Element>();
-      links.forEach((link) => {
-        const href = link.getAttribute("href");
-        const section = href ? document.querySelector(href) : null;
-        if (section) {
-          linkBySection.set(section, link);
-          sections.push(section);
-        }
-      });
-      if (sections.length) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                links.forEach((link) => link.classList.remove("is-active"));
-                const link = linkBySection.get(entry.target);
-                if (link) link.classList.add("is-active");
-              }
-            });
-          },
-          { rootMargin: "-50% 0px -50% 0px", threshold: 0 }
-        );
-        sections.forEach((section) => observer.observe(section));
-      }
-    }
-  }
-</script>
-
-<style>
-  .is-active {
-    border-color: var(--color-green);
-  }
-</style>

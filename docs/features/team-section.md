@@ -15,9 +15,13 @@ siguiendo el diseño flat de la marca (inspiración estructural: geiko.dev).
 
 ## Datos
 - `team.members[]`: `name`, `role`, `description`, `socials.{linkedin,github}`.
-- 4 miembros placeholder para mostrar la grilla.
+- 2 miembros placeholder (la empresa tiene 2 personas).
 - Cuando haya datos reales: completar `content.ts` y reemplazar
   `teamPlaceholder` por las fotos importadas.
+
+## Layout
+- `grid grid-cols-1 sm:grid-cols-2` centrado en `max-w-4xl` (1 col mobile,
+  2 col desktop).
 
 ## Verificación
 `npm run build` sin errores (genera variantes optimizadas del placeholder) +

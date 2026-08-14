@@ -1,21 +1,21 @@
 # Misura — Contexto del proyecto
 
 ## Qué es
-Sitio institucional de una sola página para Misura, empresa de software que 
-desarrolla ERP, CRM y Landing Pages para PYMEs y empresas. Secciones ancladas 
-para cada línea de servicio.
+Sitio institucional multipágina (MPA) para Misura, empresa de software que 
+desarrolla ERP, CRM y Landing Pages para PYMEs y empresas. Rutas: `/` (Inicio, 
+resumen con servicios y CTAs), `/nosotros`, `/proyectos`, `/contacto`.
 
 ## Stack
 - Astro + TypeScript
 - Tailwind CSS v4
-- Landing estática — 0 JS en cliente por defecto. No agregar JS del lado del 
+- Sitio estático — 0 JS en cliente por defecto. No agregar JS del lado del 
   cliente salvo que la tarea lo requiera explícitamente (ej: un widget 
   interactivo puntual)
 
 ## Sistema de diseño (ya implementado — no rediseñar, extender)
-- Fondo: crema `#F6EFE8`
+- Fondo: crema `#F1E8DB`
 - Acento/texto principal: verde oscuro `#0E3B33`
-- Diseño plano, bordes sólidos (no sombras difusas ni gradientes)
+- Diseño plano, sin sombras ni gradientes; redondeado sutil (`rounded-md`/`rounded-lg`) en tarjetas, botones e inputs
 - Tokens de color en src/styles/global.css — usar esas variables, no hardcodear 
   hex nuevos en componentes
 - Animaciones ya implementadas vía skills en .agents/skills — no romperlas al 
@@ -36,9 +36,10 @@ para cada línea de servicio.
 - Responsive mobile-first
 - No agregar dependencias nuevas sin justificarlas antes
 - No romper el diseño, la paleta ni las animaciones existentes
+- Ahorra contexto evitando explicarme las cosas y los resultados, simplemente hacelo.
 
 ## Estado actual
-- Landing base: terminada
+- Sitio multipágina (Inicio, Equipo, Proyectos, Contacto): estructura terminada
 - Pendiente: resolver [PENDIENTE] de datos reales, retoques de diseño menores, 
   checklist de SEO/GEO (ver docs/features/seo-geo-optimization.md si ya existe, 
   o crearlo antes de aplicar los prompts de esa feature)

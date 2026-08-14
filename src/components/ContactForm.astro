@@ -89,7 +89,7 @@ const script = `
 
 <form
   id="contact-form"
-  class="mt-12 grid gap-8 border border-green bg-cream p-6 md:p-10"
+  class="grid gap-8"
   novalidate
 >
   <div class="grid gap-6 md:grid-cols-2">
@@ -107,7 +107,7 @@ const script = `
         autocomplete="name"
         required
         placeholder={contactForm.placeholders.name}
-        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
       />
       <p data-error-for="name" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
@@ -125,7 +125,7 @@ const script = `
         type="text"
         autocomplete="organization"
         placeholder={contactForm.placeholders.company}
-        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
       />
       <p data-error-for="company" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
@@ -144,7 +144,7 @@ const script = `
         autocomplete="email"
         required
         placeholder={contactForm.placeholders.email}
-        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
       />
       <p data-error-for="email" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
@@ -160,7 +160,7 @@ const script = `
         id="cf-service"
         name="service"
         required
-        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
       >
         <option value="" disabled selected>
           {contactForm.servicePlaceholder}
@@ -185,7 +185,7 @@ const script = `
         rows="5"
         required
         placeholder={contactForm.placeholders.message}
-        class="w-full resize-y border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+        class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
       ></textarea>
       <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
@@ -200,10 +200,11 @@ const script = `
     ></p>
     <button
       type="submit"
-      class="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition-transform duration-150 ease-out hover:bg-green-dark active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 md:text-base"
+      class="inline-flex items-center justify-center gap-2 rounded-md border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition-transform duration-150 ease-out hover:bg-green-dark active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 md:text-base"
     >
       {contactForm.submitLabel}
     </button>
+    <p class="text-xs text-green/60">{contactForm.disclaimer}</p>
   </div>
 </form>
 

@@ -27,7 +27,7 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
           type="button"
           data-filter={filter.value}
           aria-pressed={filter.value === "todos" ? "true" : "false"}
-          class={`border border-green px-4 py-2 text-sm font-semibold transition-colors ${
+          class={`rounded-md border border-green px-4 py-2 text-sm font-semibold transition-colors ${
             filter.value === "todos"
               ? "bg-green text-cream"
               : "bg-transparent text-green hover:bg-green hover:text-cream"
@@ -39,23 +39,36 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
     </div>
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {portfolio.items.map((item, index) => (
-        <article
+        <a
+          href="#"
           data-category={item.category}
-          class="flex flex-col border border-green"
+          class="group flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:bg-green-dark"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >
           <BwImagePlaceholder class="aspect-[4/3] w-full" />
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
-            <p class="font-mono text-xs uppercase tracking-widest text-green/70">
+            <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
               {item.client}
             </p>
             <h3 class="font-display text-xl font-medium">{item.project}</h3>
-            <p class="mt-1 text-sm leading-relaxed text-green/80">
+            <p class="mt-1 text-sm leading-relaxed text-cream/80">
               {item.description}
             </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {item.technologies.map((tech) => (
+                <span
+                  class="border border-cream px-2 py-1 font-mono text-[0.65rem] uppercase tracking-widest text-cream"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+            <span class="mt-5 inline-block text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4">
+              {portfolio.detailsLabel}
+            </span>
           </div>
-        </article>
+        </a>
       ))}
     </div>
   </div>
@@ -65,25 +78,44 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
   const filterButtons = document.querySelectorAll("[data-filter]");
   const cards = document.querySelectorAll("[data-category]");
 
+  const applyFilter = (filter: string) => {
+    filterButtons.forEach((button) => {
+      const isActive = button.getAttribute("data-filter") === filter;
+      button.classList.toggle("bg-green", isActive);
+      button.classList.toggle("text-cream", isActive);
+      button.classList.toggle("bg-transparent", !isActive);
+      button.classList.toggle("text-green", !isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+    cards.forEach((card) => {
+      const category = card.getAttribute("data-category");
+      card.classList.toggle(
+        "hidden",
+        filter !== "todos" && filter !== category
+      );
+    });
+  };
+
   if (filterButtons.length) {
+    const initial = new URLSearchParams(window.location.search).get("cat");
+    const valid = Array.from(filterButtons).some(
+      (button) => button.getAttribute("data-filter") === initial
+    );
+    if (valid) {
+      applyFilter(initial ?? "todos");
+    }
+
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const filter = button.getAttribute("data-filter");
-        filterButtons.forEach((b) => {
-          const isActive = b === button;
-          b.classList.toggle("bg-green", isActive);
-          b.classList.toggle("text-cream", isActive);
-          b.classList.toggle("bg-transparent", !isActive);
-          b.classList.toggle("text-green", !isActive);
-          b.setAttribute("aria-pressed", String(isActive));
-        });
-        cards.forEach((card) => {
-          const category = card.getAttribute("data-category");
-          card.classList.toggle(
-            "hidden",
-            filter !== "todos" && filter !== category
-          );
-        });
+        const filter = button.getAttribute("data-filter") ?? "todos";
+        applyFilter(filter);
+        const url = new URL(window.location.href);
+        if (filter === "todos") {
+          url.searchParams.delete("cat");
+        } else {
+          url.searchParams.set("cat", filter);
+        }
+        history.replaceState({}, "", url);
       });
     });
   }

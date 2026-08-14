@@ -30,5 +30,6 @@ export type ContactInfo = {
   description: string;
   ctaLabel: string;
   email: string;
-  whatsapp: string;
+  locationItems: { label: string; value: string }[];
+  socials: { label: string; url: string }[];
 };

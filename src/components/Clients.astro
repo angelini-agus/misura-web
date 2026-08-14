@@ -1,0 +1,33 @@
+---
+import { clients } from "../lib/content";
+---
+
+<section id="clientes" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {clients.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {clients.title}
+      </h2>
+      <p class="mt-4 leading-relaxed text-green/80">{clients.description}</p>
+    </div>
+    <ul
+      class="mt-12 flex flex-wrap items-center justify-center gap-4"
+      data-reveal
+    >
+      {clients.items.map((client) => (
+        <li
+          class="flex h-20 w-40 items-center justify-center rounded-md border border-green bg-green px-4"
+        >
+          <span class="font-mono text-xs uppercase tracking-widest text-cream/60">
+            {client.name}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

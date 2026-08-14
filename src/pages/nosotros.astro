@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import About from "../components/About.astro";
+import Team from "../components/Team.astro";
+import Footer from "../components/Footer.astro";
+import StickyCta from "../components/StickyCta.astro";
+import { pages } from "../lib/content";
+---
+
+<BaseLayout
+  title={pages.nosotros.title}
+  description={pages.nosotros.description}
+>
+  <Header />
+  <main id="contenido" class="flex-1" tabindex="-1">
+    <About />
+    <Team />
+  </main>
+  <Footer />
+  <StickyCta />
+</BaseLayout>

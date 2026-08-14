@@ -18,32 +18,91 @@ export const cleanAnswer = (value: string) =>
 export const site = {
   name: "Misura",
   url: "[PENDIENTE: dominio de producción]",
-  announcement: "Software para PYMEs y empresas — ERP · CRM · Landing pages",
+  announcement:
+    "Software a medida para PYMEs y empresas — Gestión, Ventas y Páginas Web con IA",
   menuLabel: "Menú",
-  metaTitle: "Misura — Software para PYMEs: ERP, CRM y Landing Pages",
+  metaTitle: "Misura — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
   metaDescription:
-    "Misura diseña y desarrolla ERP, CRM y landing pages a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
+    "Misura diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
   tagline: "Software que ordena tu operación y hace crecer tu negocio.",
 };
 
 export const footer = {
   navTitle: "Navegación",
   servicesTitle: "Servicios",
-  tagline: "ERP · CRM · Landing pages",
+  tagline: "Gestión · Ventas · Páginas Web",
 };
 
 export const nav: NavItem[] = [
-  { label: "Servicios", href: "#servicios" },
-  { label: "Nosotros", href: "#nosotros" },
-  { label: "Diferenciales", href: "#diferenciales" },
-  { label: "Proyectos", href: "#portfolio" },
-  { label: "Preguntas", href: "#preguntas" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/nosotros" },
+  { label: "Proyectos", href: "/proyectos" },
+  { label: "Contacto", href: "/contacto" },
 ];
 
 export const headerCta: Cta = {
-  label: "INICIAR PROYECTO",
-  href: "#contacto",
+  label: "Iniciar proyecto",
+  href: "/contacto",
+};
+
+export const pages = {
+  home: { title: site.metaTitle, description: site.metaDescription },
+  nosotros: {
+    title: "Nosotros — Misura",
+    description:
+      "Conocé a las personas detrás de Misura: desarrollo de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+  },
+  proyectos: {
+    title: "Proyectos — Misura",
+    description:
+      "Casos de éxito de Misura: proyectos de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+  },
+  contacto: {
+    title: "Contacto — Misura",
+    description:
+      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida con Misura: Gestión, Ventas y Páginas Web con IA.",
+  },
+};
+
+export const clients = {
+  eyebrow: "Clientes",
+  title: "Empresas que ya confían en nosotros",
+  description: "[PENDIENTE: logos reales y menciones de clientes]",
+  items: [
+    { name: "[PENDIENTE]" },
+    { name: "[PENDIENTE]" },
+    { name: "[PENDIENTE]" },
+    { name: "[PENDIENTE]" },
+  ],
+};
+
+export const explore = {
+  eyebrow: "Explorá Misura",
+  title: "Conocé más sobre nosotros",
+  description:
+    "Mirá quiénes desarrollan los sistemas, conocé los proyectos en curso y contanos cómo podemos ayudarte.",
+  items: [
+    {
+      title: "Nosotros",
+      description:
+        "Las personas que desarrollan cada sistema de gestión, herramienta de ventas y página web.",
+      href: "/nosotros",
+      cta: "Conocenos",
+    },
+    {
+      title: "Proyectos",
+      description: "Casos de éxito de software a medida para PYMEs.",
+      href: "/proyectos",
+      cta: "Ver proyectos",
+    },
+    {
+      title: "Tu proyecto",
+      description:
+        "Empezá a digitalizar tu empresa con un sistema hecho a tu medida.",
+      href: "/contacto",
+      cta: "INICIAR PROYECTO",
+    },
+  ],
 };
 
 export const about: {
@@ -57,30 +116,16 @@ export const about: {
 };
 
 export const hero = {
-  title: "Desarrollo de Software a Medida para PYMEs",
+  title: "Software a medida para que tu empresa funcione mejor.",
   lead:
-    "Misura desarrolla ERP, CRM y landing pages a medida, alrededor de tus procesos, para ordenar tu operación y hacer crecer tu negocio con datos reales.",
-  ctaPrimary: { label: "Contanos tu proyecto", href: "#contacto" },
-  takeawayLabel: "TL:DR",
-  takeaways: [
-    "ERP, CRM y landing pages en un solo proveedor.",
-    "Software construido alrededor de tus procesos reales.",
-    "Soporte y mejoras continuas después del lanzamiento.",
-  ],
-  services: [
-    { name: "ERP", href: "#erp" },
-    { name: "CRM", href: "#crm" },
-    { name: "Landing pages", href: "#landing" },
-  ],
-  cta: { label: "Ver todos los servicios", href: "#servicios" },
+    "Misura desarrolla software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
+  ctaPrimary: { label: "Iniciar proyecto", href: "/contacto" },
+  ctaSecondary: { label: "Ver proyectos", href: "/proyectos" },
 } satisfies {
   title: string;
   lead: string;
   ctaPrimary: Cta;
-  takeawayLabel: string;
-  takeaways: string[];
-  services: { name: string; href: string }[];
-  cta: Cta;
+  ctaSecondary: Cta;
 };
 
 export const services: {
@@ -93,7 +138,7 @@ export const services: {
   eyebrow: "Servicios",
   title: "Lo que hacemos",
   subtitle:
-    "Tres líneas de servicio que se combinan para cubrir el día a día de tu empresa: desde la operación interna hasta cómo te mostrás al mundo.",
+    "Desarrollamos software específico y 100% personalizado para tu empresa, potenciado con Inteligencia Artificial para automatizar y optimizar tus procesos.",
   subtitleLink: {
     label: "¿Tenés dudas sobre qué elegir? Ver preguntas frecuentes",
     href: "#preguntas",
@@ -101,19 +146,19 @@ export const services: {
   items: [
     {
       id: "erp",
-      name: "ERP a medida",
+      name: "Sistemas de Gestión (ERP)",
       description:
         "Ventas, stock, compras y facturación en una sola herramienta, construida alrededor de tus procesos y no al revés.",
     },
     {
       id: "crm",
-      name: "CRM",
+      name: "Herramientas de Ventas (CRM)",
       description:
         "Seguimiento de clientes y oportunidades para que ninguna venta se pierda en el camino y el equipo trabaje con la misma información.",
     },
     {
       id: "landing",
-      name: "Landing pages",
+      name: "Páginas Web",
       description:
         "Páginas enfocadas en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida.",
     },
@@ -133,7 +178,7 @@ export const differentiators: {
     "Cuatro razones concretas para elegirnos, sin vueltas y sin prometer lo que no podemos cumplir.",
   subtitleLink: {
     label: "¿Te interesa? Contanos tu caso",
-    href: "#contacto",
+    href: "/contacto",
   },
   items: [
     {
@@ -154,7 +199,7 @@ export const differentiators: {
     {
       title: "Inteligencia Artificial",
       description:
-        "Integramos IA en los ERP y CRM para automatizar procesos repetitivos y agilizar el desarrollo, para que tu equipo se concentre en lo importante. [PENDIENTE: detallar casos de uso concretos]",
+        "Integramos Inteligencia Artificial en los sistemas de gestión y herramientas de ventas para automatizar procesos repetitivos y agilizar el desarrollo, para que tu equipo se concentre en lo importante. [PENDIENTE: detallar casos de uso concretos]",
     },
   ],
 };
@@ -171,26 +216,14 @@ export const team: {
     socials: { linkedin: string; github: string };
   }[];
 } = {
-  eyebrow: "Equipo",
-  title: "Nuestro equipo",
+  eyebrow: "Nosotros",
+  title: "Nosotros",
   description: "[PENDIENTE: descripción breve del equipo]",
   socialLabels: {
     linkedin: "LinkedIn",
     github: "GitHub",
   },
   members: [
-    {
-      name: "[PENDIENTE]",
-      role: "[PENDIENTE]",
-      description: "[PENDIENTE]",
-      socials: { linkedin: "[PENDIENTE]", github: "[PENDIENTE]" },
-    },
-    {
-      name: "[PENDIENTE]",
-      role: "[PENDIENTE]",
-      description: "[PENDIENTE]",
-      socials: { linkedin: "[PENDIENTE]", github: "[PENDIENTE]" },
-    },
     {
       name: "[PENDIENTE]",
       role: "[PENDIENTE]",
@@ -211,11 +244,13 @@ export const portfolio: {
   title: string;
   description: string;
   filtersLabel: string;
+  detailsLabel: string;
   filters: { value: string; label: string }[];
   items: {
     project: string;
     client: string;
     category: "erp" | "crm" | "landing";
+    technologies: string[];
     description: string;
   }[];
 } = {
@@ -224,29 +259,33 @@ export const portfolio: {
   description:
     "Estamos construyendo los primeros proyectos para mostrar. Apenas tengamos casos reales para publicar, van a aparecer acá.",
   filtersLabel: "Filtrar proyectos",
+  detailsLabel: "Ver especificaciones",
   filters: [
     { value: "todos", label: "Todos" },
-    { value: "erp", label: "ERP" },
-    { value: "crm", label: "CRM" },
-    { value: "landing", label: "Landing Pages" },
+    { value: "erp", label: "Gestión (ERP)" },
+    { value: "crm", label: "Ventas (CRM)" },
+    { value: "landing", label: "Páginas Web" },
   ],
   items: [
     {
       project: "Proyecto [PENDIENTE]",
       client: "Cliente [PENDIENTE]",
       category: "erp",
+      technologies: ["Node.js", "TypeScript", "SQL"],
       description: "[PENDIENTE: descripción del caso y resultados]",
     },
     {
       project: "Proyecto [PENDIENTE]",
       client: "Cliente [PENDIENTE]",
       category: "crm",
+      technologies: ["React", "Node.js", "TypeScript"],
       description: "[PENDIENTE: descripción del caso y resultados]",
     },
     {
       project: "Proyecto [PENDIENTE]",
       client: "Cliente [PENDIENTE]",
       category: "landing",
+      technologies: ["Next.js", "React", "TypeScript"],
       description: "[PENDIENTE: descripción del caso y resultados]",
     },
   ],
@@ -264,22 +303,22 @@ export const faq: FaqItem[] = [
   {
     question: "¿Qué servicios ofrece Misura?",
     answer:
-      "Desarrollamos ERP a medida, CRM y landing pages. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
+      "Desarrollamos sistemas de gestión (ERP), herramientas de ventas (CRM) y páginas web con IA. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
   },
   {
-    question: "¿Qué incluye el ERP a medida?",
+    question: "¿Qué incluye un sistema de gestión (ERP)?",
     answer:
       "Ventas, stock, compras y facturación en una sola herramienta, construida alrededor de tus procesos y no al revés. El alcance final se define según el rubro y la operación de cada empresa. [PENDIENTE: módulos y alcance por tipo de proyecto]",
   },
   {
-    question: "¿Para qué sirve el CRM?",
+    question: "¿Para qué sirve una herramienta de ventas (CRM)?",
     answer:
       "Para el seguimiento de clientes y oportunidades: que ninguna venta se pierda en el camino y que el equipo trabaje con la misma información. [PENDIENTE: funcionalidades según el proceso comercial de cada empresa]",
   },
   {
-    question: "¿Qué es una landing page y para qué sirve?",
+    question: "¿Qué es una página web de conversión y para qué sirve?",
     answer:
-      "Una página enfocada en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida. Se combina con el CRM para capturar y seguir los contactos que llegan.",
+      "Una página enfocada en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida. Se combina con las herramientas de ventas para capturar y seguir los contactos que llegan.",
   },
   {
     question: "¿Cuánto cuesta un proyecto?",
@@ -297,15 +336,22 @@ export const contact: ContactInfo = {
   title: "¿Listo para digitalizar tu empresa?",
   description:
     "Contanos en qué etapa está tu negocio y te contamos cómo podemos ayudarte. Sin vueltas y sin compromiso.",
-  ctaLabel: "INICIAR PROYECTO",
+  ctaLabel: "Iniciar proyecto",
   email: "[PENDIENTE: email de contacto]",
-  whatsapp: "[PENDIENTE: número de WhatsApp]",
+  locationItems: [
+    { label: "UBICACIÓN", value: "Rosario, Santa Fe" },
+    { label: "MODALIDAD", value: "Presencial / Remoto" },
+  ],
+  socials: [
+    { label: "LinkedIn", url: "[PENDIENTE: perfil de LinkedIn]" },
+    { label: "Instagram", url: "[PENDIENTE: perfil de Instagram]" },
+  ],
 };
 
 export const stickyCta = {
   ariaLabel: "Acción rápida",
   label: "Contanos tu proyecto",
-  href: "#contacto",
+  href: "/contacto",
 };
 
 export const share = {
@@ -329,9 +375,10 @@ export const contactForm = {
   },
   servicePlaceholder: "Elegí un servicio",
   serviceOptions: [
-    { value: "erp", label: "ERP" },
-    { value: "crm", label: "CRM" },
-    { value: "landing", label: "Landing page" },
+    { value: "erp", label: "Sistemas de Gestión (ERP)" },
+    { value: "crm", label: "Herramientas de Ventas (CRM)" },
+    { value: "landing", label: "Páginas Web" },
+    { value: "otros", label: "Otros" },
   ],
   errors: {
     name: "Ingresá tu nombre",
@@ -344,4 +391,6 @@ export const contactForm = {
   successMessage:
     "Gracias, recibimos tu mensaje. Te contactamos a la brevedad.",
   formError: "Revisá los campos marcados e intentá de nuevo.",
+  disclaimer:
+    "Tus datos están seguros con nosotros. No compartimos tu información con terceros ni enviamos spam.",
 };
