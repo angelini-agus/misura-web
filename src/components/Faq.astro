@@ -1,18 +1,18 @@
 ---
-import { faq, faqHeading, isPending } from "../lib/content";
+import { cleanAnswer, faq, faqHeading, hasRealAnswer } from "../lib/content";
 import PlusIcon from "./ui/PlusIcon.astro";
 
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: faq
-    .filter((item) => !isPending(item.answer))
+    .filter((item) => hasRealAnswer(item.answer))
     .map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: item.answer,
+        text: cleanAnswer(item.answer),
       },
     })),
 };
@@ -34,9 +34,9 @@ const faqSchema = {
       {faq.map((item) => (
         <details class="group border-b border-green">
           <summary
-            class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 font-display text-lg font-medium transition-colors hover:text-green-dark"
+            class="flex cursor-pointer list-none items-center justify-between gap-4 py-5 transition-colors hover:text-green-dark"
           >
-            {item.question}
+            <h3 class="font-display text-lg font-medium">{item.question}</h3>
             <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
           </summary>
           <p class="pb-6 leading-relaxed text-green/80">{item.answer}</p>

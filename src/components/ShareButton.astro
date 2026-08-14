@@ -1,0 +1,40 @@
+---
+import { share } from "../lib/content";
+
+const shareScript = `
+  const button = document.getElementById("share-button");
+  if (button) {
+    button.addEventListener("click", async () => {
+      const data = { title: document.title, url: window.location.href };
+      if (navigator.share) {
+        try {
+          await navigator.share(data);
+        } catch {
+          return;
+        }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(data.url);
+        const original = button.textContent;
+        button.textContent = "${share.copiedLabel}";
+        window.setTimeout(() => {
+          button.textContent = original;
+        }, 2000);
+      } catch {
+        return;
+      }
+    });
+  }
+`;
+---
+
+<button
+  id="share-button"
+  type="button"
+  class="w-fit text-xs underline underline-offset-4 hover:text-green"
+>
+  {share.label}
+</button>
+
+<script is:inline set:html={shareScript} />

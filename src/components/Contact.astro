@@ -2,6 +2,7 @@
 import { contact, isPending } from "../lib/content";
 import Button from "./ui/Button.astro";
 import Placeholder from "./ui/Placeholder.astro";
+import ContactForm from "./ContactForm.astro";
 
 const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
 const whatsappHref = isPending(contact.whatsapp)
@@ -40,24 +41,29 @@ const primaryHref = emailHref ?? whatsappHref;
           <Placeholder inverse label={`${contact.ctaLabel} · enlace [PENDIENTE]`} />
         )}
       </div>
-      <div
+      <ul
         class="mt-10 flex flex-col items-center gap-3 text-sm text-cream/75 sm:flex-row sm:gap-8"
       >
-        {emailHref ? (
-          <a href={emailHref} class="underline underline-offset-4">
-            {contact.email}
-          </a>
-        ) : (
-          <span>{contact.email}</span>
-        )}
-        {whatsappHref ? (
-          <a href={whatsappHref} class="underline underline-offset-4">
-            {contact.whatsapp}
-          </a>
-        ) : (
-          <span>{contact.whatsapp}</span>
-        )}
-      </div>
+        <li>
+          {emailHref ? (
+            <a href={emailHref} class="underline underline-offset-4">
+              {contact.email}
+            </a>
+          ) : (
+            <span>{contact.email}</span>
+          )}
+        </li>
+        <li>
+          {whatsappHref ? (
+            <a href={whatsappHref} class="underline underline-offset-4">
+              {contact.whatsapp}
+            </a>
+          ) : (
+            <span>{contact.whatsapp}</span>
+          )}
+        </li>
+      </ul>
     </div>
+    <ContactForm />
   </div>
 </section>

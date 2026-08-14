@@ -2,6 +2,7 @@
 import { hero } from "../lib/content";
 import ArrowRightIcon from "./ui/ArrowRightIcon.astro";
 import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
+import Button from "./ui/Button.astro";
 ---
 
 <section id="inicio" class="scroll-mt-24">
@@ -15,6 +16,30 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
       >
         {hero.title}
       </h1>
+      <p
+        data-reveal
+        style={{ transitionDelay: "60ms" }}
+        class="mt-6 max-w-xl text-lg leading-relaxed text-green/80"
+      >
+        {hero.lead}
+      </p>
+      <div data-reveal style={{ transitionDelay: "120ms" }} class="mt-7">
+        <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
+      </div>
+      <div
+        data-reveal
+        style={{ transitionDelay: "180ms" }}
+        class="mt-10 border border-green p-6"
+      >
+        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+          {hero.takeawayLabel}
+        </p>
+        <ul class="mt-4 space-y-2">
+          {hero.takeaways.map((takeaway) => (
+            <li class="text-sm leading-relaxed text-green/80">{takeaway}</li>
+          ))}
+        </ul>
+      </div>
       <ul class="mt-10 max-w-md">
         {hero.services.map((service, index) => (
           <li

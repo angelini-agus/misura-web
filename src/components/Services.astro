@@ -23,6 +23,12 @@ const icons = {
         {services.title}
       </h2>
       <p class="mt-4 leading-relaxed text-green/80">{services.subtitle}</p>
+      <a
+        href={services.subtitleLink.href}
+        class="mt-3 inline-block text-sm font-semibold underline underline-offset-4 hover:text-green-dark"
+      >
+        {services.subtitleLink.label}
+      </a>
     </div>
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {services.items.map((service, index) => {

@@ -1,0 +1,210 @@
+---
+import { contactForm } from "../lib/content";
+
+const script = `
+(() => {
+  const form = document.getElementById("contact-form");
+  if (!form) return;
+
+  const submitButton = form.querySelector("[type='submit']");
+  const status = form.querySelector("[data-status]");
+  const errors = ${JSON.stringify(contactForm.errors)};
+  const submitLabel = ${JSON.stringify(contactForm.submitLabel)};
+  const submittingLabel = ${JSON.stringify(contactForm.submittingLabel)};
+  const formError = ${JSON.stringify(contactForm.formError)};
+  const successMessage = ${JSON.stringify(contactForm.successMessage)};
+
+  const getValue = (name) => {
+    const field = form.elements.namedItem(name);
+    return field ? field.value : "";
+  };
+
+  const validators = {
+    name: (value) => (value.trim().length < 2 ? errors.name : ""),
+    email: (value) => {
+      const trimmed = value.trim();
+      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(trimmed) ? "" : errors.email;
+    },
+    service: (value) => (value ? "" : errors.service),
+    message: (value) => (value.trim().length < 10 ? errors.message : ""),
+  };
+
+  const setError = (name, message) => {
+    const field = form.elements.namedItem(name);
+    const error = form.querySelector("[data-error-for='" + name + "']");
+    if (!field || !error) return;
+    if (message) {
+      field.setAttribute("aria-invalid", "true");
+      error.textContent = message;
+      error.classList.remove("hidden");
+    } else {
+      field.removeAttribute("aria-invalid");
+      error.textContent = "";
+      error.classList.add("hidden");
+    }
+  };
+
+  const validate = () => {
+    let valid = true;
+    for (const name of Object.keys(validators)) {
+      const message = validators[name](getValue(name));
+      setError(name, message);
+      if (message) valid = false;
+    }
+    return valid;
+  };
+
+  const clearError = (event) => {
+    const target = event.target;
+    if (target && target.name) setError(target.name, "");
+  };
+
+  form.addEventListener("input", clearError);
+  form.addEventListener("change", clearError);
+
+  const simulateSend = () =>
+    new Promise((resolve) => window.setTimeout(resolve, 1400));
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!validate()) {
+      status.textContent = formError;
+      status.classList.remove("hidden");
+      return;
+    }
+    status.classList.add("hidden");
+    submitButton.disabled = true;
+    submitButton.textContent = submittingLabel;
+    await simulateSend();
+    form.reset();
+    submitButton.disabled = false;
+    submitButton.textContent = submitLabel;
+    status.textContent = successMessage;
+    status.classList.remove("hidden");
+    status.focus();
+  });
+})();
+`;
+---
+
+<form
+  id="contact-form"
+  class="mt-12 grid gap-8 border border-green bg-cream p-6 md:p-10"
+  novalidate
+>
+  <div class="grid gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label
+        for="cf-name"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.name} <span aria-hidden="true">*</span>
+      </label>
+      <input
+        id="cf-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        required
+        placeholder={contactForm.placeholders.name}
+        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+      />
+      <p data-error-for="name" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="cf-company"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.company}
+      </label>
+      <input
+        id="cf-company"
+        name="company"
+        type="text"
+        autocomplete="organization"
+        placeholder={contactForm.placeholders.company}
+        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+      />
+      <p data-error-for="company" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="cf-email"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.email} <span aria-hidden="true">*</span>
+      </label>
+      <input
+        id="cf-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        placeholder={contactForm.placeholders.email}
+        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+      />
+      <p data-error-for="email" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label
+        for="cf-service"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.service} <span aria-hidden="true">*</span>
+      </label>
+      <select
+        id="cf-service"
+        name="service"
+        required
+        class="w-full border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
+      >
+        <option value="" disabled selected>
+          {contactForm.servicePlaceholder}
+        </option>
+        {contactForm.serviceOptions.map((option) => (
+          <option value={option.value}>{option.label}</option>
+        ))}
+      </select>
+      <p data-error-for="service" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
+
+    <div class="flex flex-col gap-2 md:col-span-2">
+      <label
+        for="cf-message"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.message} <span aria-hidden="true">*</span>
+      </label>
+      <textarea
+        id="cf-message"
+        name="message"
+        rows="5"
+        required
+        placeholder={contactForm.placeholders.message}
+        class="w-full resize-y border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+      ></textarea>
+      <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-start gap-4">
+    <p
+      data-status
+      class="hidden text-sm text-green-dark"
+      role="status"
+      tabindex="-1"
+    ></p>
+    <button
+      type="submit"
+      class="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition-transform duration-150 ease-out hover:bg-green-dark active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 md:text-base"
+    >
+      {contactForm.submitLabel}
+    </button>
+  </div>
+</form>
+
+<script is:inline set:html={script} />

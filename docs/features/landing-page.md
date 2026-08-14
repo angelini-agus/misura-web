@@ -64,7 +64,7 @@ Ver AGENTS.md del proyecto.
 - **Tipografía:** Plus Jakarta Sans variable self-hosted (sin Google Fonts).
 - **Contacto:** se eligió `mailto:`/WhatsApp link (no formulario). Datos
   `[PENDIENTE]` hasta que el cliente los provea.
-- **OG image default:** `public/og-image.png` generada (B/N flat). Cuando haya
-  dominio, pasar `ogUrl`/`ogImage` absolutos a `BaseLayout`.
+- **OG image default:** `public/og-misura-software.png` generada (B/N flat).
+  Cuando haya dominio, pasar `ogUrl`/`ogImage` absolutos a `BaseLayout`.
 - **Eliminado:** proyecto Next.js anterior (app/, components/, lib/) — el repo
   ahora es solo Astro.

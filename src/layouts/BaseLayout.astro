@@ -1,7 +1,7 @@
 ---
 import "@fontsource-variable/plus-jakarta-sans";
 import "../styles/global.css";
-import { site } from "../lib/content";
+import { contact, site } from "../lib/content";
 
 interface Props {
   title?: string;
@@ -17,7 +17,7 @@ const {
   description = site.metaDescription,
   ogType = "website",
   ogUrl,
-  ogImage = "/og-image.png",
+  ogImage = "/og-misura-software.png",
   canonical = ogUrl,
 } = Astro.props;
 
@@ -25,9 +25,23 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: site.name,
-  url: ogUrl,
+  url: site.url,
   description: site.metaDescription,
+  email: contact.email,
+  telephone: contact.whatsapp,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "[PENDIENTE: dirección de Misura]",
+  },
 };
+
+const gaId = import.meta.env.PUBLIC_GA_ID;
+const gaConfigScript = gaId
+  ? `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`
+  : null;
 ---
 
 <!doctype html>
@@ -49,6 +63,14 @@ const organizationSchema = {
     {ogUrl && <meta property="og:url" content={ogUrl} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="twitter:card" content="summary_large_image" />
+
+    {gaId && (
+      <script
+        is:inline
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+      />
+    )}
+    {gaConfigScript && <script is:inline set:html={gaConfigScript} />}
 
     <script
       type="application/ld+json"
