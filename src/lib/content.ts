@@ -5,6 +5,7 @@ import type {
   FaqItem,
   ForWhoSection,
   NavItem,
+  PortfolioItem,
   Service,
 } from "./types";
 
@@ -22,9 +23,9 @@ export const site = {
   announcement:
     "Desarrollo de software a medida en Rosario y Cordón Industrial — Prototipo gratis antes de contratar",
   menuLabel: "Menú",
-  metaTitle: "misure — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
+  metaTitle: "misure — Software a medida para PYMEs: Gestión, Ventas y Páginas Web",
   metaDescription:
-    "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
+    "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario y el Cordón Industrial. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para que tu empresa funcione mejor.",
 };
 
@@ -38,7 +39,6 @@ export const nav: NavItem[] = [
   { label: "Inicio", href: "/" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Proyectos", href: "/proyectos" },
-  { label: "Contacto", href: "/contacto" },
 ];
 
 export const headerCta: Cta = {
@@ -49,28 +49,28 @@ export const headerCta: Cta = {
 export const pages = {
   home: { title: site.metaTitle, description: site.metaDescription },
   nosotros: {
-    title: "Nosotros — misure",
+    title: "Nosotros — misure | Equipo de desarrollo en Rosario",
     description:
-      "Conocé a las personas detrás de misure: desarrollo de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+      "Conocé a las personas detrás de misure: desarrollo de sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario y el Cordón Industrial.",
     h1: "Nosotros",
     intro:
       "Conocé a las personas que desarrollan el software a medida de misure: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   proyectos: {
-    title: "Proyectos — misure",
+    title: "Proyectos — misure | Casos de éxito en software a medida",
     description:
-      "Casos de éxito de misure: proyectos de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+      "Casos de éxito de misure: sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario. Resultados reales, no promesas.",
     h1: "Proyectos",
     intro:
-      "Casos de éxito de software a medida para PYMEs: sistemas de gestión, herramientas de ventas y páginas web.",
+      "Resultados reales de software a medida para PYMEs: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   contacto: {
-    title: "Contacto — misure",
+    title: "Contacto — misure | Prototipo gratis antes de firmar",
     description:
-      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida con misure: Gestión, Ventas y Páginas Web con IA.",
-    h1: "Contacto",
+      "Contanos en qué etapa está tu negocio y te mostramos cómo un sistema a medida puede resolver tu problema. Prototipo gratis, sin compromiso.",
+    h1: "Hablemos",
     intro:
-      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida.",
+      "Contanos en qué etapa está tu negocio y empecemos con un prototipo gratis, sin compromiso.",
   },
 };
 
@@ -273,20 +273,14 @@ export const portfolio: {
   filtersLabel: string;
   detailsLabel: string;
   filters: { value: string; label: string }[];
-  items: {
-    project: string;
-    client: string;
-    category: "erp" | "crm" | "landing";
-    technologies: string[];
-    description: string;
-  }[];
+  items: PortfolioItem[];
 } = {
   eyebrow: "Portfolio",
   title: "Casos de éxito",
   description:
-    "Estamos construyendo los primeros proyectos para mostrar. Apenas tengamos casos reales para publicar, van a aparecer acá.",
+    "Proyectos reales, con resultados medibles. Cada sistema fue diseñado desde cero para el proceso de cada empresa.",
   filtersLabel: "Filtrar proyectos",
-  detailsLabel: "Ver especificaciones",
+  detailsLabel: "Ver caso completo",
   filters: [
     { value: "todos", label: "Todos" },
     { value: "erp", label: "Gestión (ERP)" },
@@ -295,11 +289,13 @@ export const portfolio: {
   ],
   items: [
     {
-      project: "Proyecto [PENDIENTE]",
-      client: "Cliente [PENDIENTE]",
+      project: "Sistema de gestión para empresa de limpieza",
+      client: "Empresa de limpieza — Rosario",
       category: "erp",
-      technologies: ["Node.js", "TypeScript", "SQL"],
-      description: "[PENDIENTE: descripción del caso y resultados]",
+      technologies: ["Node.js", "TypeScript", "PostgreSQL", "QR", "Geolocalización"],
+      description:
+        "Asistencia por geolocalización/QR, cálculo automático de sueldos e impuestos y gestión de stock por edificio. Resultado: un puesto administrativo eliminado y quejas por inasistencias reducidas a 0.",
+      href: "/proyectos/empresa-limpieza-rosario",
     },
     {
       project: "Proyecto [PENDIENTE]",
@@ -312,11 +308,12 @@ export const portfolio: {
       project: "Proyecto [PENDIENTE]",
       client: "Cliente [PENDIENTE]",
       category: "landing",
-      technologies: ["Next.js", "React", "TypeScript"],
+      technologies: ["Astro", "TypeScript"],
       description: "[PENDIENTE: descripción del caso y resultados]",
     },
   ],
 };
+
 
 export const faqHeading: {
   eyebrow: string;
@@ -458,4 +455,90 @@ export const contactForm = {
   formError: "Revisá los campos marcados e intentá de nuevo.",
   disclaimer:
     "Tus datos están seguros con nosotros. No compartimos tu información con terceros ni enviamos spam.",
+};
+
+export const caseStudies = {
+  limpieza: {
+    slug: "empresa-limpieza-rosario",
+    seo: {
+      title:
+        "Sistema de gestión para empresa de limpieza — misure | Rosario",
+      description:
+        "Eliminamos un puesto administrativo completo y llevamos las quejas por inasistencias de 4-6 por mes a 0. Sistema a medida con geolocalización, cálculo de sueldos y stock por edificio.",
+    },
+    eyebrow: "Caso de éxito",
+    title: "Sistema de gestión para empresa de limpieza",
+    client: "Empresa de limpieza",
+    location: "Rosario, Santa Fe",
+    category: "Gestión (ERP)",
+    technologies: [
+      "Node.js",
+      "TypeScript",
+      "PostgreSQL",
+      "Geolocalización",
+      "QR",
+    ],
+    problem: {
+      eyebrow: "El desafío",
+      title: "Tres planillas, WhatsApp y un puesto administrativo al límite",
+      body: [
+        "La empresa manejaba la asistencia de su personal en múltiples edificios con planillas de Excel compartidas por WhatsApp. Cada fin de mes, el área administrativa tardaba varios días en cruzar datos de asistencia, calcular sueldos y liquidar impuestos.",
+        "Las quejas por inasistencias llegaban a 4-6 por mes sin que hubiera forma de verificarlas en tiempo real. El personal de supervisión no tenía visibilidad de qué empleado estaba en qué edificio, y el stock de insumos por edificio se registraba a mano.",
+        "El sistema existente no era escalable: cada empleado nuevo multiplicaba el trabajo administrativo en lugar de distribuirlo.",
+      ],
+    },
+    solution: {
+      eyebrow: "La solución",
+      title: "Un sistema construido alrededor del proceso real de la empresa",
+      features: [
+        {
+          title: "Asistencia por geolocalización y QR",
+          description:
+            "El personal registra entrada y salida desde su teléfono, verificado por geolocalización GPS y código QR en cada edificio. Sin papel, sin planillas, sin posibilidad de registrar desde otro lugar.",
+        },
+        {
+          title: "Cálculo automático de sueldos e impuestos",
+          description:
+            "Las horas trabajadas, horas extra, ausencias y llegadas tarde se calculan automáticamente según el convenio colectivo. La liquidación mensual que antes llevaba días ahora tarda minutos.",
+        },
+        {
+          title: "Gestión de stock por edificio",
+          description:
+            "Cada edificio tiene su propio inventario de insumos dentro del sistema. Los supervisores registran consumo desde el celular y el sistema alerta cuando el stock cae por debajo del mínimo.",
+        },
+        {
+          title: "Panel de supervisión en tiempo real",
+          description:
+            "Un supervisor puede ver en un mapa qué empleados están activos, en qué edificio, y cuánto llevan trabajado en el día. Las alertas de inasistencia aparecen automáticamente.",
+        },
+      ],
+    },
+    results: {
+      eyebrow: "Resultados",
+      title: "Números reales, no estimaciones.",
+      metrics: [
+        {
+          value: "$2.800.000",
+          unit: "ARS/mes",
+          label: "ahorrados en sueldo y cargas sociales al eliminar un puesto administrativo completo",
+        },
+        {
+          value: "0",
+          unit: "quejas",
+          label: "por inasistencias por mes (antes eran 4-6 mensuales sin posibilidad de verificar)",
+        },
+        {
+          value: "1",
+          unit: "persona",
+          label: "supervisa hoy lo que antes requería 3, con mayor visibilidad y en tiempo real",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "¿Tu empresa tiene un problema similar?",
+      title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
+      label: "Quiero mi prototipo gratis",
+      href: "/contacto",
+    },
+  },
 };

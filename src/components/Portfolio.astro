@@ -40,11 +40,12 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {portfolio.items.map((item, index) => (
         <a
-          href="#"
+          href={item.href ?? "#"}
           data-category={item.category}
           class="group flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:bg-green-dark"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
+          aria-disabled={!item.href ? "true" : undefined}
         >
           <BwImagePlaceholder class="aspect-[4/3] w-full" />
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
@@ -64,9 +65,11 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
                 </span>
               ))}
             </div>
-            <span class="mt-5 inline-block text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4">
-              {portfolio.detailsLabel}
-            </span>
+            {item.href && (
+              <span class="mt-5 inline-block text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4">
+                {portfolio.detailsLabel}
+              </span>
+            )}
           </div>
         </a>
       ))}

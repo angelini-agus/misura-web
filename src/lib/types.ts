@@ -14,6 +14,15 @@ export type Service = {
   description: string;
 };
 
+export type PortfolioItem = {
+  project: string;
+  client: string;
+  category: "erp" | "crm" | "landing";
+  technologies: string[];
+  description: string;
+  href?: string;
+};
+
 export type Differentiator = {
   title: string;
   description: string;

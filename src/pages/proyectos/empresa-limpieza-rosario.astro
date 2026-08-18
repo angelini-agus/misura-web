@@ -1,0 +1,182 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Footer from "../../components/Footer.astro";
+import StickyCta from "../../components/StickyCta.astro";
+import { caseStudies } from "../../lib/content";
+
+const cs = caseStudies.limpieza;
+---
+
+<BaseLayout title={cs.seo.title} description={cs.seo.description}>
+  <Header />
+  <main id="contenido" class="flex-1" tabindex="-1">
+
+    <!-- Page header -->
+    <PageHeader
+      eyebrow={cs.eyebrow}
+      title={cs.title}
+      intro={`${cs.client} · ${cs.location}`}
+    />
+
+    <!-- Meta del proyecto -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-12 md:px-6">
+        <div class="flex flex-wrap gap-6" data-reveal>
+          <div class="flex flex-col gap-1">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/50">
+              Categoría
+            </p>
+            <p class="text-sm font-semibold text-green">{cs.category}</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/50">
+              Ubicación
+            </p>
+            <p class="text-sm font-semibold text-green">{cs.location}</p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/50">
+              Tecnologías
+            </p>
+            <div class="flex flex-wrap gap-2">
+              {cs.technologies.map((tech) => (
+                <span class="rounded-md border border-green px-2 py-1 font-mono text-[0.65rem] uppercase tracking-widest text-green">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- El desafío -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+        <div class="grid gap-12 md:grid-cols-[1fr_2fr]">
+          <div data-reveal>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+              {cs.problem.eyebrow}
+            </p>
+            <h2
+              class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+            >
+              {cs.problem.title}
+            </h2>
+          </div>
+          <div class="flex flex-col gap-5" data-reveal style="transition-delay:60ms">
+            {cs.problem.body.map((paragraph) => (
+              <p class="leading-relaxed text-green/80">{paragraph}</p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- La solución -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+        <div class="max-w-xl" data-reveal>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+            {cs.solution.eyebrow}
+          </p>
+          <h2
+            class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+          >
+            {cs.solution.title}
+          </h2>
+        </div>
+        <div class="mt-12 grid gap-6 md:grid-cols-2">
+          {cs.solution.features.map((feature, index) => (
+            <article
+              class="flex flex-col rounded-md border border-green bg-green p-6 text-cream"
+              data-reveal
+              style={{ transitionDelay: `${index * 60}ms` }}
+            >
+              <span class="font-mono text-sm text-cream/60">{`0${index + 1}`}</span>
+              <h3 class="font-display mt-4 text-xl font-medium">{feature.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-cream/80">
+                {feature.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultados -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+        <div class="max-w-xl" data-reveal>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+            {cs.results.eyebrow}
+          </p>
+          <h2
+            class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+          >
+            {cs.results.title}
+          </h2>
+        </div>
+        <div class="mt-12 grid gap-px border border-green md:grid-cols-3" data-reveal>
+          {cs.results.metrics.map((metric) => (
+            <div class="flex flex-col gap-3 bg-green p-8 text-cream">
+              <div class="flex items-baseline gap-2">
+                <span class="font-display text-5xl font-semibold tracking-tight sm:text-6xl">
+                  {metric.value}
+                </span>
+                <span class="font-mono text-sm uppercase tracking-widest text-cream/60">
+                  {metric.unit}
+                </span>
+              </div>
+              <p class="text-sm leading-relaxed text-cream/75">{metric.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+        <div
+          class="flex flex-col gap-6 rounded-md border border-green bg-green p-8 text-cream md:flex-row md:items-center md:justify-between md:p-12"
+          data-reveal
+        >
+          <div class="max-w-xl">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-cream/60">
+              {cs.cta.eyebrow}
+            </p>
+            <h2 class="font-display mt-3 text-2xl font-medium leading-tight sm:text-3xl">
+              {cs.cta.title}
+            </h2>
+          </div>
+          <a
+            href={cs.cta.href}
+            class="inline-flex shrink-0 items-center gap-2 rounded-md border-2 border-cream bg-cream px-6 py-3 text-sm font-semibold text-green transition-colors hover:bg-cream-dark"
+          >
+            {cs.cta.label}
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Volver a proyectos -->
+    <section class="border-t border-green">
+      <div class="mx-auto max-w-6xl px-4 py-8 md:px-6">
+        <a
+          href="/proyectos"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-green underline underline-offset-4 hover:text-green-dark"
+        >
+          <span aria-hidden="true">←</span>
+          Ver todos los proyectos
+        </a>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+  <StickyCta />
+</BaseLayout>
