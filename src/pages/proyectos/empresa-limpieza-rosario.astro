@@ -120,17 +120,28 @@ const cs = caseStudies.limpieza;
           </h2>
         </div>
         <div class="mt-12 grid gap-px border border-green md:grid-cols-3" data-reveal>
-          {cs.results.metrics.map((metric) => (
-            <div class="flex flex-col gap-3 bg-green p-8 text-cream">
-              <div class="flex items-baseline gap-2">
-                <span class="font-display text-5xl font-semibold tracking-tight sm:text-6xl">
-                  {metric.value}
-                </span>
-                <span class="font-mono text-sm uppercase tracking-widest text-cream/60">
-                  {metric.unit}
-                </span>
-              </div>
-              <p class="text-sm leading-relaxed text-cream/75">{metric.label}</p>
+          {cs.results.metrics.map((metric, index) => (
+            <div class="flex flex-col bg-green p-8 text-cream">
+              {index === 0 ? (
+                <div class="flex flex-col">
+                  <span class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+                    {metric.value}
+                  </span>
+                  <span class="self-end text-right font-mono text-xs uppercase tracking-widest text-cream/60">
+                    {metric.unit}
+                  </span>
+                </div>
+              ) : (
+                <div class="flex items-baseline gap-2">
+                  <span class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+                    {metric.value}
+                  </span>
+                  <span class="font-mono text-xs uppercase tracking-widest text-cream/60">
+                    {metric.unit}
+                  </span>
+                </div>
+              )}
+              <p class="mt-3 text-sm leading-relaxed text-cream/75">{metric.label}</p>
             </div>
           ))}
         </div>
