@@ -135,11 +135,15 @@ export const explore = {
 export const about: {
   eyebrow: string;
   title: string;
-  body: string;
+  body: string[];
 } = {
   eyebrow: "Nosotros",
   title: "Quiénes somos",
-  body: "[PENDIENTE: texto real de la empresa]",
+  body: [
+    "Uno de nosotros empezó haciendo desarrollo freelance para pymes de Rosario a principios de 2025. Uno de esos trabajos fue un sistema para una empresa de limpieza: geolocalización para controlar asistencia, cálculo automático de sueldos e impuestos, stock por edificio. Cuando terminamos, habían eliminado un puesto administrativo completo.",
+    "Ahí entendimos que había un problema real: las pymes locales pagan de más por sistemas genéricos que no encajan con cómo trabajan. Formamos misure para poder resolver eso a escala, con un modelo que va presencialmente a entender el negocio antes de escribir una línea de código.",
+    "No somos una empresa con décadas de historia. Somos dos personas con un caso de éxito concreto y un método que funciona.",
+  ],
 };
 
 export const hero = {
@@ -235,36 +239,90 @@ export const team: {
   eyebrow: string;
   title: string;
   description: string;
-  socialLabels: { linkedin: string; github: string };
+  socialLabels: { linkedin: string; portfolio: string };
   members: {
     name: string;
     role: string;
     description: string;
-    socials: { linkedin: string; github: string };
+    socials: { linkedin: string; portfolio: string };
   }[];
 } = {
   eyebrow: "Equipo",
   title: "Conocé al equipo",
-  description: "[PENDIENTE: descripción breve del equipo]",
+  description:
+    "Dos personas, un mismo objetivo: que tu sistema funcione como vos trabajás, no al revés.",
   socialLabels: {
     linkedin: "LinkedIn",
-    github: "GitHub",
+    portfolio: "Portfolio",
   },
   members: [
     {
-      name: "[PENDIENTE]",
-      role: "[PENDIENTE]",
-      description: "[PENDIENTE]",
-      socials: { linkedin: "[PENDIENTE]", github: "[PENDIENTE]" },
+      name: "[COMPLETAR: nombre]",
+      role: "[COMPLETAR: rol — ej: Desarrollo]",
+      description: "[COMPLETAR: frase personal — ej: Me obsesiona que el cliente entienda el sistema sin manual de instrucciones]",
+      socials: {
+        linkedin: "[COMPLETAR: link LinkedIn]",
+        portfolio: "[COMPLETAR: link Portfolio]",
+      },
     },
     {
-      name: "[PENDIENTE]",
-      role: "[PENDIENTE]",
-      description: "[PENDIENTE]",
-      socials: { linkedin: "[PENDIENTE]", github: "[PENDIENTE]" },
+      name: "[COMPLETAR: nombre]",
+      role: "[COMPLETAR: rol — ej: Desarrollo y Negocio]",
+      description: "[COMPLETAR: frase personal — ej: Prefiero una demo en el negocio del cliente que diez reuniones por Zoom]",
+      socials: {
+        linkedin: "[COMPLETAR: link LinkedIn]",
+        portfolio: "[COMPLETAR: link Portfolio]",
+      },
     },
   ],
 };
+
+export const howWeWork: {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  steps: { title: string; description: string }[];
+} = {
+  eyebrow: "Proceso",
+  title: "Cómo trabajamos",
+  subtitle:
+    "Cuatro pasos que repetimos en cada proyecto. Sin sorpresas, sin letra chica.",
+  steps: [
+    {
+      title: "Vamos a tu negocio",
+      description:
+        "Hacemos una entrevista presencial de 2 horas para entender cómo trabajás. No suposiciones desde una pantalla.",
+    },
+    {
+      title: "Prototipo gratis antes de pagar",
+      description:
+        "Armamos el diseño y el prototipo navegable sin cargo. Lo ves, lo aprobás y recién ahí firmamos.",
+    },
+    {
+      title: "Entregas semanales por contrato",
+      description:
+        "El avance queda escrito. Cada semana sabés exactamente qué va a estar listo, sin depender de nuestra palabra.",
+    },
+    {
+      title: "Mantenimiento post-lanzamiento",
+      description:
+        "Si algo falla después de que sale, lo arreglamos gratis. Si algo cambia en tu negocio, lo ajustamos.",
+    },
+  ],
+};
+
+export const nosotrosCta: {
+  eyebrow: string;
+  title: string;
+  label: string;
+  href: string;
+} = {
+  eyebrow: "¿Te interesa trabajar con nosotros?",
+  title: "Agendá 20 minutos y te mostramos cómo funciona.",
+  label: "Quiero mi prototipo gratis",
+  href: "/contacto",
+};
+
 
 export const portfolio: {
   eyebrow: string;

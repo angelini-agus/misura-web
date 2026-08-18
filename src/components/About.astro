@@ -14,12 +14,16 @@ import MisureWord from "./ui/MisureWord.astro";
     >
       {about.title}
     </h2>
-    <p
-      data-reveal
-      style={{ transitionDelay: "80ms" }}
-      class="mt-8 max-w-3xl text-xl leading-relaxed text-green/80 md:text-2xl"
-    >
-      {about.body}
-    </p>
+    <div class="mt-8 flex max-w-3xl flex-col gap-5">
+      {about.body.map((paragraph, index) => (
+        <p
+          data-reveal
+          style={{ transitionDelay: `${index * 80}ms` }}
+          class="text-xl leading-relaxed text-green/80 md:text-2xl"
+        >
+          {paragraph}
+        </p>
+      ))}
+    </div>
   </div>
 </section>

@@ -4,9 +4,11 @@ import Header from "../components/Header.astro";
 import PageHeader from "../components/PageHeader.astro";
 import About from "../components/About.astro";
 import Team from "../components/Team.astro";
+import HowWeWork from "../components/HowWeWork.astro";
+import CtaBanner from "../components/CtaBanner.astro";
 import Footer from "../components/Footer.astro";
 import StickyCta from "../components/StickyCta.astro";
-import { pages } from "../lib/content";
+import { pages, nosotrosCta } from "../lib/content";
 ---
 
 <BaseLayout
@@ -15,9 +17,20 @@ import { pages } from "../lib/content";
 >
   <Header />
   <main id="contenido" class="flex-1" tabindex="-1">
-    <PageHeader eyebrow="misure" title={pages.nosotros.h1} intro={pages.nosotros.intro} />
+    <PageHeader
+      eyebrow="Nosotros"
+      title="Nosotros"
+      intro="Somos dos socios de Rosario que se cansaron de ver pymes pagando de más por sistemas genéricos que no resuelven nada. Así nació misure."
+    />
     <About />
     <Team />
+    <HowWeWork />
+    <CtaBanner
+      eyebrow={nosotrosCta.eyebrow}
+      title={nosotrosCta.title}
+      label={nosotrosCta.label}
+      href={nosotrosCta.href}
+    />
   </main>
   <Footer />
   <StickyCta />

@@ -1,0 +1,40 @@
+---
+import { howWeWork } from "../lib/content";
+---
+
+<section id="como-trabajamos" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div
+      class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+      data-reveal
+    >
+      <div class="max-w-xl">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+          {howWeWork.eyebrow}
+        </p>
+        <h2
+          class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+        >
+          {howWeWork.title}
+        </h2>
+      </div>
+      <p class="max-w-sm leading-relaxed text-green/80">{howWeWork.subtitle}</p>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {howWeWork.steps.map((step, index) => (
+        <article
+          class="flex flex-col rounded-md border border-green bg-green p-6 text-cream"
+          data-reveal
+          style={{ transitionDelay: `${index * 60}ms` }}
+        >
+          <span class="font-mono text-sm text-cream/60">{`0${index + 1}`}</span>
+          <h3 class="font-display mt-4 text-xl font-medium">{step.title}</h3>
+          <p class="mt-3 text-sm leading-relaxed text-cream/80">
+            {step.description}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
