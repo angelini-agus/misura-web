@@ -16,21 +16,21 @@ export const cleanAnswer = (value: string) =>
   value.replace(/\[PENDIENTE:[^\]]*\]/g, "").trim();
 
 export const site = {
-  name: "Misura",
+  name: "misure",
   url: "[PENDIENTE: dominio de producción]",
   announcement:
     "Software a medida para PYMEs y empresas — Gestión, Ventas y Páginas Web con IA",
   menuLabel: "Menú",
-  metaTitle: "Misura — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
+  metaTitle: "misure — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
   metaDescription:
-    "Misura diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
+    "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web a medida para PYMEs y empresas, con soporte continuo. Ordená tus procesos y crecé con datos reales.",
   tagline: "Software a medida para que tu empresa funcione mejor.",
 };
 
 export const footer = {
   navTitle: "Navegación",
   servicesTitle: "Servicios",
-  tagline: "Desarrollado por Misura",
+  tagline: "Desarrollado por misure",
 };
 
 export const nav: NavItem[] = [
@@ -48,19 +48,28 @@ export const headerCta: Cta = {
 export const pages = {
   home: { title: site.metaTitle, description: site.metaDescription },
   nosotros: {
-    title: "Nosotros — Misura",
+    title: "Nosotros — misure",
     description:
-      "Conocé a las personas detrás de Misura: desarrollo de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+      "Conocé a las personas detrás de misure: desarrollo de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+    h1: "Nosotros",
+    intro:
+      "Conocé a las personas que desarrollan el software a medida de misure: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   proyectos: {
-    title: "Proyectos — Misura",
+    title: "Proyectos — misure",
     description:
-      "Casos de éxito de Misura: proyectos de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+      "Casos de éxito de misure: proyectos de sistemas de gestión, herramientas de ventas y páginas web con IA a medida para PYMEs.",
+    h1: "Proyectos",
+    intro:
+      "Casos de éxito de software a medida para PYMEs: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   contacto: {
-    title: "Contacto — Misura",
+    title: "Contacto — misure",
     description:
-      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida con Misura: Gestión, Ventas y Páginas Web con IA.",
+      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida con misure: Gestión, Ventas y Páginas Web con IA.",
+    h1: "Contacto",
+    intro:
+      "Contanos en qué etapa está tu negocio y empecemos un proyecto de software a medida.",
   },
 };
 
@@ -77,7 +86,7 @@ export const clients = {
 };
 
 export const explore = {
-  eyebrow: "Explorá Misura",
+  eyebrow: "Exploranos",
   title: "Conocé más sobre nosotros",
   description:
     "Mirá quiénes desarrollan los sistemas, conocé los proyectos en curso y contanos cómo podemos ayudarte.",
@@ -110,7 +119,7 @@ export const about: {
   title: string;
   body: string;
 } = {
-  eyebrow: "Misura",
+  eyebrow: "Nosotros",
   title: "Quiénes somos",
   body: "[PENDIENTE: texto real de la empresa]",
 };
@@ -118,7 +127,7 @@ export const about: {
 export const hero = {
   title: "Software a medida para que tu empresa funcione mejor.",
   lead:
-    "En Misura desarrollamos software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
+    "En misure desarrollamos software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
   ctaPrimary: { label: "Iniciar proyecto", href: "/contacto" },
   ctaSecondary: { label: "Ver proyectos", href: "/proyectos" },
 } satisfies {
@@ -216,8 +225,8 @@ export const team: {
     socials: { linkedin: string; github: string };
   }[];
 } = {
-  eyebrow: "Nosotros",
-  title: "Nosotros",
+  eyebrow: "Equipo",
+  title: "Conocé al equipo",
   description: "[PENDIENTE: descripción breve del equipo]",
   socialLabels: {
     linkedin: "LinkedIn",
@@ -255,7 +264,7 @@ export const portfolio: {
   }[];
 } = {
   eyebrow: "Portfolio",
-  title: "Proyectos",
+  title: "Casos de éxito",
   description:
     "Estamos construyendo los primeros proyectos para mostrar. Apenas tengamos casos reales para publicar, van a aparecer acá.",
   filtersLabel: "Filtrar proyectos",
@@ -301,7 +310,7 @@ export const faqHeading: {
 
 export const faq: FaqItem[] = [
   {
-    question: "¿Qué servicios ofrece Misura?",
+    question: "¿Qué servicios ofrece misure?",
     answer:
       "Desarrollamos sistemas de gestión (ERP), herramientas de ventas (CRM) y páginas web con IA. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
   },

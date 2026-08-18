@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
+import PageHeader from "../components/PageHeader.astro";
 import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
 import { pages } from "../lib/content";
@@ -12,6 +13,7 @@ import { pages } from "../lib/content";
 >
   <Header />
   <main id="contenido" class="flex-1" tabindex="-1">
+    <PageHeader eyebrow="misure" title={pages.contacto.h1} intro={pages.contacto.intro} />
     <Contact />
   </main>
   <Footer />

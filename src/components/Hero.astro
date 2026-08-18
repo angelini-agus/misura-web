@@ -2,6 +2,7 @@
 import { hero } from "../lib/content";
 import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
 import Button from "./ui/Button.astro";
+import MisureWord from "./ui/MisureWord.astro";
 ---
 
 <section id="inicio" class="scroll-mt-24">
@@ -20,7 +21,7 @@ import Button from "./ui/Button.astro";
         style={{ transitionDelay: "60ms" }}
         class="mt-6 max-w-xl text-lg leading-relaxed text-green/80"
       >
-        {hero.lead}
+        <MisureWord text={hero.lead} />
       </p>
       <div
         data-reveal

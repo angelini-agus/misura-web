@@ -1,7 +1,7 @@
-# Misura — Contexto del proyecto
+# misure — Contexto del proyecto
 
 ## Qué es
-Sitio institucional multipágina (MPA) para Misura, empresa de software que 
+Sitio institucional multipágina (MPA) para misure, empresa de software que 
 desarrolla ERP, CRM y Landing Pages para PYMEs y empresas. Rutas: `/` (Inicio, 
 resumen con servicios y CTAs), `/nosotros`, `/proyectos`, `/contacto`.
 

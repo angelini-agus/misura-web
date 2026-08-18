@@ -1,13 +1,13 @@
 # Feature: Sección "Nuestro Equipo"
 
 ## Objetivo
-Presentar al equipo de desarrollo de Misura con una grilla responsive,
+Presentar al equipo de desarrollo de misure con una grilla responsive,
 siguiendo el diseño flat de la marca (inspiración estructural: geiko.dev).
 
 ## Restricciones
 - NO inventar nombres, roles, redes ni descripciones: todo queda como
   `[PENDIENTE]` en `src/lib/content.ts`, listo para completar.
-- Diseño Misura: flat, fondo crema, bordes verde `1px` sólidos, sin sombras.
+- Diseño misure: flat, fondo crema, bordes verde `1px` sólidos, sin sombras.
 - Fotos en blanco y negro: clase `grayscale` preparada para fotos reales.
 - Usar el componente `<Image>` de `astro:assets` (optimización automática),
   con `src/assets/team-placeholder.png` como placeholder actual.

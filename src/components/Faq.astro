@@ -1,6 +1,7 @@
 ---
 import { cleanAnswer, faq, faqHeading, hasRealAnswer } from "../lib/content";
 import PlusIcon from "./ui/PlusIcon.astro";
+import MisureWord from "./ui/MisureWord.astro";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -36,7 +37,9 @@ const faqSchema = {
           <summary
             class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors hover:text-cream-dark"
           >
-            <h3 class="font-display text-lg font-medium">{item.question}</h3>
+            <h3 class="font-display text-lg font-medium">
+              <MisureWord text={item.question} />
+            </h3>
             <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
           </summary>
           <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>

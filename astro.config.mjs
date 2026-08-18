@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 // [PENDIENTE: dominio de producción] — reemplazar por el dominio real al deployar
-const site = 'https://misura.example.com';
+const site = 'https://misure.example.com';
 
 // https://astro.build/config
 export default defineConfig({

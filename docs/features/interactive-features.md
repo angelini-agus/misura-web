@@ -8,7 +8,7 @@ en el header.
 ## Restricciones
 - Vanilla JS/TS dentro de `<script>` en archivos `.astro`. Sin islas de React
   ni librerías pesadas.
-- Diseño Misura (flat, crema `#F6EFE8`, verde `#0E3B33`, bordes sólidos, sin
+- Diseño misure (flat, crema `#F6EFE8`, verde `#0E3B33`, bordes sólidos, sin
   sombras). No copiar visuales de geiko.dev.
 - Textos en `src/lib/content.ts`, no hardcodeados en componentes.
 

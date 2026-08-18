@@ -1,10 +1,10 @@
-# Misura
+# misure
 
 Software para PYMEs y empresas.
 
-## Qué hace Misura
+## Qué hace misure
 
-Misura diseña y desarrolla software para PYMEs y empresas: ERP, CRM y landing pages. El objetivo es ordenar la operación interna de cada empresa y hacer crecer el negocio con datos reales.
+misure diseña y desarrolla software para PYMEs y empresas: ERP, CRM y landing pages. El objetivo es ordenar la operación interna de cada empresa y hacer crecer el negocio con datos reales.
 
 ## Servicios
 
@@ -21,7 +21,7 @@ PYMEs y empresas. Hoy el foco está en PYMEs de comercio y servicios. [PENDIENTE
 ## Estructura del sitio
 
 - `/` (Inicio) — Hero, servicios (ERP, CRM, landing), menciones de clientes, diferenciales, preguntas frecuentes y CTAs.
-- `/nosotros` — Personas detrás de Misura. [PENDIENTE: integrantes reales]
+- `/nosotros` — Personas detrás de misure. [PENDIENTE: integrantes reales]
 - `/proyectos` — Casos de éxito con filtros por categoría (ERP, CRM, Landing) y tecnologías. [PENDIENTE: casos reales]
 - `/contacto` — Formulario de contacto asíncrono y datos de la empresa.
 

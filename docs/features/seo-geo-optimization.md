@@ -1,7 +1,7 @@
 # Feature: Optimización SEO/GEO
 
 ## Objetivo
-Dejar la página de Misura optimizada para buscadores tradicionales y para 
+Dejar la página de misure optimizada para buscadores tradicionales y para 
 motores de búsqueda basados en IA (GEO), siguiendo un checklist de 26 puntos.
 
 ## Restricciones
@@ -32,7 +32,7 @@ de aceptar.
   pendientes marcados `[PENDIENTE]`.
 - **13** JSON-LD `FAQPage` con respuestas reales (se omiten placeholders puros).
 - **14** Imágenes renombradas a minúsculas con guiones: `og-image.png` →
-  `og-misura-software.png` (referencias en BaseLayout y docs actualizadas).
+  `og-misure-software.png` (referencias en BaseLayout y docs actualizadas).
 - **15** No hay `<img>`/`<Image>` reales todavía; el placeholder usa
   `role="img"` + `aria-label` que sigue al `label`.
 - **16** JSON-LD `Organization` (sin dirección física) con email/teléfono/
@@ -50,7 +50,7 @@ de aceptar.
   Instrucciones de configuración y de verificación en GSC en `README.md`.
 - **25** Sitemap generado con `@astrojs/sitemap` (integración en
   `astro.config.mjs`) y `site` configurado para URLs absolutas. El dominio en
-  `site` es un placeholder `https://misura.example.com` marcado `[PENDIENTE]`
+  `site` es un placeholder `https://misure.example.com` marcado `[PENDIENTE]`
   — reemplazar por el dominio real al deployar (actualiza también `robots.txt`).
 
 ### No aplica

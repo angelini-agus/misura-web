@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # [PENDIENTE: dominio de producción] — actualizar al deployar
-Sitemap: https://misura.example.com/sitemap-index.xml
+Sitemap: https://misure.example.com/sitemap-index.xml

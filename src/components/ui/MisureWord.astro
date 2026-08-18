@@ -1,0 +1,18 @@
+---
+interface Props {
+  text: string;
+  word?: string;
+}
+
+const { text, word = "misure" } = Astro.props;
+---
+
+{
+  text.split(new RegExp(`(${word})`, "gi")).map((part) =>
+    part.toLowerCase() === word.toLowerCase() ? (
+      <em class="normal-case italic">{word}</em>
+    ) : (
+      <span>{part}</span>
+    )
+  )
+}

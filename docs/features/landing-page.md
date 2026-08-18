@@ -1,15 +1,15 @@
-# Feature: Landing page institucional de Misura
+# Feature: Landing page institucional de misure
 
 ## Objetivo
-Página de una sola vista (con secciones ancladas) que presente a Misura y sus 
+Página de una sola vista (con secciones ancladas) que presente a misure y sus 
 tres líneas de servicio (ERP, CRM, Landing Pages) a PYMEs y empresas, con 
 estructura similar a geiko.dev/es.
 
 ## Secciones (contenido funcional — el diseño/orden visual lo define el agente según su propia dirección de arte, no debe copiar la composición de ninguna referencia externa)
 
-- Presentación de Misura y su propuesta de valor
+- Presentación de misure y su propuesta de valor
 - Los tres servicios: ERP, CRM, Landing Pages
-- Por qué elegir Misura (diferenciales)
+- Por qué elegir misure (diferenciales)
 - Portfolio / casos ([PENDIENTE] hasta tener proyectos reales)
 - Preguntas frecuentes
 - Llamado a la acción de contacto
@@ -64,7 +64,7 @@ Ver AGENTS.md del proyecto.
 - **Tipografía:** Plus Jakarta Sans variable self-hosted (sin Google Fonts).
 - **Contacto:** se eligió `mailto:`/WhatsApp link (no formulario). Datos
   `[PENDIENTE]` hasta que el cliente los provea.
-- **OG image default:** `public/og-misura-software.png` generada (B/N flat).
+- **OG image default:** `public/og-misure-software.png` generada (B/N flat).
   Cuando haya dominio, pasar `ogUrl`/`ogImage` absolutos a `BaseLayout`.
 - **Eliminado:** proyecto Next.js anterior (app/, components/, lib/) — el repo
   ahora es solo Astro.

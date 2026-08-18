@@ -7,7 +7,7 @@ archivos de Astro, manteniendo dirección de arte flat y rendimiento.
 ## Rutas
 - `/` (Inicio): Hero, vista rápida de Servicios, menciones de clientes
   (placeholders), Diferenciales, FAQ y CTAs a las demás páginas.
-- `/nosotros`: personas detrás de Misura con placeholders `[PENDIENTE]`.
+- `/nosotros`: personas detrás de misure con placeholders `[PENDIENTE]`.
 - `/proyectos`: grilla de casos de éxito con filtros por categoría y
   tecnologías por proyecto.
 - `/contacto`: formulario de contacto asíncrono + datos de la empresa en

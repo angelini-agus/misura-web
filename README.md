@@ -1,6 +1,6 @@
-# Misura — Web
+# misure — Web
 
-Sitio institucional multipágina (MPA) para **Misura**, desarrollado con
+Sitio institucional multipágina (MPA) para **misure**, desarrollado con
 **Astro + TypeScript + Tailwind CSS v4**.
 
 Sitio estático con JS mínimo en cliente (reveal de animaciones, filtro de
