@@ -19,7 +19,7 @@ export const site = {
   name: "misure",
   url: "[PENDIENTE: dominio de producción]",
   announcement:
-    "Software a medida para PYMEs y empresas — Gestión, Ventas y Páginas Web con IA",
+    "Desarrollo de software a medida en Rosario y Cordón Industrial — Prototipo gratis antes de contratar",
   menuLabel: "Menú",
   metaTitle: "misure — Software para PYMEs y empresas: Gestión, Ventas y Páginas Web con IA a medida",
   metaDescription:
@@ -41,7 +41,7 @@ export const nav: NavItem[] = [
 ];
 
 export const headerCta: Cta = {
-  label: "Iniciar proyecto",
+  label: "Quiero mi prototipo gratis",
   href: "/contacto",
 };
 
@@ -125,11 +125,11 @@ export const about: {
 };
 
 export const hero = {
-  title: "Software a medida para que tu empresa funcione mejor.",
+  title: "Automatizá lo que hoy le cuesta un sueldo completo a tu empresa.",
   lead:
-    "En misure desarrollamos software específico y 100% personalizado para tu empresa: sistemas de gestión, herramientas de ventas y páginas web, potenciados con Inteligencia Artificial para automatizar y optimizar tus procesos.",
-  ctaPrimary: { label: "Iniciar proyecto", href: "/contacto" },
-  ctaSecondary: { label: "Ver proyectos", href: "/proyectos" },
+    "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida, sin SaaS genérico ni plantillas. Vamos a tu negocio, armamos un prototipo y diseño gratis antes de firmar, y trabajamos con entregas semanales por contrato.",
+  ctaPrimary: { label: "Agendá 20 minutos con nosotros", href: "/contacto" },
+  ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos" },
 } satisfies {
   title: string;
   lead: string;
