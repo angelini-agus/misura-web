@@ -1,6 +1,12 @@
 ---
 import { contactForm } from "../lib/content";
 
+interface Props {
+  simple?: boolean;
+}
+
+const { simple = false } = Astro.props;
+
 const script = `
 (() => {
   const form = document.getElementById("contact-form");
@@ -13,21 +19,30 @@ const script = `
   const submittingLabel = ${JSON.stringify(contactForm.submittingLabel)};
   const formError = ${JSON.stringify(contactForm.formError)};
   const successMessage = ${JSON.stringify(contactForm.successMessage)};
+  const isSimple = ${JSON.stringify(!false)};
 
   const getValue = (name) => {
     const field = form.elements.namedItem(name);
     return field ? field.value : "";
   };
 
-  const validators = {
+  const baseValidators = {
     name: (value) => (value.trim().length < 2 ? errors.name : ""),
     email: (value) => {
       const trimmed = value.trim();
-      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(trimmed) ? "" : errors.email;
+      return /^[^\\\\s@]+@[^\\\\s@]+\\\\.[^\\\\s@]+$/.test(trimmed) ? "" : errors.email;
     },
+    phone: (value) => (value.trim().length < 6 ? errors.phone : ""),
+  };
+
+  const fullValidators = {
+    ...baseValidators,
     service: (value) => (value ? "" : errors.service),
     message: (value) => (value.trim().length < 10 ? errors.message : ""),
   };
+
+  const simpleMode = form.dataset.simple === "true";
+  const validators = simpleMode ? baseValidators : fullValidators;
 
   const setError = (name, message) => {
     const field = form.elements.namedItem(name);
@@ -91,6 +106,7 @@ const script = `
   id="contact-form"
   class="grid gap-8"
   novalidate
+  data-simple={simple ? "true" : "false"}
 >
   <div class="grid gap-6 md:grid-cols-2">
     <div class="flex flex-col gap-2">
@@ -151,44 +167,67 @@ const script = `
 
     <div class="flex flex-col gap-2">
       <label
-        for="cf-service"
+        for="cf-phone"
         class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
       >
-        {contactForm.labels.service} <span aria-hidden="true">*</span>
+        {contactForm.labels.phone} <span aria-hidden="true">*</span>
       </label>
-      <select
-        id="cf-service"
-        name="service"
+      <input
+        id="cf-phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
         required
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
-      >
-        <option value="" disabled selected>
-          {contactForm.servicePlaceholder}
-        </option>
-        {contactForm.serviceOptions.map((option) => (
-          <option value={option.value}>{option.label}</option>
-        ))}
-      </select>
-      <p data-error-for="service" class="hidden text-sm text-green-dark" role="alert"></p>
+        placeholder={contactForm.placeholders.phone}
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+      />
+      <p data-error-for="phone" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
 
-    <div class="flex flex-col gap-2 md:col-span-2">
-      <label
-        for="cf-message"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.message} <span aria-hidden="true">*</span>
-      </label>
-      <textarea
-        id="cf-message"
-        name="message"
-        rows="5"
-        required
-        placeholder={contactForm.placeholders.message}
-        class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
-      ></textarea>
-      <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
-    </div>
+    {!simple && (
+      <>
+        <div class="flex flex-col gap-2">
+          <label
+            for="cf-service"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.service} <span aria-hidden="true">*</span>
+          </label>
+          <select
+            id="cf-service"
+            name="service"
+            required
+            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
+          >
+            <option value="" disabled selected>
+              {contactForm.servicePlaceholder}
+            </option>
+            {contactForm.serviceOptions.map((option) => (
+              <option value={option.value}>{option.label}</option>
+            ))}
+          </select>
+          <p data-error-for="service" class="hidden text-sm text-green-dark" role="alert"></p>
+        </div>
+
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <label
+            for="cf-message"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.message} <span aria-hidden="true">*</span>
+          </label>
+          <textarea
+            id="cf-message"
+            name="message"
+            rows="5"
+            required
+            placeholder={contactForm.placeholders.message}
+            class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+          ></textarea>
+          <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
+        </div>
+      </>
+    )}
   </div>
 
   <div class="flex flex-col items-start gap-4">

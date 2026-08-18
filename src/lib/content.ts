@@ -3,6 +3,7 @@ import type {
   Cta,
   Differentiator,
   FaqItem,
+  ForWhoSection,
   NavItem,
   Service,
 } from "./types";
@@ -74,42 +75,59 @@ export const pages = {
 };
 
 export const clients = {
-  eyebrow: "Clientes",
-  title: "Empresas que ya confían en nosotros",
-  description: "[PENDIENTE: logos reales y menciones de clientes]",
-  items: [
-    { name: "[PENDIENTE]" },
-    { name: "[PENDIENTE]" },
-    { name: "[PENDIENTE]" },
-    { name: "[PENDIENTE]" },
+  eyebrow: "Prueba social",
+  title: "No prometemos resultados. Los mostramos.",
+  description:
+    "Un sistema de gestión a medida para una empresa de limpieza de Rosario eliminó un puesto administrativo completo y llevó las quejas por inasistencias de 4-6 por mes a prácticamente 0.",
+  metrics: [
+    {
+      value: "$2.800.000",
+      unit: "ARS/mes",
+      label: "ahorrados en sueldo y cargas sociales",
+    },
+    {
+      value: "0",
+      unit: "quejas",
+      label: "por inasistencias (antes: 4-6 por mes)",
+    },
+    {
+      value: "1",
+      unit: "persona",
+      label: "supervisa lo que antes hacían 3",
+    },
   ],
+  cta: {
+    label: "Ver cómo lo hicimos",
+    href: "/proyectos/empresa-limpieza-rosario",
+  },
 };
 
 export const explore = {
-  eyebrow: "Exploranos",
-  title: "Conocé más sobre nosotros",
+  eyebrow: "Explorá",
+  title: "¿Por dónde seguís?",
   description:
-    "Mirá quiénes desarrollan los sistemas, conocé los proyectos en curso y contanos cómo podemos ayudarte.",
+    "Tres cosas concretas que podés hacer ahora para entender si misure es lo que tu empresa necesita.",
   items: [
     {
-      title: "Nosotros",
+      title: "Prototipo gratis antes de firmar",
       description:
-        "Las personas que desarrollan cada sistema de gestión, herramienta de ventas y página web.",
+        "Antes de comprometerte con nada, te entregamos el diseño y el prototipo de tu sistema sin cargo. Cero riesgo para arrancar.",
       href: "/nosotros",
-      cta: "Conocenos",
+      cta: "Cómo trabajamos",
     },
     {
-      title: "Proyectos",
-      description: "Casos de éxito de software a medida para PYMEs.",
-      href: "/proyectos",
-      cta: "Ver proyectos",
-    },
-    {
-      title: "Tu proyecto",
+      title: "Un caso real documentado",
       description:
-        "Empezá a digitalizar tu empresa con un sistema hecho a tu medida.",
-      href: "/contacto",
-      cta: "Iniciar proyecto",
+        "Empresa de limpieza, Rosario: un sistema que reemplazó tres planillas de Excel y eliminó un puesto administrativo completo.",
+      href: "/proyectos/empresa-limpieza-rosario",
+      cta: "Ver el caso",
+    },
+    {
+      title: "Precios sin letra chica",
+      description:
+        "Landing desde USD 200. ERP/CRM desde USD 1.000. E-commerce desde USD 1.500. Sin sorpresas ni suscripciones de por vida.",
+      href: "#preguntas",
+      cta: "Ver preguntas frecuentes",
     },
   ],
 };
@@ -147,7 +165,7 @@ export const services: {
   eyebrow: "Servicios",
   title: "Lo que hacemos",
   subtitle:
-    "Desarrollamos software específico y 100% personalizado para tu empresa, potenciado con Inteligencia Artificial para automatizar y optimizar tus procesos.",
+    "Desarrollamos software específico y 100% personalizado para tu empresa. Sin SaaS genérico, sin plantillas, sin adaptarte a un sistema rígido.",
   subtitleLink: {
     label: "¿Tenés dudas sobre qué elegir? Ver preguntas frecuentes",
     href: "#preguntas",
@@ -157,19 +175,19 @@ export const services: {
       id: "erp",
       name: "Sistemas de Gestión (ERP)",
       description:
-        "Ventas, stock, compras y facturación en una sola herramienta, construida alrededor de tus procesos y no al revés.",
+        "Dejás de perder tiempo con planillas de Excel, WhatsApp y papeles. Tu equipo trabaja desde un solo lugar: ventas, stock, compras y facturación integrados al proceso real de tu negocio.",
     },
     {
       id: "crm",
       name: "Herramientas de Ventas (CRM)",
       description:
-        "Seguimiento de clientes y oportunidades para que ninguna venta se pierda en el camino y el equipo trabaje con la misma información.",
+        "Ninguna oportunidad se pierde más entre el primer contacto y el cierre. Tu equipo comercial trabaja con la misma información, en tiempo real, desde donde esté.",
     },
     {
       id: "landing",
       name: "Páginas Web",
       description:
-        "Páginas enfocadas en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida.",
+        "Cada visita tiene una sola misión: convertirse en consulta o venta. Diseño propio, carga rápida y un objetivo claro que reemplaza al folleto digital que nadie lee.",
     },
   ],
 };
@@ -184,31 +202,31 @@ export const differentiators: {
   eyebrow: "Diferenciales",
   title: "Qué nos hace distintos",
   subtitle:
-    "Cuatro razones concretas para elegirnos, sin vueltas y sin prometer lo que no podemos cumplir.",
+    "Cuatro compromisos concretos, no adjetivos. Podés leerlos y pedirlos por escrito.",
   subtitleLink: {
     label: "¿Te interesa? Contanos tu caso",
     href: "/contacto",
   },
   items: [
     {
-      title: "Desarrollo a medida",
+      title: "Entrevista de 2 horas en tu negocio",
       description:
-        "Cada pieza se construye alrededor de tus procesos reales, y no al revés. Nada de adaptar tu negocio a un sistema rígido.",
+        "Vamos presencialmente a ver cómo trabajás antes de escribir una línea de código. No hacemos suposiciones desde una videollamada.",
     },
     {
-      title: "Soporte continuo",
+      title: "Errores post-lanzamiento: los arreglamos gratis",
       description:
-        "El software no termina el día del lanzamiento. Nos quedamos al lado del negocio con soporte, mejoras y mantenimiento.",
+        "Si algo falla después de que el sistema sale a producción, lo solucionamos sin costo adicional. Sin excusas y sin facturar horas extra.",
     },
     {
-      title: "Stack moderno",
+      title: "Prototipo y diseño gratis antes de firmar nada",
       description:
-        "Tecnología actual y buenas prácticas de la industria para que tu inversión siga sirviendo y no quede vieja en dos años.",
+        "Antes de que desembolses un peso, ya tenés el prototipo navegable y el diseño aprobado. Si no te convence, no perdés nada.",
     },
     {
-      title: "Inteligencia Artificial",
+      title: "Cumplimiento de plazos garantizado por contrato",
       description:
-        "Integramos Inteligencia Artificial en los sistemas de gestión y herramientas de ventas para automatizar procesos repetitivos y agilizar el desarrollo, para que tu equipo se concentre en lo importante. [PENDIENTE: detallar casos de uso concretos]",
+        "Las entregas semanales y la fecha de lanzamiento quedan escritas en el contrato. No somos una empresa que promete y desaparece.",
     },
   ],
 };
@@ -312,17 +330,17 @@ export const faq: FaqItem[] = [
   {
     question: "¿Qué servicios ofrece misure?",
     answer:
-      "Desarrollamos sistemas de gestión (ERP), herramientas de ventas (CRM) y páginas web con IA. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
+      "Desarrollamos sistemas de gestión (ERP), herramientas de ventas (CRM) y páginas web a medida. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
   },
   {
     question: "¿Qué incluye un sistema de gestión (ERP)?",
     answer:
-      "Ventas, stock, compras y facturación en una sola herramienta, construida alrededor de tus procesos y no al revés. El alcance final se define según el rubro y la operación de cada empresa. [PENDIENTE: módulos y alcance por tipo de proyecto]",
+      "Ventas, stock, compras y facturación en una sola herramienta, construida alrededor de tus procesos y no al revés. El alcance final se define según el rubro y la operación de cada empresa.",
   },
   {
     question: "¿Para qué sirve una herramienta de ventas (CRM)?",
     answer:
-      "Para el seguimiento de clientes y oportunidades: que ninguna venta se pierda en el camino y que el equipo trabaje con la misma información. [PENDIENTE: funcionalidades según el proceso comercial de cada empresa]",
+      "Para el seguimiento de clientes y oportunidades: que ninguna venta se pierda en el camino y que el equipo trabaje con la misma información.",
   },
   {
     question: "¿Qué es una página web de conversión y para qué sirve?",
@@ -330,15 +348,50 @@ export const faq: FaqItem[] = [
       "Una página enfocada en un solo objetivo: convertir visitas en consultas o ventas, con diseño propio y carga rápida. Se combina con las herramientas de ventas para capturar y seguir los contactos que llegan.",
   },
   {
-    question: "¿Cuánto cuesta un proyecto?",
-    answer: "[PENDIENTE: definir presupuestos por tipo y alcance de proyecto]",
+    question: "¿Cuánto cuesta un proyecto como el mío?",
+    answer:
+      "Depende del alcance, pero manejamos rangos transparentes: landing page desde USD 200, sistemas de gestión (ERP/CRM) entre USD 1.000 y 2.000, e-commerce entre USD 1.500 y 3.000. Antes de darte un número, hacemos una entrevista para entender tu caso y presupuestamos sin compromiso.",
   },
   {
     question: "¿Qué pasa después del lanzamiento?",
     answer:
-      "El software no termina cuando se publica. Ofrecemos soporte, mantenimiento y mejoras continuas para que siga acompañando el negocio.",
+      "El software no termina cuando se publica. Si hay errores después del lanzamiento, los arreglamos gratis. Y seguimos disponibles para soporte, mantenimiento y mejoras.",
+  },
+  {
+    question: "¿Cómo sé que van a cumplir el plazo si son una empresa nueva?",
+    answer:
+      "Las entregas semanales y la fecha de lanzamiento quedan escritas en el contrato. No dependemos de promesas verbales. Podés leer las condiciones antes de firmar y, si algo se desvía, está contemplado en el acuerdo.",
+  },
+  {
+    question: "¿Cuánto cuesta un proyecto?",
+    answer:
+      "Landing page desde USD 200. Sistemas de gestión (ERP/CRM) entre USD 1.000 y 2.000. E-commerce entre USD 1.500 y 3.000. El presupuesto exacto lo definimos después de entender tu caso en una charla de 20 minutos.",
   },
 ];
+
+export const forWho: ForWhoSection = {
+  eyebrow: "¿Es para vos?",
+  title: "Trabajamos con quienes saben lo que quieren.",
+  yes: {
+    label: "Es para vos si",
+    items: [
+      "Perdiste el control de tu operación con Excel, WhatsApp o papeles",
+      "Probaste un sistema genérico que no encajaba con tu negocio",
+      "Preferís pagar una vez y no una suscripción de por vida",
+      "Querés un sistema que se adapte a vos, no al revés",
+      "Valorás tener un interlocutor que entiende tu rubro",
+    ],
+  },
+  no: {
+    label: "No es para vos si",
+    items: [
+      "Buscás la opción más barata sin importar el resultado",
+      "Querés un sistema ya armado sin adaptarlo a tu proceso",
+      "No tenés 2 horas para una entrevista inicial presencial",
+      "Esperás que el software resuelva problemas de gestión sin involucrarte",
+    ],
+  },
+};
 
 export const contact: ContactInfo = {
   eyebrow: "Contacto",
@@ -373,6 +426,7 @@ export const contactForm = {
     name: "Nombre",
     company: "Empresa",
     email: "Email",
+    phone: "Teléfono",
     service: "Servicio de interés",
     message: "Mensaje",
   },
@@ -380,6 +434,7 @@ export const contactForm = {
     name: "Tu nombre",
     company: "Tu empresa",
     email: "tucorreo@empresa.com",
+    phone: "Tu teléfono o WhatsApp",
     message: "Contanos en qué etapa está tu negocio",
   },
   servicePlaceholder: "Elegí un servicio",
@@ -392,6 +447,7 @@ export const contactForm = {
   errors: {
     name: "Ingresá tu nombre",
     email: "Ingresá un email válido",
+    phone: "Ingresá tu teléfono",
     service: "Elegí un servicio",
     message: "Contanos un poco más (mínimo 10 caracteres)",
   },

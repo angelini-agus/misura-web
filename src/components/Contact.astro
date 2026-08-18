@@ -3,6 +3,11 @@ import { contact, isPending } from "../lib/content";
 import ContactForm from "./ContactForm.astro";
 import Placeholder from "./ui/Placeholder.astro";
 
+interface Props {
+  simple?: boolean;
+}
+
+const { simple = false } = Astro.props;
 const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
 ---
 
@@ -54,7 +59,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
         </ul>
       </div>
       <div class="bg-cream p-6 md:p-12">
-        <ContactForm />
+        <ContactForm simple={simple} />
       </div>
     </div>
   </div>

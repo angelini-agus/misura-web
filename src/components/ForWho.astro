@@ -1,0 +1,68 @@
+---
+import { forWho } from "../lib/content";
+---
+
+<section id="para-vos" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {forWho.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {forWho.title}
+      </h2>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      <!-- Es para vos si -->
+      <div
+        class="rounded-md border border-green bg-green p-8 text-cream"
+        data-reveal
+        style="transition-delay: 0ms"
+      >
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-cream/60">
+          {forWho.yes.label}
+        </p>
+        <ul class="mt-6 flex flex-col gap-4">
+          {forWho.yes.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-cream/30 text-xs font-bold text-cream"
+                aria-hidden="true"
+              >
+                ✓
+              </span>
+              <span class="text-sm leading-relaxed text-cream/85">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- No es para vos si -->
+      <div
+        class="rounded-md border border-green p-8"
+        data-reveal
+        style="transition-delay: 60ms"
+      >
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/50">
+          {forWho.no.label}
+        </p>
+        <ul class="mt-6 flex flex-col gap-4">
+          {forWho.no.items.map((item) => (
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green/30 text-xs font-bold text-green/50"
+                aria-hidden="true"
+              >
+                ×
+              </span>
+              <span class="text-sm leading-relaxed text-green/70">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

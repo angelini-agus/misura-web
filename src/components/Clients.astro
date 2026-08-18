@@ -15,19 +15,31 @@ import { clients } from "../lib/content";
       </h2>
       <p class="mt-4 leading-relaxed text-green/80">{clients.description}</p>
     </div>
-    <ul
-      class="mt-12 flex flex-wrap items-center justify-center gap-4"
-      data-reveal
-    >
-      {clients.items.map((client) => (
-        <li
-          class="flex h-20 w-40 items-center justify-center rounded-md border border-green bg-green px-4"
-        >
-          <span class="font-mono text-xs uppercase tracking-widest text-cream/60">
-            {client.name}
-          </span>
-        </li>
+
+    <div class="mt-12 grid gap-px border border-green md:grid-cols-3" data-reveal>
+      {clients.metrics.map((metric) => (
+        <div class="flex flex-col gap-2 bg-green p-8 text-cream">
+          <div class="flex items-baseline gap-2">
+            <span class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+              {metric.value}
+            </span>
+            <span class="font-mono text-sm uppercase tracking-widest text-cream/60">
+              {metric.unit}
+            </span>
+          </div>
+          <p class="text-sm leading-relaxed text-cream/75">{metric.label}</p>
+        </div>
       ))}
-    </ul>
+    </div>
+
+    <div class="mt-8" data-reveal>
+      <a
+        href={clients.cta.href}
+        class="inline-flex items-center gap-2 rounded-md border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition-colors duration-150 hover:bg-green-dark"
+      >
+        {clients.cta.label}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
   </div>
 </section>

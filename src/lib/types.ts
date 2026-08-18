@@ -24,6 +24,13 @@ export type FaqItem = {
   answer: string;
 };
 
+export type ForWhoSection = {
+  eyebrow: string;
+  title: string;
+  yes: { label: string; items: string[] };
+  no: { label: string; items: string[] };
+};
+
 export type ContactInfo = {
   eyebrow: string;
   title: string;
