@@ -75,7 +75,7 @@ export const pages = {
 };
 
 export const clients = {
-  eyebrow: "Prueba social",
+  eyebrow: "Validación social",
   title: "No prometemos resultados. Los mostramos.",
   description:
     "Un sistema de gestión a medida para una empresa de limpieza de Rosario eliminó un puesto administrativo completo y llevó las quejas por inasistencias de 4-6 por mes a prácticamente 0.",
