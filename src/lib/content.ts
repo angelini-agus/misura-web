@@ -21,17 +21,18 @@ export const site = {
   name: "misure",
   url: "[PENDIENTE: dominio de producción]",
   announcement:
-    "Desarrollo de software a medida en Rosario y Cordón Industrial — Prototipo gratis antes de contratar",
+    "Desarrollo de software a medida en Rosario y alrededores — Prototipo gratis antes de contratar",
   menuLabel: "Menú",
-  metaTitle: "misure — Software a medida para PYMEs: Gestión, Ventas y Páginas Web",
+  metaTitle: "misure — Software a medida para que tu empresa funcione mejor",
   metaDescription:
-    "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario y el Cordón Industrial. Prototipo gratis antes de firmar.",
+    "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web 100% a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para que tu empresa funcione mejor.",
 };
 
 export const footer = {
   navTitle: "Navegación",
   servicesTitle: "Servicios",
+  contactTitle: "Contacto",
   tagline: "Desarrollado por misure",
 };
 
@@ -43,29 +44,29 @@ export const nav: NavItem[] = [
 
 export const headerCta: Cta = {
   label: "Quiero mi prototipo gratis",
-  href: "/contacto",
+  href: "/contacto#contacto",
 };
 
 export const pages = {
   home: { title: site.metaTitle, description: site.metaDescription },
   nosotros: {
-    title: "Nosotros — misure | Equipo de desarrollo en Rosario",
+    title: "Nosotros — misure",
     description:
-      "Conocé a las personas detrás de misure: desarrollo de sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario y el Cordón Industrial.",
+      "Conocé a las personas detrás de misure: desarrollo de sistemas de gestión, herramientas de ventas y páginas web 100% a medida para pymes de Rosario y alrededores.",
     h1: "Nosotros",
     intro:
       "Conocé a las personas que desarrollan el software a medida de misure: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   proyectos: {
-    title: "Proyectos — misure | Casos de éxito en software a medida",
+    title: "Proyectos — misure",
     description:
-      "Casos de éxito de misure: sistemas de gestión, herramientas de ventas y páginas web 100% a medida para PYMEs de Rosario. Resultados reales, no promesas.",
+      "Casos de éxito de misure: sistemas de gestión, herramientas de ventas y páginas web 100% a medida para pymes de Rosario. Resultados reales, no promesas.",
     h1: "Proyectos",
     intro:
-      "Resultados reales de software a medida para PYMEs: sistemas de gestión, herramientas de ventas y páginas web.",
+      "Resultados reales de software a medida para pymes: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   contacto: {
-    title: "Contacto — misure | Prototipo gratis antes de firmar",
+    title: "Contacto — misure",
     description:
       "Contanos en qué etapa está tu negocio y te mostramos cómo un sistema a medida puede resolver tu problema. Prototipo gratis, sin compromiso.",
     h1: "Hablemos",
@@ -137,7 +138,7 @@ export const about: {
   title: string;
   body: string[];
 } = {
-  eyebrow: "Nosotros",
+  eyebrow: "Nuestra historia",
   title: "Quiénes somos",
   body: [
     "Uno de nosotros empezó haciendo desarrollo freelance para pymes de Rosario a principios de 2025. Uno de esos trabajos fue un sistema para una empresa de limpieza: geolocalización para controlar asistencia, cálculo automático de sueldos e impuestos, stock por edificio. Cuando terminamos, habían eliminado un puesto administrativo completo.",
@@ -150,7 +151,7 @@ export const hero = {
   title: "Automatizá lo que hoy le cuesta un sueldo completo a tu empresa.",
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida, sin SaaS genérico ni plantillas. Vamos a tu negocio, armamos un prototipo y diseño gratis antes de firmar, y trabajamos con entregas semanales por contrato.",
-  ctaPrimary: { label: "Agendá 20 minutos con nosotros", href: "/contacto" },
+  ctaPrimary: { label: "Agendá 20 minutos con nosotros", href: "/contacto#contacto" },
   ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos" },
 } satisfies {
   title: string;
@@ -454,7 +455,7 @@ export const contact: ContactInfo = {
   description:
     "Contanos en qué etapa está tu negocio y te contamos cómo podemos ayudarte. Sin vueltas y sin compromiso.",
   ctaLabel: "Iniciar proyecto",
-  email: "[PENDIENTE: email de contacto]",
+  email: "contacto@misure.dev",
   locationItems: [
     { label: "UBICACIÓN", value: "Rosario, Santa Fe" },
     { label: "MODALIDAD", value: "Presencial / Remoto" },
@@ -468,7 +469,7 @@ export const contact: ContactInfo = {
 export const stickyCta = {
   ariaLabel: "Acción rápida",
   label: "Contanos tu proyecto",
-  href: "/contacto",
+  href: "/contacto#contacto",
 };
 
 export const share = {

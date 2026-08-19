@@ -16,7 +16,10 @@ import { clients } from "../lib/content";
       <p class="mt-4 leading-relaxed text-green/80">{clients.description}</p>
     </div>
 
-    <div class="mt-12 grid gap-px border border-green md:grid-cols-3" data-reveal>
+    <div
+      class="mt-12 grid gap-px overflow-hidden rounded-md border border-green md:grid-cols-3"
+      data-reveal
+    >
       {clients.metrics.map((metric) => (
         <div class="flex flex-col bg-green p-8 text-cream">
           <div class="flex items-baseline gap-2">

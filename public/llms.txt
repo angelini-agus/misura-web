@@ -27,6 +27,6 @@ PYMEs y empresas. Hoy el foco está en PYMEs de comercio y servicios. [PENDIENTE
 
 ## Contacto
 
-- Email: [PENDIENTE: email de contacto]
+- Email: contacto@misure.dev
 - WhatsApp: [PENDIENTE: número de WhatsApp]
 - Web: [PENDIENTE: dominio de producción]

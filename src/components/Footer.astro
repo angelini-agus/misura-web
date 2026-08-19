@@ -1,5 +1,5 @@
 ---
-import { footer, nav, services, site } from "../lib/content";
+import { contact, footer, isPending, nav, site } from "../lib/content";
 import ShareButton from "./ShareButton.astro";
 import MisureWord from "./ui/MisureWord.astro";
 
@@ -7,7 +7,7 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="border-t border-green bg-cream">
-  <div class="mx-auto max-w-6xl px-4 pt-12 pb-24 md:px-6 md:pb-12">
+  <div class="mx-auto max-w-6xl px-4 pt-10 pb-16 md:px-6 md:pb-8">
     <div class="flex flex-col gap-10 md:flex-row md:justify-between">
       <div class="max-w-xs">
         <img
@@ -30,22 +30,38 @@ const year = new Date().getFullYear();
           </a>
         ))}
       </nav>
-      <nav class="flex flex-col gap-2 text-sm" aria-label="Servicios">
+      <nav class="flex flex-col gap-2 text-sm" aria-label="Contacto">
         <p class="text-xs uppercase tracking-[0.2em] text-green/60">
-          {footer.servicesTitle}
+          {footer.contactTitle}
         </p>
-        {services.items.map((service) => (
+        {isPending(contact.email) ? (
+          <span class="w-fit text-green/60">{contact.email}</span>
+        ) : (
           <a
-            href={`/proyectos?cat=${service.id}`}
+            href={`mailto:${contact.email}`}
             class="w-fit text-green underline-offset-4 hover:underline"
           >
-            {service.name}
+            {contact.email}
           </a>
-        ))}
+        )}
+        {contact.socials.map((social) =>
+          isPending(social.url) ? (
+            <span class="w-fit text-green/60">{social.label}</span>
+          ) : (
+            <a
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-fit text-green underline-offset-4 hover:underline"
+            >
+              {social.label}
+            </a>
+          )
+        )}
       </nav>
     </div>
     <div
-      class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-green pt-6 text-xs text-green/60 sm:flex-row"
+      class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-green pt-4 text-xs text-green/60 sm:flex-row"
     >
       <p>
         © {year} <MisureWord text={site.name}/> 

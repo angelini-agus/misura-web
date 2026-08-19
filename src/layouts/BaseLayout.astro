@@ -1,5 +1,6 @@
 ---
 import "@fontsource-variable/plus-jakarta-sans";
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import { contact, site } from "../lib/content";
 
@@ -52,6 +53,7 @@ gtag('config', '${gaId}');`
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.svg" />
     {canonical && <link rel="canonical" href={canonical} />}
@@ -84,23 +86,58 @@ gtag('config', '${gaId}');`
   <body class="flex min-h-full flex-col bg-cream antialiased">
     <slot />
     <script>
-      const targets = document.querySelectorAll("[data-reveal]");
-      if (!("IntersectionObserver" in window)) {
-        targets.forEach((el) => el.classList.add("is-visible"));
-      } else {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target);
+      const initReveal = () => {
+        const targets = document.querySelectorAll("[data-reveal]");
+        if (!("IntersectionObserver" in window)) {
+          targets.forEach((el) => el.classList.add("is-visible"));
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("is-visible");
+                  observer.unobserve(entry.target);
+                }
               }
-            }
-          },
-          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-        );
-        targets.forEach((el) => observer.observe(el));
-      }
+            },
+            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+          );
+          targets.forEach((el) => observer.observe(el));
+        }
+      };
+      document.addEventListener("astro:page-load", initReveal);
+      initReveal();
+    </script>
+    <script>
+      const onCtaClick = (event) => {
+        const link = event.currentTarget;
+        if (!link) return;
+        const targetUrl = new URL(link.href, window.location.origin);
+        const currentUrl = new URL(window.location.href);
+        const samePage =
+          targetUrl.pathname.replace(/\/+$/, "") ===
+          currentUrl.pathname.replace(/\/+$/, "");
+        if (!samePage) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const target = document.getElementById("contacto");
+        if (!target) return;
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        target.scrollIntoView({
+          behavior: reduce ? "auto" : "smooth",
+          block: "start",
+        });
+      };
+      const initCtaScroll = () => {
+        document.querySelectorAll('a[href$="#contacto"]').forEach((link) => {
+          link.removeEventListener("click", onCtaClick, true);
+          link.addEventListener("click", onCtaClick, true);
+        });
+      };
+      document.addEventListener("astro:page-load", initCtaScroll);
+      initCtaScroll();
     </script>
   </body>
 </html>
