@@ -33,7 +33,10 @@ const faqSchema = {
     </div>
     <div class="mt-12 flex flex-col gap-6">
       {faq.map((item) => (
-        <details class="group rounded-md border border-green bg-green text-cream">
+        <details
+          id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
+          class="group rounded-md border border-green bg-green text-cream"
+        >
           <summary
             class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition-colors hover:text-cream-dark"
           >
@@ -48,6 +51,33 @@ const faqSchema = {
     </div>
   </div>
 </section>
+
+<script>
+  const openFaqFromHash = (hash) => {
+    if (!hash) return;
+    const details = document.getElementById(hash.slice(1));
+    if (details && details.tagName === "DETAILS") {
+      details.open = true;
+    }
+  };
+  const onFaqLinkClick = (event) => {
+    const link = event.currentTarget;
+    if (!link) return;
+    const href = link.getAttribute("href") || "";
+    const hashIndex = href.indexOf("#");
+    if (hashIndex === -1) return;
+    openFaqFromHash(href.slice(hashIndex));
+  };
+  const initFaqHash = () => {
+    document.querySelectorAll('a[href*="#pregunta"]').forEach((link) => {
+      link.removeEventListener("click", onFaqLinkClick, true);
+      link.addEventListener("click", onFaqLinkClick, true);
+    });
+    openFaqFromHash(window.location.hash);
+  };
+  document.addEventListener("astro:page-load", initFaqHash);
+  initFaqHash();
+</script>
 
 <script
   type="application/ld+json"

@@ -20,6 +20,8 @@ const script = `
   const formError = ${JSON.stringify(contactForm.formError)};
   const successMessage = ${JSON.stringify(contactForm.successMessage)};
   const isSimple = ${JSON.stringify(!false)};
+  const web3formsEndpoint = ${JSON.stringify(contactForm.web3forms.endpoint)};
+  const web3formsAccessKey = ${JSON.stringify(contactForm.web3forms.accessKey)};
 
   const getValue = (name) => {
     const field = form.elements.namedItem(name);
@@ -33,11 +35,11 @@ const script = `
       return /^[^\\\\s@]+@[^\\\\s@]+\\\\.[^\\\\s@]+$/.test(trimmed) ? "" : errors.email;
     },
     phone: (value) => (value.trim().length < 6 ? errors.phone : ""),
+    service: (value) => (value ? "" : errors.service),
   };
 
   const fullValidators = {
     ...baseValidators,
-    service: (value) => (value ? "" : errors.service),
     message: (value) => (value.trim().length < 10 ? errors.message : ""),
   };
 
@@ -77,8 +79,29 @@ const script = `
   form.addEventListener("input", clearError);
   form.addEventListener("change", clearError);
 
-  const simulateSend = () =>
-    new Promise((resolve) => window.setTimeout(resolve, 1400));
+  const sendForm = async () => {
+    const payload = {
+      access_key: web3formsAccessKey,
+      name: getValue("name"),
+      company: getValue("company"),
+      email: getValue("email"),
+      phone: getValue("phone"),
+      service: getValue("service"),
+      message: getValue("message"),
+    };
+    const response = await fetch(web3formsEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || (data && data.success === false)) {
+      throw new Error("web3forms submission failed");
+    }
+  };
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -90,13 +113,19 @@ const script = `
     status.classList.add("hidden");
     submitButton.disabled = true;
     submitButton.textContent = submittingLabel;
-    await simulateSend();
-    form.reset();
-    submitButton.disabled = false;
-    submitButton.textContent = submitLabel;
-    status.textContent = successMessage;
-    status.classList.remove("hidden");
-    status.focus();
+    try {
+      await sendForm();
+      form.reset();
+      status.textContent = successMessage;
+      status.classList.remove("hidden");
+      status.focus();
+    } catch {
+      status.textContent = formError;
+      status.classList.remove("hidden");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = submitLabel;
+    }
   });
 })();
 `;
@@ -184,49 +213,47 @@ const script = `
       <p data-error-for="phone" class="hidden text-sm text-green-dark" role="alert"></p>
     </div>
 
-    {!simple && (
-      <>
-        <div class="flex flex-col gap-2">
-          <label
-            for="cf-service"
-            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-          >
-            {contactForm.labels.service} <span aria-hidden="true">*</span>
-          </label>
-          <select
-            id="cf-service"
-            name="service"
-            required
-            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
-          >
-            <option value="" disabled selected>
-              {contactForm.servicePlaceholder}
-            </option>
-            {contactForm.serviceOptions.map((option) => (
-              <option value={option.value}>{option.label}</option>
-            ))}
-          </select>
-          <p data-error-for="service" class="hidden text-sm text-green-dark" role="alert"></p>
-        </div>
+    <div class="flex flex-col gap-2">
+      <label
+        for="cf-service"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+      >
+        {contactForm.labels.service} <span aria-hidden="true">*</span>
+      </label>
+      <select
+        id="cf-service"
+        name="service"
+        required
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
+      >
+        <option value="" disabled selected>
+          {contactForm.servicePlaceholder}
+        </option>
+        {contactForm.serviceOptions.map((option) => (
+          <option value={option.value}>{option.label}</option>
+        ))}
+      </select>
+      <p data-error-for="service" class="hidden text-sm text-green-dark" role="alert"></p>
+    </div>
 
-        <div class="flex flex-col gap-2 md:col-span-2">
-          <label
-            for="cf-message"
-            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-          >
-            {contactForm.labels.message} <span aria-hidden="true">*</span>
-          </label>
-          <textarea
-            id="cf-message"
-            name="message"
-            rows="5"
-            required
-            placeholder={contactForm.placeholders.message}
-            class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
-          ></textarea>
-          <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
-        </div>
-      </>
+    {!simple && (
+      <div class="flex flex-col gap-2 md:col-span-2">
+        <label
+          for="cf-message"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+        >
+          {contactForm.labels.message} <span aria-hidden="true">*</span>
+        </label>
+        <textarea
+          id="cf-message"
+          name="message"
+          rows="5"
+          required
+          placeholder={contactForm.placeholders.message}
+          class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
+        ></textarea>
+        <p data-error-for="message" class="hidden text-sm text-green-dark" role="alert"></p>
+      </div>
     )}
   </div>
 

@@ -1,6 +1,11 @@
 ---
 import { contact, isPending } from "../lib/content";
 import ContactForm from "./ContactForm.astro";
+import InstagramIcon from "./ui/InstagramIcon.astro";
+import LaptopIcon from "./ui/LaptopIcon.astro";
+import LinkedinIcon from "./ui/LinkedinIcon.astro";
+import MailIcon from "./ui/MailIcon.astro";
+import PinIcon from "./ui/PinIcon.astro";
 import Placeholder from "./ui/Placeholder.astro";
 
 interface Props {
@@ -28,8 +33,9 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
             {contact.description}
           </p>
         </div>
-        <ul class="flex flex-col gap-3 text-sm text-cream/75">
-          <li>
+        <ul class="flex flex-col gap-4 text-sm text-cream/75">
+          <li class="flex items-center gap-3">
+            <MailIcon class="h-5 w-5 shrink-0 text-cream/70" />
             {emailHref ? (
               <a href={emailHref} class="underline underline-offset-4">
                 {contact.email}
@@ -39,21 +45,34 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
             )}
           </li>
           {contact.socials.map((social) => (
-            <li>
+            <li class="flex items-center gap-3">
+              {social.label === "LinkedIn" ? (
+                <LinkedinIcon class="h-5 w-5 shrink-0 text-cream/70" />
+              ) : (
+                <InstagramIcon class="h-5 w-5 shrink-0 text-cream/70" />
+              )}
               {isPending(social.url) ? (
                 <Placeholder inverse label={`${social.label} [PENDIENTE]`} />
               ) : (
-                <a href={social.url} class="underline underline-offset-4">
-                  {social.label}
+                <a
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline underline-offset-4"
+                >
+                  {social.displayLabel ?? social.label}
                 </a>
               )}
             </li>
           ))}
           {contact.locationItems.map((item) => (
-            <li>
-              <span class="inline-flex items-center rounded-md border-2 border-dashed border-cream px-2 py-1 font-mono text-xs tracking-widest text-cream">
-                {item.label} [{item.value}]
-              </span>
+            <li class="flex items-center gap-3">
+              {item.label.includes("UBI") ? (
+                <PinIcon class="h-5 w-5 shrink-0 text-cream/70" />
+              ) : (
+                <LaptopIcon class="h-5 w-5 shrink-0 text-cream/70" />
+              )}
+              <span>{item.value}</span>
             </li>
           ))}
         </ul>

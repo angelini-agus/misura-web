@@ -33,6 +33,7 @@ export const footer = {
   navTitle: "Navegación",
   servicesTitle: "Servicios",
   contactTitle: "Contacto",
+  ctaLabel: "Contanos tu caso",
   tagline: "Desarrollado por misure",
 };
 
@@ -127,7 +128,7 @@ export const explore = {
       title: "Precios sin letra chica",
       description:
         "Landing desde USD 200. ERP/CRM desde USD 1.000. E-commerce desde USD 1.500. Sin sorpresas ni suscripciones de por vida.",
-      href: "#preguntas",
+      href: "#pregunta-costo-mio",
       cta: "Ver preguntas frecuentes",
     },
   ],
@@ -152,7 +153,7 @@ export const hero = {
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida, sin SaaS genérico ni plantillas. Vamos a tu negocio, armamos un prototipo y diseño gratis antes de firmar, y trabajamos con entregas semanales por contrato.",
   ctaPrimary: { label: "Agendá 20 minutos con nosotros", href: "/contacto#contacto" },
-  ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos" },
+  ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos#portfolio" },
 } satisfies {
   title: string;
   lead: string;
@@ -210,7 +211,7 @@ export const differentiators: {
     "Cuatro compromisos concretos, no adjetivos. Podés leerlos y pedirlos por escrito.",
   subtitleLink: {
     label: "¿Te interesa? Contanos tu caso",
-    href: "/contacto",
+    href: "/contacto#contacto",
   },
   items: [
     {
@@ -240,12 +241,12 @@ export const team: {
   eyebrow: string;
   title: string;
   description: string;
-  socialLabels: { linkedin: string; portfolio: string };
+  socialLabels: { linkedin: string; github: string };
   members: {
     name: string;
     role: string;
     description: string;
-    socials: { linkedin: string; portfolio: string };
+    socials: { linkedin: string; github: string };
   }[];
 } = {
   eyebrow: "Equipo",
@@ -254,7 +255,7 @@ export const team: {
     "Dos personas, un mismo objetivo: que tu sistema funcione como vos trabajás, no al revés.",
   socialLabels: {
     linkedin: "LinkedIn",
-    portfolio: "Portfolio",
+    github: "GitHub",
   },
   members: [
     {
@@ -263,7 +264,7 @@ export const team: {
       description: "[COMPLETAR: frase personal — ej: Me obsesiona que el cliente entienda el sistema sin manual de instrucciones]",
       socials: {
         linkedin: "[COMPLETAR: link LinkedIn]",
-        portfolio: "[COMPLETAR: link Portfolio]",
+        github: "[COMPLETAR: link GitHub]",
       },
     },
     {
@@ -272,7 +273,7 @@ export const team: {
       description: "[COMPLETAR: frase personal — ej: Prefiero una demo en el negocio del cliente que diez reuniones por Zoom]",
       socials: {
         linkedin: "[COMPLETAR: link LinkedIn]",
-        portfolio: "[COMPLETAR: link Portfolio]",
+        github: "[COMPLETAR: link GitHub]",
       },
     },
   ],
@@ -321,7 +322,7 @@ export const nosotrosCta: {
   eyebrow: "¿Te interesa trabajar con nosotros?",
   title: "Agendá 20 minutos y te mostramos cómo funciona.",
   label: "Quiero mi prototipo gratis",
-  href: "/contacto",
+  href: "/contacto#contacto",
 };
 
 
@@ -418,11 +419,6 @@ export const faq: FaqItem[] = [
     answer:
       "Las entregas semanales y la fecha de lanzamiento quedan escritas en el contrato. No dependemos de promesas verbales. Podés leer las condiciones antes de firmar y, si algo se desvía, está contemplado en el acuerdo.",
   },
-  {
-    question: "¿Cuánto cuesta un proyecto?",
-    answer:
-      "Landing page desde USD 200. Sistemas de gestión (ERP/CRM) entre USD 1.000 y 2.000. E-commerce entre USD 1.500 y 3.000. El presupuesto exacto lo definimos después de entender tu caso en una charla de 20 minutos.",
-  },
 ];
 
 export const forWho: ForWhoSection = {
@@ -461,8 +457,16 @@ export const contact: ContactInfo = {
     { label: "MODALIDAD", value: "Presencial / Remoto" },
   ],
   socials: [
-    { label: "LinkedIn", url: "[PENDIENTE: perfil de LinkedIn]" },
-    { label: "Instagram", url: "[PENDIENTE: perfil de Instagram]" },
+    {
+      label: "LinkedIn",
+      url: "https://www.linkedin.com/company/misure",
+      displayLabel: "misure",
+    },
+    {
+      label: "Instagram",
+      url: "https://www.instagram.com/misure",
+      displayLabel: "@misure",
+    },
   ],
 };
 
@@ -514,6 +518,10 @@ export const contactForm = {
   formError: "Revisá los campos marcados e intentá de nuevo.",
   disclaimer:
     "Tus datos están seguros con nosotros. No compartimos tu información con terceros ni enviamos spam.",
+  web3forms: {
+    endpoint: "https://api.web3forms.com/submit",
+    accessKey: "[PENDIENTE: access key de Web3Forms]",
+  },
 };
 
 export const caseStudies = {
@@ -597,7 +605,7 @@ export const caseStudies = {
       eyebrow: "¿Tu empresa tiene un problema similar?",
       title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
       label: "Quiero mi prototipo gratis",
-      href: "/contacto",
+      href: "/contacto#contacto",
     },
   },
 };

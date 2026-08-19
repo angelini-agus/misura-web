@@ -112,16 +112,21 @@ gtag('config', '${gaId}');`
       const onCtaClick = (event) => {
         const link = event.currentTarget;
         if (!link) return;
+        const href = link.getAttribute("href") || "";
+        const hashIndex = href.indexOf("#");
+        if (hashIndex === -1) return;
         const targetUrl = new URL(link.href, window.location.origin);
         const currentUrl = new URL(window.location.href);
         const samePage =
           targetUrl.pathname.replace(/\/+$/, "") ===
           currentUrl.pathname.replace(/\/+$/, "");
         if (!samePage) return;
+        const hash = targetUrl.hash;
+        if (!hash) return;
+        const target = document.getElementById(hash.slice(1));
+        if (!target) return;
         event.preventDefault();
         event.stopPropagation();
-        const target = document.getElementById("contacto");
-        if (!target) return;
         const reduce = window.matchMedia(
           "(prefers-reduced-motion: reduce)"
         ).matches;
@@ -131,7 +136,7 @@ gtag('config', '${gaId}');`
         });
       };
       const initCtaScroll = () => {
-        document.querySelectorAll('a[href$="#contacto"]').forEach((link) => {
+        document.querySelectorAll('a[href*="#"]').forEach((link) => {
           link.removeEventListener("click", onCtaClick, true);
           link.addEventListener("click", onCtaClick, true);
         });

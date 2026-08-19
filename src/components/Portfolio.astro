@@ -78,11 +78,11 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
 </section>
 
 <script>
-  const filterButtons = document.querySelectorAll("[data-filter]");
-  const cards = document.querySelectorAll("[data-category]");
+  const getFilterButtons = () => document.querySelectorAll("[data-filter]");
+  const getCards = () => document.querySelectorAll("[data-category]");
 
   const applyFilter = (filter: string) => {
-    filterButtons.forEach((button) => {
+    getFilterButtons().forEach((button) => {
       const isActive = button.getAttribute("data-filter") === filter;
       button.classList.toggle("bg-green", isActive);
       button.classList.toggle("text-cream", isActive);
@@ -90,7 +90,7 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
       button.classList.toggle("text-green", !isActive);
       button.setAttribute("aria-pressed", String(isActive));
     });
-    cards.forEach((card) => {
+    getCards().forEach((card) => {
       const category = card.getAttribute("data-category");
       card.classList.toggle(
         "hidden",
@@ -99,27 +99,33 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
     });
   };
 
-  if (filterButtons.length) {
+  const onFilterClick = (event: Event) => {
+    const button = event.currentTarget as HTMLElement;
+    const filter = button.getAttribute("data-filter") ?? "todos";
+    applyFilter(filter);
+    const url = new URL(window.location.href);
+    if (filter === "todos") {
+      url.searchParams.delete("cat");
+    } else {
+      url.searchParams.set("cat", filter);
+    }
+    history.replaceState({}, "", url);
+  };
+
+  const initFilter = () => {
+    const buttons = getFilterButtons();
+    if (!buttons.length) return;
+    buttons.forEach((button) => {
+      button.removeEventListener("click", onFilterClick);
+      button.addEventListener("click", onFilterClick);
+    });
     const initial = new URLSearchParams(window.location.search).get("cat");
-    const valid = Array.from(filterButtons).some(
+    const valid = Array.from(buttons).some(
       (button) => button.getAttribute("data-filter") === initial
     );
-    if (valid) {
-      applyFilter(initial ?? "todos");
-    }
+    applyFilter(valid ? (initial ?? "todos") : "todos");
+  };
 
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const filter = button.getAttribute("data-filter") ?? "todos";
-        applyFilter(filter);
-        const url = new URL(window.location.href);
-        if (filter === "todos") {
-          url.searchParams.delete("cat");
-        } else {
-          url.searchParams.set("cat", filter);
-        }
-        history.replaceState({}, "", url);
-      });
-    });
-  }
+  document.addEventListener("astro:page-load", initFilter);
+  initFilter();
 </script>

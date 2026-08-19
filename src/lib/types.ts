@@ -47,5 +47,5 @@ export type ContactInfo = {
   ctaLabel: string;
   email: string;
   locationItems: { label: string; value: string }[];
-  socials: { label: string; url: string }[];
+  socials: { label: string; url: string; displayLabel?: string }[];
 };
