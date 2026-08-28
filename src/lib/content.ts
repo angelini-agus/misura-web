@@ -23,7 +23,7 @@ export const site = {
   announcement:
     "Desarrollo de software a medida en Rosario y alrededores — Prototipo gratis antes de contratar",
   menuLabel: "Menú",
-  metaTitle: "misure — Software a medida para que tu empresa funcione mejor",
+  metaTitle: "misure — Software a medida para que tu empresa funcione mejor.",
   metaDescription:
     "misure diseña y desarrolla sistemas de gestión, herramientas de ventas y páginas web 100% a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para que tu empresa funcione mejor.",
