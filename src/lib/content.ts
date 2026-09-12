@@ -1,4 +1,5 @@
 import type {
+  CaseStudy,
   ContactInfo,
   Cta,
   Differentiator,
@@ -9,6 +10,23 @@ import type {
   ProblemSection,
   Service,
 } from "./types";
+
+import legalDashboard from "../assets/proyectos/legal/dashboard.png";
+import legalExpediente from "../assets/proyectos/legal/expediente.png";
+import legalExpedienteEdit from "../assets/proyectos/legal/expediente-edit.png";
+import azLandingDesktop from "../assets/proyectos/az-landing/desktop.png";
+import pediatricLandingHero from "../assets/proyectos/pediatric/01-landing-hero.png";
+import pediatricDoctorJourney from "../assets/proyectos/pediatric/02-landing-doctor-journey.png";
+import pediatricTurnos from "../assets/proyectos/pediatric/03-landing-turnos.png";
+import pediatricFaq from "../assets/proyectos/pediatric/04-landing-faq-contact.png";
+import pediatricLogin from "../assets/proyectos/pediatric/05-erp-login.png";
+import pediatricDashboard from "../assets/proyectos/pediatric/06-erp-dashboard.png";
+import pediatricPatients from "../assets/proyectos/pediatric/07-erp-patients.png";
+import pediatricAppointments from "../assets/proyectos/pediatric/08-erp-appointments.png";
+import pediatricSettings from "../assets/proyectos/pediatric/09-erp-settings.png";
+import limpiezaAdmin1 from "../assets/proyectos/limpieza/admin1.png";
+import limpiezaAdmin2 from "../assets/proyectos/limpieza/admin2.png";
+import limpiezaAdmin3 from "../assets/proyectos/limpieza/admin3.png";
 
 export const isPending = (value: string) => value.includes("[PENDIENTE");
 
@@ -169,9 +187,10 @@ export const about: {
 };
 
 export const hero = {
-  title: "Automatizá lo que hoy le cuesta un sueldo completo a tu empresa.",
+  title:
+    "Automatizá lo que hoy le cuesta un sueldo completo a tu empresa. El prototipo es gratis y no firmás nada hasta verlo.",
   lead:
-    "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida, sin SaaS genérico ni plantillas. Vamos a tu negocio, armamos un prototipo y diseño gratis antes de firmar, y trabajamos con entregas semanales por contrato.",
+    "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida, sin SaaS genérico ni plantillas. Vamos a tu negocio, entendemos cómo trabajás y avanzamos con entregas semanales por contrato.",
   ctaPrimary: { label: "Agendá 20 minutos con nosotros", href: "/contacto#contacto" },
   ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos#portfolio" },
 } satisfies {
@@ -191,7 +210,7 @@ export const services: {
   eyebrow: "Servicios",
   title: "Lo que hacemos",
   subtitle:
-    "Desarrollamos software específico y 100% personalizado para tu empresa. Sin SaaS genérico, sin plantillas, sin adaptarte a un sistema rígido.",
+    "Cada semana que tu operación vive en planillas y WhatsApp se van horas en tareas manuales que igual se pagan como un sueldo, aparecen errores que se descubren tarde y las ventas se enfrían sin seguimiento. Desarrollamos el software específico que reemplaza ese trabajo, 100% a medida y sin plantillas.",
   subtitleLink: {
     label: "¿Tenés dudas sobre qué elegir? Ver preguntas frecuentes",
     href: "#preguntas",
@@ -376,9 +395,11 @@ export const portfolio: {
       description:
         "Asistencia por geolocalización/QR, cálculo automático de sueldos e impuestos y gestión de stock por edificio. Resultado: un puesto administrativo eliminado y quejas por inasistencias reducidas a 0.",
       href: "/proyectos/empresa-limpieza-rosario",
+      image: limpiezaAdmin1,
+      imageAlt: "Panel de administración de ServiceTrack",
     },
     {
-      project: "Sistema de Gestión Jurídica Integral",
+      project: "Sistema de gestión jurídica integral",
       client: "Estudio jurídico — Argentina y Paraguay",
       category: "erp",
       technologies: [
@@ -392,19 +413,47 @@ export const portfolio: {
       description:
         "Plataforma integral para administrar un estudio jurídico que opera en dos jurisdicciones: gestión de clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y una biblioteca jurídica con verificación de fuentes oficiales asistida por IA.",
       href: "/proyectos/gestion-legal-estudio",
+      image: legalDashboard,
+      imageAlt: "Panel de gestión del estudio jurídico",
+    },
+    {
+      project: "Sistema de gestión para clínica pediátrica",
+      client: "Clínica pediátrica — Argentina",
+      category: "erp",
+      technologies: ["Next.js", "NestJS", "PostgreSQL", "Prisma", "Tailwind CSS"],
+      description:
+        "Plataforma integral para clínica pediátrica: historia clínica conforme a la Ley 26.529, turnos, panel clínico en tiempo real y recetas en PDF.",
+      href: "/proyectos/sistema-clinica-pediatrica",
+      image: pediatricDashboard,
+      imageAlt: "Dashboard clínico del sistema pediátrico",
+    },
+    {
+      project: "Página web para clínica pediátrica",
+      client: "Clínica pediátrica — Argentina",
+      category: "landing",
+      technologies: ["Astro", "React", "Tailwind CSS"],
+      description:
+        "Sitio público con la trayectoria médica, las etapas del cuidado pediátrico y un flujo de solicitud de turnos pensado para las familias.",
+      href: "/proyectos/landing-clinica-pediatrica",
+      image: pediatricLandingHero,
+      imageAlt: "Página web de la clínica pediátrica",
+    },
+    {
+      project: "Página web para empresa de limpieza",
+      client: "Empresa de limpieza — Rosario",
+      category: "landing",
+      technologies: ["Astro", "TypeScript", "Tailwind CSS", "Vercel"],
+      description:
+        "Sitio oficial con propuesta de valor clara, captación de consultas calificada e integración con el ERP interno bajo un mismo dominio.",
+      href: "/proyectos/landing-empresa-limpieza",
+      image: azLandingDesktop,
+      imageAlt: "Sitio de la empresa de limpieza",
     },
     {
       project: "Proyecto [PENDIENTE]",
       client: "Cliente [PENDIENTE]",
       category: "crm",
       technologies: ["React", "Node.js", "TypeScript"],
-      description: "[PENDIENTE: descripción del caso y resultados]",
-    },
-    {
-      project: "Proyecto [PENDIENTE]",
-      client: "Cliente [PENDIENTE]",
-      category: "landing",
-      technologies: ["Astro", "TypeScript"],
       description: "[PENDIENTE: descripción del caso y resultados]",
     },
   ],
@@ -473,10 +522,10 @@ export const forWho: ForWhoSection = {
   no: {
     label: "No es para vos si",
     items: [
-      "Buscás la opción más barata sin importar el resultado",
-      "Querés un sistema ya armado sin adaptarlo a tu proceso",
-      "No tenés 2 horas para una entrevista inicial presencial",
-      "Esperás que el software resuelva problemas de gestión sin involucrarte",
+      "Buscás la opción más barata, sin importar cuántas horas manuales termine costando después",
+      "Querés un sistema ya armado, aunque tu equipo tenga que seguir adaptándose a él todos los días",
+      "No tenés 2 horas para la entrevista inicial y preferís seguir gestionando como hasta ahora",
+      "Esperás que el software ordene tu gestión solo, sin involucrarte ni cambiar nada de cómo trabajás",
     ],
   },
 };
@@ -565,7 +614,13 @@ export const contactForm = {
   },
 };
 
-export const caseStudies = {
+export const caseStudies: {
+  limpieza: CaseStudy;
+  legal: CaseStudy;
+  azLanding: CaseStudy;
+  pediatricLanding: CaseStudy;
+  pediatricErp: CaseStudy;
+} = {
   limpieza: {
     slug: "empresa-limpieza-rosario",
     seo: {
@@ -585,6 +640,11 @@ export const caseStudies = {
       "PostgreSQL",
       "Geolocalización",
       "QR",
+    ],
+    gallery: [
+      { src: limpiezaAdmin1, alt: "Panel de administración con la grilla semanal de turnos" },
+      { src: limpiezaAdmin2, alt: "Liquidación automática de sueldos por horas verificadas" },
+      { src: limpiezaAdmin3, alt: "Gestión de insumos organizada por edificio" },
     ],
     problem: {
       eyebrow: "El desafío",
@@ -652,12 +712,12 @@ export const caseStudies = {
   legal: {
     slug: "gestion-legal-estudio",
     seo: {
-      title: "Sistema de Gestión Jurídica Integral — misure",
+      title: "Sistema de gestión jurídica integral — misure",
       description:
         "Plataforma integral para administrar un estudio jurídico con jurisdicción en Argentina y Paraguay: clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y biblioteca jurídica con verificación de fuentes oficiales asistida por IA.",
     },
     eyebrow: "Caso de estudio",
-    title: "Sistema de Gestión Jurídica Integral",
+    title: "Sistema de gestión jurídica integral",
     client: "Estudio jurídico con jurisdicción en Argentina y Paraguay",
     location: "Argentina / Paraguay",
     category: "Gestión (ERP)",
@@ -668,6 +728,11 @@ export const caseStudies = {
       "PostgreSQL",
       "Prisma",
       "Google Gemini",
+    ],
+    gallery: [
+      { src: legalDashboard, alt: "Panel de gestión del estudio jurídico" },
+      { src: legalExpediente, alt: "Detalle de un expediente judicial" },
+      { src: legalExpedienteEdit, alt: "Edición de un expediente judicial" },
     ],
     problem: {
       eyebrow: "El desafío",
@@ -717,6 +782,234 @@ export const caseStudies = {
     },
     cta: {
       eyebrow: "¿Tu estudio opera en más de una jurisdicción?",
+      title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
+      label: "Quiero mi prototipo gratis",
+      href: "/contacto#contacto",
+    },
+  },
+  azLanding: {
+    slug: "landing-empresa-limpieza",
+    seo: {
+      title:
+        "Landing page para empresa de limpieza — misure | Rosario",
+      description:
+        "Diseñamos y desarrollamos el sitio oficial de una empresa de limpieza de Rosario: propuesta de valor clara, captación de consultas calificada e integración con su ERP interno.",
+    },
+    eyebrow: "Caso de éxito",
+    title: "Landing page de conversión para empresa de limpieza",
+    client: "Empresa de limpieza",
+    location: "Rosario, Santa Fe",
+    category: "Página Web",
+    technologies: ["Astro", "TypeScript", "Tailwind CSS", "Lenis", "Vercel"],
+    gallery: [
+      {
+        src: azLandingDesktop,
+        alt: "Sitio de la empresa de limpieza en escritorio",
+      },
+    ],
+    problem: {
+      eyebrow: "El desafío",
+      title: "Una operación ya digitalizada que no se veía desde afuera",
+      body: [
+        "La empresa ya gestionaba su operación interna con un ERP propio, pero necesitaba una presencia pública a la altura de esa operación: un sitio que explicara su propuesta de valor y ordenara las consultas entrantes.",
+        "Sus diferenciales más fuertes —personal propio asegurado, sin subcontratación, y verificación de asistencia en tiempo real por QR y GPS— tenían que comunicarse de forma clara a edificios, oficinas y clínicas.",
+        "El desafío adicional era no fragmentar la marca: el acceso de empleados y las llamadas al sistema interno debían convivir bajo el mismo dominio que el sitio público.",
+      ],
+    },
+    solution: {
+      eyebrow: "La solución",
+      title: "Un sitio estático, rápido y conectado al ERP de la empresa",
+      features: [
+        {
+          title: "Propuesta de valor como eje del sitio",
+          description:
+            "Cada sección está construida para responder por qué contratar a la empresa: personal propio asegurado, verificación de turnos por QR y GPS, y cobertura de edificios, oficinas y clínicas.",
+        },
+        {
+          title: "Captación de consultas calificada",
+          description:
+            "Un flujo de contacto de varios pasos filtra y ordena las consultas antes de que lleguen, para que el equipo comercial reciba información útil en lugar de mensajes sueltos.",
+        },
+        {
+          title: "Integración transparente con el ERP",
+          description:
+            "El sitio es la puerta de entrada de la marca: un proxy en el borde redirige el acceso de empleados y las llamadas a la API hacia el sistema interno, todo bajo un mismo dominio.",
+        },
+        {
+          title: "Rendimiento y calidad medidos",
+          description:
+            "Generación estática, contenido tipado y una batería de pruebas automatizadas (unitarias y end-to-end en varios tamaños de pantalla) para cuidar velocidad, navegación y formularios.",
+        },
+      ],
+    },
+    results: {
+      eyebrow: "Resultados",
+      title: "El sitio está en producción; las métricas de negocio, pendientes.",
+      metrics: [
+        {
+          value: "[PENDIENTE]",
+          unit: "métricas de resultado",
+          label:
+            "Todavía no contamos con cifras de conversión o de consultas generadas. Completar con datos reales cuando estén disponibles.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "¿Tu negocio necesita una web que traiga consultas?",
+      title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
+      label: "Quiero mi prototipo gratis",
+      href: "/contacto#contacto",
+    },
+  },
+  pediatricLanding: {
+    slug: "landing-clinica-pediatrica",
+    seo: {
+      title: "Página web para clínica pediátrica — misure",
+      description:
+        "Sitio público para una clínica pediátrica: trayectoria médica, etapas del cuidado pediátrico, solicitud de turnos y contacto directo, optimizado para SEO.",
+    },
+    eyebrow: "Caso de estudio",
+    title: "Página web para clínica pediátrica",
+    client: "Clínica pediátrica",
+    location: "Argentina",
+    category: "Página Web",
+    technologies: ["Astro", "React", "Tailwind CSS"],
+    gallery: [
+      { src: pediatricLandingHero, alt: "Portada de la landing con la autoridad médica" },
+      { src: pediatricDoctorJourney, alt: "Trayectoria médica y etapas del cuidado pediátrico" },
+      { src: pediatricTurnos, alt: "Flujo de solicitud de turnos" },
+      { src: pediatricFaq, alt: "Preguntas frecuentes y contacto" },
+    ],
+    problem: {
+      eyebrow: "El desafío",
+      title: "La autoridad médica no se veía desde afuera",
+      body: [
+        "El consultorio pediátrico necesitaba una presencia pública que comunicara su trayectoria y especialidad, y que funcionara como canal de contacto para las familias.",
+        "La información clave —trayectoria del profesional, etapas del cuidado pediátrico, horarios y ubicación— no tenía un lugar único donde consultarse.",
+        "Las consultas de turnos llegaban por canales dispersos, sin un flujo ordenado que le dejara a la clínica los datos necesarios para responder.",
+      ],
+    },
+    solution: {
+      eyebrow: "La solución",
+      title: "Un sitio público claro, optimizado para SEO y orientado a turnos",
+      features: [
+        {
+          title: "Autoridad médica como eje",
+          description:
+            "La portada presenta al profesional y su trayectoria, con las etapas del cuidado pediátrico desde la preconcepción hasta la adolescencia.",
+        },
+        {
+          title: "Flujo de solicitud de turnos",
+          description:
+            "Un formulario de solicitud de turnos ordena la consulta y reúne los datos que la clínica necesita antes de responder, en lugar de mensajes sueltos.",
+        },
+        {
+          title: "FAQ y contacto directo",
+          description:
+            "Preguntas frecuentes, horarios, ubicación y canales de contacto directo, todo en un mismo lugar y sin fricción.",
+        },
+        {
+          title: "Rendimiento y SEO",
+          description:
+            "Sitio estático con generación optimizada y contenido pensado para buscadores, para que las familias encuentren la clínica y lleguen al turno.",
+        },
+      ],
+    },
+    results: {
+      eyebrow: "Resultados",
+      title: "Funcionalidades entregadas; métricas de negocio pendientes.",
+      metrics: [
+        {
+          value: "[PENDIENTE]",
+          unit: "métricas de resultado",
+          label:
+            "No contamos aún con cifras de consultas o conversión. Completar con datos reales cuando los tengas.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "¿Tu consultorio o clínica necesita una web que traiga consultas?",
+      title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
+      label: "Quiero mi prototipo gratis",
+      href: "/contacto#contacto",
+    },
+  },
+  pediatricErp: {
+    slug: "sistema-clinica-pediatrica",
+    seo: {
+      title: "Sistema de gestión clínica pediátrica — misure",
+      description:
+        "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica conforme a la Ley 26.529, turnos, recetas en PDF y autenticación segura.",
+    },
+    eyebrow: "Caso de estudio",
+    title: "ERP clínico y portal de pacientes para clínica pediátrica",
+    client: "Clínica pediátrica",
+    location: "Argentina",
+    category: "Gestión (ERP)",
+    technologies: [
+      "Next.js",
+      "NestJS",
+      "PostgreSQL",
+      "Prisma",
+      "Tailwind CSS",
+      "Turborepo",
+    ],
+    gallery: [
+      { src: pediatricDashboard, alt: "Dashboard clínico con el embudo de pacientes del día" },
+      { src: pediatricPatients, alt: "Directorio de pacientes pediátricos" },
+      { src: pediatricAppointments, alt: "Agenda de turnos del consultorio" },
+      { src: pediatricSettings, alt: "Configuración de la clínica y recetas" },
+      { src: pediatricLogin, alt: "Login seguro del ERP clínico" },
+    ],
+    problem: {
+      eyebrow: "El desafío",
+      title: "Gestionar pacientes pediátricos exige más que una agenda de turnos",
+      body: [
+        "Un consultorio pediátrico no maneja un solo paciente: maneja niños con tutores legales (padre, madre o responsable), obra social y datos clínicos que deben conservarse durante años.",
+        "La historia clínica está alcanzada por la Ley 26.529 de registros médicos: no se puede borrar información clínica ni dejar acciones sin trazabilidad. Un sistema genérico no contempla esa exigencia.",
+        "El consultorio necesitaba centralizar en una sola herramienta la gestión de pacientes, turnos, historia clínica, recetas y obligaciones, sin depender de planillas sueltas ni de un software que no contemplara su forma de trabajar.",
+      ],
+    },
+    solution: {
+      eyebrow: "La solución",
+      title: "Un ERP clínico a medida, con API propia y portal de pacientes",
+      features: [
+        {
+          title: "Panel clínico en tiempo real",
+          description:
+            "El equipo ve el embudo de pacientes del día, la sala de espera, la asistencia, las evoluciones pendientes de firma y los próximos turnos en un solo tablero.",
+        },
+        {
+          title: "Historia clínica conforme a la Ley 26.529",
+          description:
+            "Cada acción clínica queda registrada en un historial de auditoría inmutable, con autor, fecha y detalle del cambio. Nada se borra: las entidades clínicas usan baja lógica y la jerarquía de tutores queda modelada.",
+        },
+        {
+          title: "Recetas en PDF y configuración de la clínica",
+          description:
+            "Un generador dinámico de recetas en PDF incorpora los datos de la clínica, el profesional y su matrícula. La configuración permite ajustar licencias, especialidad y encabezados sin tocar código.",
+        },
+        {
+          title: "Seguridad y control de acceso",
+          description:
+            "Una API propia con roles diferenciados y autenticación de servidor mediante cookies httpOnly, sin exponer tokens al navegador. Cada usuario accede solo a lo que le corresponde.",
+        },
+      ],
+    },
+    results: {
+      eyebrow: "Resultados",
+      title: "Funcionalidades entregadas; métricas de negocio pendientes.",
+      metrics: [
+        {
+          value: "[PENDIENTE]",
+          unit: "métricas de resultado",
+          label:
+            "No contamos aún con cifras de ahorro o de tiempo. Completar con datos reales cuando los tengas.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "¿Tu consultorio o clínica necesita un sistema a medida?",
       title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
       label: "Quiero mi prototipo gratis",
       href: "/contacto#contacto",

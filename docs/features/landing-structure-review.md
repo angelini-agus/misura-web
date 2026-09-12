@@ -58,6 +58,6 @@ incluye para no rellenar con humo.
 - Confirmar que `/nosotros` sigue mostrando `HowWeWork` completo sin cambios.
 
 ## Pendientes reales
-- **Foto del equipo trabajando** para el Hero (hoy placeholder). Avisar al
-  cliente; cuando exista, reemplazar el `Placeholder` por una imagen en B/N
-  siguiendo el patrón de `Team.astro`.
+- ~~Foto del equipo trabajando para el Hero~~ Resuelto: `IMG_2299.HEIC` se
+  convirtió a `src/assets/team-trabajando.jpg` (512×512) y se muestra en el Hero
+  con `<Image>` de Astro (`object-cover`, a color).

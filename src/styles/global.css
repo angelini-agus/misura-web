@@ -43,7 +43,10 @@ body {
   transform: translateY(16px);
   transition:
     opacity 500ms ease-out,
-    transform 500ms ease-out;
+    transform 500ms ease-out,
+    translate 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
 }
 
 .js [data-reveal].is-visible {

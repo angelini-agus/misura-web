@@ -1,8 +1,9 @@
 ---
 import { hero } from "../lib/content";
+import { Image } from "astro:assets";
 import Button from "./ui/Button.astro";
 import MisureWord from "./ui/MisureWord.astro";
-import Placeholder from "./ui/Placeholder.astro";
+import teamPhoto from "../assets/team-trabajando.jpg";
 ---
 
 <section id="inicio" class="scroll-mt-24">
@@ -39,9 +40,16 @@ import Placeholder from "./ui/Placeholder.astro";
     <div
       data-reveal
       style={{ transitionDelay: "120ms" }}
-      class="relative mx-auto flex aspect-[4/3] w-full max-w-lg items-center justify-center overflow-hidden rounded-lg border-2 border-green bg-green"
+      class="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-lg border-2 border-green bg-green"
     >
-      <Placeholder inverse label="Foto del equipo trabajando [PENDIENTE]" />
+      <Image
+        src={teamPhoto}
+        alt="Equipo de misure trabajando"
+        widths={[400, 512]}
+        sizes="(min-width: 768px) 45vw, 100vw"
+        class="h-full w-full object-cover"
+        loading="eager"
+      />
     </div>
   </div>
 </section>

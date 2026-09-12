@@ -1,0 +1,147 @@
+---
+import { Image } from "astro:assets";
+import type { CaseStudyCover } from "../lib/types";
+
+interface Props {
+  images?: CaseStudyCover[];
+  label?: string;
+}
+
+const { images = [], label = "Galería del proyecto" } = Astro.props;
+const total = images.length;
+---
+
+{total > 0 && (
+  <section
+    class="border-t border-green"
+    data-gallery
+    aria-label={label}
+    aria-roledescription="carrusel"
+  >
+    <div class="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-12">
+      <div class="relative flex justify-center">
+        {images.map((image, index) => (
+          <div
+            class:list={["w-full", index !== 0 && "hidden"]}
+            data-gallery-slide
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              widths={[800, 1200, 1600]}
+              sizes="(min-width: 1152px) 1104px, 100vw"
+              class="mx-auto max-h-[70vh] w-auto max-w-full"
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+          </div>
+        ))}
+
+        {total > 1 && (
+          <>
+            <button
+              type="button"
+              data-gallery-prev
+              aria-label="Imagen anterior"
+              class="absolute left-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition-colors hover:bg-green hover:text-cream"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+            <button
+              type="button"
+              data-gallery-next
+              aria-label="Imagen siguiente"
+              class="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition-colors hover:bg-green hover:text-cream"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {total > 1 && (
+        <div class="mt-4 flex items-center justify-between">
+          <p
+            class="font-mono text-xs uppercase tracking-widest text-green/60"
+            data-gallery-counter
+            aria-live="polite"
+          >
+            {`01 / ${String(total).padStart(2, "0")}`}
+          </p>
+          <div class="flex gap-2">
+            {images.map((image, index) => (
+              <button
+                type="button"
+                data-gallery-dot={index}
+                aria-label={`Ver imagen ${index + 1}: ${image.alt}`}
+                class="h-2.5 w-2.5 rounded-full border border-green bg-transparent transition-colors"
+              ></button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
+<script>
+  const initGalleries = () => {
+    document
+      .querySelectorAll<HTMLElement>("[data-gallery]")
+      .forEach((gallery) => {
+        if (gallery.dataset.galleryReady === "true") return;
+        gallery.dataset.galleryReady = "true";
+
+        const slides = gallery.querySelectorAll<HTMLElement>(
+          "[data-gallery-slide]"
+        );
+        const prev = gallery.querySelector<HTMLButtonElement>(
+          "[data-gallery-prev]"
+        );
+        const next = gallery.querySelector<HTMLButtonElement>(
+          "[data-gallery-next]"
+        );
+        const counter = gallery.querySelector<HTMLElement>(
+          "[data-gallery-counter]"
+        );
+        const dots = gallery.querySelectorAll<HTMLButtonElement>(
+          "[data-gallery-dot]"
+        );
+        if (slides.length < 2) return;
+
+        const total = slides.length;
+        let index = 0;
+        const pad = (value: number) => String(value).padStart(2, "0");
+
+        const render = () => {
+          slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle("hidden", slideIndex !== index);
+          });
+          if (counter) counter.textContent = `${pad(index + 1)} / ${pad(total)}`;
+          dots.forEach((dot, dotIndex) => {
+            const active = dotIndex === index;
+            dot.classList.toggle("bg-green", active);
+            dot.setAttribute("aria-current", active ? "true" : "false");
+          });
+        };
+
+        const go = (direction: number) => {
+          index = (index + direction + total) % total;
+          render();
+        };
+
+        prev?.addEventListener("click", () => go(-1));
+        next?.addEventListener("click", () => go(1));
+        dots.forEach((dot) =>
+          dot.addEventListener("click", () => {
+            index = Number(dot.getAttribute("data-gallery-dot")) || 0;
+            render();
+          })
+        );
+
+        render();
+      });
+  };
+
+  document.addEventListener("astro:page-load", initGalleries);
+  initGalleries();
+</script>

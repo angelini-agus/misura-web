@@ -21,7 +21,7 @@ import Placeholder from "./ui/Placeholder.astro";
     <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
       {team.members.map((member, index) => (
         <article
-          class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream"
+          class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:border-green-dark"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >

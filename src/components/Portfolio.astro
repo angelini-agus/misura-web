@@ -1,5 +1,6 @@
 ---
 import { portfolio } from "../lib/content";
+import { Image } from "astro:assets";
 import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
 ---
 
@@ -47,7 +48,20 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
           style={{ transitionDelay: `${index * 60}ms` }}
           aria-disabled={!item.href ? "true" : undefined}
         >
-          <BwImagePlaceholder class="aspect-[4/3] w-full" />
+          <div class="aspect-[16/9] w-full overflow-hidden">
+            {item.image ? (
+              <Image
+                src={item.image}
+                alt={item.imageAlt ?? item.project}
+                widths={[400, 800, 1200]}
+                sizes="(min-width: 768px) 33vw, 100vw"
+                class="h-full w-full object-cover object-top"
+                loading="lazy"
+              />
+            ) : (
+              <BwImagePlaceholder class="h-full w-full" />
+            )}
+          </div>
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
             <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
               {item.client}
@@ -66,7 +80,7 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
               ))}
             </div>
             {item.href && (
-              <span class="mt-5 inline-block text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4">
+              <span class="mt-auto inline-block pt-5 text-xs font-semibold uppercase tracking-[0.2em] underline underline-offset-4">
                 {portfolio.detailsLabel}
               </span>
             )}
