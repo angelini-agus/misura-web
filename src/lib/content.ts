@@ -6,6 +6,7 @@ import type {
   ForWhoSection,
   NavItem,
   PortfolioItem,
+  ProblemSection,
   Service,
 } from "./types";
 
@@ -101,6 +102,24 @@ export const clients = {
   cta: {
     label: "Ver cómo lo hicimos",
     href: "/proyectos/empresa-limpieza-rosario",
+  },
+};
+
+export const problem: ProblemSection = {
+  eyebrow: "El problema",
+  title:
+    "Cada semana que seguís gestionando con Excel y WhatsApp, perdés plata y control.",
+  bullets: [
+    "Cada fin de mes alguien cruza planillas a mano para liquidar sueldos e impuestos: días de trabajo administrativo que no generan ni una venta.",
+    "Lo que no queda registrado en el momento se descubre tarde y mal. Corregir un error de asistencia, stock o facturación cuesta horas que ya no vuelven.",
+    "El seguimiento de clientes vive en el celular de cada vendedor. Las oportunidades que no cierran hoy se pierden sin dejar rastro.",
+  ],
+  caseNote: {
+    text: "Es lo que le pasaba a la empresa de limpieza que documentamos: tres planillas de Excel, WhatsApp y un puesto administrativo al límite. Después del sistema a medida ahorró $2.800.000 ARS/mes y llevó las quejas por inasistencias a 0.",
+    cta: {
+      label: "Ver el caso completo",
+      href: "/proyectos/empresa-limpieza-rosario",
+    },
   },
 };
 

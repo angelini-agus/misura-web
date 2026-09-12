@@ -28,6 +28,16 @@ export type Differentiator = {
   description: string;
 };
 
+export type ProblemSection = {
+  eyebrow: string;
+  title: string;
+  bullets: string[];
+  caseNote: {
+    text: string;
+    cta: Cta;
+  };
+};
+
 export type FaqItem = {
   question: string;
   answer: string;
