@@ -450,11 +450,21 @@ export const portfolio: {
       imageAlt: "Sitio de la empresa de limpieza",
     },
     {
-      project: "Proyecto [PENDIENTE]",
-      client: "Cliente [PENDIENTE]",
+      project: "CRM de leads para concesionaria",
+      client: "Concesionaria de autos — Rosario",
       category: "crm",
-      technologies: ["React", "Node.js", "TypeScript"],
-      description: "[PENDIENTE: descripción del caso y resultados]",
+      technologies: [
+        "React",
+        "Vite",
+        "PrimeReact",
+        ".NET 9",
+        "Dapper",
+        "PostgreSQL",
+        "Docker",
+      ],
+      description:
+        "CRM a medida que centraliza las consultas de WhatsApp, Instagram, Facebook y Mercado Libre en una sola base, con filtros por marca/modelo, cliente y teléfono y asignación de cada lead a un asesor. Reemplaza la planilla de Excel manual.",
+      href: "/proyectos/crm-concesionaria-rosario",
     },
   ],
 };
@@ -616,6 +626,7 @@ export const contactForm = {
 
 export const caseStudies: {
   limpieza: CaseStudy;
+  leadscrm: CaseStudy;
   legal: CaseStudy;
   azLanding: CaseStudy;
   pediatricLanding: CaseStudy;
@@ -704,6 +715,94 @@ export const caseStudies: {
     },
     cta: {
       eyebrow: "¿Tu empresa tiene un problema similar?",
+      title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
+      label: "Quiero mi prototipo gratis",
+      href: "/contacto#contacto",
+    },
+  },
+  leadscrm: {
+    slug: "crm-concesionaria-rosario",
+    seo: {
+      title: "CRM de leads para concesionaria — misure | Rosario",
+      description:
+        "CRM a medida para una concesionaria de autos de Rosario: centraliza los leads de WhatsApp, Instagram, Facebook y Mercado Libre, con filtros por marca/modelo, cliente y teléfono y asignación a asesores. Reemplaza la planilla de Excel manual.",
+    },
+    eyebrow: "Caso de estudio",
+    title: "CRM de leads para concesionaria",
+    client: "Concesionaria de autos",
+    location: "Rosario, Santa Fe",
+    category: "Ventas (CRM)",
+    technologies: [
+      "React",
+      "Vite",
+      "PrimeReact",
+      ".NET 9",
+      "Dapper",
+      "PostgreSQL",
+      "Docker",
+    ],
+    gallery: [],
+    problem: {
+      eyebrow: "El desafío",
+      title: "Una planilla de Excel no aguanta cuatro canales y varios asesores a la vez",
+      body: [
+        "La concesionaria recibe consultas diarias de campañas de Facebook e Instagram: clientes interesados en modelos como Jolion, H6 o Tank. Hasta ahora esas consultas se cargaban a mano en una planilla de Excel, filtrando manualmente por modelo, nombre de cliente y teléfono.",
+        "Con múltiples canales de entrada —WhatsApp, Instagram, Facebook y Mercado Libre— y varios asesores atendiendo en paralelo, la planilla se volvía difícil de mantener ordenada y de asignar seguimiento a tiempo. Cada consulta nueva multiplicaba el trabajo manual en lugar de ordenarlo.",
+        "Una muestra real de la planilla que reemplazamos mostró qué necesitaban registrar: en 22 consultas, el 60% de los clientes pedían cotización de su vehículo usado y condiciones de financiación. Eso dejó en claro que el seguimiento no podía reducirse a datos de contacto genéricos: hacían falta campos específicos para cotización de usado y plan de pago.",
+      ],
+    },
+    solution: {
+      eyebrow: "La solución",
+      title: "Un CRM a medida que centraliza los leads y ordena el seguimiento",
+      features: [
+        {
+          title: "Todos los canales en una sola base",
+          description:
+            "Las consultas de WhatsApp, Instagram, Facebook y Mercado Libre dejan de vivir en planillas y chats sueltos: entran a un mismo lugar, con fecha, canal y modelo asociado a cada lead.",
+        },
+        {
+          title: "Filtros por marca/modelo, cliente y teléfono",
+          description:
+            "El equipo encuentra cualquier consulta filtrando por lo que realmente usa para trabajar: el modelo de interés, el nombre del cliente o su teléfono. Lo que antes era buscar a mano en una planilla pasa a ser una consulta inmediata.",
+        },
+        {
+          title: "Asignación de cada consulta a un asesor",
+          description:
+            "Cada lead se asigna a un asesor responsable, para que el seguimiento no dependa de la memoria de nadie ni de mensajes cruzados. Con varios asesores en paralelo, queda claro quién atiende qué.",
+        },
+        {
+          title: "Campos para cotización de usado y financiación",
+          description:
+            "A partir de lo que mostraba la planilla anterior, el CRM contempla los datos que el negocio realmente pide: cotización del vehículo usado del cliente y condiciones de financiación, además de los datos de contacto.",
+        },
+      ],
+    },
+    results: {
+      eyebrow: "Impacto",
+      title: "Lo que el CRM ordena hoy, sin métricas de mejora medidas todavía.",
+      metrics: [
+        {
+          value: "4",
+          unit: "canales",
+          label:
+            "WhatsApp, Instagram, Facebook y Mercado Libre centralizados en una sola base de leads, en lugar de planillas y chats dispersos.",
+        },
+        {
+          value: "60%",
+          unit: "pedía cotización de usado",
+          label:
+            "Dato real de la planilla anterior (22 consultas): el 60% pedía cotización de su usado y financiación. Es evidencia del proceso que se reemplazó e informó los campos del CRM, no una mejora medida del sistema nuevo.",
+        },
+        {
+          value: "1",
+          unit: "asesor por lead",
+          label:
+            "Cada consulta se filtra por marca/modelo, cliente o teléfono y se asigna a un asesor, para que el seguimiento no se pierda entre varios canales y varias personas.",
+        },
+      ],
+    },
+    cta: {
+      eyebrow: "¿Tus ventas se pierden entre planillas y canales sueltos?",
       title: "Contanos cómo trabajás y te mostramos qué podemos hacer.",
       label: "Quiero mi prototipo gratis",
       href: "/contacto#contacto",
