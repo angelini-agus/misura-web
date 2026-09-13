@@ -1,3 +1,5 @@
+import type { ImageMetadata } from "astro";
+
 export type NavItem = {
   label: string;
   href: string;
@@ -21,11 +23,52 @@ export type PortfolioItem = {
   technologies: string[];
   description: string;
   href?: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+};
+
+export type CaseStudyCover = {
+  src: ImageMetadata;
+  alt: string;
+};
+
+export type CaseStudy = {
+  slug: string;
+  seo: { title: string; description: string };
+  eyebrow: string;
+  title: string;
+  client: string;
+  location: string;
+  category: string;
+  technologies: string[];
+  gallery?: CaseStudyCover[];
+  problem: { eyebrow: string; title: string; body: string[] };
+  solution: {
+    eyebrow: string;
+    title: string;
+    features: { title: string; description: string }[];
+  };
+  results: {
+    eyebrow: string;
+    title: string;
+    metrics: { value: string; unit: string; label: string }[];
+  };
+  cta: { eyebrow: string; title: string; label: string; href: string };
 };
 
 export type Differentiator = {
   title: string;
   description: string;
+};
+
+export type ProblemSection = {
+  eyebrow: string;
+  title: string;
+  bullets: string[];
+  caseNote: {
+    text: string;
+    cta: Cta;
+  };
 };
 
 export type FaqItem = {

@@ -1,0 +1,50 @@
+---
+import { problem } from "../lib/content";
+---
+
+<section id="problema" class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-2xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {problem.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {problem.title}
+      </h2>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {problem.bullets.map((bullet, index) => (
+        <article
+          class="flex flex-col rounded-md border border-green p-6"
+          data-reveal
+          style={{ transitionDelay: `${index * 60}ms` }}
+        >
+          <span
+            class="font-mono text-sm text-green/60"
+            aria-hidden="true"
+          >{`0${index + 1}`}</span>
+          <p class="mt-4 text-sm leading-relaxed text-green/80">{bullet}</p>
+        </article>
+      ))}
+    </div>
+
+    <div
+      class="mt-8 flex flex-col gap-4 rounded-md border border-green bg-green p-6 text-cream sm:flex-row sm:items-center sm:justify-between"
+      data-reveal
+    >
+      <p class="max-w-3xl text-sm leading-relaxed text-cream/85">
+        {problem.caseNote.text}
+      </p>
+      <a
+        href={problem.caseNote.cta.href}
+        class="inline-flex shrink-0 items-center gap-2 text-sm font-semibold underline underline-offset-4 hover:text-cream-dark"
+      >
+        {problem.caseNote.cta.label}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>

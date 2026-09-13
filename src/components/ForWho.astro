@@ -46,19 +46,19 @@ import { forWho } from "../lib/content";
         data-reveal
         style="transition-delay: 60ms"
       >
-        <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/50">
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/65">
           {forWho.no.label}
         </p>
         <ul class="mt-6 flex flex-col gap-4">
           {forWho.no.items.map((item) => (
             <li class="flex items-start gap-3">
               <span
-                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green/30 text-xs font-bold text-green/50"
+                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-green/45 text-xs font-bold text-green/65"
                 aria-hidden="true"
               >
                 ×
               </span>
-              <span class="text-sm leading-relaxed text-green/70">{item}</span>
+              <span class="text-sm leading-relaxed text-green/80">{item}</span>
             </li>
           ))}
         </ul>

@@ -22,7 +22,7 @@ import MisureWord from "./ui/MisureWord.astro";
       {explore.items.map((item, index) => (
         <a
           href={item.href}
-          class="group flex flex-col rounded-md border border-green bg-green p-6 text-cream transition-colors hover:bg-green-dark"
+          class="group flex flex-col rounded-md border border-green bg-green p-6 text-cream transition duration-150 ease-out hover:-translate-y-1 hover:bg-green-dark"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >
