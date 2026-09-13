@@ -14,6 +14,20 @@ import type {
 import legalDashboard from "../assets/proyectos/legal/dashboard.png";
 import legalExpediente from "../assets/proyectos/legal/expediente.png";
 import legalExpedienteEdit from "../assets/proyectos/legal/expediente-edit.png";
+import legalClientes from "../assets/proyectos/legal/clientes.png";
+import legalAgenda from "../assets/proyectos/legal/agenda.png";
+import legalBiblioteca from "../assets/proyectos/legal/biblioteca.png";
+import legalBibliotecaIa from "../assets/proyectos/legal/biblioteca-ia.png";
+import legalContabilidad from "../assets/proyectos/legal/contabilidad.png";
+import legalObligaciones from "../assets/proyectos/legal/obligaciones.png";
+import legalTeam from "../assets/proyectos/legal/team.png";
+import legalLogin from "../assets/proyectos/legal/login.png";
+import legalSwitchUser from "../assets/proyectos/legal/switch-user.png";
+import leadsNuevaConsulta from "../assets/proyectos/leadscrm/01-nueva-consulta.png";
+import leadsBaseDeDatos from "../assets/proyectos/leadscrm/02-base-de-datos.png";
+import leadsConfiguracion from "../assets/proyectos/leadscrm/03-configuracion.png";
+import leadsLogin from "../assets/proyectos/leadscrm/04-login.png";
+import leadsMetricas from "../assets/proyectos/leadscrm/05-metricas.png";
 import azLandingDesktop from "../assets/proyectos/az-landing/desktop.png";
 import pediatricLandingHero from "../assets/proyectos/pediatric/01-landing-hero.png";
 import pediatricDoctorJourney from "../assets/proyectos/pediatric/02-landing-doctor-journey.png";
@@ -465,6 +479,8 @@ export const portfolio: {
       description:
         "CRM a medida que centraliza las consultas de WhatsApp, Instagram, Facebook y Mercado Libre en una sola base, con filtros por marca/modelo, cliente y teléfono y asignación de cada lead a un asesor. Reemplaza la planilla de Excel manual.",
       href: "/proyectos/crm-concesionaria-rosario",
+      image: leadsBaseDeDatos,
+      imageAlt: "Base de datos de leads del CRM de la concesionaria",
     },
   ],
 };
@@ -741,7 +757,28 @@ export const caseStudies: {
       "PostgreSQL",
       "Docker",
     ],
-    gallery: [],
+    gallery: [
+      {
+        src: leadsNuevaConsulta,
+        alt: "Formulario para ingresar una consulta con canal de ingreso, modelo de interés, datos del cliente y asesor asignado",
+      },
+      {
+        src: leadsBaseDeDatos,
+        alt: "Base de datos de leads con filtros por canal, asesor y fecha, y exportación a Excel",
+      },
+      {
+        src: leadsConfiguracion,
+        alt: "Administración de datos maestros: vendedores, modelos de vehículos y usuarios del CRM",
+      },
+      {
+        src: leadsMetricas,
+        alt: "Métricas de consultas por canal, tendencia diaria, modelos más pedidos y distribución por asesor",
+      },
+      {
+        src: leadsLogin,
+        alt: "Pantalla de inicio de sesión de AutoLeads CRM",
+      },
+    ],
     problem: {
       eyebrow: "El desafío",
       title: "Una planilla de Excel no aguanta cuatro canales y varios asesores a la vez",
@@ -829,9 +866,18 @@ export const caseStudies: {
       "Google Gemini",
     ],
     gallery: [
-      { src: legalDashboard, alt: "Panel de gestión del estudio jurídico" },
+      { src: legalDashboard, alt: "Panel de inicio del estudio jurídico con agenda, vencimientos y resumen contable" },
+      { src: legalClientes, alt: "Gestión de clientes con filtros por área, expedientes y turnos del día" },
       { src: legalExpediente, alt: "Detalle de un expediente judicial" },
       { src: legalExpedienteEdit, alt: "Edición de un expediente judicial" },
+      { src: legalAgenda, alt: "Agenda del estudio con audiencias, plazos y bandeja operativa" },
+      { src: legalBiblioteca, alt: "Biblioteca jurídica de Argentina y Paraguay con verificación de fuentes oficiales" },
+      { src: legalBibliotecaIa, alt: "Comparador asistido por IA entre el texto derogado y el texto vigente de una norma" },
+      { src: legalContabilidad, alt: "Resumen contable con evolución mensual y seguimiento de señas" },
+      { src: legalObligaciones, alt: "Seguimiento impositivo y administrativo con vencimientos, montos y estados" },
+      { src: legalTeam, alt: "Gestión de equipo con usuarios, roles y auditoría de accesos" },
+      { src: legalLogin, alt: "Acceso al sistema del estudio jurídico" },
+      { src: legalSwitchUser, alt: "Selección de cuenta para ingresar al sistema" },
     ],
     problem: {
       eyebrow: "El desafío",
