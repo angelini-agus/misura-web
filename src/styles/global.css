@@ -2,9 +2,10 @@
 
 @theme {
   --color-cream: #f1e8db;
-  --color-cream-dark: #e9e0d3;
+  --color-cream-dark: #ded2c0;
   --color-green: #0e3b33;
   --color-green-dark: #0a2d27;
+  --color-error: #a64a2a;
   --font-sans: "Plus Jakarta Sans Variable", system-ui, Arial, sans-serif;
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
