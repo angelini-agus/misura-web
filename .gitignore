@@ -30,5 +30,8 @@ AGENTS.md
 .vscode/
 .idea/
 
+# local working docs
+docs/copy-completo.md
+
 # macOS-specific files
 .DS_Store

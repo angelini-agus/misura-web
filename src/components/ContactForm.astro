@@ -93,12 +93,11 @@ const { web3forms } = contactForm;
         for="cf-service"
         class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
       >
-        {contactForm.labels.service} <span aria-hidden="true">*</span>
+        {contactForm.labels.service}
       </label>
       <select
         id="cf-service"
         name="service"
-        required
         class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green focus:outline-none"
       >
         <option value="" disabled selected>
@@ -116,13 +115,12 @@ const { web3forms } = contactForm;
           for="cf-message"
           class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
         >
-          {contactForm.labels.message} <span aria-hidden="true">*</span>
+          {contactForm.labels.message}
         </label>
         <textarea
           id="cf-message"
           name="message"
           rows="5"
-          required
           placeholder={contactForm.placeholders.message}
           class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 focus:outline-none"
         ></textarea>
