@@ -204,7 +204,7 @@ export const hero = {
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida. Entendemos el problema completo de tu negocio antes de proponerte una solución.",
   ctaPrimary: { label: "Quiero mi prototipo gratis", href: "/contacto#contacto" },
-  ctaSecondary: { label: "Ver el caso de éxito", href: "/proyectos#portfolio" },
+  ctaSecondary: { label: "Ver casos de éxito", href: "/proyectos#portfolio" },
 } satisfies {
   title: string;
   lead: string;
@@ -381,23 +381,14 @@ export const portfolio: {
   eyebrow: string;
   title: string;
   description: string;
-  filtersLabel: string;
   detailsLabel: string;
-  filters: { value: string; label: string }[];
   items: PortfolioItem[];
 } = {
   eyebrow: "Portfolio",
   title: "Casos de éxito",
   description:
     "Proyectos reales, con resultados medibles. Cada sistema fue diseñado desde cero para el proceso de cada empresa.",
-  filtersLabel: "Filtrar proyectos",
   detailsLabel: "Ver caso completo",
-  filters: [
-    { value: "todos", label: "Todos" },
-    { value: "erp", label: "Gestión (ERP)" },
-    { value: "crm", label: "Ventas (CRM)" },
-    { value: "landing", label: "Páginas Web" },
-  ],
   items: [
     {
       project: "Sistema de gestión para empresa de limpieza",
