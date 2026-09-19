@@ -22,6 +22,7 @@ pnpm-debug.log*
 .agents/
 .opencode/
 .claude/
+.atl/
 skills-lock.json
 CLAUDE.md
 AGENTS.md
