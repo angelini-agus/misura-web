@@ -31,9 +31,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
           <a
             href={item.href}
             aria-current={pathname === item.href ? "page" : undefined}
-            class={`border-b-2 ${
-              pathname === item.href ? "border-green" : "border-transparent"
-            } text-sm text-green underline-offset-4 hover:underline active:underline`}
+            class="link-ink inline-block text-sm text-green"
           >
             {item.label}
           </a>
@@ -58,7 +56,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
             <a
               href={item.href}
               aria-current={pathname === item.href ? "page" : undefined}
-              class="block py-2 text-sm text-green underline-offset-4 hover:underline active:underline"
+              class="link-ink block py-2 text-sm text-green"
             >
               {item.label}
             </a>
