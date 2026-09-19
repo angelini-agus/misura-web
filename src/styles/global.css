@@ -6,6 +6,8 @@
   --color-green: #0e3b33;
   --color-green-dark: #0a2d27;
   --color-error: #a64a2a;
+  --color-green-light: #0f4238;
+  --color-cream-light: #fbf7f0;
   --font-sans: "Plus Jakarta Sans Variable", system-ui, Arial, sans-serif;
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -28,6 +30,11 @@ body {
   outline-offset: 2px;
 }
 
+::selection {
+  background-color: var(--color-green-light);
+  color: var(--color-cream);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -41,28 +48,140 @@ body {
 
 .js [data-reveal] {
   opacity: 0;
-  transform: translateY(16px);
+  clip-path: inset(0 0 100% 0);
   transition:
-    opacity 500ms ease-out,
-    transform 500ms ease-out,
-    translate 150ms ease-out,
+    opacity 420ms ease-out,
+    clip-path 520ms ease-out,
     background-color 150ms ease-out,
     border-color 150ms ease-out;
 }
 
 .js [data-reveal].is-visible {
   opacity: 1;
-  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] {
     opacity: 1;
-    transform: none;
+    clip-path: none;
     transition: none;
   }
 }
 
 .bw-placeholder {
   background-image: repeating-linear-gradient(45deg, #e6ddd0 0 14px, #d8cfc0 14px 28px);
+}
+
+.link-ink {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-ink::before,
+.link-ink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 2px;
+  background-color: currentColor;
+  pointer-events: none;
+}
+
+.link-ink::before {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 160ms ease-out;
+}
+
+.link-ink::after {
+  opacity: 0.3;
+}
+
+.link-ink:hover::before,
+.link-ink:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.js .draw-check path,
+.js .draw-cross path {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+  transition: stroke-dashoffset 320ms ease-out;
+}
+
+.js .draw-cross path {
+  stroke-dasharray: 18;
+  stroke-dashoffset: 18;
+  transition-duration: 260ms;
+}
+
+.js .is-visible .draw-check path,
+.js .is-visible .draw-cross path,
+.js dialog[open] .draw-check path {
+  stroke-dashoffset: 0;
+}
+
+a > span[aria-hidden="true"] {
+  transition: transform 150ms ease-out;
+}
+
+a:hover > span[aria-hidden="true"],
+a:focus-visible > span[aria-hidden="true"] {
+  transform: translateX(3px);
+}
+
+.details-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease-out;
+}
+
+details[open] .details-collapse {
+  grid-template-rows: 1fr;
+}
+
+.details-collapse-inner {
+  overflow: hidden;
+}
+
+.js dialog[open] .modal-stamp {
+  animation: stamp-in 200ms steps(3, end) both;
+}
+
+@keyframes stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: page-out 220ms ease-in both;
+  }
+
+  ::view-transition-new(root) {
+    animation: page-in 240ms ease-out both;
+  }
 }

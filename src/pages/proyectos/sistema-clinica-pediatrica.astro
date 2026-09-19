@@ -126,7 +126,7 @@ const cs = caseStudies.pediatricErp;
           {cs.results.metrics.map((metric) => (
             <div class="flex flex-col bg-green p-8 text-cream">
               <div class="flex items-baseline gap-2">
-                <span class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                <span data-countup class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
                   {metric.value}
                 </span>
                 <span class="font-mono text-xs uppercase tracking-widest text-cream/60">
@@ -157,7 +157,7 @@ const cs = caseStudies.pediatricErp;
           </div>
           <a
             href={cs.cta.href}
-            class="inline-flex shrink-0 items-center gap-2 rounded-md border-2 border-cream bg-cream px-6 py-3 text-sm font-semibold text-green transition hover:-translate-y-1 hover:bg-cream-dark"
+            class="inline-flex shrink-0 items-center gap-2 rounded-md border-2 border-cream bg-cream px-6 py-3 text-sm font-semibold text-green transition hover:border-cream-light hover:bg-cream-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
           >
             {cs.cta.label}
             <span aria-hidden="true">→</span>
@@ -171,7 +171,7 @@ const cs = caseStudies.pediatricErp;
       <div class="mx-auto max-w-6xl px-4 py-8 md:px-6">
         <a
           href="/proyectos"
-          class="inline-flex items-center gap-2 text-sm font-semibold text-green underline underline-offset-4 hover:text-green-dark"
+          class="link-ink inline-flex items-center gap-2 text-sm font-semibold text-green hover:text-green-dark"
         >
           <span aria-hidden="true">←</span>
           Ver todos los proyectos

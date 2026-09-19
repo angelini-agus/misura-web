@@ -107,6 +107,63 @@ gtag('config', '${gaId}');`
       };
       document.addEventListener("astro:page-load", initReveal);
       initReveal();
+
+      const initCountUp = () => {
+        const targets = document.querySelectorAll("[data-countup]");
+        if (!targets.length) return;
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const format = new Intl.NumberFormat("es-AR");
+
+        const render = (el: HTMLElement, value: number) => {
+          el.textContent = `${el.dataset.prefix ?? ""}${format.format(value)}${el.dataset.suffix ?? ""}`;
+        };
+
+        const animate = (el: HTMLElement) => {
+          const raw = (el.dataset.raw ?? "").trim();
+          const match = raw.match(/^(\D*)([\d.,]+)(\D*)$/);
+          if (!match) return;
+          const prefix = match[1];
+          const digits = match[2].replace(/[^\d]/g, "");
+          const suffix = match[3];
+          const target = Number(digits);
+          el.dataset.prefix = prefix;
+          el.dataset.suffix = suffix;
+          if (reduce || !target) {
+            render(el, target);
+            return;
+          }
+          const duration = 700;
+          const start = performance.now();
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            render(el, Math.round(target * eased));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        };
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                animate(entry.target as HTMLElement);
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.4 }
+        );
+
+        targets.forEach((target) => {
+          const element = target as HTMLElement;
+          if (element.dataset.raw !== undefined) return;
+          element.dataset.raw = (element.textContent ?? "").trim();
+          observer.observe(element);
+        });
+      };
+      document.addEventListener("astro:page-load", initCountUp);
+      initCountUp();
     </script>
     <script>
       const onCtaClick = (event: Event) => {

@@ -41,7 +41,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
       </nav>
       <a
         href={headerCta.href}
-        class="inline-flex items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold tracking-wide text-cream transition-colors hover:bg-green-dark"
+        class="inline-flex items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-sm font-semibold tracking-wide text-cream transition hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
       >
         {headerCta.label}
       </a>
@@ -58,7 +58,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
             <a
               href={item.href}
               aria-current={pathname === item.href ? "page" : undefined}
-              class="text-sm text-green underline-offset-4 hover:underline active:underline"
+              class="block py-2 text-sm text-green underline-offset-4 hover:underline active:underline"
             >
               {item.label}
             </a>
@@ -68,3 +68,22 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
     </div>
   </div>
 </header>
+
+<script>
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Node)) return;
+    const openMenu = document.querySelector<HTMLDetailsElement>("header details[open]");
+    if (openMenu && !openMenu.contains(event.target)) {
+      openMenu.open = false;
+    }
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    document.querySelectorAll("header details a").forEach((link) => {
+      link.addEventListener("click", () => {
+        const details = link.closest("details");
+        if (details) details.open = false;
+      });
+    });
+  });
+</script>

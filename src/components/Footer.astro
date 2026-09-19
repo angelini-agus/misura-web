@@ -27,26 +27,26 @@ const year = new Date().getFullYear();
         </p>
       </div>
       <nav class="flex flex-col gap-2 text-sm" aria-label="Navegación">
-        <p class="text-xs uppercase tracking-[0.2em] text-green/60">
+        <p class="text-xs uppercase tracking-[0.2em] text-green/75">
           {footer.navTitle}
         </p>
         {nav.map((item) => (
           <a
             href={item.href}
-            class="w-fit text-green underline-offset-4 hover:underline"
+            class="w-fit py-1 text-green underline-offset-4 hover:underline"
           >
             {item.label}
           </a>
         ))}
         <a
           href={headerCta.href}
-          class="mt-1 inline-flex w-fit items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-xs font-semibold tracking-wide text-cream transition-colors hover:bg-green-dark"
+          class="mt-1 inline-flex w-fit items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-sm font-semibold tracking-wide text-cream transition hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
         >
           {footer.ctaLabel}
         </a>
       </nav>
       <nav class="flex flex-col gap-3 text-sm" aria-label="Contacto">
-        <p class="text-xs uppercase tracking-[0.2em] text-green/60">
+        <p class="text-xs uppercase tracking-[0.2em] text-green/75">
           {footer.contactTitle}
         </p>
         {isPending(contact.email) ? (
@@ -57,7 +57,7 @@ const year = new Date().getFullYear();
         ) : (
           <a
             href={`mailto:${contact.email}`}
-            class="flex w-fit items-center gap-3 text-green underline-offset-4 hover:underline"
+            class="flex w-fit items-center gap-3 py-1 text-green underline-offset-4 hover:underline"
           >
             <MailIcon class="h-5 w-5 shrink-0 text-green/60" />
             {contact.email}
@@ -78,7 +78,7 @@ const year = new Date().getFullYear();
               href={social.url}
               target="_blank"
               rel="noopener noreferrer"
-              class="flex w-fit items-center gap-3 text-green underline-offset-4 hover:underline"
+              class="flex w-fit items-center gap-3 py-1 text-green underline-offset-4 hover:underline"
             >
               {social.label === "LinkedIn" ? (
                 <LinkedinIcon class="h-5 w-5 shrink-0 text-green/60" />
@@ -102,7 +102,7 @@ const year = new Date().getFullYear();
       </nav>
     </div>
     <div
-      class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-green pt-4 text-xs text-green/60 sm:flex-row"
+      class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-green pt-4 text-xs text-green/75 sm:flex-row"
     >
       <p>
         © {year} <MisureWord text={site.name}/> 

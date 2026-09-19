@@ -54,7 +54,7 @@ export const site = {
   name: "misure",
   url: "[PENDIENTE: dominio de producción]",
   announcement:
-    "Desarrollo de software a medida en Rosario y alrededores. Prototipo gratis antes de contratar.",
+    "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
   metaTitle: "misure | Software a medida para pymes de Rosario y alrededores",
   metaDescription:
@@ -200,7 +200,7 @@ export const about: {
 };
 
 export const hero = {
-  title: "El sistema que reemplaza un sueldo completo.",
+  title: "¿Sabías que un sistema a medida puede reemplazar un sueldo completo?",
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida. Entendemos el problema completo de tu negocio antes de proponerte una solución.",
   ctaPrimary: { label: "Quiero mi prototipo gratis", href: "/contacto#contacto" },
@@ -222,7 +222,7 @@ export const services: {
   eyebrow: "Servicios",
   title: "Lo que hacemos",
   subtitle:
-    "Cada semana que tu operación vive en planillas y WhatsApp se van horas en tareas manuales que igual se pagan como un sueldo, aparecen errores que se descubren tarde y las ventas se enfrían sin seguimiento. Desarrollamos el software específico que reemplaza ese trabajo, 100% a medida y sin plantillas.",
+    "Cada semana se van horas en tareas manuales que igual se pagan como un sueldo, los errores se descubren tarde y las ventas se enfrían sin seguimiento. Desarrollamos el software específico que reemplaza ese trabajo, 100% a medida y sin plantillas.",
   subtitleLink: {
     label: "¿Tenés dudas sobre qué elegir? Ver preguntas frecuentes",
     href: "#preguntas",
@@ -629,6 +629,8 @@ export const contactForm = {
   modal: {
     title: "¡Mensaje enviado!",
     body: "Gracias por escribirnos. Te contactamos a la brevedad.",
+    nextLabel: "Mientras tanto, mirá el caso de la empresa de limpieza",
+    nextHref: "/proyectos/empresa-limpieza-rosario",
     closeLabel: "Cerrar",
   },
   web3forms: {

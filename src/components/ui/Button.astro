@@ -8,13 +8,16 @@ interface Props {
 const { href, variant = "solid", class: className = "" } = Astro.props;
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md border-2 px-6 py-3 text-sm font-semibold md:text-base transition-transform duration-150 ease-out active:scale-[0.97]";
+  "inline-flex items-center justify-center gap-2 rounded-md border-2 px-6 py-3 text-sm font-semibold md:text-base transition duration-150 ease-out";
+
+const press =
+  "active:translate-x-[-4px] active:translate-y-[4px] active:duration-75";
 
 const variants = {
-  solid: "border-green bg-green text-cream hover:bg-green-dark",
+  solid: `border-green bg-green text-cream hover:border-green-light hover:bg-green-light ${press}`,
   outline:
-    "border-green bg-transparent text-green hover:-translate-y-1 hover:border-green-dark",
-  cream: "border-cream bg-cream text-green hover:-translate-y-1 hover:bg-cream-dark hover:border-cream-dark",
+    "border-green bg-transparent text-green hover:border-green-dark",
+  cream: `border-cream bg-cream text-green hover:border-cream-light hover:bg-cream-light ${press}`,
 };
 ---
 

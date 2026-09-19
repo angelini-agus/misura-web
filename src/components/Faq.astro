@@ -45,7 +45,11 @@ const faqSchema = {
             </h3>
             <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
           </summary>
-          <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
+          <div class="details-collapse">
+            <div class="details-collapse-inner">
+              <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
+            </div>
+          </div>
         </details>
       ))}
     </div>
