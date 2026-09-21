@@ -59,7 +59,7 @@ export const site = {
   metaTitle: "misure | Software a medida para pymes de Rosario y alrededores",
   metaDescription:
     "misure desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
-  tagline: "Software a medida para pymes de Rosario y el cordón industrial.",
+  tagline: "Software a medida para pymes de Rosario y alrededores.",
 };
 
 export const footer = {

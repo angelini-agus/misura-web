@@ -1,81 +1,67 @@
-# Feature: Transición de página tipo hoja de libro
+# Feature: Transición de página direccional
 
-- **Estado:** en progreso
-- **Rama:** por definir (hoy `master`)
-- **Autorización:** el usuario aprobó arrancar por el page-turn
-- **Origen:** `docs/features/design-philosophy.md` (movimiento analógico: "cambiar
-  de página es dar vuelta una hoja de un libro")
+> El nombre del archivo es histórico: empezó como "page-turn" (giro de hoja) y
+> terminó como deslizamiento horizontal direccional.
 
-## Objetivo
+- **Estado:** implementado y verificado. Pendiente de revisión visual del autor y del commit.
+- **Rama:** `feat/page-turn-transition`
+- **Autorización:** el usuario aprobó el slide direccional y eligió la opción A: se actualiza la filosofía y se cae la metáfora del libro.
 
-Reemplazar el cambio de ruta actual (fundido + `translateY`) por una transición
-que se lea como dar vuelta la hoja de un libro, sin romper el reveal ni el resto
-de las micro-interacciones.
+## Objetivo final
 
-## Diagnóstico
+Que el cambio de ruta tenga dirección: al avanzar en el sitio la página sale
+hacia la izquierda y la nueva entra desde la derecha; al retroceder, se espeja.
+La dirección la define la posición en el navbar, no el historial del navegador.
 
-- Hoy `::view-transition-old/new(root)` usan `page-out` / `page-in`: opacidad más
-  un `translateY` de 8–10px, 300ms / 340ms. El `ClientRouter` de Astro está
-  activo en `src/layouts/BaseLayout.astro`.
-- El commit `5ae525e` revirtió el `clip-path` del reveal porque Chrome calcula
-  intersección 0 en un elemento observado recortado a 0 de altura: el
-  `IntersectionObserver` nunca dispara y el contenido queda oculto en carga
-  directa.
-- **Implicancia:** ese defecto es del `clip-path` aplicado al *elemento
-  observado*. Los pseudo-elementos de la view transition no son observados por
-  nadie, así que el 3D ahí es seguro. Aun así: no se usa `clip-path` en el
-  reveal y no se toca `[data-reveal]`.
+## Historial
 
-## Restricciones (tomadas de la filosofía)
+1. Primera versión: `page-turn` con `rotateY` sobre el lomo (`leaf-out`/`leaf-in`),
+   no direccional. Descartada.
+2. Versión final: slide horizontal direccional.
 
-- Solo `opacity` y `transform`. Nada que fuerce layout.
-- Respetar `prefers-reduced-motion: reduce`.
-- Sin sombras grandes, sin gradientes, sin librerías de animación.
-- Duraciones cortas: 300–340ms, siempre `--ease-out`.
+## Diagnóstico que condiciona el diseño
+
+El commit `5ae525e` revirtió un `clip-path` en el reveal porque Chrome calcula
+intersección 0 en un elemento observado recortado a 0 de altura: el
+`IntersectionObserver` nunca dispara y el contenido queda oculto. Por eso el
+efecto se hace solo con `transform` y `opacity`, nunca con `clip-path`.
+
+## Implementación
+
+- `src/layouts/BaseLayout.astro`: script inline que escucha `astro:before-preparation`,
+  resuelve la posición de origen y destino en
+  `NAV_ORDER = ["/", "/nosotros", "/proyectos", "/contacto"]`
+  (`/proyectos/<slug>` cuenta como 2.5), y escribe
+  `document.documentElement.dataset.navDir = "forward" | "back"`. `event.direction`
+  queda solo como fallback cuando alguna ruta no está en el orden.
+- `src/styles/global.css`: `slide-out-forward`, `slide-in-forward`,
+  `slide-out-back` y `slide-in-back`, aplicados con
+  `:root[data-nav-dir="..."]::view-transition-old/new(root)`. Solo `transform` y
+  `opacity`, 300ms/340ms con `--ease-out`, dentro de
+  `@media (prefers-reduced-motion: no-preference)`.
+- `docs/features/page-turn-transition.md`: documenta el slide direccional.
 
 ## Tareas
 
-- [x] **T1** — Implementar el page-turn en `src/styles/global.css` con transform
-      3D exponencial en los pseudo-elementos de view transition.
-- [x] **T2** — Documentar la feature en `docs/features/page-turn-transition.md`.
-- [x] **T3** — Verificar: `npm run build` + `npx astro check` + inspección del CSS
-      emitido y del `data-*` intacto.
-- [ ] **T4** — Commit de la unidad de trabajo (requiere autorización del usuario).
+- [x] Implementar el slide direccional
+- [x] Documentar la feature
+- [x] Actualizar la filosofía de diseño (se cae la metáfora del libro)
+- [x] Verificar: build, astro check y CSS emitido
+- [ ] Commit de la unidad (pendiente de autorización)
 
 ## Evidencia
 
-**Implementación** (`src/styles/global.css`):
-
-- `@keyframes leaf-out`: opacidad 1→0, `perspective(1200px) rotateY(0) scale(1)` →
-  `rotateY(-28deg) scale(0.97)`.
-- `@keyframes leaf-in`: opacidad 0→1, `rotateY(20deg) translateX(1.5%) scale(0.99)`
-  → `rotateY(0)`.
-- `transform-origin: left center` (el lomo) en ambos pseudo-elementos.
-- `::view-transition` con `background-color: var(--color-cream)`.
-- 300ms / 340ms con `--ease-out`. Se eliminaron `page-out` y `page-in`.
-
-**Doc**: `docs/features/page-turn-transition.md`.
-
-**Verificación** (agente `gentle-ai-verify`, read-only) — 8/8 PASS:
-
 - `npm run build` → exit 0, 10 páginas, sin errores.
 - `npx astro check` → exit 0, 55 archivos, 0 errores / 0 warnings / 0 hints.
-- El CSS emitido contiene `leaf-out`, `leaf-in`, `::view-transition-old/new(root)`
-  y `perspective(1200px)`; sin rastro de `page-out`/`page-in` en `dist/` ni en `src/`.
-- El HTML emitido conserva `data-reveal` (146), `data-countup` (24) y
-  `data-gallery` (122).
-- Los overrides de `prefers-reduced-motion: reduce` para `[data-reveal]` siguen
-  intactos.
+- El CSS emitido contiene los cuatro keyframes y los selectores `data-nav-dir`;
+  no queda rastro de `leaf-out`/`leaf-in` ni de `perspective(1200px)`.
+- El HTML emitido incluye el script de dirección en todas las páginas y conserva
+  `data-reveal` y `data-countup`.
 
-**No verificado**: el efecto visual en navegador real. No hay browser automation
-en este entorno, así que la lectura del movimiento queda pendiente del autor, junto
-con el ajuste fino de ángulos y duraciones.
+**No verificado:** el efecto visual en navegador real. No hay browser automation
+en este entorno.
 
-**Corrección posterior**: el doc afirmaba que todo vivía dentro del media query;
-los `@keyframes` están a nivel global. Redacción corregida por precisión.
+## Nota
 
-## Archivos de la unidad
-
-- `src/styles/global.css` (modificado)
-- `docs/features/page-turn-transition.md` (nuevo)
-- `odd/tasks/misura-page-turn.md` (tracking)
+El agente `design` (ruteado a Muse Spark) falló dos veces con "assistant reported
+an error", así que esta unidad la implementó `gentle-ai-worker`.
