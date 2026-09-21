@@ -50,8 +50,8 @@ const year = new Date().getFullYear();
           {footer.contactTitle}
         </p>
         {isPending(contact.email) ? (
-          <span class="flex w-fit items-center gap-3 text-green/60">
-            <MailIcon class="h-5 w-5 shrink-0 text-green/60" />
+          <span class="flex w-fit items-center gap-3 text-green/75">
+            <MailIcon class="h-5 w-5 shrink-0 text-green/75" />
             {contact.email}
           </span>
         ) : (
@@ -59,17 +59,17 @@ const year = new Date().getFullYear();
             href={`mailto:${contact.email}`}
             class="flex w-fit items-center gap-3 py-1 text-green underline-offset-4 hover:underline"
           >
-            <MailIcon class="h-5 w-5 shrink-0 text-green/60" />
+            <MailIcon class="h-5 w-5 shrink-0 text-green/75" />
             {contact.email}
           </a>
         )}
         {contact.socials.map((social) =>
           isPending(social.url) ? (
-            <span class="flex w-fit items-center gap-3 text-green/60">
+            <span class="flex w-fit items-center gap-3 text-green/75">
               {social.label === "LinkedIn" ? (
-                <LinkedinIcon class="h-5 w-5 shrink-0 text-green/60" />
+                <LinkedinIcon class="h-5 w-5 shrink-0 text-green/75" />
               ) : (
-                <InstagramIcon class="h-5 w-5 shrink-0 text-green/60" />
+                <InstagramIcon class="h-5 w-5 shrink-0 text-green/75" />
               )}
               {social.label}
             </span>
@@ -81,9 +81,9 @@ const year = new Date().getFullYear();
               class="flex w-fit items-center gap-3 py-1 text-green underline-offset-4 hover:underline"
             >
               {social.label === "LinkedIn" ? (
-                <LinkedinIcon class="h-5 w-5 shrink-0 text-green/60" />
+                <LinkedinIcon class="h-5 w-5 shrink-0 text-green/75" />
               ) : (
-                <InstagramIcon class="h-5 w-5 shrink-0 text-green/60" />
+                <InstagramIcon class="h-5 w-5 shrink-0 text-green/75" />
               )}
               {social.displayLabel ?? social.label}
             </a>
@@ -92,9 +92,9 @@ const year = new Date().getFullYear();
         {contact.locationItems.map((item) => (
           <span class="flex w-fit items-center gap-3 text-green">
             {item.label.includes("UBI") ? (
-              <PinIcon class="h-5 w-5 shrink-0 text-green/60" />
+              <PinIcon class="h-5 w-5 shrink-0 text-green/75" />
             ) : (
-              <LaptopIcon class="h-5 w-5 shrink-0 text-green/60" />
+              <LaptopIcon class="h-5 w-5 shrink-0 text-green/75" />
             )}
             <span>{item.value}</span>
           </span>

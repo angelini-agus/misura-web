@@ -34,7 +34,7 @@ const { web3forms } = contactForm;
         required
         data-error-message={contactForm.errors.name}
         placeholder={contactForm.placeholders.name}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 aria-[invalid=true]:border-error"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
       />
       <p data-error-for="name" class="hidden text-sm text-error" role="alert"></p>
     </div>
@@ -52,7 +52,7 @@ const { web3forms } = contactForm;
         type="text"
         autocomplete="organization"
         placeholder={contactForm.placeholders.company}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
       />
     </div>
 
@@ -71,7 +71,7 @@ const { web3forms } = contactForm;
         required
         data-error-message={contactForm.errors.email}
         placeholder={contactForm.placeholders.email}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 aria-[invalid=true]:border-error"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
       />
       <p data-error-for="email" class="hidden text-sm text-error" role="alert"></p>
     </div>
@@ -91,7 +91,7 @@ const { web3forms } = contactForm;
         required
         data-error-message={contactForm.errors.phone}
         placeholder={contactForm.placeholders.phone}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50 aria-[invalid=true]:border-error"
+        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
       />
       <p data-error-for="phone" class="hidden text-sm text-error" role="alert"></p>
     </div>
@@ -119,10 +119,10 @@ const { web3forms } = contactForm;
           data-select-trigger
           data-field-visual="service"
         >
-          <span data-select-label class="text-green/50">
+          <span data-select-label class="text-green/75">
             {contactForm.servicePlaceholder}
           </span>
-          <ChevronDownIcon class="h-4 w-4 shrink-0 text-green/60" />
+          <ChevronDownIcon class="h-4 w-4 shrink-0 text-green/75" />
         </button>
         <ul
           id="cf-service-listbox"
@@ -168,7 +168,7 @@ const { web3forms } = contactForm;
           name="message"
           rows="5"
           placeholder={contactForm.placeholders.message}
-          class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/50"
+          class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
         ></textarea>
       </div>
     )}
@@ -327,7 +327,7 @@ const { web3forms } = contactForm;
         );
         input.value = option.dataset.value || "";
         label.textContent = option.textContent.trim();
-        label.classList.remove("text-green/50");
+        label.classList.remove("text-green/75");
         input.dispatchEvent(new Event("input", { bubbles: true }));
         close();
         trigger.focus();
@@ -337,7 +337,7 @@ const { web3forms } = contactForm;
         options.forEach((item) => item.setAttribute("aria-selected", "false"));
         input.value = "";
         label.textContent = placeholder;
-        label.classList.add("text-green/50");
+        label.classList.add("text-green/75");
         close();
       };
 
