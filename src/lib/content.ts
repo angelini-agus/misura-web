@@ -616,7 +616,7 @@ export const contactForm = {
     "Gracias, recibimos tu mensaje. Te contactamos a la brevedad.",
   formError: "Revisá los campos marcados e intentá de nuevo.",
   disclaimer:
-    "Tus datos están seguros con nosotros. No compartimos tu información con terceros ni enviamos spam.",
+    "Prometemos responderte en menos de 24 horas hábiles. Tus datos están seguros: no compartimos tu información con terceros ni enviamos spam.",
   modal: {
     title: "¡Mensaje enviado!",
     body: "Gracias por escribirnos. Te contactamos a la brevedad.",
