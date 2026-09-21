@@ -1,114 +1,95 @@
-# Feature: Transición de página direccional
+# Feature: Transición de página
 
-## Objetivo
+> El nombre del archivo es histórico: empezó como "page-turn" (giro de hoja) y
+> hoy describe un fundido. Ver **Historial** al final.
 
-Que el cambio de ruta tenga **dirección**: avanzar por el sitio corre la página
-saliente hacia la izquierda y hace entrar la nueva desde la derecha; retroceder
-hace el espejo. La dirección sigue el orden del navbar, no el historial del
-navegador, así que un click en el menú siempre se siente como avanzar por la
-estructura del sitio.
+## Estado actual
 
-## Diagnóstico previo
+Al cambiar de ruta **solo se funde el contenido**: lo que sale baja a opacidad
+0 en `300ms ease-in` y lo que entra sube desde opacidad 0 en `340ms ease-out`.
+Sin desplazamiento, sin rotación, sin dirección.
 
-El cambio de ruta empezó como un fundido con `translateY` de 8–10px
-(`page-out` / `page-in`), sin ninguna lectura espacial. Después pasó por una
-rotación 3D tipo hoja de libro (`leaf-out` / `leaf-in` con `rotateY`), que sí
-tenía presencia espacial pero **no distinguía dirección**: ir a `/contacto` y
-volver a `/` se veía exactamente igual.
+La barra de anuncio y el navbar **no participan del fundido**: quedan clavados
+mientras el contenido se releva.
 
-También quedó un antecedente que condiciona cualquier cambio acá: el commit
-`5ae525e` revirtió un `clip-path` en el reveal porque **Chrome calcula intersección
-0 en un elemento observado que está recortado a 0 de altura**, el
-`IntersectionObserver` nunca dispara y el contenido queda invisible en carga
-directa. Este feature no reintroduce `clip-path`: solo mueve y opacita los
-pseudo-elementos de la view transition.
+Implementado en `src/styles/global.css` con `::view-transition-old/new(root)` y
+los keyframes `page-out` / `page-in`, dentro de
+`@media (prefers-reduced-motion: no-preference)`.
 
-## Implementación
+## Barra superior fuera del fundido
 
-### Regla de dirección
+El objetivo es que la navegación se lea como un cambio de contenido, no como un
+cambio de página entera: el navbar es el marco del sitio, no parte de la página.
 
-En `src/layouts/BaseLayout.astro` hay un script inline que escucha
-`astro:before-preparation` (el evento que dispara el `ClientRouter` antes de
-preparar la navegación) y escribe la dirección en la raíz:
+La mecánica son **named view transitions**:
 
-```js
-document.documentElement.dataset.navDir = "forward" | "back";
-```
+- En `src/components/Header.astro`, la barra de anuncio lleva
+  `transition:name="site-announcement"` y el `<header>` lleva
+  `transition:name="site-header"`. Astro los emite como
+  `view-transition-name`.
+- Un elemento con nombre propio **sale del snapshot de `root`** y obtiene su
+  propio grupo de view transition. `root` queda con el contenido y el footer, y
+  eso es lo único que se funde.
+- En `global.css`, los pseudo-elementos `old`/`new` de ambos nombres llevan
+  `animation: none`, y sus grupos `z-index: 100` para pintarse por encima del
+  contenido que se funde.
 
-La posición de cada ruta se resuelve contra el orden del navbar:
-
-```js
-const NAV_ORDER = ["/", "/nosotros", "/proyectos", "/contacto"];
-```
-
-- Se normaliza el pathname sacando barras finales; `/` queda `/`.
-- Cualquier ruta `/proyectos/<algo>` (casos de estudio) resuelve a **2.5**: un
-  paso después de `/proyectos` y antes de `/contacto`.
-- Con ambos índices resueltos: `to > from` es `forward`, `to < from` es `back`.
-  Si son iguales, se conserva el valor anterior.
-- Si alguna de las dos rutas no está en `NAV_ORDER` ni es un caso, se cae a
-  `event.direction` del navegador (`"back"` o `forward`).
-
-`event.direction` **no** alcanza por sí solo: refleja el historial del navegador,
-así que un click en el navbar hacia una ruta anterior se leería como `back`
-aunque el usuario esté avanzando en la estructura del sitio. Por eso manda la
-regla propia y el historial queda solo como fallback.
-
-### CSS
-
-Los selectores y las animaciones viven en `src/styles/global.css`, dentro de
-`@media (prefers-reduced-motion: no-preference)`. Los `@keyframes` se definen a
-nivel global y solo se activan desde ese bloque. Cada dirección tiene su propio
-par de keyframes:
-
-| Dirección | Selector | Keyframe | Recorrido |
-| --- | --- | --- | --- |
-| `forward` | `:root[data-nav-dir="forward"]::view-transition-old(root)` | `slide-out-forward` | `translateX(0)` → `translateX(-100%)`, opacidad 1 → 0 |
-| `forward` | `:root[data-nav-dir="forward"]::view-transition-new(root)` | `slide-in-forward` | `translateX(100%)` → `translateX(0)`, opacidad 0 → 1 |
-| `back` | `:root[data-nav-dir="back"]::view-transition-old(root)` | `slide-out-back` | `translateX(0)` → `translateX(100%)`, opacidad 1 → 0 |
-| `back` | `:root[data-nav-dir="back"]::view-transition-new(root)` | `slide-in-back` | `translateX(-100%)` → `translateX(0)`, opacidad 0 → 1 |
-
-**Claves del efecto:**
-
-- El scope es el atributo de la raíz: sin `data-nav-dir` no hay animación
-  custom y el navegador hace su cross-fade por defecto.
-- Solo se animan `transform` y `opacity`. No hay rotación, ni `perspective`, ni
-  `transform-origin`: el movimiento es una traslación horizontal pura.
-- Duraciones sin cambios: **300ms** la página que sale, **340ms** la que entra,
-  ambas con `--ease-out` y `fill-mode: both`.
-- `::view-transition` lleva `background-color: var(--color-cream)` para que el
-  deslizamiento nunca deje ver un destello blanco del navegador.
+**Detalle que importa:** Astro emite su propio crossfade de 180ms para cada
+grupo nombrado, dentro de `@layer astro`. La regla del sitio gana porque vive
+fuera de toda capa (unlayered vence a cualquier `@layer`, sin importar
+especificidad ni orden de carga). Por eso `animation: none` no lleva capa: si
+alguna vez se envuelve ese bloque en un `@layer`, el navbar vuelve a fundirse.
 
 ## Por qué es seguro
 
-- Solo se animan `opacity` y `transform`: nada que fuerce layout ni paint.
-- La animación vive exclusivamente en los pseudo-elementos de la view
-  transition. Esos nodos no los observa ningún `IntersectionObserver`, así que
-  el reveal sigue disparando como siempre.
+- Solo se animan `opacity` y `transform`: nada fuerza layout ni paint.
+- La superposición la compone la View Transitions API con capas absolutas; el
+  relevo no altera el flujo del documento.
+- La animación vive solo en los pseudo-elementos de la view transition, que
+  ningún `IntersectionObserver` observa: el reveal de `[data-reveal]` sigue
+  disparando igual.
 - `[data-reveal]` queda intacto en `translateY(16px)`.
-- Con `prefers-reduced-motion: reduce` el bloque entero no aplica y la
-  navegación vuelve al comportamiento por defecto del navegador.
+- **Nunca usar `clip-path` acá:** el commit `5ae525e` lo revirtió porque Chrome
+  calcula intersección 0 en un elemento observado recortado a 0 de altura, el
+  `IntersectionObserver` nunca dispara y el contenido queda invisible.
+- Con `prefers-reduced-motion: reduce` todo el bloque no aplica.
 
 ## Ajuste fino
 
 | Parámetro | Valor actual | Efecto al tocarlo |
 | --- | --- | --- |
-| `NAV_ORDER` | `["/", "/nosotros", "/proyectos", "/contacto"]` | Cualquier ruta que no esté cae al fallback del navegador |
-| Índice de caso de estudio | `2.5` | Lo corre respecto de `/proyectos` (2) y `/contacto` (3) |
-| Distancia | `±100%` | Menos distancia deja las dos páginas a la vista al mismo tiempo |
-| Duración | `300ms` / `340ms` | Más lento y más visible |
+| Duración salida / entrada | `300ms` / `340ms` | Más lento y el relevo se siente pesado |
+| Easing | `ease-in` sale, `ease-out` entra | Un solo easing para ambos corta la sensación de relevo |
+| Nombres | `site-announcement`, `site-header` | Quitarlos devuelve la barra al snapshot de `root`: vuelve a fundirse con la página |
+| `z-index` de los grupos | `100` | Menos que el contenido deja el navbar por debajo durante el relevo |
 
 ## Verificación
 
 1. `npm run build` sin errores.
 2. `npx astro check` limpio.
-3. El CSS emitido conserva los `@keyframes` (`slide-out-forward`,
-   `slide-in-forward`, `slide-out-back`, `slide-in-back`) y los selectores
-   `:root[data-nav-dir=...]::view-transition-old/new(root)`.
-4. El HTML no pierde atributos `data-reveal` ni `data-countup`.
-5. El script escribe `data-nav-dir` en `<html>` antes de cada navegación.
-6. Navegación real: `/` → `/contacto` se siente hacia adelante; volver se
-   siente al revés; un caso de estudio se lee como un paso después de
-   `/proyectos`.
+3. El CSS emitido conserva `::view-transition-old/new(root)` con `page-out` /
+   `page-in`, los cuatro selectores `(site-announcement|site-header)` con
+   `animation: none` y los dos grupos con `z-index: 100`.
+4. El HTML emitido lleva `view-transition-name: site-announcement` en la barra
+   de anuncio y `view-transition-name: site-header` en el header.
+5. Navegación real: el navbar queda clavado mientras el contenido se funde.
 
-**Estado:** implementado; pendiente de revisión visual en navegador por el autor.
+**Estado:** implementado; el punto 5 queda pendiente de verificación visual en
+navegador (no hay browser automation en este entorno).
+
+**Limitación conocida:** en navegadores sin soporte nativo de View Transitions
+Astro usa su fallback (`[data-astro-transition-fallback]`), que anima los
+elementos reales y por lo tanto sí funde el navbar. Es degradación aceptable, no
+un defecto: el navbar nunca queda invisible ni descolocado.
+
+## Historial
+
+1. **Hoja de libro** (`leaf-out` / `leaf-in` con `rotateY`): tenía presencia
+   espacial pero no distinguía dirección. Descartada.
+2. **Slide direccional**: `NAV_ORDER = ["/", "/nosotros", "/proyectos",
+   "/contacto"]` con `/proyectos/<slug>` en 2.5, escrito por un script en
+   `BaseLayout.astro` que escuchaba `astro:before-preparation` y seteaba
+   `data-nav-dir`; el CSS movía `±100%` con crossfade a `0.55`. Descartada: el
+   movimiento no le gustó al autor. De acá sobrevive la idea de la barra
+   estática, que en esa versión ya existía con los mismos dos nombres.
+3. **Fundido puro** (actual): sin dirección, sin movimiento.

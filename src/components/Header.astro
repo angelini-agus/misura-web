@@ -11,10 +11,16 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 >
   Saltar al contenido
 </a>
-<div class="bg-green text-center text-xs tracking-[0.2em] text-cream">
+<div
+  transition:name="site-announcement"
+  class="bg-green text-center text-xs tracking-[0.2em] text-cream"
+>
   <p class="px-4 py-2.5 uppercase">{site.announcement}</p>
 </div>
-<header class="sticky top-0 z-50 border-b border-green bg-cream">
+<header
+  transition:name="site-header"
+  class="sticky top-0 z-50 border-b border-green bg-cream"
+>
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
     <a href="/" class="inline-flex items-center">
       <img

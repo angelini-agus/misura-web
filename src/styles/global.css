@@ -217,75 +217,40 @@ details[open] .details-collapse {
   }
 }
 
-/* Cambio de ruta: deslizamiento horizontal direccional. La direccion la resuelve
-   el script inline de BaseLayout.astro, que compara la posicion de la ruta en
-   NAV_ORDER y escribe data-nav-dir en <html> (ver
-   docs/features/page-turn-transition.md). */
-@keyframes slide-out-forward {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
+@keyframes page-out {
   to {
     opacity: 0;
-    transform: translateX(-100%);
   }
 }
 
-@keyframes slide-in-forward {
+@keyframes page-in {
   from {
     opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-out-back {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
-
-@keyframes slide-in-back {
-  from {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition {
-    background-color: var(--color-cream);
-  }
-
-  /* "Adelante" es el default a proposito: asi la animacion existe aunque el
-     script de direccion no llegue a correr o el atributo no este seteado.
-     El caso "atras" solo la sobreescribe. */
   ::view-transition-old(root) {
-    animation: slide-out-forward 300ms var(--ease-out) both;
+    animation: page-out 300ms ease-in both;
   }
 
   ::view-transition-new(root) {
-    animation: slide-in-forward 340ms var(--ease-out) both;
+    animation: page-in 340ms ease-out both;
   }
 
-  :root[data-nav-dir="back"]::view-transition-old(root) {
-    animation: slide-out-back 300ms var(--ease-out) both;
+  /* Barra de anuncio y header quedan fuera del fundido de `root`: al tener
+     nombre propio salen del snapshot de la pagina, asi que la navegacion no
+     los toca. Sin animacion no hay crossfade propio que los opaque. */
+  ::view-transition-old(site-announcement),
+  ::view-transition-new(site-announcement),
+  ::view-transition-old(site-header),
+  ::view-transition-new(site-header) {
+    animation: none;
   }
+}
 
-  :root[data-nav-dir="back"]::view-transition-new(root) {
-    animation: slide-in-back 340ms var(--ease-out) both;
-  }
+/* Los grupos nombrados se pintan sobre el contenido que se funde. */
+::view-transition-group(site-announcement),
+::view-transition-group(site-header) {
+  z-index: 100;
 }
