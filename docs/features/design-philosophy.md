@@ -78,16 +78,18 @@ reales, sin llegar nunca a lo caricaturesco.
   (`translate(-4px, 4px)`) en 75ms, como si lo empujaras contra la hoja.
 - **Los subrayados se dibujan.** Los links trazan una línea de 2px de izquierda
   a derecha (`scaleX(0)` → `scaleX(1)`) en 160ms.
-- **Cambiar de página es dar vuelta una hoja de un libro.** El cambio de ruta se
-  siente como pasar de página: la hoja sale y entra, no como un fundido
-  genérico ni un deslizamiento de app móvil.
+- **Cambiar de página tiene dirección.** El cambio de ruta es un deslizamiento
+  horizontal, como correr una hoja sobre la mesa: al avanzar en el sitio la
+  página sale hacia la izquierda y la nueva entra desde la derecha; al
+  retroceder, se espeja. La dirección la define la posición en el navbar, no el
+  historial del navegador.
 - **Lo que aparece, se asienta.** Los bloques entran con un desplazamiento corto
   (`translateY(16px)`) y se acomodan.
 
 ### Reglas de movimiento
 
 - Duraciones **cortas**: 75ms para feedback directo, 150–220ms para cambios de
-  estado, 300–420ms para entradas de bloque, 300–340ms para el cambio de hoja.
+  estado, 300–420ms para entradas de bloque, 300–340ms para el cambio de página.
 - Easing: siempre `--ease-out`. Nunca rebotes elásticos ni `ease-in-out` en
   feedback inmediato.
 - Se anima **opacidad y transform** únicamente: nada que fuerce layout.

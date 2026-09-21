@@ -171,29 +171,51 @@ details[open] .details-collapse {
   }
 }
 
-/* Cambio de ruta: la hoja se levanta desde el lomo y la nueva se asienta.
-   El 3D vive solo en los pseudo-elementos de la view transition, nunca en el DOM
-   real: asi el IntersectionObserver del reveal queda intacto (ver commit 5ae525e
-   y docs/features/page-turn-transition.md). */
-@keyframes leaf-out {
+/* Cambio de ruta: deslizamiento horizontal direccional. La direccion la resuelve
+   el script inline de BaseLayout.astro, que compara la posicion de la ruta en
+   NAV_ORDER y escribe data-nav-dir en <html> (ver
+   docs/features/page-turn-transition.md). */
+@keyframes slide-out-forward {
   from {
     opacity: 1;
-    transform: perspective(1200px) rotateY(0deg) scale(1);
+    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: perspective(1200px) rotateY(-28deg) scale(0.97);
+    transform: translateX(-100%);
   }
 }
 
-@keyframes leaf-in {
+@keyframes slide-in-forward {
   from {
     opacity: 0;
-    transform: perspective(1200px) rotateY(20deg) translateX(1.5%) scale(0.99);
+    transform: translateX(100%);
   }
   to {
     opacity: 1;
-    transform: perspective(1200px) rotateY(0deg) translateX(0) scale(1);
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-back {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -202,16 +224,22 @@ details[open] .details-collapse {
     background-color: var(--color-cream);
   }
 
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    transform-origin: left center;
-  }
-
+  /* "Adelante" es el default a proposito: asi la animacion existe aunque el
+     script de direccion no llegue a correr o el atributo no este seteado.
+     El caso "atras" solo la sobreescribe. */
   ::view-transition-old(root) {
-    animation: leaf-out 300ms var(--ease-out) both;
+    animation: slide-out-forward 300ms var(--ease-out) both;
   }
 
   ::view-transition-new(root) {
-    animation: leaf-in 340ms var(--ease-out) both;
+    animation: slide-in-forward 340ms var(--ease-out) both;
+  }
+
+  :root[data-nav-dir="back"]::view-transition-old(root) {
+    animation: slide-out-back 300ms var(--ease-out) both;
+  }
+
+  :root[data-nav-dir="back"]::view-transition-new(root) {
+    animation: slide-in-back 340ms var(--ease-out) both;
   }
 }
