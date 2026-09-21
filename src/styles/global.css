@@ -17,6 +17,52 @@
 html {
   background: var(--color-cream);
   scroll-behavior: smooth;
+  /* El gutter siempre reservado evita el salto horizontal cuando una pagina no
+     tiene scroll (riesgo de CLS, y el objetivo es CLS 0). */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* La sintaxis estandar se declara SOLO donde no existe ::-webkit-scrollbar
+   (Firefox). En Chromium, declarar scrollbar-width o scrollbar-color hace que
+   el navegador descarte todo el bloque webkit de abajo, y con el se perderian
+   el track transparente y la ausencia de botones. */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-green) 22%, var(--color-cream-dark))
+      transparent;
+  }
+}
+
+/* Scrollbar propia: sin track, sin botones y sin aire interno, para que el thumb
+   llene toda la pista y quede pegado al borde derecho y al contenido. Neutro
+   calido en reposo y verde de marca al pasar el mouse. */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Sin botones de flecha ni extremos visibles: la barra queda solo con el thumb. */
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--color-green) 22%, var(--color-cream-dark));
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-green);
 }
 
 body {
