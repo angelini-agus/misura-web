@@ -108,6 +108,21 @@ gtag('config', '${gaId}');`
       document.addEventListener("astro:page-load", initReveal);
       initReveal();
 
+      document.addEventListener("astro:before-swap", (event) => {
+        event.newDocument
+          .querySelectorAll("[data-reveal]")
+          .forEach((el) => el.classList.add("is-visible"));
+      });
+
+      const restoreScrollReveal = () => {
+        document.querySelectorAll("[data-reveal].is-visible").forEach((el) => {
+          if (el.getBoundingClientRect().top > window.innerHeight) {
+            el.classList.remove("is-visible");
+          }
+        });
+      };
+      document.addEventListener("astro:page-load", restoreScrollReveal);
+
       const initCountUp = () => {
         const targets = document.querySelectorAll("[data-countup]");
         if (!targets.length) return;
@@ -200,35 +215,6 @@ gtag('config', '${gaId}');`
       };
       document.addEventListener("astro:page-load", initCtaScroll);
       initCtaScroll();
-    </script>
-    <script>
-      // El orden refleja el navbar: la direccion sigue la posicion en el sitio,
-      // no el historial del navegador (event.direction queda solo como fallback).
-      const NAV_ORDER = ["/", "/nosotros", "/proyectos", "/contacto"];
-
-      const navIndex = (pathname: string): number | null => {
-        const normalized =
-          pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
-        const exact = NAV_ORDER.indexOf(normalized);
-        if (exact !== -1) return exact;
-        if (normalized.startsWith("/proyectos/")) return 2.5;
-        return null;
-      };
-
-      document.addEventListener("astro:before-preparation", (event) => {
-        const from = navIndex(new URL(event.from).pathname);
-        const to = navIndex(new URL(event.to).pathname);
-        const root = document.documentElement;
-
-        if (from === null || to === null) {
-          root.dataset.navDir = event.direction === "back" ? "back" : "forward";
-          return;
-        }
-
-        if (to === from) return;
-
-        root.dataset.navDir = to > from ? "forward" : "back";
-      });
     </script>
   </body>
 </html>
