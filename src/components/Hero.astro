@@ -7,26 +7,26 @@ import CodePanel from "./ui/CodePanel.astro";
 
 <section id="inicio" class="scroll-mt-24">
   <div
-    class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
+    class="hero-grid mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
   >
     <div class="order-2 md:order-1">
       <h1
         data-reveal
-        class="font-display max-w-xl text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[3.4rem]"
+        class="hero-title font-display max-w-xl text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[3.4rem]"
       >
         {hero.title}
       </h1>
       <p
         data-reveal
         style={{ transitionDelay: "60ms" }}
-        class="mt-4 max-w-xl text-base leading-relaxed text-green/80 sm:text-lg"
+        class="hero-lead mt-4 max-w-xl text-base leading-relaxed text-green/80 sm:text-lg"
       >
         <MisureWord text={hero.lead} />
       </p>
       <div
         data-reveal
         style={{ transitionDelay: "120ms" }}
-        class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
+        class="hero-actions mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
       >
         <Button href={hero.ctaPrimary.href} class="w-full sm:w-auto">
           {hero.ctaPrimary.label}
@@ -36,8 +36,67 @@ import CodePanel from "./ui/CodePanel.astro";
         </Button>
       </div>
     </div>
-    <div class="order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-xl md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
+    <div class="hero-visual order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-xl md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
       <CodePanel />
     </div>
   </div>
 </section>
+
+<style>
+  /* En celulares bajos el hero se compacta un escalon mas: es la unica forma
+     de que los dos botones entren dentro de los primeros 100dvh a 375x667 y
+     360x740, que es lo que la version mobile no cumplia. La condicion pide
+     ancho de celular (hasta 30rem) Y alto bajo (hasta 820px), asi que la
+     version desktop y los celulares altos no se tocan. */
+  @media (max-width: 30rem) and (max-height: 820px) {
+    .hero-grid {
+      gap: 0.75rem;
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-size: 1.5rem;
+      line-height: 1.15;
+    }
+
+    .hero-lead {
+      margin-top: 0.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .hero-actions {
+      margin-top: 1rem;
+    }
+
+    .hero-visual {
+      max-width: min(11rem, 24dvh);
+    }
+  }
+
+  /* Pantallas muy bajas (un iPhone SE con las barras del navegador a la vista
+     ronda los 550px utiles): un escalon mas. Los dos CTAs pasan a dos
+     columnas y el panel achica otra vez, asi los botones entran sin tocar la
+     tipografia ni el copy. */
+  @media (max-width: 30rem) and (max-height: 620px) {
+    .hero-grid {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+
+    .hero-visual {
+      max-width: min(9rem, 20dvh);
+    }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .hero-actions > * {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+  }
+</style>
