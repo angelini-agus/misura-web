@@ -50,6 +50,10 @@ Estilo **retro / analógico** sobre una base plana y editorial.
 - **Iconografía y assets en SVG inline**, sin librerías de íconos.
 - **Fotografía** en gris como recurso de marca: el color se reserva para lo
   interactivo.
+- **Los controles no se redimensionan.** Un campo de texto largo (mensaje,
+  notas, comentarios) tiene alto fijo, scroll interno cuando el texto no entra, y
+  sin barra de scroll visible: el visitante escribe dentro de la caja que se le
+  dio, la caja no sigue el texto.
 
 ### Tokens vigentes
 
@@ -158,6 +162,8 @@ Ninguno de estos pertenece a la identidad de Misure:
 - Animaciones continuas o infinitas, fondos animados, partículas, canvas o WebGL
   decorativos.
 - Texto con opacidad reducida que rompe el contraste mínimo.
+- Campos de texto que el visitante puede redimensionar a mano, y barras de
+  scroll visibles dentro de un campo.
 
 ## Presupuesto de rendimiento y accesibilidad (Lighthouse)
 

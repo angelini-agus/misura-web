@@ -61,8 +61,10 @@ Queda como follow-up.
 ## Fuera de alcance
 
 - Descripciones por opción en las tarjetas del paso 1.
-- Caso de estudio contextual en el modal según el servicio elegido (hoy
-  `modal.nextHref` es fijo).
+- ~~Caso de estudio contextual en el modal según el servicio elegido~~: cerrado
+  el 2026-09-22. El autor eliminó el caso de estudio del modal de éxito (era fijo
+  en `modal.nextHref`), así que la idea pierde sentido: el modal queda centrado,
+  con una sola acción y sin CTA secundario.
 - Limpieza del CSS muerto `.select-chevron` y de `ChevronDownIcon.astro`.
 - `docs/features/contact-form-integration.md` está desactualizado (habla de
   `simulateSend` y de un POST JSON cuando hoy se manda `FormData`) y no se toca.

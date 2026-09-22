@@ -202,7 +202,7 @@ const { web3forms } = contactForm;
   id="contact-modal"
   aria-labelledby="cf-modal-title"
   aria-describedby="cf-modal-body"
-  class="m-auto w-[min(90vw,28rem)] rounded-md border-2 border-green bg-cream p-8 text-green shadow-none backdrop:bg-green-dark/80"
+  class="m-auto w-[min(90vw,28rem)] rounded-md border-2 border-green bg-cream p-8 text-center text-green shadow-none backdrop:bg-green-dark/80"
 >
   <span
     class="modal-stamp mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-green text-green"
@@ -212,12 +212,6 @@ const { web3forms } = contactForm;
   </span>
   <h2 id="cf-modal-title" class="mt-4 text-2xl font-bold">{contactForm.modal.title}</h2>
   <p id="cf-modal-body" class="mt-3 text-sm text-green/80">{contactForm.modal.body}</p>
-  <a
-    href={contactForm.modal.nextHref}
-    class="mt-4 inline-block text-sm font-semibold text-green underline underline-offset-4 hover:text-green-dark"
-  >
-    {contactForm.modal.nextLabel}
-  </a>
   <button
     id="contact-modal-close"
     type="button"
@@ -261,22 +255,15 @@ const { web3forms } = contactForm;
 </style>
 
 <script is:inline>
-  // Reset del flujo del formulario al paso 1. El paso vive en un atributo del
-  // DOM, así que sobrevive a cualquier navegación que no recargue el documento:
-  // un link al ancla de la sección, la vuelta desde la bfcache o un cambio de
-  // hash. Se reasigna en cada page-load para apuntar siempre al form vivo.
+  // Reset del flujo del formulario. Se reasigna en cada page-load para apuntar
+  // siempre al formulario vivo, y lo llaman los eventos que significan "el
+  // visitante vuelve a entrar al formulario".
   let resetCurrentFlow = null;
 
-  const resetFlowSoon = () => {
-    window.setTimeout(() => {
-      if (resetCurrentFlow) resetCurrentFlow();
-    }, 0);
-  };
-
-  // Los links a la sección del formulario van en fase de captura a propósito:
-  // el router de Astro corta la propagación del click, así que un listener de
-  // burbuja no llega a verlo. Cubre también el caso de tocar el mismo CTA dos
-  // veces seguidas, cuando el hash no cambia y no hay ningún otro evento.
+  // Un link que apunta a la sección del formulario devuelve el flujo al paso 1,
+  // incluso cuando la navegación es solo por hash y el documento no recarga. Va
+  // en fase de captura a propósito: el router de Astro corta la propagación del
+  // click, así que un listener de burbuja no llega a verlo.
   document.addEventListener(
     "click",
     (event) => {
@@ -285,22 +272,22 @@ const { web3forms } = contactForm;
       if (!link) return;
       const href = link.getAttribute("href") || "";
       if (!href.endsWith("#contacto")) return;
-      resetFlowSoon();
+      window.setTimeout(() => {
+        if (resetCurrentFlow) resetCurrentFlow();
+      }, 0);
     },
     true
   );
 
-  // La vuelta desde la bfcache restaura el DOM tal como estaba, atributo
-  // incluido.
-  window.addEventListener("pageshow", resetFlowSoon);
-
-  // Un cambio de hash que no venga de un click sobre un link. Se filtra por el
-  // hash del formulario para no reaccionar a las anclas del FAQ.
-  window.addEventListener("hashchange", () => {
-    if (window.location.hash === "#contacto") resetFlowSoon();
+  // pageshow cubre la vuelta desde la bfcache y la restauración de valores que
+  // el navegador guarda por su cuenta: el formulario vuelve al paso 1, sin el
+  // servicio de la visita anterior.
+  window.addEventListener("pageshow", () => {
+    if (resetCurrentFlow) resetCurrentFlow();
   });
 
   document.addEventListener("astro:page-load", () => {
+    resetCurrentFlow = null;
     const form = document.getElementById("contact-form");
     if (!form) return;
 
@@ -379,6 +366,44 @@ const { web3forms } = contactForm;
       ? serviceFlow.querySelector("[data-service-change]")
       : null;
 
+    // El formulario siempre arranca en el paso 1: no se recuerda el servicio
+    // elegido en una entrada anterior. Por default el reset es completo (es el
+    // mismo que corre después de un envío exitoso); con `keepValues` se vuelve
+    // al paso 1 sin borrar lo que el visitante ya escribió, para no perder su
+    // trabajo cuando vuelve a entrar. Un envío fallido no llama a esto.
+    const resetFlow = ({ keepValues = false } = {}) => {
+      if (!keepValues) {
+        form.reset();
+      }
+      if (serviceInput) {
+        serviceInput.value = "";
+      }
+      if (serviceChosen) {
+        serviceChosen.textContent = "";
+      }
+      if (serviceFlow) {
+        serviceFlow.dataset.step = "service";
+      }
+      validatedFields.forEach((name) => setError(name, false));
+      if (formErrorRegion) {
+        formErrorRegion.textContent = "";
+        formErrorRegion.classList.add("sr-only");
+      }
+    };
+
+    // ¿El visitante ya escribió algo? Si escribió, el reset vuelve al paso 1
+    // pero no le borra las respuestas.
+    const hasTypedAnswers = () =>
+      ["name", "company", "email", "phone", "message"].some((name) => {
+        const field = getField(name);
+        return field ? field.value.trim().length > 0 : false;
+      });
+
+    const resetOnEntry = () => resetFlow({ keepValues: hasTypedAnswers() });
+
+    resetCurrentFlow = resetOnEntry;
+    resetOnEntry();
+
     const chooseService = (option) => {
       if (serviceInput) {
         serviceInput.value = option.dataset.value || "";
@@ -411,24 +436,6 @@ const { web3forms } = contactForm;
         target.focus();
       }
     };
-
-    // Vuelve al paso 1 y limpia el servicio elegido, para que nadie pueda
-    // enviar un servicio que no volvió a elegir. No toca el resto de los
-    // campos: lo que el visitante ya escribió se conserva.
-    const resetServiceFlow = () => {
-      if (serviceInput) {
-        serviceInput.value = "";
-      }
-      if (serviceChosen) {
-        serviceChosen.textContent = "";
-      }
-      if (serviceFlow) {
-        serviceFlow.dataset.step = "service";
-      }
-      setError("service", false);
-    };
-
-    resetCurrentFlow = resetServiceFlow;
 
     serviceOptions.forEach((option) => {
       option.addEventListener("click", () => chooseService(option));
@@ -469,8 +476,8 @@ const { web3forms } = contactForm;
         if (!response.ok) {
           throw new Error("web3forms submission failed");
         }
-        form.reset();
-        resetServiceFlow();
+        // Envío exitoso: los datos ya llegaron, el formulario vuelve al paso 1.
+        resetFlow();
         if (typeof modal.showModal === "function") {
           modal.showModal();
         } else {

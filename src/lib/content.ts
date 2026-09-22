@@ -700,8 +700,6 @@ export const contactForm = {
   modal: {
     title: "¡Mensaje enviado!",
     body: "Gracias por escribirnos. Te contactamos a la brevedad.",
-    nextLabel: "Mientras tanto, mirá el caso de la empresa de limpieza",
-    nextHref: "/proyectos/empresa-limpieza-rosario",
     closeLabel: "Cerrar",
   },
   web3forms: {

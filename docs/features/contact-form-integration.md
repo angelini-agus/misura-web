@@ -48,6 +48,23 @@ backend propio.
    accesibilidad; cada control lo referencia con `aria-describedby` y `setError`
    alterna `sr-only` + `aria-invalid`. El teléfono pasó a ser opcional: vacío es
    válido, y si se completa exige al menos 6 caracteres.
+6. **Entrada al formulario: siempre paso 1.** El servicio elegido no se recuerda
+   entre visitas. El flujo vuelve al paso 1 en cada `astro:page-load`, en la
+   vuelta desde la bfcache (`pageshow`) y al clickear un link que apunta a
+   `#contacto`. El listener de click va en fase de captura porque el router de
+   Astro corta la propagación del evento. Si el visitante ya escribió algo, el
+   reset conserva sus respuestas (`keepValues`) y solo limpia el servicio; un
+   envío fallido no resetea nada. El envío exitoso sí hace el reset completo.
+   El reset también vacía el input oculto `service`, para que el valor que el
+   navegador restaura por su cuenta no viaje en un envío que el visitante no
+   eligió.
+7. **Modal de éxito centrado y sin CTA secundario.** El `<dialog>` centra todo
+   (sello, título, cuerpo y botón) y queda con una sola acción, "Cerrar". Se
+   eliminó el link al caso de la empresa de limpieza junto con `nextLabel` y
+   `nextHref` de `contactForm.modal` en `src/lib/content.ts`.
+8. **Campo de mensaje sin redimensionar.** El textarea tiene alto fijo
+   (`rows="5"`), no se puede agrandar a mano (`resize-none`) y scrollea por
+   dentro cuando el texto no entra, sin barra de scroll visible.
 
 ## Paso manual pendiente
 Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
@@ -59,3 +76,9 @@ Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
 - Probar el form en `/contacto` y en el bloque de contacto de la home:
   completar y enviar → debe llegar el mail a contacto@misure.dev. Si el envío
   falla, se mostrará `formError` sin resetear el form.
+- Verificado en un build de Chromium servido con `astro preview`: tras un
+  `pageshow` simulado de bfcache el formulario vuelve al paso 1 conservando lo
+  ya escrito, el click en el CTA del paso 2 vuelve al paso 1, el envío exitoso
+  limpia todo detrás del modal y el fallido conserva las respuestas y muestra
+  la región de error. El textarea reporta `resize: none` y una scrollbar de
+  ancho cero.
