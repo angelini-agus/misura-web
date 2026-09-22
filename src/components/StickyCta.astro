@@ -5,6 +5,8 @@ import Button from "./ui/Button.astro";
 
 <aside
   aria-label={stickyCta.ariaLabel}
+  inert
+  data-sticky-cta
   class="fixed inset-x-0 bottom-0 z-40 border-t border-green bg-cream p-3 md:hidden"
 >
   <div class="mx-auto w-full max-w-6xl">
@@ -13,3 +15,101 @@ import Button from "./ui/Button.astro";
     </Button>
   </div>
 </aside>
+
+<style>
+  /* Estado inicial oculto: desplazado hacia abajo fuera del viewport y
+     transparente. La transición usa solo transform y opacity, así que no
+     fuerza layout ni introduce CLS. El bloque global de
+     prefers-reduced-motion ya neutraliza la duración de la transición, por
+     lo que no hace falta un segundo mecanismo acá. */
+  [data-sticky-cta] {
+    transform: translateY(110%);
+    opacity: 0;
+    transition:
+      transform 200ms var(--ease-out),
+      opacity 200ms var(--ease-out);
+  }
+
+  [data-sticky-cta].is-visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Referencias a nivel de módulo para poder desconectar / remover los
+  // listeners y el observer entre navegaciones sin que se apilen.
+  let scrollHandler: (() => void) | null = null;
+  let footerObserver: IntersectionObserver | null = null;
+
+  const initStickyCta = () => {
+    const aside = document.querySelector<HTMLElement>(
+      "aside[data-sticky-cta]"
+    );
+    const footer = document.querySelector<HTMLElement>("footer");
+    if (!aside) return;
+
+    // Limpieza: removemos los listeners y el observer anteriores para que no
+    // se acumulen entre navegaciones dentro de la misma sesión SPA.
+    if (scrollHandler) {
+      window.removeEventListener("scroll", scrollHandler);
+      window.removeEventListener("resize", scrollHandler);
+      scrollHandler = null;
+    }
+    if (footerObserver) {
+      footerObserver.disconnect();
+      footerObserver = null;
+    }
+
+    let pending = false;
+    let visible = false;
+    let footerInView = false;
+
+    // Solo mutamos el DOM cuando el estado realmente cambia, para no
+    // tocar el árbol en cada scroll. coalescing por requestAnimationFrame:
+    // un único cálculo por frame como máximo.
+    const compute = () => {
+      pending = false;
+      const pastHero = window.scrollY > window.innerHeight * 0.85;
+      const shouldShow = pastHero && !footerInView;
+      if (shouldShow === visible) return;
+      visible = shouldShow;
+      aside.classList.toggle("is-visible", shouldShow);
+      if (shouldShow) {
+        aside.removeAttribute("inert");
+      } else {
+        aside.setAttribute("inert", "");
+      }
+    };
+
+    const onScrollOrResize = () => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(compute);
+    };
+
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    scrollHandler = onScrollOrResize;
+
+    // Observer fresco por page-load: desconectamos el previo en la rama de
+    // limpieza de arriba. threshold 0 alcanza para saber si el footer está
+    // superpuesto al viewport.
+    if (footer) {
+      footerObserver = new IntersectionObserver(
+        (entries) => {
+          const last = entries[entries.length - 1];
+          footerInView = last.isIntersecting;
+          compute();
+        },
+        { threshold: 0 }
+      );
+      footerObserver.observe(footer);
+    }
+
+    compute();
+  };
+
+  document.addEventListener("astro:page-load", initStickyCta);
+  initStickyCta();
+</script>
