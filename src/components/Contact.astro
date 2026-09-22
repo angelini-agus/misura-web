@@ -17,15 +17,17 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
 ---
 
 <!--
-  --contact-nav-h: sticky header height = py-4 (32px) + the CTA button (44px)
-  + its border-b (1px) = 77px = 4.8125rem. The announcement bar above it is
-  not counted: it scrolls away and is not visible once the user is at this
-  section. If the header's padding, its CTA size or its border change, this
-  value must be updated.
+  --contact-nav-h: alto del header sticky. Mobile = py-4 (32px) + summary
+  del menú (34px) + border-b (1px) = 67px = 4.1875rem. md+ = py-4 (32px)
+  + CTA (44px) + border-b (1px) = 77px = 4.8125rem. La barra de anuncio
+  arriba del header no se cuenta: scrollea hacia afuera y no está visible
+  cuando el usuario llega a esta sección. Si cambia el padding del header,
+  la altura del summary mobile o del CTA desktop, o el border, hay que
+  actualizar ambos valores.
 -->
 <section
   id="contacto"
-  class="scroll-mt-24 border-t border-green [--contact-nav-h:4.8125rem]"
+  class="scroll-mt-24 border-t border-green [--contact-nav-h:4.1875rem] md:[--contact-nav-h:4.8125rem]"
 >
   <div
     class="mx-auto flex min-h-[calc(100dvh-var(--contact-nav-h))] max-w-6xl flex-col px-4 py-16 md:px-6 md:py-24"

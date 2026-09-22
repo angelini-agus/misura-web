@@ -7,26 +7,26 @@ import CodePanel from "./ui/CodePanel.astro";
 
 <section id="inicio" class="scroll-mt-24">
   <div
-    class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-14 px-4 py-16 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
+    class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
   >
-    <div>
+    <div class="order-2 md:order-1">
       <h1
         data-reveal
-        class="font-display max-w-xl text-4xl font-medium leading-[1.1] tracking-tight sm:text-5xl md:text-[3.4rem]"
+        class="font-display max-w-xl text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[3.4rem]"
       >
         {hero.title}
       </h1>
       <p
         data-reveal
         style={{ transitionDelay: "60ms" }}
-        class="mt-6 max-w-xl text-lg leading-relaxed text-green/80"
+        class="mt-4 max-w-xl text-base leading-relaxed text-green/80 sm:text-lg"
       >
         <MisureWord text={hero.lead} />
       </p>
       <div
         data-reveal
         style={{ transitionDelay: "120ms" }}
-        class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
+        class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
       >
         <Button href={hero.ctaPrimary.href} class="w-full sm:w-auto">
           {hero.ctaPrimary.label}
@@ -36,7 +36,7 @@ import CodePanel from "./ui/CodePanel.astro";
         </Button>
       </div>
     </div>
-    <div class="mx-auto w-full max-w-xl" data-reveal style={{ transitionDelay: "120ms" }}>
+    <div class="order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-xl md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
       <CodePanel />
     </div>
   </div>
