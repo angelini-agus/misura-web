@@ -150,8 +150,8 @@ textarea:autofill {
 /* Duotono sutil para fotos de personas: el gris manda y el tinte verde/crema
    queda flotando. El blend "color" toma el tono y la saturación del degradé y
    la luminosidad de la foto, así que pinta por POSICIÓN (arriba verdoso, abajo
-   neutro), no por luminosidad. El opacity es el dial: 0.15 es casi blanco y
-   negro, 0.35 ya se lee como color. */
+   neutro), no por luminosidad. El dial es --duotono-fuerza: 0.25 es "leve pero
+   se nota", 0.12 es casi blanco y negro con un aire de temperatura. */
 .foto-duotono {
   position: relative;
   isolation: isolate;
@@ -168,7 +168,7 @@ textarea:autofill {
   inset: 0;
   background: linear-gradient(to bottom, var(--color-green), var(--color-cream));
   mix-blend-mode: color;
-  opacity: 0.25;
+  opacity: var(--duotono-fuerza, 0.25);
   pointer-events: none;
 }
 
@@ -177,6 +177,9 @@ textarea:autofill {
    el software funciona. El único agregado sobre los píxeles es el tinte de
    abajo, tan bajo que no le come contraste al texto chico de la interfaz. */
 .screenshot-frame {
+  /* Las capturas llevan el mismo duotono pero mucho más tenue: acá lo que
+     importa es que se siga leyendo el texto chico de la interfaz. */
+  --duotono-fuerza: 0.12;
   display: flex;
   flex-direction: column;
   overflow: hidden;

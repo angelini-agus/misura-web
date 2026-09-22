@@ -10,20 +10,30 @@ lo que las capturas tienen que demostrar.
 
 | Tipo de imagen | Tratamiento | Por qué |
 | --- | --- | --- |
-| Fotos de personas (equipo) | **Duotono sutil** al 25% sobre gris | Convierte una foto de celular en algo que se lee "diseñado" y fuerza la imagen a la paleta verde/crema |
-| Capturas del sistema (galerías de casos, portfolio) | **Marco**, sin desaturar | El motivo de mostrar una captura es probar que el software funciona: desaturarla pierde legibilidad justo donde tiene que convencer |
+| Fotos de personas (equipo) | **Duotono** al 25% sobre gris | Convierte una foto de celular en algo que se lee "diseñado" y fuerza la imagen a la paleta verde/crema |
+| Capturas del sistema (galerías de casos, portfolio) | **Duotono al 12%** más marco | A esa fuerza el gris domina y el tinte solo le baja la temperatura: el texto chico de la interfaz se sigue leyendo |
 
-## Por qué las capturas no se tocan
+## Las capturas también llevan duotono, pero muy tenue
 
-El ruido no es "crema contra foto", es la paleta propia de la interfaz chocando
-contra el verde y el crema del sitio. Eso se contiene **encuadrando**, no
-recoloreando: el marco con borde verde y barra superior hace que el contraste se
-lea como "ventana al software", intencional, en vez de una imagen flotando sin
-control.
+El motivo de mostrar una captura es probar que el software funciona, así que la
+primera idea fue no tocarla. Pero el ruido real no es "crema contra foto": es la
+paleta propia de la interfaz chocando contra el verde y el crema del sitio. Y a
+una fuerza muy baja, el duotono lo resuelve sin comerse la legibilidad.
 
-El único agregado sobre los píxeles es un tinte de `multiply` al **6%**, que le
-baja la temperatura al blanco puro de la interfaz sin tocar el contraste del
-texto chico.
+Son dos capas que trabajan juntas:
+
+- **El duotono al 12%**, el mismo primitivo que las fotos, con el dial bajado por
+  `--duotono-fuerza`. A esa opacidad la imagen queda casi en blanco y negro, con
+  un aire de temperatura verdosa, y el `contrast(1.05)` del filtro ayuda en vez de
+  estorbar.
+- **El marco**, que hace el trabajo de leer la captura como "ventana al
+  software", intencional, en vez de una imagen flotando sin control.
+
+Encima va un tinte de `multiply` al **6%** sobre todo el shot, que le baja la
+termperatura al blanco puro de la interfaz.
+
+Si alguna captura futura tiene texto más chico o más denso y el 12% estorba, el
+dial se baja sin tocar nada más: es una variable.
 
 ## Nota técnica: esto NO es un duotono por luminosidad
 
