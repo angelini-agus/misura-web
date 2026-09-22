@@ -118,9 +118,10 @@ const detailsLabel = portfolio.detailsLabel;
        el bloque siguiente la releve. Media tarjeta alcanza para que la pausa se
        note (unos 180px en un viewport de 800px) sin que el hueco entre bloques
        se coma la pantalla. */
-    /* Una pantalla por tarjeta. El aire de arriba (el navbar), el de abajo y el
-       espacio entre tarjetas entran dentro de ese 100dvh, asi que la tarjeta
-       mide 100dvh menos esos dos. */
+    /* Dos tarjetas por pantalla. Entre las dos, el aire de abajo y el navbar
+       suman 100dvh, asi que la tarjeta es la mitad de lo que sobra. La formula
+       es la misma que usa la seccion de servicios de AZ:
+       h = (100vh - top - gap) / 2, con el aire de abajo sumado aparte. */
     --stack-gap: 24px;
   }
 
@@ -144,7 +145,7 @@ const detailsLabel = portfolio.detailsLabel;
   .projects-stack__card {
     position: sticky;
     top: var(--nav-h);
-    height: calc(100dvh - var(--nav-h) - var(--stack-gap));
+    height: calc((100dvh - var(--nav-h) - var(--stack-gap) * 2) / 2);
   }
 
   /* Desktop bajo (un 1366x768 con las barras del navegador ronda los 650-700px
