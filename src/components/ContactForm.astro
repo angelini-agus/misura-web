@@ -11,8 +11,8 @@ const { simple = false } = Astro.props;
 const { web3forms } = contactForm;
 ---
 
-<div data-service-flow data-step="service">
-  <div data-service-step role="group" aria-labelledby="cf-service-question">
+<div data-service-flow data-step="service" class="h-full">
+  <div data-service-step role="group" aria-labelledby="cf-service-question" class="flex flex-col justify-center">
     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-green">
       {contactForm.serviceStep.eyebrow}
     </p>
@@ -42,7 +42,7 @@ const { web3forms } = contactForm;
     id="contact-form"
     data-service-form
     data-form-error-message={contactForm.formError}
-    class="grid gap-8"
+    class="flex h-full flex-col gap-8"
     novalidate
   >
     <input
@@ -60,10 +60,10 @@ const { web3forms } = contactForm;
         aria-label={contactForm.serviceStep.backAriaLabel}
         class="group flex w-full cursor-pointer items-center gap-3 rounded-md text-left text-green transition duration-150 ease-out hover:text-green-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75 aria-[invalid=true]:text-error"
       >
-        <ArrowRightIcon class="h-8 w-8 shrink-0 -scale-x-100 transition-transform duration-150 ease-out group-hover:-translate-x-1" />
+        <ArrowRightIcon class="h-6 w-6 shrink-0 -scale-x-100 transition-transform duration-150 ease-out group-hover:-translate-x-1" />
         <span
           data-service-chosen
-          class="font-display text-4xl font-medium leading-tight tracking-tight sm:text-5xl"
+          class="block min-h-8 text-2xl font-bold"
         ></span>
       </button>
       <input
@@ -75,103 +75,105 @@ const { web3forms } = contactForm;
       <p id="cf-service-error" data-error-for="service" class="sr-only text-sm text-error" role="alert"></p>
     </div>
 
-    <div class="grid gap-6 md:grid-cols-2">
-      <div class="flex flex-col gap-2">
-        <label
-          for="cf-name"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-        >
-          {contactForm.labels.name} <span aria-hidden="true" class="text-error">*</span>
-        </label>
-        <input
-          id="cf-name"
-          name="name"
-          type="text"
-          autocomplete="name"
-          required
-          aria-describedby="cf-name-error"
-          data-error-message={contactForm.errors.name}
-          placeholder={contactForm.placeholders.name}
-          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-        />
-        <p id="cf-name-error" data-error-for="name" class="sr-only text-sm text-error" role="alert"></p>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label
-          for="cf-company"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-        >
-          {contactForm.labels.company} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
-        </label>
-        <input
-          id="cf-company"
-          name="company"
-          type="text"
-          autocomplete="organization"
-          placeholder={contactForm.placeholders.company}
-          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
-        />
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label
-          for="cf-email"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-        >
-          {contactForm.labels.email} <span aria-hidden="true" class="text-error">*</span>
-        </label>
-        <input
-          id="cf-email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          required
-          aria-describedby="cf-email-error"
-          data-error-message={contactForm.errors.email}
-          placeholder={contactForm.placeholders.email}
-          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-        />
-        <p id="cf-email-error" data-error-for="email" class="sr-only text-sm text-error" role="alert"></p>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label
-          for="cf-phone"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-        >
-          {contactForm.labels.phone} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
-        </label>
-        <input
-          id="cf-phone"
-          name="phone"
-          type="tel"
-          autocomplete="tel"
-          aria-describedby="cf-phone-error"
-          data-error-message={contactForm.errors.phone}
-          placeholder={contactForm.placeholders.phone}
-          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-        />
-        <p id="cf-phone-error" data-error-for="phone" class="sr-only text-sm text-error" role="alert"></p>
-      </div>
-
-      {!simple && (
-        <div class="flex flex-col gap-2 md:col-span-2">
+    <div class="flex flex-1 flex-col justify-center">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="flex flex-col gap-2">
           <label
-            for="cf-message"
+            for="cf-name"
             class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
           >
-            {contactForm.labels.message} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+            {contactForm.labels.name} <span aria-hidden="true" class="text-error">*</span>
           </label>
-          <textarea
-            id="cf-message"
-            name="message"
-            rows="5"
-            placeholder={contactForm.placeholders.message}
-            class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
-          ></textarea>
+          <input
+            id="cf-name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            required
+            aria-describedby="cf-name-error"
+            data-error-message={contactForm.errors.name}
+            placeholder={contactForm.placeholders.name}
+            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+          />
+          <p id="cf-name-error" data-error-for="name" class="sr-only text-sm text-error" role="alert"></p>
         </div>
-      )}
+
+        <div class="flex flex-col gap-2">
+          <label
+            for="cf-company"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.company} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+          </label>
+          <input
+            id="cf-company"
+            name="company"
+            type="text"
+            autocomplete="organization"
+            placeholder={contactForm.placeholders.company}
+            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            for="cf-email"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.email} <span aria-hidden="true" class="text-error">*</span>
+          </label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            aria-describedby="cf-email-error"
+            data-error-message={contactForm.errors.email}
+            placeholder={contactForm.placeholders.email}
+            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+          />
+          <p id="cf-email-error" data-error-for="email" class="sr-only text-sm text-error" role="alert"></p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            for="cf-phone"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.phone} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+          </label>
+          <input
+            id="cf-phone"
+            name="phone"
+            type="tel"
+            autocomplete="tel"
+            aria-describedby="cf-phone-error"
+            data-error-message={contactForm.errors.phone}
+            placeholder={contactForm.placeholders.phone}
+            class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+          />
+          <p id="cf-phone-error" data-error-for="phone" class="sr-only text-sm text-error" role="alert"></p>
+        </div>
+
+        {!simple && (
+          <div class="flex flex-col gap-2 md:col-span-2">
+            <label
+              for="cf-message"
+              class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+            >
+              {contactForm.labels.message} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+            </label>
+            <textarea
+              id="cf-message"
+              name="message"
+              rows="5"
+              placeholder={contactForm.placeholders.message}
+              class="w-full resize-none overflow-y-auto rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            ></textarea>
+          </div>
+        )}
+      </div>
     </div>
 
     <div class="flex flex-col items-center gap-4">
