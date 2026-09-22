@@ -36,12 +36,11 @@ const detailsLabel = portfolio.detailsLabel;
       <p class="mt-4 leading-relaxed text-green/80">{portfolio.description}</p>
     </div>
 
-    <div class="mt-12">
+    <div class="projects-stack__cards mt-12">
       {projects.map(({ study, gallery }, index) => (
         <article
           class="projects-stack__card overflow-hidden rounded-md border border-green bg-green text-cream"
-          style={`--i: ${index}`}
-          data-reveal
+          style={`z-index: ${index + 1}`}
         >
             <div
               class="projects-card__inner flex h-full flex-col gap-3 p-4 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-8 md:p-6"
@@ -119,11 +118,10 @@ const detailsLabel = portfolio.detailsLabel;
        el bloque siguiente la releve. Media tarjeta alcanza para que la pausa se
        note (unos 180px en un viewport de 800px) sin que el hueco entre bloques
        se coma la pantalla. */
-    --stack-step: 14px;
-    /* El recorrido de scroll de cada tarjeta: media pantalla util. Es el ritmo
-       de la pila, o sea cuanto tarda la siguiente en llegar y tapar la
-       anterior. */
-    --stack-room: calc((100dvh - var(--nav-h)) / 2);
+    /* Una pantalla por tarjeta. El aire de arriba (el navbar), el de abajo y el
+       espacio entre tarjetas entran dentro de ese 100dvh, asi que la tarjeta
+       mide 100dvh menos esos dos. */
+    --stack-gap: 24px;
   }
 
   @media (min-width: 48rem) {
@@ -132,22 +130,21 @@ const detailsLabel = portfolio.detailsLabel;
     }
   }
 
-  /* Apilado real: las tarjetas son hermanas dentro de la pila, asi que la
-     contenedora de cada una es la pila entera y ninguna se suelta hasta el
-     final. Cada tarjeta se pega un escalon mas abajo que la anterior, y ese
-     escalon es el borde que queda asomando en la pila. El margen de abajo es
-     el scroll que tarda en llegar la siguiente. */
-  .projects-stack__card {
-    position: sticky;
-    top: calc(var(--nav-h) + var(--stack-step) * var(--i));
-    height: calc((100dvh - var(--nav-h)) / 2);
-    margin-bottom: var(--stack-room);
+  /* Las tarjetas son hermanas en una columna con gap, como la seccion de
+     servicios de AZ: la contenedora de cada una es la pila entera, asi que
+     ninguna se suelta hasta que termina la seccion. Cada una se pega justo
+     debajo del navbar y la siguiente la tapa al subir, porque lleva un z-index
+     mayor (va en el markup). */
+  .projects-stack__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-gap);
   }
 
-  /* La ultima tambien lleva recorrido: sin el, la pila se va de la pantalla
-     apenas termina la seccion y no se llega a ver apilada. */
-  .projects-stack__card:last-child {
-    margin-bottom: var(--stack-room);
+  .projects-stack__card {
+    position: sticky;
+    top: var(--nav-h);
+    height: calc(100dvh - var(--nav-h) - var(--stack-gap));
   }
 
   /* Desktop bajo (un 1366x768 con las barras del navegador ronda los 650-700px
