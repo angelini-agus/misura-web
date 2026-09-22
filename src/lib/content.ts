@@ -596,11 +596,17 @@ export const contactForm = {
     phone: "Tu teléfono o WhatsApp",
     message: "Contanos en qué etapa está tu negocio",
   },
-  servicePlaceholder: "Elegí un servicio",
+  serviceStep: {
+    eyebrow: "Paso 1",
+    title: "¿Qué necesitás?",
+    help: "Elegí el tipo de servicio y completá tus datos.",
+    changeLabel: "Cambiar",
+  },
   serviceOptions: [
     { value: "erp", label: "Sistemas de Gestión (ERP)" },
     { value: "crm", label: "Herramientas de Ventas (CRM)" },
     { value: "landing", label: "Páginas Web" },
+    { value: "ecommerce", label: "Tienda Online (E-commerce)" },
     { value: "otros", label: "Otros" },
   ],
   errors: {

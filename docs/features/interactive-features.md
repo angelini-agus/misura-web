@@ -23,6 +23,19 @@ en el header.
 3. **Scroll spy en el header** (`Header.astro`): `IntersectionObserver` con
    banda central (`-50% 0px -50% 0px`) que resalta el link del nav de la
    sección visible (`border-bottom` verde). Estado: ✅ hecho.
+4. **Elección de servicio en dos pasos** (`ContactForm.astro`): el formulario no
+   se muestra hasta que el visitante elige un tipo de servicio. El paso 1 es un
+   `role="group"` con `aria-labelledby` sobre la pregunta, y ofrece las
+   opciones de `contactForm.serviceOptions` (ERP, CRM, Landing, E-commerce,
+   Otros) como botones nativos. Al elegir, el formulario aparece con el servicio
+   visible como resumen y un control "Cambiar" que vuelve al paso 1 y devuelve
+   el foco a la opción elegida; el value viaja igual por el input oculto
+   `name="service"` hacia Web3Forms. Progressive enhancement: con JS el paso 1
+   se ve y el form arranca oculto (patrón `.js` con CSS scoped en el propio
+   componente); sin JS el formulario queda visible y alcanzable. Nota: el
+   desplegable custom de servicio (`data-select`) quedó retirado con este
+   cambio; `.select-chevron` en `global.css` y `ChevronDownIcon.astro` quedan
+   sin uso como follow-up. Estado: ✅ hecho.
 
 ## Verificación
 `npm run build` sin errores + `npx astro check` limpio + revisar HTML emitido

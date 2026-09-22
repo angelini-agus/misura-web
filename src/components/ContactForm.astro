@@ -1,7 +1,6 @@
 ---
 import { contactForm } from "../lib/content";
 import CheckIcon from "./ui/CheckIcon.astro";
-import ChevronDownIcon from "./ui/ChevronDownIcon.astro";
 
 interface Props {
   simple?: boolean;
@@ -11,180 +10,175 @@ const { simple = false } = Astro.props;
 const { web3forms } = contactForm;
 ---
 
-<form id="contact-form" class="grid gap-8" novalidate>
-  <input
-    type="hidden"
-    name="access_key"
-    value={web3forms.accessKey}
-  />
+<div data-service-flow data-step="service">
+  <div data-service-step role="group" aria-labelledby="cf-service-question">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-green">
+      {contactForm.serviceStep.eyebrow}
+    </p>
+    <p id="cf-service-question" class="mt-3 text-2xl font-bold text-green">
+      {contactForm.serviceStep.title}
+    </p>
+    <p class="mt-2 text-sm text-green/75">
+      {contactForm.serviceStep.help}
+    </p>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+      {contactForm.serviceOptions.map((option) => (
+        <li>
+          <button
+            type="button"
+            data-service-option
+            data-value={option.value}
+            class="w-full cursor-pointer rounded-md border border-green bg-cream px-4 py-3 text-left text-sm font-semibold text-green transition hover:bg-green hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+          >
+            {option.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
 
-  <div class="grid gap-6 md:grid-cols-2">
-    <div class="flex flex-col gap-2">
-      <label
-        for="cf-name"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.name} <span aria-hidden="true" class="text-error">*</span>
-      </label>
-      <input
-        id="cf-name"
-        name="name"
-        type="text"
-        autocomplete="name"
-        required
-        data-error-message={contactForm.errors.name}
-        placeholder={contactForm.placeholders.name}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-      />
-      <p data-error-for="name" class="hidden text-sm text-error" role="alert"></p>
-    </div>
+  <form id="contact-form" data-service-form class="grid gap-8" novalidate>
+    <input
+      type="hidden"
+      name="access_key"
+      value={web3forms.accessKey}
+    />
 
-    <div class="flex flex-col gap-2">
-      <label
-        for="cf-company"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.company} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
-      </label>
-      <input
-        id="cf-company"
-        name="company"
-        type="text"
-        autocomplete="organization"
-        placeholder={contactForm.placeholders.company}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
-      />
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <label
-        for="cf-email"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.email} <span aria-hidden="true" class="text-error">*</span>
-      </label>
-      <input
-        id="cf-email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-        data-error-message={contactForm.errors.email}
-        placeholder={contactForm.placeholders.email}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-      />
-      <p data-error-for="email" class="hidden text-sm text-error" role="alert"></p>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <label
-        for="cf-phone"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.phone} <span aria-hidden="true" class="text-error">*</span>
-      </label>
-      <input
-        id="cf-phone"
-        name="phone"
-        type="tel"
-        autocomplete="tel"
-        required
-        data-error-message={contactForm.errors.phone}
-        placeholder={contactForm.placeholders.phone}
-        class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
-      />
-      <p data-error-for="phone" class="hidden text-sm text-error" role="alert"></p>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <label
-        for="cf-service"
-        class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
-      >
-        {contactForm.labels.service} <span aria-hidden="true" class="text-error">*</span>
-      </label>
-      <div
-        class="relative"
-        data-select
-        data-placeholder={contactForm.servicePlaceholder}
-      >
-        <button
-          type="button"
-          id="cf-service"
-          class="flex w-full items-center justify-between gap-3 rounded-md border border-green bg-cream px-4 py-3 text-left text-sm text-green aria-[invalid=true]:border-error"
-          aria-haspopup="listbox"
-          aria-expanded="false"
-          aria-controls="cf-service-listbox"
-          aria-required="true"
-          data-select-trigger
-          data-field-visual="service"
-        >
-          <span data-select-label class="text-green/75">
-            {contactForm.servicePlaceholder}
-          </span>
-          <ChevronDownIcon class="h-4 w-4 shrink-0 text-green/75" />
-        </button>
-        <ul
-          id="cf-service-listbox"
-          role="listbox"
-          aria-label={contactForm.labels.service}
-          class="absolute inset-x-0 top-full z-20 mt-1 hidden overflow-hidden rounded-md border border-green bg-cream"
-          data-select-list
-        >
-          {contactForm.serviceOptions.map((option) => (
-            <li
-              role="option"
-              id={`cf-service-${option.value}`}
-              aria-selected="false"
-              data-select-option
-              data-value={option.value}
-              class="px-4 py-2.5 text-sm text-green hover:bg-green hover:text-cream"
-            >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-        <input
-          type="hidden"
-          name="service"
-          value=""
-          data-error-message={contactForm.errors.service}
-          data-select-input
-        />
-      </div>
-      <p data-error-for="service" class="hidden text-sm text-error" role="alert"></p>
-    </div>
-
-    {!simple && (
-      <div class="flex flex-col gap-2 md:col-span-2">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="flex flex-col gap-2">
         <label
-          for="cf-message"
+          for="cf-name"
           class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
         >
-          {contactForm.labels.message} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+          {contactForm.labels.name} <span aria-hidden="true" class="text-error">*</span>
         </label>
-        <textarea
-          id="cf-message"
-          name="message"
-          rows="5"
-          placeholder={contactForm.placeholders.message}
-          class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
-        ></textarea>
+        <input
+          id="cf-name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          data-error-message={contactForm.errors.name}
+          placeholder={contactForm.placeholders.name}
+          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+        />
+        <p data-error-for="name" class="hidden text-sm text-error" role="alert"></p>
       </div>
-    )}
-  </div>
 
-  <div class="flex flex-col items-start gap-4">
-    <button
-      id="contact-submit"
-      type="submit"
-      class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-md border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75 disabled:cursor-not-allowed disabled:opacity-60 md:text-base"
-    >
-      {contactForm.submitLabel}
-    </button>
-    <p class="text-xs text-green/75">{contactForm.disclaimer}</p>
-  </div>
-</form>
+      <div class="flex flex-col gap-2">
+        <label
+          for="cf-company"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+        >
+          {contactForm.labels.company} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+        </label>
+        <input
+          id="cf-company"
+          name="company"
+          type="text"
+          autocomplete="organization"
+          placeholder={contactForm.placeholders.company}
+          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="cf-email"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+        >
+          {contactForm.labels.email} <span aria-hidden="true" class="text-error">*</span>
+        </label>
+        <input
+          id="cf-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          data-error-message={contactForm.errors.email}
+          placeholder={contactForm.placeholders.email}
+          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+        />
+        <p data-error-for="email" class="hidden text-sm text-error" role="alert"></p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          for="cf-phone"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+        >
+          {contactForm.labels.phone} <span aria-hidden="true" class="text-error">*</span>
+        </label>
+        <input
+          id="cf-phone"
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          required
+          data-error-message={contactForm.errors.phone}
+          placeholder={contactForm.placeholders.phone}
+          class="w-full rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75 aria-[invalid=true]:border-error"
+        />
+        <p data-error-for="phone" class="hidden text-sm text-error" role="alert"></p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-green">
+          {contactForm.labels.service} <span aria-hidden="true" class="text-error">*</span>
+        </span>
+        <div
+          data-field-visual="service"
+          class="flex items-center justify-between gap-4 rounded-md border border-green bg-cream px-4 py-3 aria-[invalid=true]:border-error"
+        >
+          <span data-service-chosen class="text-sm font-semibold text-green"></span>
+          <button
+            type="button"
+            data-service-change
+            class="shrink-0 cursor-pointer text-sm font-semibold text-green underline underline-offset-4 transition duration-150 ease-out hover:text-green-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+          >
+            {contactForm.serviceStep.changeLabel}
+          </button>
+          <input
+            type="hidden"
+            name="service"
+            value=""
+            data-error-message={contactForm.errors.service}
+          />
+        </div>
+        <p data-error-for="service" class="hidden text-sm text-error" role="alert"></p>
+      </div>
+
+      {!simple && (
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <label
+            for="cf-message"
+            class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
+          >
+            {contactForm.labels.message} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+          </label>
+          <textarea
+            id="cf-message"
+            name="message"
+            rows="5"
+            placeholder={contactForm.placeholders.message}
+            class="w-full resize-y rounded-md border border-green bg-cream px-4 py-3 text-sm text-green placeholder:text-green/75"
+          ></textarea>
+        </div>
+      )}
+    </div>
+
+    <div class="flex flex-col items-start gap-4">
+      <button
+        id="contact-submit"
+        type="submit"
+        class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-md border-2 border-green bg-green px-6 py-3 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75 disabled:cursor-not-allowed disabled:opacity-60 md:text-base"
+      >
+        {contactForm.submitLabel}
+      </button>
+      <p class="text-xs text-green/75">{contactForm.disclaimer}</p>
+    </div>
+  </form>
+</div>
 
 <dialog
   id="contact-modal"
@@ -212,6 +206,26 @@ const { web3forms } = contactForm;
     {contactForm.modal.closeLabel}
   </button>
 </dialog>
+
+<style>
+  /* Sin JS el paso 1 no existe: se oculta y el formulario queda visible. */
+  [data-service-step] {
+    display: none;
+  }
+
+  /* Con JS el estado inicial lo define `data-step`, antes del primer paint. */
+  :global(.js) [data-service-flow][data-step="service"] [data-service-step] {
+    display: block;
+  }
+
+  :global(.js) [data-service-flow][data-step="service"] [data-service-form] {
+    display: none;
+  }
+
+  :global(.js) [data-service-flow][data-step="form"] [data-service-form] {
+    display: grid;
+  }
+</style>
 
 <script is:inline>
   document.addEventListener("astro:page-load", () => {
@@ -274,129 +288,60 @@ const { web3forms } = contactForm;
       }
     });
 
-    const select = form.querySelector("[data-select]");
-    let resetSelect = () => {};
+    const serviceFlow = document.querySelector("[data-service-flow]");
+    const serviceStep = serviceFlow
+      ? serviceFlow.querySelector("[data-service-step]")
+      : null;
+    const serviceOptions = serviceFlow
+      ? Array.from(serviceFlow.querySelectorAll("[data-service-option]"))
+      : [];
+    const serviceInput = form.querySelector("input[name='service']");
+    const serviceChosen = serviceFlow
+      ? serviceFlow.querySelector("[data-service-chosen]")
+      : null;
+    const serviceChange = serviceFlow
+      ? serviceFlow.querySelector("[data-service-change]")
+      : null;
 
-    if (select) {
-      const trigger = select.querySelector("[data-select-trigger]");
-      const list = select.querySelector("[data-select-list]");
-      const label = select.querySelector("[data-select-label]");
-      const input = select.querySelector("[data-select-input]");
-      const options = Array.from(select.querySelectorAll("[data-select-option]"));
-      const placeholder = select.dataset.placeholder || "";
-      let activeIndex = -1;
-
-      const isOpen = () => !list.classList.contains("hidden");
-
-      const setActive = (index) => {
-        options.forEach((option, i) => {
-          option.classList.toggle("bg-green", i === index);
-          option.classList.toggle("text-cream", i === index);
-        });
-        if (index >= 0) {
-          trigger.setAttribute("aria-activedescendant", options[index].id);
-        } else {
-          trigger.removeAttribute("aria-activedescendant");
-        }
-        activeIndex = index;
-      };
-
-      const close = () => {
-        list.classList.add("hidden");
-        trigger.setAttribute("aria-expanded", "false");
-        setActive(-1);
-      };
-
-      const open = () => {
-        list.classList.remove("hidden");
-        const rect = trigger.getBoundingClientRect();
-        const clip = trigger.closest(".overflow-hidden");
-        const limit = clip ? clip.getBoundingClientRect().bottom : window.innerHeight;
-        if (limit - rect.bottom < list.offsetHeight + 8) {
-          list.setAttribute("data-flip", "true");
-        } else {
-          list.removeAttribute("data-flip");
-        }
-        trigger.setAttribute("aria-expanded", "true");
-        setActive(-1);
-      };
-
-      const selectOption = (option) => {
-        options.forEach((item) =>
-          item.setAttribute("aria-selected", String(item === option))
-        );
-        input.value = option.dataset.value || "";
-        label.textContent = option.textContent.trim();
-        label.classList.remove("text-green/75");
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        close();
-        trigger.focus();
-      };
-
-      resetSelect = () => {
-        options.forEach((item) => item.setAttribute("aria-selected", "false"));
-        input.value = "";
-        label.textContent = placeholder;
-        label.classList.add("text-green/75");
-        close();
-      };
-
-      select.__closeSelect = close;
-
-      trigger.addEventListener("click", () => {
-        if (isOpen()) {
-          close();
-        } else {
-          open();
-        }
-      });
-
-      trigger.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-          event.preventDefault();
-          if (!isOpen()) {
-            open();
-            return;
-          }
-          if (activeIndex === -1) {
-            setActive(event.key === "ArrowDown" ? 0 : options.length - 1);
-            return;
-          }
-          const delta = event.key === "ArrowDown" ? 1 : -1;
-          setActive((activeIndex + delta + options.length) % options.length);
-        } else if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          if (!isOpen()) {
-            open();
-            return;
-          }
-          if (activeIndex >= 0) selectOption(options[activeIndex]);
-        } else if (event.key === "Escape") {
-          if (isOpen()) {
-            event.preventDefault();
-            close();
-          }
-        } else if (event.key === "Home" || event.key === "End") {
-          if (!isOpen()) return;
-          event.preventDefault();
-          setActive(event.key === "Home" ? 0 : options.length - 1);
-        } else if (event.key === "Tab") {
-          close();
-        }
-      });
-
-      options.forEach((option) => {
-        option.addEventListener("click", () => selectOption(option));
-      });
-
-      if (!document.documentElement.dataset.selectOutside) {
-        document.documentElement.dataset.selectOutside = "true";
-        document.addEventListener("click", (event) => {
-          const wrapper = document.querySelector("[data-select]");
-          if (!wrapper || wrapper.contains(event.target)) return;
-          if (typeof wrapper.__closeSelect === "function") wrapper.__closeSelect();
-        });
+    const chooseService = (option) => {
+      if (serviceInput) {
+        serviceInput.value = option.dataset.value || "";
       }
+      if (serviceChosen) {
+        serviceChosen.textContent = option.textContent.trim();
+      }
+      if (serviceFlow) {
+        serviceFlow.dataset.step = "form";
+      }
+      setError("service", false);
+      if (serviceInput) {
+        serviceInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      const firstField = document.getElementById("cf-name");
+      if (firstField) {
+        firstField.focus();
+      }
+    };
+
+    const changeService = () => {
+      if (serviceFlow) {
+        serviceFlow.dataset.step = "service";
+      }
+      const current = serviceInput ? serviceInput.value : "";
+      const target =
+        serviceOptions.find((option) => option.dataset.value === current) ||
+        serviceOptions[0];
+      if (target) {
+        target.focus();
+      }
+    };
+
+    serviceOptions.forEach((option) => {
+      option.addEventListener("click", () => chooseService(option));
+    });
+
+    if (serviceStep && serviceChange) {
+      serviceChange.addEventListener("click", changeService);
     }
 
     closeButton.addEventListener("click", () => {
@@ -427,7 +372,12 @@ const { web3forms } = contactForm;
           throw new Error("web3forms submission failed");
         }
         form.reset();
-        resetSelect();
+        if (serviceChosen) {
+          serviceChosen.textContent = "";
+        }
+        if (serviceFlow) {
+          serviceFlow.dataset.step = "service";
+        }
         if (typeof modal.showModal === "function") {
           modal.showModal();
         } else {
