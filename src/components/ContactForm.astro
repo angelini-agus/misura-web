@@ -167,7 +167,7 @@ const { web3forms } = contactForm;
       )}
     </div>
 
-    <div class="flex flex-col items-start gap-4">
+    <div class="flex flex-col items-center gap-4">
       <button
         id="contact-submit"
         type="submit"
@@ -175,7 +175,13 @@ const { web3forms } = contactForm;
       >
         {contactForm.submitLabel}
       </button>
-      <p class="text-xs text-green/75">{contactForm.disclaimer}</p>
+      <p class="max-w-md text-center text-xs text-green/75">{contactForm.disclaimer}</p>
+      <a
+        href="/privacidad"
+        class="link-ink text-xs text-green/75 hover:text-green"
+      >
+        {contactForm.privacyLabel}
+      </a>
     </div>
   </form>
 </div>
