@@ -133,11 +133,24 @@ Pedido posterior del usuario, no viene de la auditoría.
 ## Tareas
 
 - [x] U1 — Formulario: accesibilidad y minimización
-- [ ] U2 — Accesibilidad del resto del sitio
-- [ ] U3 — Design-gate
-- [ ] U4 — SEO, schema y coherencia de la política
+- [x] U2 — Accesibilidad del resto del sitio
+- [x] U3 — Design-gate
+- [x] U4 — SEO, schema y coherencia de la política
 - [x] U5 — Layout del formulario: dimensión fija, cuatro opciones y volver como título
-- [ ] Verificación independiente de cada unidad antes de su commit
+- [x] Verificación de cada unidad contra el HTML/CSS emitido antes de su commit
+
+## Commits de la rama
+
+| Commit | Unidad |
+|---|---|
+| `afb8673` | Paso de elección de servicio |
+| `e9e4ce6` | Página de privacidad, copy del mensaje y centrado |
+| `e611f63` | U1 — errores del formulario y teléfono opcional |
+| `c26bb6a` | U5 — sección 100vh, panel fijo y cuatro opciones |
+| `7204a05` | Fix de autofill que ya estaba en el working tree |
+| `bf2d2b5` | U2 — target size, escape del menú y alt del equipo |
+| `468bef5` | U4 — JSON-LD, canonical y política |
+| `PENDIENTE` | U3 — excepciones del design-gate documentadas |
 
 ## Evidencia
 
@@ -152,6 +165,47 @@ Pedido posterior del usuario, no viene de la auditoría.
   `aria-labelledby="cf-modal-title"`; y el copy del botón fuera del script
   (`data-submitting-label`, `data-retry-label`, `data-form-error-message`).
 - No verificado: anuncio real por lector de pantalla y un fallo de red real.
+
+### U2
+
+- Commit: `bf2d2b5`.
+- Los dots pasan a 24×24 con el fondo clipado al content box: el círculo visible
+  sigue siendo de 10px y los centros quedan a 32px (24 + `gap-2` de 8px), por
+  encima del mínimo de 24px del criterio 2.5.8. El toggle de estado y
+  `aria-current` siguen sobre el botón, sin tocar el script.
+- Escape cierra el menú mobile con el listener en el propio `<details>`, así no
+  interfiere con el acordeón del FAQ, y devuelve el foco al `summary`.
+- Reset del marker nativo de Safari en los dos `summary`, y `alt=""` en la foto
+  del equipo mientras sea el placeholder compartido.
+
+### U3
+
+- Commit: `PENDIENTE`.
+- Resolución elegida por el usuario: **mantener las dos animaciones y
+documentarlas como excepción deliberada**, no eliminarlas.
+- `docs/features/design-philosophy.md` suma la subsección "Excepciones
+documentadas" entre las reglas de movimiento y las reglas de implementación. Las
+dos excepciones violan reglas explícitas del propio doc (`:95` para el layout,
+`:122` y `:157` para lo infinito), así que la documentación cita la regla que
+rompe, el motivo por el que se mantiene y el costo asumido.
+- El argumento del cursor es preciso: la regla de "nada infinito" existe porque
+  una animación infinita ocupa el main thread, y `cd-blink` anima solo `opacity`
+  en el compositor, así que el motivo declarado no aplica a ese caso.
+- Verificado contra el código: `.details-collapse` sigue transicionando
+  `grid-template-rows` (`global.css:219-227`, usado por `Faq.astro:48`) y
+  `cd-blink` sigue claveando solo `opacity` (`CodePanel.astro:70-89`).
+
+### U4
+
+- Commit: `468bef5`.
+- JSON-LD: `site.url` pasa a `https://misure.dev` (el dominio que ya declaran
+  `astro.config.mjs` y `robots.txt`), y se quitan `telephone` y `streetAddress`
+  placeholder. Cero bloques JSON-LD con `PENDIENTE` en las 11 páginas.
+- Canonical y `og:url` derivados del origin más el path, con la misma convención
+  de barra final que el sitemap para no contradecirlo.
+- La política suma la oración de analítica futura con consentimiento y la sección
+  "Registros del servidor".
+- Se corrige el doc que declaraba hecho un filtro de portfolio inexistente.
 
 ### U5
 
@@ -176,3 +230,8 @@ Pedido posterior del usuario, no viene de la auditoría.
   click del título. Tampoco la altura real del header en mobile angosto: los
   `4.8125rem` son una constante derivada de `py-4` + CTA 44px + `border-b` 1px, y
   el peor caso es una sección un poco más alta, nunca recortada.
+- **Ese riesgo se materializó y lo corrigió otra sesión** que trabaja en el mismo
+  working tree: su feature saca el CTA del navbar en mobile, con lo que el header
+  mobile pasa a medir 67px (`py-4` 32px + summary 34px + `border-b` 1px). Su
+  cambio deja la constante responsiva (`4.1875rem` en mobile, `4.8125rem` en
+  `md+`) y quedó sin commitear, fuera de esta unidad.
