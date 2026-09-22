@@ -215,8 +215,9 @@ viewport, contando barra de anuncio + header):
   576×448 porque `sm:max-w-xl` lo deja casi a pantalla completa y los CTAs caen a
   906px. Es previo a este cambio y no es un celular en vertical, pero un plegable
   (por ejemplo 673×841) cae justo ahí: la corrección sería topar el panel también
-  en `sm` (por ejemplo `sm:max-w-[min(20rem,42dvh)]`), que cambiaría el layout de
-  640–767px y por eso no se aplicó sin pedido.
+  en `sm` (un ancho máximo acotado, sin usar la forma de clase de Tailwind, para
+  que el escáner de contenido no emita CSS muerto desde este markdown), que
+  cambiaría el layout de 640–767px y por eso no se aplicó sin pedido.
 - **Defecto previo, no introducido acá:** entre 768px y ~1256px de ancho el hero
   desborda horizontalmente ~64px, porque `md:grid-cols-[55%_45%]` suma 100% y el
   `md:gap-16` se agrega por encima. Medido a 768×1024: `scrollWidth` 802 contra
