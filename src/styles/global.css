@@ -173,21 +173,6 @@ textarea:autofill {
   transform: scaleX(1);
 }
 
-.select-chevron {
-  transition: transform 150ms ease-out;
-}
-
-[data-select-trigger][aria-expanded="true"] .select-chevron {
-  transform: rotate(180deg);
-}
-
-[data-select-list][data-flip="true"] {
-  top: auto;
-  bottom: 100%;
-  margin-top: 0;
-  margin-bottom: 0.25rem;
-}
-
 .js .draw-check path,
 .js .draw-cross path {
   stroke-dasharray: 22;

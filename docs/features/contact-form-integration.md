@@ -24,8 +24,8 @@ backend propio.
 1. **Config en `src/lib/content.ts`**: dentro de `contactForm`, se agregó
    `web3forms` con:
    - `endpoint: "https://api.web3forms.com/submit"`
-   - `accessKey: "[PENDIENTE: access key de Web3Forms]"` (placeholder real de
-     una cuenta por crear).
+   - `accessKey`: Access Key real de la cuenta de Web3Forms, ya cargado (no se
+     reproduce el valor en este documento).
 2. **Envío real en `ContactForm.astro`**: `fetch` POST a
    `https://api.web3forms.com/submit` con `new FormData(form)` (multipart). Las
    claves que viajan son `access_key`, `name`, `company`, `email`, `phone`,
@@ -50,14 +50,12 @@ backend propio.
    válido, y si se completa exige al menos 6 caracteres.
 
 ## Paso manual pendiente
-- Crear una cuenta en **web3forms.com** con destino de mail
-  **contacto@misure.dev**.
-- Copiar el Access Key generado y reemplazar
-  `contactForm.web3forms.accessKey` en `src/lib/content.ts` (quitando el
-  placeholder).
+Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
+**contacto@misure.dev** y el Access Key está cargado en
+`contactForm.web3forms.accessKey` en `src/lib/content.ts`.
 
 ## Verificación
 - `npm run build` sin errores.
 - Probar el form en `/contacto` y en el bloque de contacto de la home:
-  completar y enviar → debe llegar el mail a contacto@misure.dev. Con la key
-  pendiente el fetch fallará y se mostrará `formError` sin resetear el form.
+  completar y enviar → debe llegar el mail a contacto@misure.dev. Si el envío
+  falla, se mostrará `formError` sin resetear el form.

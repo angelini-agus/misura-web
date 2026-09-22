@@ -22,11 +22,12 @@ PYMEs y empresas. Hoy el foco está en PYMEs de comercio y servicios. [PENDIENTE
 
 - `/` (Inicio) — Hero, servicios (ERP, CRM, landing), menciones de clientes, diferenciales, preguntas frecuentes y CTAs.
 - `/nosotros` — Personas detrás de misure. [PENDIENTE: integrantes reales]
-- `/proyectos` — Casos de éxito con filtros por categoría (ERP, CRM, Landing) y tecnologías. [PENDIENTE: casos reales]
+- `/proyectos` — Casos de éxito en una grilla, cada uno con cliente, proyecto, descripción y las tecnologías usadas. [PENDIENTE: casos reales]
 - `/contacto` — Formulario de contacto asíncrono y datos de la empresa.
+- `/privacidad` — Política de privacidad: qué datos se piden en el formulario, para qué se usan, quién los procesa y cómo pedir la baja.
 
 ## Contacto
 
 - Email: contacto@misure.dev
 - WhatsApp: [PENDIENTE: número de WhatsApp]
-- Web: [PENDIENTE: dominio de producción]
+- Web: https://misure.dev
