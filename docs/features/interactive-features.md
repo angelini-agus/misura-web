@@ -19,7 +19,11 @@ en el header.
    Estado: ✅ hecho.
 2. **Filtro de portfolio dinámico** (`Portfolio.astro`): botones
    Todos/ERP/CRM/Landing, `data-category` en tarjetas, Vanilla JS para
-   ocultar/mostrar. Filtro activo con borde/bg verde sólido. Estado: ✅ hecho.
+   ocultar/mostrar. Filtro activo con borde/bg verde sólido. Estado: ❌ no
+   implementado. El filtro no existe en el código actual: `Portfolio.astro`
+   hoy es una grilla estática y no hay `data-filter`, `data-category` ni
+   `aria-pressed` en `src/`. La descripción de arriba queda como registro
+   histórico de la idea original.
 3. **Scroll spy en el header** (`Header.astro`): `IntersectionObserver` con
    banda central (`-50% 0px -50% 0px`) que resalta el link del nav de la
    sección visible (`border-bottom` verde). Estado: ✅ hecho.
@@ -46,4 +50,4 @@ en el header.
 
 ## Verificación
 `npm run build` sin errores + `npx astro check` limpio + revisar HTML emitido
-(scripts válidos, atributos `data-category`/`data-filter` presentes).
+(scripts válidos).

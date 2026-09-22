@@ -52,7 +52,7 @@ export const cleanAnswer = (value: string) =>
 
 export const site = {
   name: "misure",
-  url: "[PENDIENTE: dominio de producción]",
+  url: "https://misure.dev",
   announcement:
     "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
@@ -156,12 +156,20 @@ export const privacy = {
       title: "Cookies y analítica",
       body: [
         "Este sitio no usa cookies, ni de seguimiento ni de publicidad, ni analítica de terceros.",
+        "Si en algún momento sumamos analítica, va a ser con tu consentimiento previo y vas a poder rechazarla.",
       ],
     },
     {
       title: "Cambios en esta política",
       body: [
         "Si cambiamos algo de lo que dice esta página, actualizamos la fecha del encabezado.",
+      ],
+    },
+    {
+      title: "Registros del servidor",
+      body: [
+        "Como cualquier sitio, el servidor que aloja esta página registra accesos técnicos (dirección IP, fecha y página visitada) para que el sitio funcione y para prevenir abusos.",
+        "Esos registros no se cruzan con tus datos de contacto ni se usan para perfilarte.",
       ],
     },
   ],
