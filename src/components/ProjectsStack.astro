@@ -1,0 +1,212 @@
+---
+import { Image } from "astro:assets";
+import { caseStudies, portfolio } from "../lib/content";
+import Button from "./ui/Button.astro";
+import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
+
+// Un bloque a lo ancho por proyecto, en el orden curado de `portfolio.items`.
+// El href de cada item (`/proyectos/<slug>`) cruza con su caso para tomar las
+// capturas de la galeria y el detalle documentado. No se inventa copy: cliente,
+// titulo, descripcion, tags y destino salen de content.ts.
+//
+// La galeria puede tener menos de 3 capturas (hoy pasa con la landing de
+// limpieza, que tiene una sola): el bloque muestra las que haya.
+const projects = portfolio.items.flatMap((item) => {
+  const slug = item.href?.replace("/proyectos/", "") ?? "";
+  const study = Object.values(caseStudies).find((cs) => cs.slug === slug);
+  return study ? [{ study, gallery: study.gallery?.slice(0, 3) ?? [] }] : [];
+});
+
+// Etiqueta del CTA: la del portfolio ("Ver caso completo"), que ya existe en
+// content.ts y es la misma que usan las tarjetas del home.
+const detailsLabel = portfolio.detailsLabel;
+---
+
+<section id="portfolio" class="projects-stack scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div class="max-w-xl" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+        {portfolio.eyebrow}
+      </p>
+      <h2
+        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      >
+        {portfolio.title}
+      </h2>
+      <p class="mt-4 leading-relaxed text-green/80">{portfolio.description}</p>
+    </div>
+
+    <div class="mt-12">
+      {projects.map(({ study, gallery }) => (
+        <div class="projects-stack__slot">
+          <article
+            class="projects-stack__card overflow-hidden rounded-md border border-green bg-green text-cream"
+            data-reveal
+          >
+            <div
+              class="projects-card__inner flex h-full flex-col gap-3 p-4 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-8 md:p-6"
+            >
+              <div
+                class="projects-card__shots grid grid-cols-3 items-center gap-2 md:gap-3"
+              >
+                {gallery.map((shot) => (
+                  <ScreenshotFrame compact>
+                    <Image
+                      src={shot.src}
+                      alt={shot.alt}
+                      widths={[320, 480, 800]}
+                      sizes="(min-width: 768px) 33vw, 50vw"
+                      class="aspect-[16/9] w-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </ScreenshotFrame>
+                ))}
+              </div>
+
+              <div class="flex min-h-0 flex-1 flex-col">
+                <p
+                  class="projects-card__client font-mono text-[0.65rem] uppercase tracking-widest text-cream/70 md:text-xs"
+                >
+                  {study.client}
+                </p>
+                <h3
+                  class="projects-card__title font-display mt-1.5 text-base font-medium leading-tight md:mt-3 md:text-xl"
+                >
+                  {study.title}
+                </h3>
+                <p
+                  class="projects-card__description mt-2 line-clamp-3 min-h-0 text-xs leading-relaxed text-cream/80 md:mt-3 md:line-clamp-4 md:text-sm"
+                >
+                  {study.seo.description}
+                </p>
+                <div
+                  class="projects-card__tags mt-3 flex flex-wrap gap-1.5 md:gap-2"
+                >
+                  {study.technologies.map((tech) => (
+                    <span
+                      class="border border-cream px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-widest text-cream md:px-2 md:py-1 md:text-[0.65rem]"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div class="projects-card__cta mt-auto pt-4">
+                  <Button variant="cream" href={`/proyectos/${study.slug}`}>
+                    {detailsLabel}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --nav-h: alto del header sticky, el mismo numero que usa Contact.astro.
+     mobile = py-4 (2 x 16px) + el summary del menu (34px) + border-b (1px) = 67px
+     = 4.1875rem; desde md = py-4 + el CTA de escritorio (44px) + border-b (1px)
+     = 77px = 4.8125rem. La barra de anuncio NO se cuenta: cuando el visitante
+     llega a estas tarjetas ya scrolleo y la barra no esta visible. Si cambia el
+     padding del header, su contenido mas alto o su borde, hay que tocar los dos
+     valores. */
+  .projects-stack {
+    --nav-h: 4.1875rem;
+    /* La ranura de cada bloque mide una tarjeta y media: la tarjeta (media
+       pantalla util) mas media tarjeta de recorrido. Ese extra es el ritmo de
+       la pila: es el scroll durante el que la tarjeta queda pegada antes de que
+       el bloque siguiente la releve. Media tarjeta alcanza para que la pausa se
+       note (unos 180px en un viewport de 800px) sin que el hueco entre bloques
+       se coma la pantalla. */
+    --stack-extra: calc((100dvh - var(--nav-h)) / 4);
+  }
+
+  @media (min-width: 48rem) {
+    .projects-stack {
+      --nav-h: 4.8125rem;
+    }
+  }
+
+  /* La ranura scrollea; la tarjeta se queda pegada adentro. */
+  .projects-stack__slot {
+    height: calc((100dvh - var(--nav-h)) / 2 + var(--stack-extra));
+  }
+
+  /* El par se reparte la pantalla: la tarjeta impar (1a, 3a, ...) se pega
+     arriba y la par (2a, 4a, ...) abajo. Dos bloques + navbar = una pantalla
+     exacta. Sin z-index: cuando dos bloques se cruzan, el posterior pinta
+     encima del anterior por orden de flujo. */
+  .projects-stack__card {
+    position: sticky;
+    top: var(--nav-h);
+    height: calc((100dvh - var(--nav-h)) / 2);
+  }
+
+  .projects-stack__slot:nth-child(even) .projects-stack__card {
+    top: calc(var(--nav-h) + (100dvh - var(--nav-h)) / 2);
+  }
+
+  /* Desktop bajo (un 1366x768 con las barras del navegador ronda los 650-700px
+     utiles): el bloque queda justo, asi que se recorta la descripcion a 2 lineas
+     y se aprietan los espaciados. Arriba de 760px entra completa. */
+  @media (min-width: 48rem) and (max-height: 760px) {
+    .projects-card__inner {
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .projects-card__title {
+      margin-top: 0.375rem;
+      font-size: 1.125rem;
+    }
+
+    .projects-card__description {
+      margin-top: 0.5rem;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .projects-card__tags {
+      margin-top: 0.625rem;
+    }
+
+    .projects-card__cta {
+      padding-top: 0.75rem;
+    }
+  }
+
+  /* Mismo umbral de celulares bajos que Hero.astro/Header.astro: con menos alto
+     el bloque de media pantalla no puede mostrar todo el detalle; se prioriza
+     capturas, titulo, tags, descripcion de 2 lineas y boton. */
+  @media (max-width: 30rem) and (max-height: 620px) {
+    .projects-card__inner {
+      gap: 0.5rem;
+      padding: 0.75rem;
+    }
+
+    .projects-card__shots {
+      gap: 0.375rem;
+    }
+
+    .projects-card__title {
+      margin-top: 0.25rem;
+      font-size: 0.9375rem;
+    }
+
+    .projects-card__description {
+      margin-top: 0.375rem;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .projects-card__tags {
+      margin-top: 0.375rem;
+    }
+
+    .projects-card__cta {
+      padding-top: 0.5rem;
+    }
+  }
+</style>
