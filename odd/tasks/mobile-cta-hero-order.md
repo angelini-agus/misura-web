@@ -155,8 +155,8 @@ en todos los anchos mobile (antes eran tres: navbar, hero y CTA fijo).
 | 390×745 (iPhone real con barra del navegador) | 67px | 224×174 | 721px | Sí |
 | 412×820 | 67px | 240×187 | 701px | Sí |
 | 430×932 | 67px | 240×187 | 701px | Sí |
-| 360×740 | 67px | 222×173 | 762px | **No: 22px abajo** |
-| 375×667 (iPhone SE) | 67px | 200×156 | 745px | **No: 78px abajo** |
+| 360×740 | 67px | 222×173 | 762px | Sí tras la compactación: ver la sección de escalones |
+| 375×667 (iPhone SE) | 67px | 200×156 | 745px | Sí (+75, ver la sección de escalones) |
 | 1440×900 (desktop) | 77px | 497×386 | 644px | Hero sin cambios; sigue con 2 CTAs en pantalla (navbar + hero), que es previo y está fuera del alcance mobile |
 
 El header mobile mide 67px medidos, así que el `4.1875rem` de `--contact-nav-h`
@@ -183,14 +183,41 @@ achicó un paso más dentro de lo autorizado por el usuario: `py-8` → `py-6`,
 `gap-6` → `gap-5` y el tope del panel `33dvh` → `30dvh`. Resultado medido: 734px
 en 390×844 y 721px en 390×745.
 
+### Escalones de compactación en celulares bajos
+
+El criterio de los 100dvh se cerró con tres escalones, todos condicionados a
+**ancho de celular** (hasta 30rem = 480px) **y** alto bajo, así que ni el desktop
+ni los celulares altos los ven:
+
+| Escalón | Condición | Qué cambia |
+| --- | --- | --- |
+| 1 | `max-height: 820px` | `h1` a 1.5rem, panel a `min(11rem, 24dvh)`, gaps y márgenes más chicos (`Hero.astro`) |
+| 2 | `max-height: 620px` | panel a `min(9rem, 20dvh)` y los dos CTAs pasan a dos columnas (`Hero.astro`) |
+| Barra de anuncio | `max-height: 620px` | 0.7rem, tracking 0.1em y `py-1.5` (`Header.astro`) |
+
+Medición final en Chromium (borde inferior del segundo botón contra el alto del
+viewport, contando barra de anuncio + header):
+
+| Viewport | Antes | Ahora | Entra |
+| --- | --- | --- | --- |
+| 320×568 | 630 | 542 | Sí (+26) |
+| 360×640 | 627 | 627 | Sí (+13) |
+| 375×667 | 745 | 592 | Sí (+75) |
+| 360×740 | 762 | 645 | Sí (+95) |
+| 390×745 (iPhone con barra del navegador) | 721 | 604 | Sí (+141) |
+| 375×553 (SE con las barras a la vista) | 571 | 495 | Sí (+58) |
+| 390×844 / 412×915 / 430×932 | 734 / 701 / 701 | igual | Sí |
+| 1440×900 y 768×1024 (desktop) | 644 / 846 | igual | Sin cambios: los `md:` y los tamaños base de desktop quedaron idénticos |
+
 ### Lo que queda abierto
 
-- **375×667 y 360×740 no cumplen el criterio de los 100dvh.** Con el título en
-  4 líneas (132px), el copete en 4 líneas (104px) y la barra de anuncio en 52px
-  (68px a 360), no hay recorte de padding que lo cierre: hace falta una decisión
-  de producto. Palancas medidas: bajar el `h1` mobile a `text-2xl` (~53px),
-  acortar el copete solo en mobile (~50px) o pasar los botones a dos columnas
-  (~40px).
+- **El rango `sm` (640–767px de ancho) sigue sin cumplir.** A 700×800 el panel mide
+  576×448 porque `sm:max-w-xl` lo deja casi a pantalla completa y los CTAs caen a
+  906px. Es previo a este cambio y no es un celular en vertical, pero un plegable
+  (por ejemplo 673×841) cae justo ahí: la corrección sería topar el panel también
+  en `sm` (un ancho máximo acotado, sin usar la forma de clase de Tailwind, para
+  que el escáner de contenido no emita CSS muerto desde este markdown), que
+  cambiaría el layout de 640–767px y por eso no se aplicó sin pedido.
 - **Defecto previo, no introducido acá:** entre 768px y ~1256px de ancho el hero
   desborda horizontalmente ~64px, porque `md:grid-cols-[55%_45%]` suma 100% y el
   `md:gap-16` se agrega por encima. Medido a 768×1024: `scrollWidth` 802 contra
