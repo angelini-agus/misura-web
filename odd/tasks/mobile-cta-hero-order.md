@@ -91,10 +91,13 @@ prototipo gratis" aparece tres veces al mismo tiempo en la primera pantalla
 
 ## Estrategia de entrega
 
-`ask-on-risk` (por defecto). Pronóstico de líneas autoradas: ~75 (adiciones más
+`ask-on-risk` (por defecto). Pronóstico de líneas autoradas: ~140 (adiciones más
 borrados), muy por debajo de las 400, así que la estrategia no se dispara y la
-feature queda en un solo PR. No se commitea: el autor co-edita el working tree y
-pidió explícitamente no commitear su trabajo en curso.
+feature queda en un solo PR. El trabajo mobile vive en la rama **`feat/mobile`**,
+creada desde el HEAD de `fix/a11y-compliance-audit` (que ya está dentro de
+`master`) y pusheada a `origin` y `upstream`. El trabajo del formulario (textarea,
+modal, reset al paso 1) no forma parte de esta rama: sigue sin commitear en el
+working tree, junto con la edición en curso del autor en `ContactForm.astro`.
 
 ## Criterios de aceptación
 
@@ -119,7 +122,8 @@ pidió explícitamente no commitear su trabajo en curso.
 
 ### Implementación
 
-Los tres cambios quedaron sin commitear en el working tree, en cuatro archivos:
+Los tres cambios quedaron en cuatro commits de la rama `feat/mobile`
+(`839ea6b`, `c671f48`, `c81938f`, `901e748`), en cuatro archivos:
 `src/components/Header.astro`, `src/components/Contact.astro` (solo la custom
 property `--contact-nav-h` y su comentario), `src/components/StickyCta.astro` y
 `src/components/Hero.astro`. No se tocó ningún texto de `content.ts`, ni
