@@ -1,0 +1,23 @@
+---
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+
+const { compact = false, class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "screenshot-frame",
+    compact && "screenshot-frame--compact",
+    className,
+  ]}
+>
+  <div class="screenshot-frame-bar" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="screenshot-frame-shot">
+    <slot />
+  </div>
+</div>
