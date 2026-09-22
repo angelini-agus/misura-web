@@ -645,7 +645,6 @@ export const contactForm = {
     company: "Empresa",
     email: "Email",
     phone: "Teléfono",
-    service: "Servicio de interés",
     message: "Detalles",
   },
   placeholders: {
@@ -659,14 +658,12 @@ export const contactForm = {
     eyebrow: "Paso 1",
     title: "¿Qué necesitás?",
     help: "Elegí el tipo de servicio y completá tus datos.",
-    changeLabel: "Cambiar",
-    changeAriaLabel: "Cambiar el servicio elegido",
+    backAriaLabel: "Volver a elegir el servicio",
   },
   serviceOptions: [
     { value: "erp", label: "Sistemas de Gestión (ERP)" },
     { value: "crm", label: "Herramientas de Ventas (CRM)" },
-    { value: "landing", label: "Páginas Web" },
-    { value: "ecommerce", label: "Tienda Online (E-commerce)" },
+    { value: "web", label: "Páginas Web y E-commerce" },
     { value: "otros", label: "Otros" },
   ],
   errors: {

@@ -1,5 +1,6 @@
 ---
 import { contactForm } from "../lib/content";
+import ArrowRightIcon from "./ui/ArrowRightIcon.astro";
 import CheckIcon from "./ui/CheckIcon.astro";
 
 interface Props {
@@ -21,14 +22,14 @@ const { web3forms } = contactForm;
     <p class="mt-2 text-sm text-green/75">
       {contactForm.serviceStep.help}
     </p>
-    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+    <ul class="mt-6 grid auto-rows-fr gap-3 sm:grid-cols-2">
       {contactForm.serviceOptions.map((option) => (
         <li>
           <button
             type="button"
             data-service-option
             data-value={option.value}
-            class="w-full cursor-pointer rounded-md border border-green bg-cream px-4 py-3 text-left text-sm font-semibold text-green transition hover:bg-green hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+            class="flex h-full w-full cursor-pointer items-center justify-center rounded-md border border-green bg-cream px-4 py-3 text-center text-sm font-semibold text-green transition hover:bg-green hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
           >
             {option.label}
           </button>
@@ -49,6 +50,30 @@ const { web3forms } = contactForm;
       name="access_key"
       value={web3forms.accessKey}
     />
+
+    <div class="flex flex-col gap-2">
+      <button
+        type="button"
+        data-service-change
+        data-field-visual="service"
+        aria-describedby="cf-service-error"
+        aria-label={contactForm.serviceStep.backAriaLabel}
+        class="group flex w-full cursor-pointer items-center gap-3 rounded-md text-left text-green transition duration-150 ease-out hover:text-green-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75 aria-[invalid=true]:text-error"
+      >
+        <ArrowRightIcon class="h-8 w-8 shrink-0 -scale-x-100 transition-transform duration-150 ease-out group-hover:-translate-x-1" />
+        <span
+          data-service-chosen
+          class="font-display text-4xl font-medium leading-tight tracking-tight sm:text-5xl"
+        ></span>
+      </button>
+      <input
+        type="hidden"
+        name="service"
+        value=""
+        data-error-message={contactForm.errors.service}
+      />
+      <p id="cf-service-error" data-error-for="service" class="sr-only text-sm text-error" role="alert"></p>
+    </div>
 
     <div class="grid gap-6 md:grid-cols-2">
       <div class="flex flex-col gap-2">
@@ -130,35 +155,6 @@ const { web3forms } = contactForm;
         <p id="cf-phone-error" data-error-for="phone" class="sr-only text-sm text-error" role="alert"></p>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-green">
-          {contactForm.labels.service} <span aria-hidden="true" class="text-error">*</span>
-        </span>
-        <div
-          data-field-visual="service"
-          tabindex="-1"
-          aria-describedby="cf-service-error"
-          class="flex items-center justify-between gap-4 rounded-md border border-green bg-cream px-4 py-3 aria-[invalid=true]:border-error"
-        >
-          <span data-service-chosen class="text-sm font-semibold text-green"></span>
-          <button
-            type="button"
-            data-service-change
-            aria-label={contactForm.serviceStep.changeAriaLabel}
-            class="shrink-0 cursor-pointer text-sm font-semibold text-green underline underline-offset-4 transition duration-150 ease-out hover:text-green-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-          >
-            {contactForm.serviceStep.changeLabel}
-          </button>
-          <input
-            type="hidden"
-            name="service"
-            value=""
-            data-error-message={contactForm.errors.service}
-          />
-        </div>
-        <p id="cf-service-error" data-error-for="service" class="sr-only text-sm text-error" role="alert"></p>
-      </div>
-
       {!simple && (
         <div class="flex flex-col gap-2 md:col-span-2">
           <label
@@ -230,22 +226,35 @@ const { web3forms } = contactForm;
 </dialog>
 
 <style>
-  /* Sin JS el paso 1 no existe: se oculta y el formulario queda visible. */
+  /* Both steps live in the same grid cell, so the cell always measures the
+     taller step and the panel keeps its size when switching. */
+  [data-service-flow] {
+    display: grid;
+  }
+
+  [data-service-step],
+  [data-service-form] {
+    grid-area: 1 / 1;
+  }
+
+  /* Without JS step 1 does not exist: it stays hidden, and `visibility` keeps
+     it out of the tab order and the accessibility tree while the form stays
+     visible and reachable. */
   [data-service-step] {
-    display: none;
+    visibility: hidden;
   }
 
-  /* Con JS el estado inicial lo define `data-step`, antes del primer paint. */
+  /* With JS the form starts hidden; `data-step` defines the visible step. */
+  :global(.js) [data-service-form] {
+    visibility: hidden;
+  }
+
   :global(.js) [data-service-flow][data-step="service"] [data-service-step] {
-    display: block;
-  }
-
-  :global(.js) [data-service-flow][data-step="service"] [data-service-form] {
-    display: none;
+    visibility: visible;
   }
 
   :global(.js) [data-service-flow][data-step="form"] [data-service-form] {
-    display: grid;
+    visibility: visible;
   }
 </style>
 

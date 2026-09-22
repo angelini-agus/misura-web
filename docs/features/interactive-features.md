@@ -25,17 +25,24 @@ en el header.
    sección visible (`border-bottom` verde). Estado: ✅ hecho.
 4. **Elección de servicio en dos pasos** (`ContactForm.astro`): el formulario no
    se muestra hasta que el visitante elige un tipo de servicio. El paso 1 es un
-   `role="group"` con `aria-labelledby` sobre la pregunta, y ofrece las
-   opciones de `contactForm.serviceOptions` (ERP, CRM, Landing, E-commerce,
-   Otros) como botones nativos. Al elegir, el formulario aparece con el servicio
-   visible como resumen y un control "Cambiar" que vuelve al paso 1 y devuelve
-   el foco a la opción elegida; el value viaja igual por el input oculto
-   `name="service"` hacia Web3Forms. Progressive enhancement: con JS el paso 1
-   se ve y el form arranca oculto (patrón `.js` con CSS scoped en el propio
-   componente); sin JS el formulario queda visible y alcanzable. Nota: el
-   desplegable custom de servicio (`data-select`) quedó retirado con este
-   cambio; `.select-chevron` en `global.css` y `ChevronDownIcon.astro` quedan
-   sin uso como follow-up. Estado: ✅ hecho.
+   `role="group"` con `aria-labelledby` sobre la pregunta, y ofrece las cuatro
+   opciones de `contactForm.serviceOptions` (ERP, CRM, Páginas Web y E-commerce
+   —fusión de las antiguas Páginas Web y Tienda Online—, Otros) como botones
+   nativos del mismo tamaño en una grilla 2×2 (`auto-rows-fr` + `h-full`). Al
+   elegir, el formulario aparece con el servicio visible como título grande y
+   clickeable (`data-service-change`) que vuelve al paso 1 y devuelve el foco a
+   la opción elegida; el value viaja igual por el input oculto `name="service"`
+   hacia Web3Forms. Los dos pasos comparten una única celda de grilla y se
+   alternan con `visibility: hidden`, así el panel conserva el mismo tamaño
+   entre pasos y el paso oculto queda fuera del foco y del árbol de
+   accesibilidad. La sección ocupa un viewport menos el alto del navbar
+   (`--contact-nav-h`: 4.8125rem) mediante `min-height` con `dvh`, de modo que
+   crece en pantallas bajas en lugar de recortar el formulario. Progressive
+   enhancement: con JS el paso 1 se ve y el form arranca oculto (patrón `.js`
+   con CSS scoped en el propio componente); sin JS el formulario queda visible
+   y alcanzable. Nota: el desplegable custom de servicio (`data-select`) quedó
+   retirado con este cambio; `.select-chevron` en `global.css` y
+   `ChevronDownIcon.astro` quedan sin uso como follow-up. Estado: ✅ hecho.
 
 ## Verificación
 `npm run build` sin errores + `npx astro check` limpio + revisar HTML emitido
