@@ -2,39 +2,121 @@
 import { share } from "../lib/content";
 
 const shareScript = `
-  const button = document.getElementById("share-button");
-  if (button) {
-    button.addEventListener("click", async () => {
-      const data = { title: document.title, url: window.location.href };
-      if (navigator.share) {
-        try {
-          await navigator.share(data);
-        } catch {
-          return;
-        }
-        return;
+(() => {
+  // Document-level delegation: the footer is replaced on every client-side
+  // navigation, so a listener bound to the button would die with the old node.
+  // Guard on window: ClientRouter swaps away <html> root attributes on nav.
+  if (window.__misureShareDelegated) return;
+  window.__misureShareDelegated = true;
+
+  const originalLabel = ${JSON.stringify(share.label)};
+  const copiedLabel = ${JSON.stringify(share.copiedLabel)};
+  const errorLabel = ${JSON.stringify(share.errorLabel)};
+
+  let restoreTimer = 0;
+
+  const legacyCopy = (url) => {
+    let textarea;
+    try {
+      textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.top = "-1000px";
+      textarea.style.left = "-1000px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+      return document.execCommand("copy");
+    } catch {
+      return false;
+    } finally {
+      if (textarea && textarea.parentNode) {
+        textarea.parentNode.removeChild(textarea);
       }
+    }
+  };
+
+  const copyUrl = async (url) => {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
       try {
-        await navigator.clipboard.writeText(data.url);
-        const original = button.textContent;
-        button.textContent = "${share.copiedLabel}";
-        window.setTimeout(() => {
-          button.textContent = original;
-        }, 2000);
+        await navigator.clipboard.writeText(url);
+        return true;
       } catch {
-        return;
+        // Clipboard API blocked (for example, insecure context): fall through.
       }
-    });
-  }
+    }
+    return legacyCopy(url);
+  };
+
+  document.addEventListener("click", async (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    // Query inside the handler: the footer node is fresh after each navigation.
+    const button = target.closest("[data-share]");
+    if (!button) return;
+    const status = document.querySelector("[data-share-status]");
+
+    const showFeedback = (message, delay) => {
+      button.textContent = message;
+      if (status) {
+        status.textContent = message;
+      }
+      window.clearTimeout(restoreTimer);
+      restoreTimer = window.setTimeout(() => {
+        button.textContent = originalLabel;
+        if (status) {
+          status.textContent = "";
+        }
+      }, delay);
+    };
+
+    const url = window.location.href;
+    const data = { title: document.title, url };
+
+    // Native sheet only on touch devices; desktop always copies.
+    let canUseNativeShare =
+      typeof navigator.share === "function" &&
+      window.matchMedia("(pointer: coarse)").matches;
+
+    if (canUseNativeShare && typeof navigator.canShare === "function") {
+      try {
+        canUseNativeShare = navigator.canShare(data);
+      } catch {
+        canUseNativeShare = false;
+      }
+    }
+
+    if (canUseNativeShare) {
+      try {
+        await navigator.share(data);
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+        // Any other share failure falls through to the copy path.
+      }
+    }
+
+    const copied = await copyUrl(url);
+    if (copied) {
+      showFeedback(copiedLabel, 2000);
+    } else {
+      showFeedback(errorLabel, 2500);
+    }
+  });
+})();
 `;
 ---
 
 <button
-  id="share-button"
+  data-share
   type="button"
+  aria-label={share.ariaLabel}
   class="link-ink w-fit cursor-pointer py-1 text-xs text-green/70 hover:text-green"
 >
   {share.label}
 </button>
+<span class="sr-only" role="status" aria-live="polite" data-share-status></span>
 
 <script is:inline set:html={shareScript} />

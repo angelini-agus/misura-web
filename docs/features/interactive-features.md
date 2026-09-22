@@ -11,6 +11,10 @@ en el header.
 - Diseño misure (flat, crema `#F6EFE8`, verde `#0E3B33`, bordes sólidos, sin
   sombras). No copiar visuales de geiko.dev.
 - Textos en `src/lib/content.ts`, no hardcodeados en componentes.
+- Con `<ClientRouter />`, un script `is:inline` con el mismo `textContent` en
+  todas las páginas se ejecuta una sola vez por sesión. Los componentes
+  interactivos deben delegar eventos en `document` o reinicializarse en
+  `astro:page-load`.
 
 ## Funcionalidades
 1. **Formulario de contacto asíncrono** (`ContactForm.astro`): campos
@@ -23,6 +27,11 @@ en el header.
 3. **Scroll spy en el header** (`Header.astro`): `IntersectionObserver` con
    banda central (`-50% 0px -50% 0px`) que resalta el link del nav de la
    sección visible (`border-bottom` verde). Estado: ✅ hecho.
+4. **Botón Compartir del footer** (`ShareButton.astro`): delegación de eventos
+   en `document` para sobrevivir a los swaps del ClientRouter, cascada
+   Web Share API nativa (solo en dispositivos táctiles) → Clipboard API →
+   fallback legacy con `execCommand`, y feedback visible con live region
+   para lectores de pantalla. Estado: ✅ hecho.
 
 ## Verificación
 `npm run build` sin errores + `npx astro check` limpio + revisar HTML emitido

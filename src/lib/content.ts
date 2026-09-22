@@ -59,7 +59,7 @@ export const site = {
   metaTitle: "misure | Software a medida para pymes de Rosario y alrededores",
   metaDescription:
     "misure desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
-  tagline: "Software a medida para pymes de Rosario y alrededores.",
+  tagline: "Software a medida para pequeñas y medianas empresas de Argentina.",
 };
 
 export const footer = {
@@ -67,6 +67,7 @@ export const footer = {
   contactTitle: "Contacto",
   ctaLabel: "Contanos tu caso",
   tagline: "Desarrollado por misure",
+  legal: "Todos los derechos reservados",
 };
 
 export const nav: NavItem[] = [
@@ -194,7 +195,7 @@ export const about: {
   body: [
     "Uno de nosotros empezó haciendo desarrollo freelance para pymes de Rosario a principios de 2025. Uno de esos trabajos fue un sistema para una empresa de limpieza: geolocalización para controlar asistencia, cálculo automático de sueldos e impuestos, stock por edificio. Cuando terminamos, habían eliminado un puesto administrativo completo.",
     "El otro socio arrancó por su lado, desarrollando sistemas a medida para conocidos y amigos de familiares. Un ejemplo es el sistema de gestión jurídica que armamos a pedido de un estudio jurídico que opera en Argentina y Paraguay: gestión de clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y una biblioteca jurídica con verificación de fuentes oficiales asistida por IA, todo adaptado a la normativa de ambos países.",
-    "Ahí entendimos que había un problema real: las pymes locales pagan de más por sistemas genéricos que no encajan con cómo trabajan. Formamos misure para poder resolver eso a escala, con un modelo que va presencialmente a entender el negocio antes de escribir una línea de código.",
+    "Ahí entendimos que había un problema real: las pymes locales pagan de más por sistemas genéricos que no encajan con cómo trabajan. Formamos misure para poder resolver eso a escala, con un modelo que entiende el negocio en persona o a distancia antes de escribir una línea de código.",
     "No somos una empresa con décadas de historia. Somos dos personas con un caso de éxito concreto y un método que funciona.",
   ],
 };
@@ -266,9 +267,9 @@ export const differentiators: {
   },
   items: [
     {
-      title: "Entrevista de 2 horas en tu negocio",
+      title: "Entrevista de 2 horas, presencial o a distancia",
       description:
-        "Vamos presencialmente a ver cómo trabajás antes de escribir una línea de código. No hacemos suposiciones desde una videollamada.",
+        "Si estás en Rosario y alrededores, vamos a tu negocio. Si estás en otra provincia, la hacemos por videollamada. En los dos casos entendemos cómo trabajás antes de escribir una línea de código.",
     },
     {
       title: "Errores post-lanzamiento: los arreglamos gratis",
@@ -342,9 +343,9 @@ export const howWeWork: {
     "Cuatro pasos que repetimos en cada proyecto. Sin sorpresas, sin letra chica.",
   steps: [
     {
-      title: "Vamos a tu negocio",
+      title: "Entrevistamos a tu equipo",
       description:
-        "Hacemos una entrevista presencial de 2 horas para entender cómo trabajás. No suposiciones desde una pantalla.",
+        "Si estás en Rosario y alrededores, vamos presencialmente. Si estás en otra provincia, la misma entrevista se hace a distancia. Nunca arrancamos sin entender cómo trabajás.",
     },
     {
       title: "Prototipo gratis antes de pagar",
@@ -553,7 +554,11 @@ export const contact: ContactInfo = {
   email: "contacto@misure.dev",
   locationItems: [
     { label: "UBICACIÓN", value: "Rosario, Santa Fe" },
-    { label: "MODALIDAD", value: "Presencial / Remoto" },
+    {
+      label: "MODALIDAD",
+      value:
+        "Entrevistas presenciales en Rosario y alrededores y a distancia en todo el país.",
+    },
   ],
   socials: [
     {
@@ -578,6 +583,8 @@ export const stickyCta = {
 export const share = {
   label: "Compartir",
   copiedLabel: "Link copiado",
+  errorLabel: "No se pudo copiar",
+  ariaLabel: "Compartir esta página",
 };
 
 export const contactForm = {
