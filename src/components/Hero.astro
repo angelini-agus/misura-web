@@ -94,7 +94,10 @@ import CodePanel from "./ui/CodePanel.astro";
       gap: 0.5rem;
     }
 
-    .hero-actions > * {
+    /* :global hace falta: los botones son el root de otro componente, y Astro
+       no le propaga el scope del padre, asi que un selector de hijo directo no
+       matcheaba nada. Con px-3 las etiquetas de los dos CTAs envuelven menos. */
+    .hero-actions :global(a) {
       padding-left: 0.75rem;
       padding-right: 0.75rem;
     }
