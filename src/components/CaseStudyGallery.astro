@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import type { CaseStudyCover } from "../lib/types";
+import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
 
 interface Props {
   images?: CaseStudyCover[];
@@ -25,14 +26,16 @@ const total = images.length;
             class:list={["w-full", index !== 0 && "hidden"]}
             data-gallery-slide
           >
-            <Image
-              src={image.src}
-              alt={image.alt}
-              widths={[800, 1200, 1600]}
-              sizes="(min-width: 1152px) 1104px, 100vw"
-              class="mx-auto max-h-[70vh] w-auto max-w-full"
-              loading={index === 0 ? "eager" : "lazy"}
-            />
+            <ScreenshotFrame class="mx-auto w-fit max-w-full">
+              <Image
+                src={image.src}
+                alt={image.alt}
+                widths={[800, 1200, 1600]}
+                sizes="(min-width: 1152px) 1104px, 100vw"
+                class="mx-auto max-h-[70vh] w-auto max-w-full"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+            </ScreenshotFrame>
           </div>
         ))}
 

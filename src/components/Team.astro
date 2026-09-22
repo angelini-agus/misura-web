@@ -27,15 +27,19 @@ import Placeholder from "./ui/Placeholder.astro";
         >
           {/* Placeholder photo shared by every member: decorative, so alt is empty.
               When real per-member photos replace the placeholder, describe the photo
-              instead of repeating the member name, which is already the adjacent h3. */}
-          <Image
-            src={teamPlaceholder}
-            alt=""
-            widths={[400]}
-            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-            class="aspect-[4/5] w-full object-cover grayscale"
-            loading="lazy"
-          />
+              instead of repeating the member name, which is already the adjacent h3.
+              El duotono envuelve solo la foto: si cubriera la tarjeta entera,
+              también teñiría el nombre y el texto de abajo. */}
+          <div class="foto-duotono">
+            <Image
+              src={teamPlaceholder}
+              alt=""
+              widths={[400]}
+              sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+              class="aspect-[4/5] w-full object-cover"
+              loading="lazy"
+            />
+          </div>
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
             <h3 class="font-display text-xl font-medium">{member.name}</h3>
             <p class="font-mono text-xs uppercase tracking-widest text-cream/70">

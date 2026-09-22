@@ -2,6 +2,7 @@
 import { portfolio } from "../lib/content";
 import { Image } from "astro:assets";
 import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
+import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
 ---
 
 <section id="portfolio" class="scroll-mt-24 border-t border-green">
@@ -26,20 +27,20 @@ import BwImagePlaceholder from "./ui/BwImagePlaceholder.astro";
           style={{ transitionDelay: `${index * 60}ms` }}
           aria-disabled={!item.href ? "true" : undefined}
         >
-          <div class="aspect-[16/9] w-full overflow-hidden">
+          <ScreenshotFrame compact>
             {item.image ? (
               <Image
                 src={item.image}
                 alt={item.imageAlt ?? item.project}
                 widths={[400, 800, 1200]}
                 sizes="(min-width: 768px) 33vw, 100vw"
-                class="h-full w-full object-cover object-top"
+                class="aspect-[16/9] w-full object-cover object-top"
                 loading="lazy"
               />
             ) : (
-              <BwImagePlaceholder class="h-full w-full" />
+              <BwImagePlaceholder class="aspect-[16/9] w-full" />
             )}
-          </div>
+          </ScreenshotFrame>
           <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
             <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
               {item.client}
