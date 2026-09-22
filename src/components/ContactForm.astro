@@ -261,6 +261,45 @@ const { web3forms } = contactForm;
 </style>
 
 <script is:inline>
+  // Reset del flujo del formulario al paso 1. El paso vive en un atributo del
+  // DOM, así que sobrevive a cualquier navegación que no recargue el documento:
+  // un link al ancla de la sección, la vuelta desde la bfcache o un cambio de
+  // hash. Se reasigna en cada page-load para apuntar siempre al form vivo.
+  let resetCurrentFlow = null;
+
+  const resetFlowSoon = () => {
+    window.setTimeout(() => {
+      if (resetCurrentFlow) resetCurrentFlow();
+    }, 0);
+  };
+
+  // Los links a la sección del formulario van en fase de captura a propósito:
+  // el router de Astro corta la propagación del click, así que un listener de
+  // burbuja no llega a verlo. Cubre también el caso de tocar el mismo CTA dos
+  // veces seguidas, cuando el hash no cambia y no hay ningún otro evento.
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest("a[href]");
+      if (!link) return;
+      const href = link.getAttribute("href") || "";
+      if (!href.endsWith("#contacto")) return;
+      resetFlowSoon();
+    },
+    true
+  );
+
+  // La vuelta desde la bfcache restaura el DOM tal como estaba, atributo
+  // incluido.
+  window.addEventListener("pageshow", resetFlowSoon);
+
+  // Un cambio de hash que no venga de un click sobre un link. Se filtra por el
+  // hash del formulario para no reaccionar a las anclas del FAQ.
+  window.addEventListener("hashchange", () => {
+    if (window.location.hash === "#contacto") resetFlowSoon();
+  });
+
   document.addEventListener("astro:page-load", () => {
     const form = document.getElementById("contact-form");
     if (!form) return;
@@ -373,6 +412,24 @@ const { web3forms } = contactForm;
       }
     };
 
+    // Vuelve al paso 1 y limpia el servicio elegido, para que nadie pueda
+    // enviar un servicio que no volvió a elegir. No toca el resto de los
+    // campos: lo que el visitante ya escribió se conserva.
+    const resetServiceFlow = () => {
+      if (serviceInput) {
+        serviceInput.value = "";
+      }
+      if (serviceChosen) {
+        serviceChosen.textContent = "";
+      }
+      if (serviceFlow) {
+        serviceFlow.dataset.step = "service";
+      }
+      setError("service", false);
+    };
+
+    resetCurrentFlow = resetServiceFlow;
+
     serviceOptions.forEach((option) => {
       option.addEventListener("click", () => chooseService(option));
     });
@@ -413,12 +470,7 @@ const { web3forms } = contactForm;
           throw new Error("web3forms submission failed");
         }
         form.reset();
-        if (serviceChosen) {
-          serviceChosen.textContent = "";
-        }
-        if (serviceFlow) {
-          serviceFlow.dataset.step = "service";
-        }
+        resetServiceFlow();
         if (typeof modal.showModal === "function") {
           modal.showModal();
         } else {

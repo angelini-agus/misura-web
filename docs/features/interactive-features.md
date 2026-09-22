@@ -54,7 +54,11 @@ en el header.
    form arranca oculto (patrón `.js` con CSS scoped en el propio componente);
    sin JS el formulario queda visible y alcanzable. Nota: el desplegable custom
    de servicio (`data-select`) quedó retirado con este cambio, y su CSS y su
-   ícono se limpiaron después. Estado: ✅ hecho.
+   ícono se limpiaron después. El flujo vuelve solo al paso 1 cada vez que el
+   visitante entra de nuevo al formulario: un link al ancla de la sección, la
+   vuelta desde la bfcache o un cambio de hash. El paso vive en un atributo del
+   DOM, así que sin ese reset sobreviviría a cualquier navegación que no
+   recargue el documento. Estado: ✅ hecho.
 
 ## Verificación
 `npm run build` sin errores + `npx astro check` limpio + revisar HTML emitido
