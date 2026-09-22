@@ -11,29 +11,29 @@ lo que las capturas tienen que demostrar.
 | Tipo de imagen | Tratamiento | Por qué |
 | --- | --- | --- |
 | Fotos de personas (equipo) | **Duotono** al 25% sobre gris | Convierte una foto de celular en algo que se lee "diseñado" y fuerza la imagen a la paleta verde/crema |
-| Capturas del sistema (galerías de casos, portfolio) | **Duotono al 12%** más marco | A esa fuerza el gris domina y el tinte solo le baja la temperatura: el texto chico de la interfaz se sigue leyendo |
+| Capturas del sistema (galerías de casos, portfolio) | **Duotono** al 25% más marco | Misma fuerza que las fotos: satura el tinte sin tocar la legibilidad, porque el blend preserva la luminosidad |
 
-## Las capturas también llevan duotono, pero muy tenue
+## Las capturas también llevan duotono
 
 El motivo de mostrar una captura es probar que el software funciona, así que la
 primera idea fue no tocarla. Pero el ruido real no es "crema contra foto": es la
-paleta propia de la interfaz chocando contra el verde y el crema del sitio. Y a
-una fuerza muy baja, el duotono lo resuelve sin comerse la legibilidad.
+paleta propia de la interfaz chocando contra el verde y el crema del sitio, y
+entre capturas distintas, que traían cada una su propio esquema de color.
 
 Son dos capas que trabajan juntas:
 
-- **El duotono al 12%**, el mismo primitivo que las fotos, con el dial bajado por
-  `--duotono-fuerza`. A esa opacidad la imagen queda casi en blanco y negro, con
-  un aire de temperatura verdosa, y el `contrast(1.05)` del filtro ayuda en vez de
-  estorbar.
+- **El duotono**, el mismo primitivo que las fotos y con la misma fuerza (25%).
+  Subir el dial satura el tinte pero **no toca el contraste**: `mix-blend-mode:
+  color` toma la luminosidad de la imagen, así que la legibilidad del texto chico
+  no depende de la fuerza. Lo que sí ayuda es el `contrast(1.05)` del filtro.
 - **El marco**, que hace el trabajo de leer la captura como "ventana al
   software", intencional, en vez de una imagen flotando sin control.
 
 Encima va un tinte de `multiply` al **6%** sobre todo el shot, que le baja la
-termperatura al blanco puro de la interfaz.
+temperatura al blanco puro de la interfaz.
 
-Si alguna captura futura tiene texto más chico o más denso y el 12% estorba, el
-dial se baja sin tocar nada más: es una variable.
+Si una captura futura necesita menos tinte, el dial se baja por superficie con
+`--duotono-fuerza`, sin tocar nada más.
 
 ## Nota técnica: esto NO es un duotono por luminosidad
 

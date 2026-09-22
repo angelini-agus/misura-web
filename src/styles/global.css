@@ -151,7 +151,12 @@ textarea:autofill {
    queda flotando. El blend "color" toma el tono y la saturación del degradé y
    la luminosidad de la foto, así que pinta por POSICIÓN (arriba verdoso, abajo
    neutro), no por luminosidad. El dial es --duotono-fuerza: 0.25 es "leve pero
-   se nota", 0.12 es casi blanco y negro con un aire de temperatura. */
+   se nota", 0.35-0.4 ya se lee el degradé como color.
+
+   El dial cambia el COLOR, no el contraste: como el blend toma la luminosidad
+   de la imagen, subirlo satura el tinte sin tocar la legibilidad. Por eso las
+   capturas del sistema usan la misma fuerza que las fotos, aunque tengan texto
+   chico adentro. */
 .foto-duotono {
   position: relative;
   isolation: isolate;
@@ -177,9 +182,6 @@ textarea:autofill {
    el software funciona. El único agregado sobre los píxeles es el tinte de
    abajo, tan bajo que no le come contraste al texto chico de la interfaz. */
 .screenshot-frame {
-  /* Las capturas llevan el mismo duotono pero mucho más tenue: acá lo que
-     importa es que se siga leyendo el texto chico de la interfaz. */
-  --duotono-fuerza: 0.12;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -217,6 +219,14 @@ textarea:autofill {
   mix-blend-mode: multiply;
   opacity: 0.06;
   pointer-events: none;
+}
+
+/* La captura lleva el mismo radio que el marco. El recorte va en el wrapper del
+   duotono y no en la imagen: si fuera en la imagen, la capa de color asomaría
+   por los vértices redondeados. */
+.screenshot-frame-shot .foto-duotono {
+  overflow: hidden;
+  border-radius: 0.375rem;
 }
 
 /* Variante compacta: para tarjetas chicas, donde la barra se comería la captura. */
