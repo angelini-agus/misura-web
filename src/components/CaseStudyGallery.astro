@@ -73,8 +73,10 @@ const total = images.length;
                 type="button"
                 data-gallery-dot={index}
                 aria-label={`Ver imagen ${index + 1}: ${image.alt}`}
-                class="h-2.5 w-2.5 rounded-full border border-green bg-transparent transition-colors"
-              ></button>
+                class="flex h-6 w-6 items-center justify-center rounded-full border border-transparent bg-clip-content p-1.5 transition-colors"
+              >
+                <span class="block h-2.5 w-2.5 rounded-full border border-green"></span>
+              </button>
             ))}
           </div>
         </div>

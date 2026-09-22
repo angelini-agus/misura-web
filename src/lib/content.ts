@@ -52,7 +52,7 @@ export const cleanAnswer = (value: string) =>
 
 export const site = {
   name: "misure",
-  url: "[PENDIENTE: dominio de producción]",
+  url: "https://misure.dev",
   announcement:
     "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
@@ -66,7 +66,7 @@ export const footer = {
   navTitle: "Navegación",
   contactTitle: "Contacto",
   ctaLabel: "Contanos tu caso",
-  tagline: "Desarrollado por misure",
+  privacyLabel: "Privacidad",
   legal: "Todos los derechos reservados",
 };
 
@@ -107,6 +107,73 @@ export const pages = {
     intro:
       "Contanos en qué etapa está tu negocio y empecemos con un prototipo gratis, sin compromiso.",
   },
+};
+
+export const privacy = {
+  title: "Privacidad | misure",
+  description:
+    "Cómo trata misure los datos que dejás en el formulario de contacto: para qué se usan, quién los procesa y cómo pedir su eliminación.",
+  eyebrow: "Legal",
+  h1: "Privacidad",
+  intro: "Qué hacemos con los datos que nos dejás y qué no hacemos nunca.",
+  updatedAt: "Última actualización: septiembre de 2026",
+  sections: [
+    {
+      title: "Qué datos pedimos",
+      body: [
+        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono (opcional), el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
+        "No pedimos datos sensibles, información financiera ni nada que no esté en ese formulario.",
+      ],
+    },
+    {
+      title: "Para qué los usamos",
+      body: [
+        "Únicamente para responder tu consulta y coordinar una charla de 20 minutos. Nada más.",
+        "No los usamos para publicidad, no te suscribimos a ningún envío y no armamos perfiles tuyos.",
+      ],
+    },
+    {
+      title: "Con quién se comparten",
+      body: [
+        "No vendemos, alquilamos ni cedemos tus datos a terceros.",
+        "El formulario se envía a través de Web3Forms, el proveedor que recibe el mensaje y lo reenvía a nuestro correo (contacto@misure.dev). Es el único tercero que interviene, y lo hace solo como intermediario técnico para que el mensaje llegue. Su infraestructura puede estar fuera de Argentina.",
+      ],
+    },
+    {
+      title: "Cuánto tiempo los conservamos",
+      body: [
+        "El tiempo necesario para atender tu consulta y, si seguimos trabajando juntos, mientras dure la relación comercial.",
+        "Cuando nos pidas que los eliminemos, los borramos.",
+      ],
+    },
+    {
+      title: "Qué podés pedirnos",
+      body: [
+        "Podés pedirnos acceso, corrección o eliminación de tus datos escribiendo a contacto@misure.dev. Te respondemos en menos de 24 horas hábiles.",
+        "En Argentina el tratamiento de datos personales está regulado por la Ley 25.326, y la autoridad de aplicación es la Agencia de Acceso a la Información Pública (AAIP).",
+      ],
+    },
+    {
+      title: "Cookies y analítica",
+      body: [
+        "Este sitio no usa cookies, ni de seguimiento ni de publicidad, ni analítica de terceros.",
+        "Si en algún momento sumamos analítica, va a ser con tu consentimiento previo y vas a poder rechazarla.",
+      ],
+    },
+    {
+      title: "Cambios en esta política",
+      body: [
+        "Si cambiamos algo de lo que dice esta página, actualizamos la fecha del encabezado.",
+      ],
+    },
+    {
+      title: "Registros del servidor",
+      body: [
+        "Como cualquier sitio, el servidor que aloja esta página registra accesos técnicos (dirección IP, fecha y página visitada) para que el sitio funcione y para prevenir abusos.",
+        "Esos registros no se cruzan con tus datos de contacto ni se usan para perfilarte.",
+      ],
+    },
+  ],
 };
 
 export const clients = {
@@ -593,21 +660,25 @@ export const contactForm = {
     company: "Empresa",
     email: "Email",
     phone: "Teléfono",
-    service: "Servicio de interés",
-    message: "Mensaje",
+    message: "Detalles",
   },
   placeholders: {
     name: "Tu nombre",
     company: "Tu empresa",
     email: "tucorreo@empresa.com",
     phone: "Tu teléfono o WhatsApp",
-    message: "Contanos en qué etapa está tu negocio",
+    message: "Contanos, ¿cuál es el mayor problema en el día a día de tu empresa?",
   },
-  servicePlaceholder: "Elegí un servicio",
+  serviceStep: {
+    eyebrow: "Paso 1",
+    title: "¿Qué necesitás?",
+    help: "Elegí el tipo de servicio y completá tus datos.",
+    backAriaLabel: "Volver a elegir el servicio",
+  },
   serviceOptions: [
     { value: "erp", label: "Sistemas de Gestión (ERP)" },
     { value: "crm", label: "Herramientas de Ventas (CRM)" },
-    { value: "landing", label: "Páginas Web" },
+    { value: "web", label: "Páginas Web y E-commerce" },
     { value: "otros", label: "Otros" },
   ],
   errors: {
@@ -619,11 +690,13 @@ export const contactForm = {
   },
   submitLabel: "Enviar mi consulta",
   submittingLabel: "Enviando...",
+  retryLabel: "Reintentar",
   successMessage:
     "Gracias, recibimos tu mensaje. Te contactamos a la brevedad.",
   formError: "Revisá los campos marcados e intentá de nuevo.",
   disclaimer:
-    "Prometemos responderte en menos de 24 horas hábiles. Tus datos están seguros: no compartimos tu información con terceros ni enviamos spam.",
+    "Prometemos responderte en menos de 24 horas hábiles. No vendemos ni cedemos tus datos a nadie: los usamos solo para responderte y no te vamos a mandar spam.",
+  privacyLabel: "Política de privacidad",
   modal: {
     title: "¡Mensaje enviado!",
     body: "Gracias por escribirnos. Te contactamos a la brevedad.",

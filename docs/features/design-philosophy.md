@@ -97,6 +97,42 @@ reales, sin llegar nunca a lo caricaturesco.
 - Antes de inventar una animación nueva, se reutiliza un primitivo existente
   (`.details-collapse`, `link-ink`, `data-reveal`, `stamp-in`, `page-in/out`).
 
+Hay **dos excepciones deliberadas** a estas reglas. Están documentadas abajo con
+su motivo y su costo, para que la regla y el código no se contradigan.
+
+### Excepciones documentadas
+
+#### 1. El acordeón del FAQ anima `grid-template-rows`
+
+`src/styles/global.css` (`.details-collapse`) transiciona `grid-template-rows`
+de `0fr` a `1fr` en 220ms. Eso **fuerza layout en cada frame**, así que rompe la
+regla de "se anima opacidad y transform únicamente".
+
+Se mantiene porque es la técnica estándar para abrir un `<details>` sin conocer
+su altura, y las alternativas son peores: animar `max-height` también es layout y
+encima calcula mal las alturas intermedias, y animar la altura por JavaScript es
+layout **más** trabajo en el main thread. El alcance es de un elemento por
+pregunta, 220ms, y solo se dispara con una acción explícita del usuario. Con
+`prefers-reduced-motion: reduce` no hay transición.
+
+Si algún día el FAQ crece a decenas de ítems abiertos al mismo tiempo, esta es la
+primera excepción que hay que revisar.
+
+#### 2. El cursor del panel de código titila en loop infinito
+
+`src/components/ui/CodePanel.astro` (`.cd-cursor`) usa
+`animation: cd-blink 1.1s steps(1, end) infinite`, que la lista de anti-patrones
+prohíbe como "animación continua o infinita".
+
+Se mantiene porque el motivo declarado de esa regla **no aplica a este caso**: la
+regla existe porque una animación infinita mantiene ocupado el main thread, y acá
+la única propiedad animada es `opacity`, que corre en el compositor. Es un rect
+chico y decorativo, dentro de una ilustración, y con
+`prefers-reduced-motion: reduce` queda estático.
+
+Lo que sigue prohibido sin excepción: `requestAnimationFrame` en loop, canvas,
+WebGL, partículas, y animar propiedades de layout de forma continua.
+
 ## Reglas de implementación
 
 - El copy vive en `src/lib/content.ts`. **No se hardcodea texto** en

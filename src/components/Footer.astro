@@ -108,9 +108,12 @@ const year = new Date().getFullYear();
         © {year} <MisureWord text={site.name} />. {footer.legal}.
       </p>
       <ShareButton />
-      <p>
-        <MisureWord text={footer.tagline} />
-      </p>
+      <a
+        href="/privacidad"
+        class="text-green/75 underline-offset-4 hover:underline"
+      >
+        {footer.privacyLabel}
+      </a>
     </div>
   </div>
 </footer>

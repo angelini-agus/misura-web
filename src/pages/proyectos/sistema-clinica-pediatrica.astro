@@ -5,6 +5,7 @@ import PageHeader from "../../components/PageHeader.astro";
 import Footer from "../../components/Footer.astro";
 import StickyCta from "../../components/StickyCta.astro";
 import CaseStudyGallery from "../../components/CaseStudyGallery.astro";
+import Button from "../../components/ui/Button.astro";
 import { caseStudies } from "../../lib/content";
 
 const cs = caseStudies.pediatricErp;
@@ -155,13 +156,10 @@ const cs = caseStudies.pediatricErp;
               {cs.cta.title}
             </h2>
           </div>
-          <a
-            href={cs.cta.href}
-            class="inline-flex shrink-0 items-center gap-2 rounded-md border-2 border-cream bg-cream px-6 py-3 text-sm font-semibold text-green transition hover:border-cream-light hover:bg-cream-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-          >
+          <Button variant="cream" href={cs.cta.href} class="shrink-0">
             {cs.cta.label}
             <span aria-hidden="true">→</span>
-          </a>
+          </Button>
         </div>
       </div>
     </section>

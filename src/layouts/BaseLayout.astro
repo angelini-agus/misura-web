@@ -17,10 +17,22 @@ const {
   title = site.metaTitle,
   description = site.metaDescription,
   ogType = "website",
-  ogUrl,
+  ogUrl: ogUrlProp,
   ogImage = "/og-misure-software.png",
-  canonical = ogUrl,
+  canonical: canonicalProp,
 } = Astro.props;
+
+// Canonical and og:url derive from Astro.site (set in astro.config.mjs) plus the
+// current path; site.url is the fallback origin.
+const siteOrigin = Astro.site ?? new URL(site.url);
+// The generated sitemap uses trailing-slash URLs (e.g. https://misure.dev/privacidad/),
+// so the canonical follows that convention.
+const pathname = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+const pageUrl = new URL(pathname, siteOrigin).href;
+const canonical = canonicalProp ?? pageUrl;
+const ogUrl = ogUrlProp ?? pageUrl;
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -29,10 +41,12 @@ const organizationSchema = {
   url: site.url,
   description: site.metaDescription,
   email: contact.email,
-  telephone: "[PENDIENTE: teléfono de contacto]",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "[PENDIENTE: dirección de misure]",
+    // The site states Rosario, Santa Fe. telephone and streetAddress can be
+    // added once misure has real values for them.
+    addressLocality: "Rosario",
+    addressRegion: "Santa Fe",
   },
 };
 
