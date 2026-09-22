@@ -2,8 +2,8 @@
 
 ## Objetivo
 Que el submit del formulario de contacto (`ContactForm.astro`) envíe un mail
-real a contacto@misure.dev. Antes solo simulaba el envío con un `setTimeout`
-(`simulateSend`) y no mandaba los datos a ningún lado.
+real a contacto@misure.dev. El envío se hace desde el cliente con `fetch` y
+`new FormData(form)` (multipart) al endpoint de Web3Forms.
 
 ## Contexto / restricciones
 - El sitio es 100% estático (`astro build`, sin servidor/backend).
@@ -14,10 +14,11 @@ real a contacto@misure.dev. Antes solo simulaba el envío con un `setTimeout`
 
 ## Servicio elegido: Web3Forms
 Se eligió **Web3Forms** sobre Formspree porque se integra más simple con
-`fetch` nativo: un único `POST` JSON a `https://api.web3forms.com/submit` con
-un campo `access_key` y los datos del form como claves directas, sin necesidad
-de token de autenticación en el header ni de armar `FormData` con nombres de
-campo especiales. Plan gratis, sin backend propio.
+`fetch` nativo: un único `POST` multipart a `https://api.web3forms.com/submit`
+con `new FormData(form)`, donde viajan el campo `access_key` y los datos del
+form con las mismas claves que sus atributos `name`. No hace falta token de
+autenticación en el header ni transformar los datos a JSON. Plan gratis, sin
+backend propio.
 
 ## Qué se hizo
 1. **Config en `src/lib/content.ts`**: dentro de `contactForm`, se agregó
@@ -25,16 +26,28 @@ campo especiales. Plan gratis, sin backend propio.
    - `endpoint: "https://api.web3forms.com/submit"`
    - `accessKey: "[PENDIENTE: access key de Web3Forms]"` (placeholder real de
      una cuenta por crear).
-2. **Envío real en `ContactForm.astro`**: se reemplazó `simulateSend()` por
-   `sendForm()` que hace un `fetch` POST JSON a `web3forms.endpoint` con
-   `access_key` + `name`, `company`, `email`, `phone`, `service`, `message`.
-3. **UX mantenida**: se deshabilita el botón y se muestra `submittingLabel`
-   durante el envío; al terminar, `successMessage` si OK o `formError` si falla.
-4. **Manejo de error real**: si el `fetch` falla (sin conexión, servicio caído,
-   key inválida, `response.ok` falso o `data.success === false`) se muestra
-   `formError` y **NO** se resetea el form, para no perder lo escrito.
-5. Se mantuvo la validación de campos existente (`baseValidators` /
-   `fullValidators`), sin cambios de diseño, labels ni HTML de los campos.
+2. **Envío real en `ContactForm.astro`**: `fetch` POST a
+   `https://api.web3forms.com/submit` con `new FormData(form)` (multipart). Las
+   claves que viajan son `access_key`, `name`, `company`, `email`, `phone`,
+   `service` y `message`; este último no existe en la variante simple de la
+   home.
+3. **Estados del botón**: se deshabilita el botón y se muestra
+   `contactForm.submittingLabel` durante el envío; al terminar vuelve a
+   `submitLabel`, o a `contactForm.retryLabel` si falló (ya no hay copy
+   hardcodeado en el script). En éxito se abre el `<dialog>` de
+   `contactForm.modal`.
+4. **Manejo de error anunciado**: si el `fetch` falla (sin conexión, servicio
+   caído, key inválida o `response.ok` falso) se escribe `contactForm.formError`
+   en la región `#contact-form-error` (`data-form-error`, `role="alert"`) y se
+   le quita `sr-only` para que quede visible y sea anunciada. La región se
+   limpia y vuelve a `sr-only` al inicio de cada intento de envío. El form
+   **NO** se resetea, para no perder lo escrito.
+5. **Errores de campo asociados**: cada `<p data-error-for>` tiene id estable
+   (`cf-name-error`, `cf-email-error`, `cf-phone-error`, `cf-service-error`) y
+   arranca en `sr-only` en vez de `hidden`, para seguir en el árbol de
+   accesibilidad; cada control lo referencia con `aria-describedby` y `setError`
+   alterna `sr-only` + `aria-invalid`. El teléfono pasó a ser opcional: vacío es
+   válido, y si se completa exige al menos 6 caracteres.
 
 ## Paso manual pendiente
 - Crear una cuenta en **web3forms.com** con destino de mail

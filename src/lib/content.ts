@@ -120,7 +120,7 @@ export const privacy = {
     {
       title: "Qué datos pedimos",
       body: [
-        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono, el tipo de servicio que te interesa y los detalles que quieras contarnos.",
+        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono (opcional), el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
         "No pedimos datos sensibles, información financiera ni nada que no esté en ese formulario.",
       ],
     },
@@ -660,6 +660,7 @@ export const contactForm = {
     title: "¿Qué necesitás?",
     help: "Elegí el tipo de servicio y completá tus datos.",
     changeLabel: "Cambiar",
+    changeAriaLabel: "Cambiar el servicio elegido",
   },
   serviceOptions: [
     { value: "erp", label: "Sistemas de Gestión (ERP)" },
@@ -677,11 +678,12 @@ export const contactForm = {
   },
   submitLabel: "Enviar mi consulta",
   submittingLabel: "Enviando...",
+  retryLabel: "Reintentar",
   successMessage:
     "Gracias, recibimos tu mensaje. Te contactamos a la brevedad.",
   formError: "Revisá los campos marcados e intentá de nuevo.",
   disclaimer:
-    "Prometemos responderte en menos de 24 horas hábiles. Tus datos están seguros: no compartimos tu información con terceros ni enviamos spam.",
+    "Prometemos responderte en menos de 24 horas hábiles. No vendemos ni cedemos tus datos a nadie: los usamos solo para responderte y no te vamos a mandar spam.",
   privacyLabel: "Política de privacidad",
   modal: {
     title: "¡Mensaje enviado!",
