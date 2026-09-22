@@ -16,13 +16,18 @@ import CodePanel from "./ui/CodePanel.astro";
   en mobile y 77 desde md. Medido con el navegador: <640px = 52 + 67 = 119px;
   640-767px = 36 + 67 = 103px; md+ = 36 + 77 = 113px. Si cambia el copy del
   anuncio, el padding del header o su contenido más alto, hay que remedir.
+
+  El padding y el tope del panel de abajo no son decorativos: están ajustados
+  para que el contenido entre en una pantalla. Con py-28 y el panel sin capar
+  por alto de viewport, el hero se estiraba a 811px en 700x800 y a 845px en
+  768x900, y ahí dejaba de ocupar una pantalla exacta.
 -->
 <section
   id="inicio"
   class="scroll-mt-24 [--hero-top-h:6.4375rem] max-sm:[--hero-top-h:7.4375rem] md:[--hero-top-h:7.0625rem]"
 >
   <div
-    class="mx-auto grid min-h-[calc(100dvh-var(--hero-top-h))] max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
+    class="mx-auto grid min-h-[calc(100dvh-var(--hero-top-h))] max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-16"
   >
     <div class="order-2 md:order-1">
       <h1
@@ -51,7 +56,7 @@ import CodePanel from "./ui/CodePanel.astro";
         </Button>
       </div>
     </div>
-    <div class="order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-xl md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
+    <div class="order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-[min(36rem,40dvh)] md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
       <CodePanel />
     </div>
   </div>
