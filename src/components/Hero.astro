@@ -5,9 +5,24 @@ import MisureWord from "./ui/MisureWord.astro";
 import CodePanel from "./ui/CodePanel.astro";
 ---
 
-<section id="inicio" class="scroll-mt-24">
+<!--
+  --hero-top-h: lo que ocupa la barra de anuncio más el header sticky, que es lo
+  que tapa el hero al llegar. Acá SÍ cuenta la barra de anuncio, a diferencia de
+  la sección de contacto: el hero está arriba de todo, así que la barra todavía
+  está visible.
+
+  Tres valores porque la barra de anuncio cambia de alto según el ancho: su copy
+  entra en una línea arriba de ~640px y envuelve a dos abajo, y el header mide 67
+  en mobile y 77 desde md. Medido con el navegador: <640px = 52 + 67 = 119px;
+  640-767px = 36 + 67 = 103px; md+ = 36 + 77 = 113px. Si cambia el copy del
+  anuncio, el padding del header o su contenido más alto, hay que remedir.
+-->
+<section
+  id="inicio"
+  class="scroll-mt-24 [--hero-top-h:6.4375rem] max-sm:[--hero-top-h:7.4375rem] md:[--hero-top-h:7.0625rem]"
+>
   <div
-    class="mx-auto grid max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
+    class="mx-auto grid min-h-[calc(100dvh-var(--hero-top-h))] max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-28"
   >
     <div class="order-2 md:order-1">
       <h1
