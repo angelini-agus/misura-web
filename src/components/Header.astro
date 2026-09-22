@@ -48,7 +48,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
         {headerCta.label}
       </a>
       <details class="md:hidden">
-        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-green px-3 py-1.5 text-sm text-green transition-transform duration-150 ease-out active:scale-[0.97]">
+        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-green px-3 py-1.5 text-sm text-green transition-transform duration-150 ease-out [&::-webkit-details-marker]:hidden active:scale-[0.97]">
           {site.menuLabel}
           <MenuIcon class="h-4 w-4" />
         </summary>
@@ -80,12 +80,25 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
     }
   });
 
-  document.addEventListener("astro:page-load", () => {
-    document.querySelectorAll("header details a").forEach((link) => {
-      link.addEventListener("click", () => {
-        const details = link.closest("details");
-        if (details) details.open = false;
+  const initMobileMenu = () => {
+    document.querySelectorAll<HTMLDetailsElement>("header details").forEach((details) => {
+      if (details.dataset.menuReady === "true") return;
+      details.dataset.menuReady = "true";
+
+      details.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || !details.open) return;
+        details.open = false;
+        details.querySelector("summary")?.focus();
+      });
+
+      details.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          details.open = false;
+        });
       });
     });
-  });
+  };
+
+  document.addEventListener("astro:page-load", initMobileMenu);
+  initMobileMenu();
 </script>

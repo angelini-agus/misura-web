@@ -25,9 +25,12 @@ import Placeholder from "./ui/Placeholder.astro";
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >
+          {/* Placeholder photo shared by every member: decorative, so alt is empty.
+              When real per-member photos replace the placeholder, describe the photo
+              instead of repeating the member name, which is already the adjacent h3. */}
           <Image
             src={teamPlaceholder}
-            alt={member.name}
+            alt=""
             widths={[400]}
             sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
             class="aspect-[4/5] w-full object-cover grayscale"
