@@ -37,12 +37,12 @@ const detailsLabel = portfolio.detailsLabel;
     </div>
 
     <div class="mt-12">
-      {projects.map(({ study, gallery }) => (
-        <div class="projects-stack__slot">
-          <article
-            class="projects-stack__card overflow-hidden rounded-md border border-green bg-green text-cream"
-            data-reveal
-          >
+      {projects.map(({ study, gallery }, index) => (
+        <article
+          class="projects-stack__card overflow-hidden rounded-md border border-green bg-green text-cream"
+          style={`--i: ${index}`}
+          data-reveal
+        >
             <div
               class="projects-card__inner flex h-full flex-col gap-3 p-4 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-8 md:p-6"
             >
@@ -98,7 +98,6 @@ const detailsLabel = portfolio.detailsLabel;
               </div>
             </div>
           </article>
-        </div>
       ))}
     </div>
   </div>
@@ -120,7 +119,11 @@ const detailsLabel = portfolio.detailsLabel;
        el bloque siguiente la releve. Media tarjeta alcanza para que la pausa se
        note (unos 180px en un viewport de 800px) sin que el hueco entre bloques
        se coma la pantalla. */
-    --stack-extra: calc((100dvh - var(--nav-h)) / 4);
+    --stack-step: 14px;
+    /* El recorrido de scroll de cada tarjeta: media pantalla util. Es el ritmo
+       de la pila, o sea cuanto tarda la siguiente en llegar y tapar la
+       anterior. */
+    --stack-room: calc((100dvh - var(--nav-h)) / 2);
   }
 
   @media (min-width: 48rem) {
@@ -129,23 +132,22 @@ const detailsLabel = portfolio.detailsLabel;
     }
   }
 
-  /* La ranura scrollea; la tarjeta se queda pegada adentro. */
-  .projects-stack__slot {
-    height: calc((100dvh - var(--nav-h)) / 2 + var(--stack-extra));
-  }
-
-  /* El par se reparte la pantalla: la tarjeta impar (1a, 3a, ...) se pega
-     arriba y la par (2a, 4a, ...) abajo. Dos bloques + navbar = una pantalla
-     exacta. Sin z-index: cuando dos bloques se cruzan, el posterior pinta
-     encima del anterior por orden de flujo. */
+  /* Apilado real: las tarjetas son hermanas dentro de la pila, asi que la
+     contenedora de cada una es la pila entera y ninguna se suelta hasta el
+     final. Cada tarjeta se pega un escalon mas abajo que la anterior, y ese
+     escalon es el borde que queda asomando en la pila. El margen de abajo es
+     el scroll que tarda en llegar la siguiente. */
   .projects-stack__card {
     position: sticky;
-    top: var(--nav-h);
+    top: calc(var(--nav-h) + var(--stack-step) * var(--i));
     height: calc((100dvh - var(--nav-h)) / 2);
+    margin-bottom: var(--stack-room);
   }
 
-  .projects-stack__slot:nth-child(even) .projects-stack__card {
-    top: calc(var(--nav-h) + (100dvh - var(--nav-h)) / 2);
+  /* La ultima tambien lleva recorrido: sin el, la pila se va de la pantalla
+     apenas termina la seccion y no se llega a ver apilada. */
+  .projects-stack__card:last-child {
+    margin-bottom: var(--stack-room);
   }
 
   /* Desktop bajo (un 1366x768 con las barras del navegador ronda los 650-700px
