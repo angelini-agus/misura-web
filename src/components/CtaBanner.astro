@@ -1,4 +1,6 @@
 ---
+import Button from "./ui/Button.astro";
+
 interface Props {
   eyebrow: string;
   title: string;
@@ -23,13 +25,10 @@ const { eyebrow, title, label, href } = Astro.props;
           {title}
         </h2>
       </div>
-      <a
-        href={href}
-        class="inline-flex shrink-0 items-center gap-2 rounded-md border-2 border-cream bg-cream px-6 py-3 text-sm font-semibold text-green transition hover:border-cream-light hover:bg-cream-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-      >
+      <Button variant="cream" href={href} class="shrink-0">
         {label}
         <span aria-hidden="true">→</span>
-      </a>
+      </Button>
     </div>
   </div>
 </section>
