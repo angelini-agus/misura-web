@@ -207,7 +207,6 @@ textarea:autofill {
 
 .screenshot-frame-shot {
   position: relative;
-  padding: 10px;
   background-color: var(--color-cream);
 }
 
@@ -221,9 +220,10 @@ textarea:autofill {
   pointer-events: none;
 }
 
-/* La captura lleva el mismo radio que el marco. El recorte va en el wrapper del
-   duotono y no en la imagen: si fuera en la imagen, la capa de color asomaría
-   por los vértices redondeados. */
+/* La captura va pegada al borde: el marco es la ventana y el contenido llega
+   hasta el borde, como en un navegador de verdad. Sin el aire crema, el recorte
+   de los vértices queda a cargo del overflow del marco; el radio del wrapper del
+   duotono sigue haciendo falta para que la capa de color no asome. */
 .screenshot-frame-shot .foto-duotono {
   overflow: hidden;
   border-radius: 0.375rem;
@@ -232,10 +232,6 @@ textarea:autofill {
 /* Variante compacta: para tarjetas chicas, donde la barra se comería la captura. */
 .screenshot-frame--compact .screenshot-frame-bar {
   display: none;
-}
-
-.screenshot-frame--compact .screenshot-frame-shot {
-  padding: 6px;
 }
 
 .link-ink {

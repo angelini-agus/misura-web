@@ -48,13 +48,16 @@ descartado por ahora; si se quiere, es un cambio acotado al mismo primitivo.
 
 ## Parámetros
 
-- **Duotono:** `opacity: 0.25`. El dial es ese valor: 0.15 es prácticamente
-  blanco y negro con un aire de temperatura verdosa, y 0.35-0.4 ya se nota el
-  degradé como color. El punto justo depende del brillo de cada foto.
-- **Tinte de capturas:** `multiply` al `0.06`.
-- **Marco:** borde sólido verde de 1px, radio igual al de las tarjetas (`rounded-md`),
-  barra superior verde con tres puntos crema, y 10px de aire entre el marco y la
-  captura para que la transición crema → marco verde → captura se sienta en capas.
+- **Duotono:** `--duotono-fuerza` en `0.25` para todo. El dial cambia el color,
+  no el contraste: subirlo satura el tinte sin tocar la legibilidad, porque el
+  blend toma la luminosidad de la imagen. De 0.35 para arriba el degradé ya se
+  lee como color.
+- **Tinte de capturas:** `multiply` al `0.06` sobre el shot.
+- **Marco:** borde sólido verde de 1px, radio igual al de las tarjetas
+  (`rounded-md`), barra superior verde con tres puntos crema, y la captura
+  **pegada al borde**: el marco es la ventana y el contenido llega hasta el borde,
+  como en un navegador de verdad. El recorte de los vértices queda a cargo del
+  `overflow` del marco.
 
 ## Alcance
 
