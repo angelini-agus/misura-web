@@ -10,10 +10,11 @@ apilando las tarjetas una sobre otra. Referencia: `geiko.dev/es/projects/`.
 
 1. **Solo en `/proyectos`.** El home conserva la grilla compacta: con 6 proyectos
    a pantalla completa, la home se vuelve larguísima antes del formulario.
-2. **Una pantalla por tarjeta**, contando el aire de arriba (el navbar), el de
-   abajo y el espacio entre tarjetas: la tarjeta mide `100dvh − navbar − gap`.
-   Verificado midiendo: 799 + 77 + 24 = 900 en desktop y 753 + 67 + 24 = 844 en
-   mobile. El mismo criterio en todos los tamaños.
+2. **Dos tarjetas por pantalla**, con el aire de entre medio, el de arriba (el
+   navbar) y el de abajo: la tarjeta mide `(100dvh − navbar − 2 × gap) / 2`. Es
+   la misma fórmula que usa la sección de servicios de AZ,
+   `h = (100vh − top − gap) / 2`, con el aire de abajo sumado aparte. Verificado
+   midiendo: 77 + 388 + 24 + 388 + 24 = 900 en desktop y 844 exacto en mobile.
 3. **Sticky cards:** al scrollear, las tarjetas se van pegando y apilando una
    sobre otra. Referencia: la sección de servicios de AZ
    (`az-landing2/src/components/ServicesSection.astro`).
@@ -68,9 +69,10 @@ que el portfolio se lea como un conjunto y no como seis paletas distintas.
 
 ## Criterios de aceptación
 
-1. En `/proyectos`, cada proyecto ocupa el ancho completo y mide la mitad de
-   `100dvh − navbar`.
-2. Dos bloques más el navbar suman exactamente una pantalla.
+1. En `/proyectos`, cada proyecto ocupa el ancho completo y mide
+   `(100dvh − navbar − 2 × gap) / 2`.
+2. Dos tarjetas, el aire de entre medio, el de abajo y el navbar suman
+   exactamente una pantalla.
 3. Al scrollear, las tarjetas se pegan y el par siguiente tapa al anterior.
 4. Cada bloque muestra las 3 capturas a la izquierda y los datos a la derecha.
 5. El botón «Ver el caso» lleva a `/proyectos/<slug>`.
