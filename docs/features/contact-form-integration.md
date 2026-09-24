@@ -83,3 +83,17 @@ Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
   limpia todo detrás del modal y el fallido conserva las respuestas y muestra
   la región de error. El textarea reporta `resize: none` y una scrollbar de
   ancho cero.
+
+## Anclaje del CTA al formulario (24-09-2026)
+
+El CTA que lleva al formulario (`/contacto#contacto` desde el navbar, el footer y el
+hero) aterrizaba con `scroll-margin-top: 96px` mientras el header mide 67 px en
+mobile y 77 px en desktop: dejaba 19-29 px de hueco arriba y **cortaba 81 px del
+formulario abajo**. Ahora el `scroll-margin-top` es exactamente el alto del header
+(`var(--contact-nav-h)`), así que la sección arranca pegada a él.
+
+Medido con click real: 1440x1080 → la sección entra completa (1003 px visibles de
+1004, sin hueco arriba); 1440x900 → 823 de 885 px (los 62 px que sobran son la
+sección misma: su contenido supera los `100dvh − nav`); 375x667 → arranca pegada al
+header (67) y el resto se scrollea. Idéntico al entrar por client-side desde
+`/proyectos` que desde la misma página.
