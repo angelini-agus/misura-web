@@ -720,7 +720,7 @@ const projectCount = projects.length;
       // del sticky: el cuerpo debe quedar casi debajo del stage para que
       // SOLO la pestaña asome en el borde inferior del stage cuando la
       // carpeta esta "esperando abajo".
-      const entryOffset = Math.max(stickyHeight - maxTabHeight - 1, step);
+      let entryOffset = step; // se recalcula más abajo, con el cuerpo ya medido
 
       // El CSS lee --folder-step para decidir la padding-top del cuerpo (asi
       // la franja que asoma arriba es cuerpo liso sin contenido). Lo
@@ -728,7 +728,7 @@ const projectCount = projects.length;
       // hereden por cascada.
       section.style.setProperty("--folder-step", `${step}px`);
 
-      geometry = flipGeometry(folders.length, step, entryOffset);
+      // (La geometría se arma más abajo, cuando ya está medido el alto del cuerpo.)
 
       // Alto del deck: en mobile, donde el cuerpo puede crecer con el
       // contenido (descripción + tags + CTA + captura), el deck tiene que
@@ -750,6 +750,15 @@ const projectCount = projects.length;
 
       const desiredDeckH = maxBodyHeight + maxTabHeight;
       deck.style.height = `${Math.min(desiredDeckH, deckMaxH)}px`;
+
+      // La carpeta siguiente se estaciona JUSTO DEBAJO de la del frente: su
+      // solapa queda a PARK_AIR del borde inferior del cuerpo, y las que siguen
+      // se escalonan un escalón más abajo cada una (la cola espeja la pila de
+      // arriba). Antes se estacionaban fuera de pantalla (stickyHeight - tab),
+      // así que todo el espacio de abajo quedaba vacío hasta que entraban.
+      const PARK_AIR = 10;
+      entryOffset = desiredDeckH + maxTabHeight + PARK_AIR;
+      geometry = flipGeometry(folders.length, step, entryOffset);
 
       // La pila se pega ARRIBA del stage y el mazo baja un escalon por cada
       // carpeta asentada (ver syncDomFromProgress). Con el centrado de la pila

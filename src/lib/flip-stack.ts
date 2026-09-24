@@ -12,7 +12,8 @@
 //     del cuerpo y un cuerpo con el resto del contenido.
 //   - Cuando una carpeta pasa al frente, sube un escalón (su pestaña queda
 //     visible sobre la carpeta siguiente) y se escala un punto abajo.
-//   - La siguiente carpeta sube desde abajo hasta ocupar su lugar.
+//   - La siguiente está estacionada justo debajo del frente (y las que siguen,
+//     escalonadas una más abajo cada una) y sube hasta ocupar su lugar.
 //   - La última carpeta nunca se asienta: queda al frente al final.
 //
 // Diferencias con v1 (plegado con rotateX):
@@ -130,64 +131,39 @@ export const flipCardState = (
     return { y: 0, scale: 1, opacity };
   }
 
-  // Posición del segmento "salida": la carpeta está al frente exactamente en
-  // `incomingEnd = i*seg`. Antes está subiendo desde abajo (entrada); después
-  // está subiendo hacia arriba (salida) hasta su posición final.
-  const incomingEnd = index * segment;
+  // `q` = cuántos tramos faltan para que esta carpeta llegue al frente
+  // (fraccionario): 0 = al frente, 1 = una carpeta adelante (la próxima), etc.
+  // De `q` salen las tres fases:
+  //   q >= 1        espera en la cola de abajo, un escalón más abajo por carpeta
+  //   0 <= q <= 1   sube desde la cola hasta el frente (un tramo)
+  //  -1 <= q < 0    al frente, quieta: todo su tramo (así nunca mueve su solapa)
+  //   q < -1        se asienta en la pila de arriba, un escalón por tramo
+  const q = index - p / segment;
 
   let y: number;
   let scale: number;
 
-  if (p <= incomingEnd) {
-    // Fase de entrada (incluye la primera carpeta si `index === 0`, donde
-    // `incomingEnd = 0` y la condición es `p <= 0`, así que no entra acá).
-    if (index === 0) {
-      // Caso degenerado: `incomingEnd = 0` y nunca se cumple `p <= incomingEnd`
-      // con `p > 0`, así que la primera carpeta no entra acá en la práctica.
-      // Pero si `progress = 0` cae acá y devolvemos la posición de reposo.
-      y = 0;
-      scale = 1;
-    } else {
-      const incomingStart = Math.max(0, (index - 1) * segment);
-      const t = clamp01(
-        (p - incomingStart) / Math.max(incomingEnd - incomingStart, 1e-6),
-      );
-      y = lerp(entryOffset, 0, t);
-      scale = lerp(0.98, 1, t);
-    }
+  if (q >= 0) {
+    // Cola de abajo o subiendo: la próxima (q = 1) espera justo debajo de la del
+    // frente, a `entryOffset` = alto del cuerpo + pestaña + un aire, así el
+    // visitante ya ve el proyecto que viene antes de que empiece la animación y
+    // no queda el hueco vacío de abajo. Cada una de las que siguen espera otro
+    // `entryOffset` más abajo, fuera de cuadro a propósito: asomando mostrarían
+    // el contenido de proyectos que todavía no tocan. Cuando le toca subir
+    // (0 < q < 1) recorre la cola hasta el frente en su tramo.
+    y = entryOffset * q;
   } else {
-    // Fase de salida: la carpeta está al frente en `p = incomingEnd` y sube
-    // continuamente hasta su lugar final cuando `p = 1`. La fórmula
-    // `y = -step * (total - 1) * (p - incomingEnd)` da el resultado correcto
-    // para cualquier i:
-    //   - p = incomingEnd: y = 0
-    //   - p = 1: y = -step * (total - 1 - index)
-    // La última carpeta (index === total - 1) tiene `(total - 1 - index) = 0`,
-    // así que su y final es 0: nunca se mueve después de llegar al frente.
-    // La salida arranca al PRINCIPIO DEL TRAMO SIGUIENTE, no en el propio.
-    // Con la version anterior la carpeta empezaba a subir mientras todavia era
-    // la del frente, asi que su pestaña (el titulo del caso) se metia debajo del
-    // navbar durante medio tramo: medido en mobile, pestaña en y=38 con navbar
-    // de 67px. Con el arranque diferido, la carpeta se queda quieta en y = 0
-    // todo su tramo y recien sube cuando la siguiente llega y la tapa (la
-    // siguiente tiene z mayor), que es como se comporta una pila fisica.
-    //   - p <= exitStart: y = 0
-    //   - p = 1: y = -step * (total - 1 - index): la anteultima sube su escalon
-    //     (asi su solapa asoma sobre la ultima, escalonada como el resto) y la
-    //     ultima (exitStart = 1, fuera del rango) nunca se mueve.
-    // Correccion 24-09: antes el recorrido era `-step * (total - 1) * drift`, que
-    // en p = 1 dejaba a la anteultima en el MISMO lugar que la ultima (el
-    // proyecto 6 tapaba por completo al 5, sin solapa visible). Ahora sube UN
-    // ESCALON POR TRAMO: con un tramo final propio de la ultima carpeta (ver
-    // flipGeometry), cada una termina (total - 1 - index) escalones arriba.
-    const exitStart = (index + 1) * segment;
-    const escalones = Math.max(0, (p - exitStart) / segment);
-    y = -step * escalones;
-    // La escala se interpola entre 1 (al frente) y 0.98 (un escalón atrás),
-    // y se queda en 0.98 cuando |y| >= step.
-    const scaleT = clamp01(Math.abs(y) / Math.max(step, 1e-6));
-    scale = lerp(1, 0.98, scaleT);
+    // Pila de arriba: la carpeta ya pasó al frente. Se queda quieta todo su
+    // tramo (así su solapa nunca se mete debajo del navbar) y recién sube un
+    // escalón por tramo cuando la siguiente llegó y la tapa. Al final del
+    // carrete cada una queda exactamente (total - 1 - index) escalones arriba.
+    y = q >= -1 ? 0 : step * (q + 1);
   }
+
+  // La escala se interpola entre 1 (al frente) y 0.98 (un escalón atrás, o en
+  // la cola de abajo), y se queda en 0.98 cuando |y| >= step.
+  const scaleT = clamp01(Math.abs(y) / Math.max(step, 1e-6));
+  scale = lerp(1, 0.98, scaleT);
 
   return { y, scale, opacity: 1 };
 };

@@ -685,3 +685,36 @@ tapando a la anterior). En los dos breakpoints: pestaña del frente bajo el navb
 tarjeta dentro del viewport y los 6 casos sin recorte. La matemática se ejercitó
 en Node: escalonado final exacto, monotonía, rangos, frente por tramo (con el
 tramo propio de la última) y movimiento reducido sin translate.
+
+## Corrección 24-09: la cola de abajo (el espacio pre-animación)
+
+Pedido del autor: el espacio que quedaba vacío abajo del folder —el que se reserva
+para que la pila crezca hacia abajo— tenía que usarse; **antes de que empiece la
+animación ya tiene que verse el proyecto que viene**, y no hay que scrollear una
+pantalla entera para pasar de un proyecto al siguiente.
+
+Las carpetas que todavía no entraron se estacionan DEBAJO del frente, en una cola
+gobernada por `q` = cuántos tramos faltan para que esa carpeta llegue al frente:
+
+| `q` | posición |
+| --- | --- |
+| `q >= 1` | cola: la próxima a `entryOffset` debajo del frente; cada una de las que siguen, otro `entryOffset` más abajo |
+| `0 < q < 1` | sube desde la cola hasta el frente, en su tramo |
+| `-1 <= q < 0` | al frente, quieta todo su tramo (así su solapa nunca se mete bajo el navbar) |
+| `q < -1` | se asienta en la pila de arriba, un escalón por tramo |
+
+`entryOffset` dejó de ser "estacionar fuera de pantalla" (`stickyHeight - tab`) y
+ahora es **alto del cuerpo + pestaña + 10 px**: la próxima carpeta queda con su
+solapa justo debajo del borde inferior del frente y su cuerpo asomando debajo.
+
+Medido (1440x900): al inicio, con el Proyecto 01 al frente, se ven 360 px del cuerpo
+del frente y 353 px del cuerpo del Proyecto 02 — y nada más. En mobile (375x667): el
+frente completo (419 px) y la solapa del Proyecto 02 asomando con 78 px de su cuerpo.
+Antes ese espacio era crema vacío. Con `prefers-reduced-motion` no hay cola ni
+desplazamiento: la cola queda en su posición y el avance sigue siendo por opacidad.
+
+Por qué las que siguen no asoman: cada carpeta de la cola espera un `entryOffset`
+(≈ un cuerpo) más abajo que la anterior, así que quedan fuera de cuadro. Si asomaran,
+mostrarían su contenido —y por el orden de pintado (índice mayor = arriba) la que se
+vería sería la última del mazo, no la que sigue—. Para que asome también la solapa de
+la tercera hay que acortar el espaciado de la cola y recortarles el cuerpo.
