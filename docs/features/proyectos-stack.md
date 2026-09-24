@@ -541,3 +541,23 @@ Todo el contenido sale de `src/lib/content.ts`. No se inventó copy:
 - **Desviación abierta para el autor:** en mobile el cuerpo no entra en 40vh con
   el contenido completo (410 px a 375x667; 428 px a 320x568). Se eligió preservar
   el contenido antes que el tope.
+## Corrección 24-09: la solapa lleva el número
+
+El autor pidió volver al esquema de la referencia (`Proyecto 01`, `Proyecto 02`…)
+en la solapa del folder: la solapa lleva el NÚMERO del caso y el título real
+(`study.title`) vuelve al cuerpo, como heading `h3` de la tarjeta.
+
+Consecuencias medidas:
+
+- La etiqueta es de una línea siempre (`white-space: nowrap`), así que la solapa
+  no crece: el escalón del asentado bajó de **60 px a 43 px** en mobile y quedó
+  en **45 px** en desktop (sigue saliendo del alto medido de la solapa + 10 px).
+- El cuerpo creció por el título (~20-40 px según caso y ancho): 353-360 px en
+  desktop (tope 40vh) y 417-451 px en mobile. Medido en los cuatro breakpoints:
+  `description.scrollHeight === description.clientHeight`, título, tags y CTA
+  dentro del cuerpo, solapa del frente siempre por debajo del navbar
+  (`108 ≥ 67`, `92 ≥ 67`, `364 ≥ 77`, `334 ≥ 77`) y la tarjeta siempre dentro del
+  viewport (`627 ≤ 667`, `561 ≤ 568`, `790 ≤ 900`, `720 ≤ 800`).
+- Se eliminó `.folder__number` (el número vive en la solapa) y la clase
+  `.folder__title` pasó a ser el heading del cuerpo; la etiqueta de la solapa es
+  `.folder__label`.

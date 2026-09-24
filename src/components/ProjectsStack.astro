@@ -60,13 +60,13 @@ const projectCount = projects.length;
               style={`z-index: ${index + 1}`}
             >
               <div class="folder__tab">
-                <h3 class="folder__title">{study.title}</h3>
+                <p class="folder__label">
+                  Proyecto {String(index + 1).padStart(2, "0")}
+                </p>
               </div>
               <div class="folder__body">
                 <div class="folder__copy">
-                  <p class="folder__number" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </p>
+                  <h3 class="folder__title">{study.title}</h3>
                   <p class="folder__client">{study.client}</p>
                   <p class="folder__description">{study.seo.description}</p>
                   <div class="folder__tags">
@@ -250,15 +250,16 @@ const projectCount = projects.length;
     max-width: 100%;
   }
 
-  .folder__title {
+  .folder__label {
     font-family: var(--font-display);
     font-weight: 500;
     letter-spacing: -0.005em;
     font-size: inherit;
     line-height: inherit;
-    /* Sin wrap forzado: el navegador parte en espacios. max-width lo da la
-       pestaña; el h3 fluye adentro. */
+    /* Etiqueta de la solapa: "Proyecto 01". Una linea siempre (el numero es
+       corto): la solapa no crece y el escalon del asentado queda chico. */
     display: block;
+    white-space: nowrap;
   }
 
   .folder__body {
@@ -280,12 +281,14 @@ const projectCount = projects.length;
     min-width: 0;
   }
 
-  .folder__number {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--color-green) 60%, transparent);
+  /* Titulo del caso: vive en el cuerpo del folder (la solapa lleva el numero,
+     como en la referencia del autor). */
+  .folder__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.0625rem, 1.7cqw, 1.375rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 
   .folder__client {
@@ -467,10 +470,6 @@ const projectCount = projects.length;
       padding: var(--folder-step, 44px) 12px 12px 12px;
     }
 
-    .folder__number {
-      font-size: 0.75rem;
-    }
-
     .folder__client {
       font-size: 0.6rem;
     }
@@ -501,12 +500,6 @@ const projectCount = projects.length;
 
     .folder__cta {
       margin-top: 0.25rem;
-    }
-
-    .folder__number {
-      /* El índice es decoración (aria-hidden): en la pantalla más chica se
-         saca para no gastar una línea del cuerpo. */
-      display: none;
     }
 
     .folder__copy {
@@ -555,9 +548,14 @@ const projectCount = projects.length;
       padding: var(--folder-step, 44px) 0.75rem 0.75rem 0.75rem;
     }
 
-    .folder__title {
-      /* floor tab >= 12px. 0.8125rem = 13px. */
+    .folder__label {
+      /* floor etiqueta de solapa >= 12px. 0.8125rem = 13px. */
       font-size: 0.8125rem;
+    }
+
+    .folder__title {
+      /* El titulo del cuerpo baja un punto en la pantalla mas chica. */
+      font-size: 1.0625rem;
     }
 
     .folder__description {

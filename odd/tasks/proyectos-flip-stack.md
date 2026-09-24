@@ -486,3 +486,9 @@ y el modificador del duotono del v1 quedaron como estaban.
 
 **No commiteado, no pusheado, no stageado nada**: el padre committea
 después de verificar.
+
+Corrección del autor (24-09): la solapa lleva el número del caso
+(`Proyecto 01`, `Proyecto 02`…) y el título real vuelve al cuerpo como `h3`.
+Cambia la decisión 4 de v2. Medido: escalón 45 px desktop / 43 px mobile,
+los 6 casos sin recorte en los 4 breakpoints, solapa del frente siempre bajo el
+navbar y tarjeta dentro del viewport.
