@@ -95,6 +95,14 @@ gtag('config', '${gaId}');`
     />
     <script is:inline>
       document.documentElement.classList.add("js");
+      // El ClientRouter reemplaza el atributo `class` del <html> con el del
+      // HTML servido en cada navegacion client-side (entrar a /proyectos desde
+      // el navbar), asi que la clase se pierde y el sitio entero cae al estado
+      // sin JS: mazos, reveals y animaciones desarmados. Hay que reponerla en
+      // cada swap (astro:after-swap corre antes de la transicion, sin flash).
+      document.addEventListener("astro:after-swap", () => {
+        document.documentElement.classList.add("js");
+      });
     </script>
   </head>
   <body class="flex min-h-full flex-col bg-cream antialiased">
