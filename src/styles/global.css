@@ -34,43 +34,6 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* ===== Textura de fondo: papel de medicion =============================
-   Puntos en cada interseccion de una grilla de 64px, con la tinta de la marca al
-   4% de opacidad: se nota solo si uno la busca, nunca compite con el contenido.
-
-   CSS puro con hard stops (de color a transparente en el mismo punto), asi que no
-   puede producir banding y no se recalcula en el scroll (background-attachment:
-   scroll por defecto). Sin SVG, sin imagen rasterizada, sin JS.
-
-   La tinta se invierte sola por superficie: verde sobre crema, crema sobre verde.
-   Para una superficie verde nueva alcanza con sumarla a la lista de abajo, en un
-   solo lugar; los componentes no llevan nada.
-
-   Elegido sobre la variante de lineas despues de medir las dos (ver grid-demo.html):
-   con la misma tinta (delta de luminancia 7,4 sobre 255), una linea continua se lee
-   como grilla y un punto es un evento aislado, asi que el punto pesa mucho menos. */
-:root {
-  --grid-step: 64px;
-  --grid-alpha: 4%;
-  --grid-ink: var(--color-green);
-}
-
-/* Superficies que pintan su propio fondo: la trama va ENCIMA del color, en el
-   mismo elemento, asi que no hace falta un pseudo-elemento ni tocar el layout. */
-:is(html, body, .bg-cream, .bg-green, .folder__body, .folder__tab) {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    color-mix(in srgb, var(--grid-ink) var(--grid-alpha), transparent) 1.05px,
-    transparent 1.05px
-  );
-  background-size: var(--grid-step) var(--grid-step);
-}
-
-/* Superficies verdes: la tinta de la trama se invierte a crema. */
-:is(.bg-green, .folder__body, .folder__tab) {
-  --grid-ink: var(--color-cream);
-}
-
 /* La sintaxis estandar se declara SOLO donde no existe ::-webkit-scrollbar
    (Firefox). En Chromium, declarar scrollbar-width o scrollbar-color hace que
    el navegador descarte todo el bloque webkit de abajo, y con el se perderian
