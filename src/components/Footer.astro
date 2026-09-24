@@ -25,6 +25,12 @@ const year = new Date().getFullYear();
         <p class="mt-2 text-sm leading-relaxed text-green/70">
           <MisureWord text={site.tagline} />
         </p>
+        <a
+          href={headerCta.href}
+          class="mt-4 inline-flex w-fit items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-sm font-semibold tracking-wide text-cream transition hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+        >
+          {footer.ctaLabel}
+        </a>
       </div>
       <nav class="flex flex-col gap-2 text-sm" aria-label="Navegación">
         <p class="text-xs uppercase tracking-[0.2em] text-green/75">
@@ -38,12 +44,6 @@ const year = new Date().getFullYear();
             {item.label}
           </a>
         ))}
-        <a
-          href={headerCta.href}
-          class="mt-1 inline-flex w-fit items-center rounded-md border-2 border-green bg-green px-5 py-2.5 text-sm font-semibold tracking-wide text-cream transition hover:border-green-light hover:bg-green-light active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-        >
-          {footer.ctaLabel}
-        </a>
       </nav>
       <nav class="flex flex-col gap-3 text-sm" aria-label="Contacto">
         <p class="text-xs uppercase tracking-[0.2em] text-green/75">
