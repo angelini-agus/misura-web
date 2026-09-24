@@ -27,6 +27,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
 -->
 <section
   id="contacto"
+  data-scroll-align="center"
   class="scroll-mt-[calc(var(--contact-nav-h)_-_2px)] border-t border-green [--contact-nav-h:4.1875rem] md:[--contact-nav-h:4.8125rem]"
 >
   <div
@@ -35,6 +36,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
     <div
       class="grid w-full flex-1 overflow-hidden rounded-lg border border-green md:grid-cols-2"
       data-reveal
+      data-scroll-card
     >
       <div class="flex flex-col justify-center gap-8 bg-green p-6 text-cream md:p-12">
         <div class="flex flex-col gap-4">

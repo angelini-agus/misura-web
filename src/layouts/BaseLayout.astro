@@ -203,6 +203,33 @@ gtag('config', '${gaId}');`
       initCountUp();
     </script>
     <script>
+      // Encuadre del destino: una seccion que se lee como tarjeta (el formulario)
+      // pide CENTRAR su tarjeta en la franja entre el header y el borde inferior
+      // de la ventana; el resto aterriza pegado al header. La seccion entera no se
+      // puede centrar cuando es mas alta que esa franja (el navegador no centra
+      // algo mas grande que el viewport), asi que se centra el elemento marcado
+      // con `data-scroll-card` y su propio `scroll-margin-top`.
+      const scrollAligned = (target: HTMLElement) => {
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        const navH = document.querySelector("header")?.offsetHeight ?? 0;
+        const card = target.querySelector<HTMLElement>("[data-scroll-card]");
+        // Centrar solo si la tarjeta entra en la franja entre el header y el borde
+        // inferior. Si es mas alta que la ventana (mobile), centrarla esconde el
+        // arranque del formulario, asi que se alinea arriba como cualquier otra
+        // seccion.
+        const centrar =
+          target.dataset.scrollAlign === "center" &&
+          !!card &&
+          card.offsetHeight <= window.innerHeight - navH;
+        const destino = centrar && card ? card : target;
+        destino.scrollIntoView({
+          behavior: reduce ? "auto" : "smooth",
+          block: centrar ? "center" : "start",
+        });
+      };
+
       const onCtaClick = (event: Event) => {
         const link = event.currentTarget as HTMLAnchorElement | null;
         if (!link) return;
@@ -221,14 +248,20 @@ gtag('config', '${gaId}');`
         if (!target) return;
         event.preventDefault();
         event.stopPropagation();
-        const reduce = window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-        target.scrollIntoView({
-          behavior: reduce ? "auto" : "smooth",
-          block: "start",
-        });
+        scrollAligned(target);
       };
+
+      // Llegada por hash desde OTRA pagina: ahi el handler de click no corre (la
+      // navegacion la maneja el ClientRouter) y el router scrollea con alineacion
+      // "start". Se reencuadra centrado apenas la pagina nueva termino de montarse.
+      const alignHashTarget = () => {
+        const hash = window.location.hash;
+        if (!hash) return;
+        const target = document.getElementById(hash.slice(1));
+        if (!target || target.dataset.scrollAlign !== "center") return;
+        setTimeout(() => scrollAligned(target), 80);
+      };
+      document.addEventListener("astro:page-load", alignHashTarget);
       const initCtaScroll = () => {
         document.querySelectorAll('a[href*="#"]').forEach((link) => {
           link.removeEventListener("click", onCtaClick, true);

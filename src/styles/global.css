@@ -14,6 +14,17 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+/* Anclaje del CTA al formulario: la tarjeta va CENTRADA en la franja que queda
+   entre el header sticky y el borde inferior de la ventana. El destino declara
+   `data-scroll-align="center"` (lo lee el handler de BaseLayout) y este
+   scroll-margin convierte el centro de la ventana en el centro de esa franja:
+   con el margen igual al alto del header, el centro del area de scroll coincide
+   con el de la franja real. La seccion NO se centra: es mas alta que la franja y
+   el navegador no puede centrar algo mas grande que el viewport. La tarjeta si. */
+[data-scroll-card] {
+  scroll-margin-top: var(--contact-nav-h, 4.1875rem);
+}
+
 html {
   background: var(--color-cream);
   scroll-behavior: smooth;

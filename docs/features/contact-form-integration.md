@@ -97,3 +97,29 @@ Medido con click real: 1440x1080 → la sección entra completa (1003 px visible
 sección misma: su contenido supera los `100dvh − nav`); 375x667 → arranca pegada al
 header (67) y el resto se scrollea. Idéntico al entrar por client-side desde
 `/proyectos` que desde la misma página.
+
+### Corrección 24-09: la tarjeta va centrada, no pegada al header
+
+El scroll del CTA dejaba la sección pegada al header: en 1440x900 eso daba 97 px de
+aire arriba y solo 35 abajo, es decir la tarjeta del formulario descentrada. Ahora el
+destino declara `data-scroll-align="center"` y el handler de `BaseLayout` centra el
+elemento marcado con `data-scroll-card` (la tarjeta), no la sección: la sección es más
+alta que la franja y el navegador no puede centrar algo más grande que el viewport.
+
+El `scroll-margin-top` de la tarjeta (`var(--contact-nav-h)`) es lo que convierte el
+centro de la ventana en el centro de la franja real (la que queda entre el header y el
+borde inferior). Y centra **solo si la tarjeta entra** en esa franja: en mobile mide
+1292 px sobre 600 disponibles, así que ahí cae a alineación arriba, que es la que deja
+el arranque del formulario a la vista. El `scroll-margin-top` de la sección mantiene
+los 2 px de menos para que su línea no quede pegada a la del header.
+
+| viewport | aire arriba / abajo | resultado |
+| --- | --- | --- |
+| 1440x1080 | 96 / 97 | centrada |
+| 1440x900 | 66 / 66 | centrada (el scroll pasa de 359 a 390: baja más) |
+| 1280x800 | 16 / 16 | centrada, justa |
+| 375x667 | 65 / — | la tarjeta no entra: alineación arriba, se ve el arranque |
+
+Además, la llegada por hash desde otra página (`/contacto#contacto`) no pasa por el
+handler de click: la maneja el ClientRouter con alineación `start`. Por eso se reencuadra
+en `astro:page-load` con el mismo helper, 80 ms después de montar la página nueva.
