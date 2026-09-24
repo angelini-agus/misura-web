@@ -2,11 +2,9 @@
 import { contact, footer, headerCta, isPending, nav, site } from "../lib/content";
 import ShareButton from "./ShareButton.astro";
 import InstagramIcon from "./ui/InstagramIcon.astro";
-import LaptopIcon from "./ui/LaptopIcon.astro";
 import LinkedinIcon from "./ui/LinkedinIcon.astro";
 import MailIcon from "./ui/MailIcon.astro";
 import MisureWord from "./ui/MisureWord.astro";
-import PinIcon from "./ui/PinIcon.astro";
 
 const year = new Date().getFullYear();
 ---
@@ -89,16 +87,6 @@ const year = new Date().getFullYear();
             </a>
           )
         )}
-        {contact.locationItems.map((item) => (
-          <span class="flex w-fit items-center gap-3 text-green">
-            {item.label.includes("UBI") ? (
-              <PinIcon class="h-5 w-5 shrink-0 text-green/75" />
-            ) : (
-              <LaptopIcon class="h-5 w-5 shrink-0 text-green/75" />
-            )}
-            <span>{item.value}</span>
-          </span>
-        ))}
       </nav>
     </div>
     <div
