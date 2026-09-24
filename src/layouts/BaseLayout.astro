@@ -1,4 +1,5 @@
 ---
+import ScrollRail from "../components/ScrollRail.astro";
 import "@fontsource-variable/plus-jakarta-sans";
 import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
@@ -279,5 +280,6 @@ gtag('config', '${gaId}');`
       document.addEventListener("astro:page-load", initCtaScroll);
       initCtaScroll();
     </script>
+  <ScrollRail />
   </body>
 </html>

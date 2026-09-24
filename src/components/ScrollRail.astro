@@ -1,0 +1,246 @@
+---
+// Riel de scroll propio, SOLO desktop. La barra nativa se corta en el borde de
+// cada sección (el fondo alterna crema y verde) y no queda pegada al borde real
+// de la ventana; este riel es `fixed`, opaco y vive fuera del contenido, así que
+// se ve igual sobre cualquier superficie. En mobile no se activa nada: ahí sigue
+// la barra nativa del sistema.
+//
+// Approach, medidas y verificación: docs/features/scroll-rail.md
+---
+
+<div id="scroll-rail" aria-hidden="true">
+  <div id="scroll-rail-thumb"></div>
+</div>
+
+<style>
+  /* El riel: pegado al borde derecho de la ventana, opaco (esto es lo que lo hace
+     consistente sobre cualquier sección), con marcas de regla cada 8px y una marca
+     larga cada 40px, dibujadas con dos gradientes de hard stops: sin elementos
+     extra, sin sombras difusas, sin radius. */
+  #scroll-rail {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    /* Por encima del header sticky. */
+    z-index: 60;
+    background-color: var(--color-cream);
+    border-left: 1px solid var(--color-green);
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1px,
+        transparent 1px 40px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1px,
+        transparent 1px 8px
+      );
+    background-size:
+      8px 40px,
+      4px 8px;
+    background-position:
+      0 0,
+      0 0;
+    background-repeat: repeat, repeat;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Solo cuando el script lo activó: desktop y JS disponible. Si el script no
+     corre, esta regla no aplica y la barra nativa queda como está. */
+  :global(html.has-rail) #scroll-rail {
+    display: block;
+  }
+
+  /* El thumb: pieza maciza, esquinas rectas, sin transición (mapeo 1:1 con el
+     scroll). El alto lo fija el script en proporción al contenido y la posición
+     se actualiza SOLO con transform. Las dos líneas crema son la marca
+     mecanizada de los extremos. */
+  #scroll-rail-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-green);
+    border-top: 1px solid var(--color-cream);
+    border-bottom: 1px solid var(--color-cream);
+  }
+</style>
+
+<script>
+  // Alto mínimo del thumb: en páginas largas la proporción pura daría un hilo de
+  // 3 o 4px y tiene que leerse como una pieza, no como un pelo.
+  const MIN_THUMB = 28;
+  // Mismo corte de desktop que usa el sitio para el header sticky.
+  const CONSULTA_DESKTOP = "(min-width: 48rem)";
+
+  const medio = window.matchMedia(CONSULTA_DESKTOP);
+  const reducir = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // La clase que oculta la barra nativa vive en el <html>, y el router la pisa en
+  // cada navegación con la del HTML servido: se repone en after-swap, antes de la
+  // transición, para que la nativa no alcance a asomar.
+  const marcarSuperficie = () => {
+    document.documentElement.classList.toggle("has-rail", medio.matches);
+  };
+  document.addEventListener("astro:after-swap", marcarSuperficie);
+
+  let cleanup = null;
+
+  const init = () => {
+    cleanup?.();
+    cleanup = null;
+
+    const rail = document.getElementById("scroll-rail");
+    const thumb = document.getElementById("scroll-rail-thumb");
+    if (!rail || !thumb) return;
+
+    let railH = 0;
+    let thumbH = 0;
+    let travel = 0;
+    let maxY = 0;
+    let frame = 0;
+
+    // Pinta el thumb. SOLO transform: nada de top ni margin, y sin leer layout
+    // adentro del frame (las métricas ya están cacheadas).
+    const pintar = () => {
+      const p = maxY === 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxY));
+      thumb.style.transform = `translate3d(0, ${(p * travel).toFixed(2)}px, 0)`;
+    };
+
+    // Mide el contenido. Se llama en carga, resize y cuando cambia el alto del
+    // documento: nunca en el evento de scroll.
+    const medir = () => {
+      railH = rail.clientHeight;
+      const docH = document.documentElement.scrollHeight;
+      const viewH = window.innerHeight;
+      maxY = Math.max(0, docH - viewH);
+      const proporcion = viewH / Math.max(docH, 1);
+      thumbH = Math.min(
+        railH,
+        Math.max(MIN_THUMB, Math.round(railH * proporcion)),
+      );
+      travel = Math.max(0, railH - thumbH);
+      thumb.style.height = `${thumbH}px`;
+      pintar();
+    };
+
+    const alScrollear = () => {
+      if (frame || !medio.matches) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        pintar();
+      });
+    };
+
+    const alRedimensionar = () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      medir();
+    };
+
+    const alCambiarMedio = () => {
+      marcarSuperficie();
+      alRedimensionar();
+    };
+
+    // --- arrastre del thumb y click en el riel ---
+    let arrastrando = false;
+    let inicioY = 0;
+    let inicioScroll = 0;
+
+    const alBajar = (event) => {
+      if (!medio.matches) return;
+      event.preventDefault();
+      const sobreThumb = event.target === thumb;
+      arrastrando = true;
+      inicioY = event.clientY;
+      inicioScroll = window.scrollY;
+      // setPointerCapture puede tirar si el pointerId no existe (eventos
+      // sintéticos o un puntero que se fue): no puede romper el handler.
+      try {
+        rail.setPointerCapture(event.pointerId);
+      } catch {
+        /* sin captura igual funciona el arrastre dentro del riel */
+      }
+
+      if (!sobreThumb && travel > 0) {
+        // Click en el riel: el thumb se centra en ese punto y la página salta ahí.
+        const caja = rail.getBoundingClientRect();
+        const deseado = Math.min(
+          travel,
+          Math.max(0, event.clientY - caja.top - thumbH / 2),
+        );
+        const destino = (deseado / travel) * maxY;
+        window.scrollTo({
+          top: destino,
+          behavior: reducir() ? "auto" : "smooth",
+        });
+        // El arrastre sigue desde donde quedó el salto, no desde el click.
+        inicioScroll = destino;
+        inicioY = event.clientY;
+      }
+    };
+
+    const alMover = (event) => {
+      if (!arrastrando || travel <= 0) return;
+      const delta = event.clientY - inicioY;
+      // instant: el arrastre tiene que responder 1:1, no con scroll suave.
+      window.scrollTo({
+        top: inicioScroll + (delta / travel) * maxY,
+        behavior: "instant",
+      });
+    };
+
+    const alSoltar = (event) => {
+      arrastrando = false;
+      try {
+        rail.releasePointerCapture(event.pointerId);
+      } catch {
+        /* ya liberado */
+      }
+    };
+
+    // El documento crece o encoge sin resize de ventana (imágenes, acordeones,
+    // pasos del formulario): el riel se re-mide.
+    const observador = new ResizeObserver(alRedimensionar);
+    observador.observe(document.body);
+
+    window.addEventListener("scroll", alScrollear, { passive: true });
+    window.addEventListener("resize", alRedimensionar, { passive: true });
+    medio.addEventListener("change", alCambiarMedio);
+    rail.addEventListener("pointerdown", alBajar);
+    rail.addEventListener("pointermove", alMover);
+    rail.addEventListener("pointerup", alSoltar);
+    rail.addEventListener("pointercancel", alSoltar);
+
+    cleanup = () => {
+      window.removeEventListener("scroll", alScrollear);
+      window.removeEventListener("resize", alRedimensionar);
+      medio.removeEventListener("change", alCambiarMedio);
+      rail.removeEventListener("pointerdown", alBajar);
+      rail.removeEventListener("pointermove", alMover);
+      rail.removeEventListener("pointerup", alSoltar);
+      rail.removeEventListener("pointercancel", alSoltar);
+      observador.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    marcarSuperficie();
+    medir();
+  };
+
+  document.addEventListener("astro:page-load", init);
+  document.addEventListener("astro:before-swap", () => cleanup?.());
+  init();
+</script>

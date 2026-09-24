@@ -49,6 +49,22 @@
   scroll-margin-top: calc(var(--nav-h) - 2px);
 }
 
+/* Con el riel propio activo (solo desktop, lo decide el script), la barra nativa
+   se oculta. Sigue el criterio del resto del archivo: la via webkit es la que usan
+   Chromium y Safari, y la sintaxis estandar se declara SOLO donde no existe
+   ::-webkit-scrollbar, porque declarar scrollbar-width en Chromium hace que el
+   navegador descarte todo el bloque webkit. En mobile la clase no existe, asi que
+   la barra nativa del sistema queda intacta. */
+html.has-rail::-webkit-scrollbar {
+  display: none;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html.has-rail {
+    scrollbar-width: none;
+  }
+}
+
 html {
   background: var(--color-cream);
   scroll-behavior: smooth;
