@@ -624,7 +624,7 @@ export const contact: ContactInfo = {
     {
       label: "MODALIDAD",
       value:
-        "Entrevistas presenciales en Rosario y alrededores y a distancia en todo el país.",
+        "Entrevistas presenciales en Rosario y alrededores. A distancia en todo el país.",
     },
   ],
   socials: [
