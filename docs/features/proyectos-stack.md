@@ -600,7 +600,7 @@ baja un escalón por cada carpeta asentada y la pila crece hacia abajo.
 ### Conexión solapa–cuerpo
 
 La esquina superior **izquierda** del cuerpo va a 90° (`border-top-left-radius: 0`):
-ahí apoya la solapa, que comparte el borde con el cuerpo (`left: -1px`,
+ahí apoya la solapa, que comparte el borde con el cuerpo (`left: 0`,
 `bottom: calc(100% - 1px)` y sin borde inferior, así el hairline superior del
 cuerpo queda tapado justo debajo de la solapa). Con el radio puesto, la curva
 cortaba la unión y se veía un escalón entre la solapa y el cuerpo. Las otras tres
@@ -614,3 +614,9 @@ referencia del autor.
 Medido en el navegador: `borderTopLeftRadius: 0px` con `topRight/bottomLeft/bottomRight: 6px`,
 y solapa y cuerpo compartiendo borde (`tabLeft 76` vs `bodyLeft 77`,
 `tabBottom 215` vs `bodyTop 214`).
+
+Corrección del eje X (24-09): la solapa usaba `left: -1px`, así que su borde
+izquierdo quedaba **al lado** del borde del cuerpo en vez de encima: 2 px de filo
+y un escalón de 1 px entre la solapa y el cuerpo. Con `left: 0` los dos bordes
+caen en la misma línea. Medido: `tabLeft === bodyLeft` (77 px) y el borde
+compartido sigue en `tabBottom 215` contra `bodyTop 214`.

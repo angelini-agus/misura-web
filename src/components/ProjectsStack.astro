@@ -387,7 +387,11 @@ const projectCount = projects.length;
        cuerpo: su lado inferior coincide con el top del cuerpo. Es el gesto
        de "carpeta de Windows" del recorte. */
     bottom: calc(100% - 1px);
-    left: -1px;
+    /* `left: 0` (no -1px): el borde izquierdo de la solapa tiene que caer
+       EXACTAMENTE sobre el del cuerpo para leerse como una sola linea. Con
+       -1px quedaban uno al lado del otro y el filo izquierdo hacia un escalon
+       de 1px entre la solapa y el cuerpo. */
+    left: 0;
     /* Para que el borde inferior de la pestaña se fusione con el borde
        superior del cuerpo, sin que se vea una línea doble: el offset de -1px
        sube la pestaña para superponerse con el borde de 1px del cuerpo. */
