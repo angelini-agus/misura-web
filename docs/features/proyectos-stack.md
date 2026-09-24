@@ -596,3 +596,21 @@ baja un escalón por cada carpeta asentada y la pila crece hacia abajo.
   se pasa del viewport (`529-717 ≤ 900`, `611-627 ≤ 667`, `769 ≤ 1080`).
 - La intro de la sección bajó su padding inferior (`pb-8 md:pb-10`) para que el
   primer folder arranque junto al título.
+
+### Conexión solapa–cuerpo
+
+La esquina superior **izquierda** del cuerpo va a 90° (`border-top-left-radius: 0`):
+ahí apoya la solapa, que comparte el borde con el cuerpo (`left: -1px`,
+`bottom: calc(100% - 1px)` y sin borde inferior, así el hairline superior del
+cuerpo queda tapado justo debajo de la solapa). Con el radio puesto, la curva
+cortaba la unión y se veía un escalón entre la solapa y el cuerpo. Las otras tres
+esquinas siguen redondeadas (6 px): recta donde entra la pestaña, curva en el
+resto, que es la silueta de carpeta.
+
+La solapa lleva las dos esquinas de ARRIBA redondeadas
+(`border-radius: 0.375rem 0.375rem 0 0`) y las de abajo rectas, como la
+referencia del autor.
+
+Medido en el navegador: `borderTopLeftRadius: 0px` con `topRight/bottomLeft/bottomRight: 6px`,
+y solapa y cuerpo compartiendo borde (`tabLeft 76` vs `bodyLeft 77`,
+`tabBottom 215` vs `bodyTop 214`).

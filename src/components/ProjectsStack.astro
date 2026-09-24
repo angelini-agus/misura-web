@@ -172,6 +172,11 @@ const projectCount = projects.length;
     overflow: hidden;
     border: 1px solid var(--color-cream);
     border-radius: 0.375rem;
+    /* La esquina superior IZQUIERDA va a 90°: ahí apoya la solapa, que comparte
+       el borde con el cuerpo. Con el radio, la curva cortaba la unión y se veía
+       un escalon entre la solapa y el cuerpo. Las otras tres siguen redondeadas:
+       es la silueta de carpeta (recta donde entra la pestaña, curva en el resto). */
+    border-top-left-radius: 0;
     background-color: var(--color-green);
     color: var(--color-cream);
   }
@@ -246,6 +251,9 @@ const projectCount = projects.length;
     align-self: flex-start;
     border: 1px solid var(--color-cream);
     border-bottom: 0;
+    /* Arriba redondeada (como la referencia del autor), abajo a 90° para
+       fusionarse con el cuerpo, que tiene la esquina superior izquierda recta. */
+    border-radius: 0.375rem 0.375rem 0 0;
     background-color: var(--color-green);
     color: var(--color-cream);
     padding: 0.5rem 1rem;
