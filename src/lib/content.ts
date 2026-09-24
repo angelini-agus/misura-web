@@ -378,21 +378,21 @@ export const team: {
   },
   members: [
     {
-      name: "[COMPLETAR: nombre]",
-      role: "[COMPLETAR: rol, ej: Desarrollo]",
-      description: "[COMPLETAR: frase personal, ej: Me obsesiona que el cliente entienda el sistema sin manual de instrucciones]",
+      name: "Agustín Angelini",
+      role: "Desarrollador Full Stack",
+      description: "Orientación en Frontend e integraciones con IA. Me gusta que el software sea rápido, simple y fácil de usar.",
       socials: {
-        linkedin: "[COMPLETAR: link LinkedIn]",
-        github: "[COMPLETAR: link GitHub]",
+        linkedin: "https://www.linkedin.com/in/agustin-angelini/",
+        github: "https://github.com/angelini-agus",
       },
     },
     {
-      name: "[COMPLETAR: nombre]",
-      role: "[COMPLETAR: rol, ej: Desarrollo y Negocio]",
-      description: "[COMPLETAR: frase personal, ej: Prefiero una demo en el negocio del cliente que diez reuniones por Zoom]",
+      name: "Franco Cuscianna",
+      role: "Desarrollador Full Stack",
+      description: "Orientación en Backend y Arquitectura de Sistemas. Me gusta que el software sea sólido, seguro y escalable.",
       socials: {
-        linkedin: "[COMPLETAR: link LinkedIn]",
-        github: "[COMPLETAR: link GitHub]",
+        linkedin: "https://www.linkedin.com/in/francocus/",
+        github: "https://github.com/francocus",
       },
     },
   ],
