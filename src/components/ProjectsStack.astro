@@ -4,25 +4,32 @@ import { caseStudies, portfolio } from "../lib/content";
 import Button from "./ui/Button.astro";
 import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
 
-// Un bloque a lo ancho por proyecto, en el orden curado de `portfolio.items`.
-// El href de cada item (`/proyectos/<slug>`) cruza con su caso para tomar las
-// capturas de la galeria y el detalle documentado. No se inventa copy: cliente,
-// titulo, descripcion, tags y destino salen de content.ts.
-//
-// La galeria puede tener menos de 3 capturas (hoy pasa con la landing de
-// limpieza, que tiene una sola): el bloque muestra las que haya.
+// Un mazo "flip stack" por proyecto, en el orden curado de `portfolio.items`.
+// El href de cada item (`/proyectos/<slug>`) cruza con el caso correspondiente
+// para tomar cliente, título, descripción, tecnologías, slug y la galería.
+// No se inventa copy: todo sale de content.ts. La galería se corta a tres
+// capturas: una grande arriba y dos chicas abajo, en la columna de la derecha
+// (es el mosaico pedido por el autor). Si el caso tiene menos, se muestran
+// las que haya.
 const projects = portfolio.items.flatMap((item) => {
   const slug = item.href?.replace("/proyectos/", "") ?? "";
   const study = Object.values(caseStudies).find((cs) => cs.slug === slug);
-  return study ? [{ study, gallery: study.gallery?.slice(0, 3) ?? [] }] : [];
+  return study
+    ? [{ study, gallery: study.gallery?.slice(0, 3) ?? [] }]
+    : [];
 });
 
 // Etiqueta del CTA: la del portfolio ("Ver caso completo"), que ya existe en
 // content.ts y es la misma que usan las tarjetas del home.
 const detailsLabel = portfolio.detailsLabel;
+const projectCount = projects.length;
 ---
 
-<section id="portfolio" class="projects-stack scroll-mt-24 border-t border-green">
+<section
+  id="portfolio"
+  class="projects-stack scroll-mt-24 border-t border-green"
+  style={`--flip-count: ${projectCount}`}
+>
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
     <div class="max-w-xl" data-reveal>
       <p class="text-xs font-semibold uppercase tracking-[0.2em]">
@@ -33,71 +40,96 @@ const detailsLabel = portfolio.detailsLabel;
       >
         {portfolio.title}
       </h2>
-      <p class="mt-4 leading-relaxed text-green/80">{portfolio.description}</p>
+      <p class="mt-4 leading-relaxed text-green/80">
+        {portfolio.description}
+      </p>
     </div>
+  </div>
 
-    <div class="projects-stack__cards mt-12">
-      {projects.map(({ study, gallery }, index) => (
-        <article
-          class="projects-stack__card overflow-hidden rounded-md border border-green bg-green text-cream"
-          style={`z-index: ${index + 1}`}
-        >
-            <div
-              class="projects-card__inner flex h-full flex-col gap-3 p-4 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-8 md:p-6"
-            >
-              <div
-                class="projects-card__shots grid grid-cols-3 items-center gap-2 md:gap-3"
-              >
-                {gallery.map((shot) => (
-                  <ScreenshotFrame compact>
-                    <Image
-                      src={shot.src}
-                      alt={shot.alt}
-                      widths={[320, 480, 800]}
-                      sizes="(min-width: 768px) 33vw, 50vw"
-                      class="aspect-[16/9] w-full object-cover object-top"
-                      loading="lazy"
-                    />
-                  </ScreenshotFrame>
-                ))}
+  <div class="projects-stack__runway" data-flip-runway>
+    <div class="projects-stack__sticky">
+      <div class="projects-stack__stage" data-flip-stage>
+        {projects.map(({ study, gallery }, index) => (
+          <article
+            class="projects-stack__card"
+            data-flip-card={index}
+            style={`z-index: ${projectCount - index}`}
+          >
+            <div class="projects-stack__panel">
+              <div class="projects-stack__copy">
+                <p class="projects-stack__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <div class="projects-stack__block">
+                  <p class="projects-stack__client">{study.client}</p>
+                  <h3 class="projects-stack__title">{study.title}</h3>
+                  <p class="projects-stack__description">
+                    {study.seo.description}
+                  </p>
+                  <div class="projects-stack__tags">
+                    {study.technologies.map((tech) => (
+                      <span class="projects-stack__tag">{tech}</span>
+                    ))}
+                  </div>
+                  <div class="projects-stack__cta">
+                    <Button
+                      variant="cream"
+                      href={`/proyectos/${study.slug}`}
+                    >
+                      {detailsLabel}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
-              <div class="flex min-h-0 flex-1 flex-col">
-                <p
-                  class="projects-card__client font-mono text-[0.65rem] uppercase tracking-widest text-cream/70 md:text-xs"
-                >
-                  {study.client}
-                </p>
-                <h3
-                  class="projects-card__title font-display mt-1.5 text-base font-medium leading-tight md:mt-3 md:text-xl"
-                >
-                  {study.title}
-                </h3>
-                <p
-                  class="projects-card__description mt-2 line-clamp-3 min-h-0 text-xs leading-relaxed text-cream/80 md:mt-3 md:line-clamp-4 md:text-sm"
-                >
-                  {study.seo.description}
-                </p>
-                <div
-                  class="projects-card__tags mt-3 flex flex-wrap gap-1.5 md:gap-2"
-                >
-                  {study.technologies.map((tech) => (
-                    <span
-                      class="border border-cream px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-widest text-cream md:px-2 md:py-1 md:text-[0.65rem]"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+              <div class="projects-stack__shots">
+                <div class="projects-stack__shot projects-stack__shot--big">
+                  <ScreenshotFrame compact hover>
+                    {/*
+                      Nota: la relación 16:10 está elegida a propósito. Es la
+                      relación modal de los estudios legal y pediátrico (1600x1000
+                      y 1440x900), las fuentes más visibles del mazo. Las
+                      capturas de limpieza (1903x916, ~2.08:1) se recortan un
+                      poco a los costados vía object-cover — el contenido crítico
+                      (la grilla, las tablas) está centrado verticalmente y se
+                      preserva. Si más adelante aparece una captura fuera de 16:10
+                      con texto a un costado, conviene revisar este aspect.
+                    */}
+                    <Image
+                      src={gallery[0].src}
+                      alt={gallery[0].alt}
+                      widths={[480, 768, 1088]}
+                      sizes="(min-width: 48rem) 30rem, 88vw"
+                      class="aspect-[16/10] w-full object-cover object-top"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                  </ScreenshotFrame>
                 </div>
-                <div class="projects-card__cta mt-auto pt-4">
-                  <Button variant="cream" href={`/proyectos/${study.slug}`}>
-                    {detailsLabel}
-                  </Button>
-                </div>
+
+                {gallery.length > 1 && (
+                  <div class="projects-stack__thumbs">
+                    {gallery.slice(1).map((shot) => (
+                      <div class="projects-stack__shot projects-stack__shot--thumb">
+                        <ScreenshotFrame compact hover>
+                          <Image
+                            src={shot.src}
+                            alt={shot.alt}
+                            widths={[256, 512]}
+                            sizes="(min-width: 48rem) 15rem, 45vw"
+                            class="aspect-[16/10] w-full object-cover object-top"
+                            loading="lazy"
+                          />
+                        </ScreenshotFrame>
+                      </div>
+                    ))}
+                    {/* Ver la nota sobre aspect 16:10 en el bloque del shot grande. */}
+                  </div>
+                )}
               </div>
             </div>
           </article>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -112,17 +144,6 @@ const detailsLabel = portfolio.detailsLabel;
      valores. */
   .projects-stack {
     --nav-h: 4.1875rem;
-    /* La ranura de cada bloque mide una tarjeta y media: la tarjeta (media
-       pantalla util) mas media tarjeta de recorrido. Ese extra es el ritmo de
-       la pila: es el scroll durante el que la tarjeta queda pegada antes de que
-       el bloque siguiente la releve. Media tarjeta alcanza para que la pausa se
-       note (unos 180px en un viewport de 800px) sin que el hueco entre bloques
-       se coma la pantalla. */
-    /* Dos tarjetas por pantalla. Entre las dos, el aire de abajo y el navbar
-       suman 100dvh, asi que la tarjeta es la mitad de lo que sobra. La formula
-       es la misma que usa la seccion de servicios de AZ:
-       h = (100vh - top - gap) / 2, con el aire de abajo sumado aparte. */
-    --stack-gap: 24px;
   }
 
   @media (min-width: 48rem) {
@@ -131,82 +152,616 @@ const detailsLabel = portfolio.detailsLabel;
     }
   }
 
-  /* Las tarjetas son hermanas en una columna con gap, como la seccion de
-     servicios de AZ: la contenedora de cada una es la pila entera, asi que
-     ninguna se suelta hasta que termina la seccion. Cada una se pega justo
-     debajo del navbar y la siguiente la tapa al subir, porque lleva un z-index
-     mayor (va en el markup). */
-  .projects-stack__cards {
+  /* Tamaño de la tarjeta desde la geometría (no el viewport): el stage es un
+     container de cqw y la escala tipográfica cuelga de él con mínimos en rem.
+     Así una tarjeta compacta en mobile y una grande en desktop comparten la
+     misma curva de tipo, sin saltos al rotar el dispositivo. */
+  .projects-stack__stage {
+    --flip-pad: clamp(1.25rem, 3cqw, 3rem);
+    --flip-gap: clamp(1rem, 3cqw, 2.5rem);
+
+    /* Container queries sobre inline-size para que 1cqw = 1% del ancho del
+       stage, no de la ventana. */
+    container-type: inline-size;
+  }
+
+  /* Reglas BASE (sin JS): el carrete se desarma. El runway es alto automatico,
+     el sticky no se pega, las tarjetas se ven una debajo de la otra en flujo
+     normal. Es el patron de [data-reveal] en global.css y la misma idea: con
+     JS deshabilitado o fallando, el contenido no queda apilado en un solo
+     punto del DOM. */
+  .projects-stack__runway {
+    height: auto;
+  }
+
+  .projects-stack__sticky {
+    position: static;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  .projects-stack__stage {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    perspective: none;
+  }
+
+  /* La caja visible (borde, radio, verde, texto crema) vive en el PANEL y no
+     en la tarjeta: el panel es lo que sube en la entrada (crece desde su borde
+     inferior), asi que la superficie entera tiene que moverse, no solo su
+     contenido. La tarjeta es el envoltorio de posicionamiento que se pliega en
+     la salida. */
+  .projects-stack__card {
+    margin-bottom: 1rem;
+  }
+
+  .projects-stack__panel {
+    height: auto;
+    overflow: hidden;
+    border: 1px solid var(--color-green);
+    border-radius: 0.375rem;
+    background-color: var(--color-green);
+    color: var(--color-cream);
+  }
+
+  /* Reglas CON JS (gate en .js del <html>): el runway se vuelve el carrete de
+     scroll y el sticky se pega a la ventana. Las tarjetas pasan a estar
+     apiladas en el stage. .js lo pone BaseLayout.astro cuando el modulo
+     del cliente carga; sin ese gate, el contenido se ve como una lista. */
+
+  :global(.js) .projects-stack__runway {
+    /* El runway mide n * 100dvh y NO (n + 1) * 100dvh como la referencia:
+       con n * 100dvh la última tarjeta se queda al final del scroll y el
+       visitante sigue hasta el footer; con (n+1) el mazo terminaba con la
+       ventana vacía. La diferencia se calcula en el spec de la feature. */
+    height: calc(var(--flip-count) * 100dvh);
+  }
+
+  :global(.js) .projects-stack__sticky {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    /* overflow: clip (no hidden) recorta las tarjetas que se pliegan fuera del
+       viewport sin crear un scroll container interno. */
+    overflow: clip;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--nav-h) + 1.5rem) clamp(1rem, 4vw, 2.5rem) 2.5rem;
+  }
+
+  :global(.js) .projects-stack__stage {
+    position: relative;
+    perspective: 800px;
+    perspective-origin: 50% 50%;
+  }
+
+  /* Mobile: el stage toma el alto util de la pantalla en vez de una relacion
+     fija, porque la tarjeta es de una columna y el texto necesita mas alto
+     relativo que en desktop. El tope de 40rem evita que en un celular muy alto
+     el texto quede flotando lejos de la captura. */
+  :global(.js) .projects-stack__stage {
+    width: min(100%, 30rem);
+    height: min(calc(100dvh - var(--nav-h) - 4rem), 40rem);
+  }
+
+  :global(.js) .projects-stack__card {
+    position: absolute;
+    inset: 0;
+    margin-bottom: 0;
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    /* will-change se aplica SOLO mientras el mazo está en movimiento (clase
+       .projects-stack--moving, gestionada por el script). Sin esa capa
+       permanente, las tarjetas no gastan memoria de GPU cuando el visitante
+       ya pasó la sección. */
+  }
+
+  /* Capa compuesta solo mientras el mazo se mueve: la clase la pone y la saca
+     el script. El mazo en reposo no deja capas de GPU prendidas. */
+  :global(.js) .projects-stack--moving .projects-stack__card,
+  :global(.js) .projects-stack--moving .projects-stack__panel {
+    will-change: transform;
+  }
+
+  :global(.js) .projects-stack__panel {
+    /* El origen del panel es el borde inferior: la tarjeta crece desde abajo
+       cuando entra, como un mazo real apoyado sobre la mesa. */
+    transform-origin: 50% 100%;
+    height: 100%;
+    width: 100%;
+  }
+
+  /* === Layout: una columna en mobile, dos en desktop ===================== */
+
+  .projects-stack__panel {
     display: flex;
     flex-direction: column;
-    gap: var(--stack-gap);
+    gap: var(--flip-gap);
+    padding: var(--flip-pad);
   }
 
-  .projects-stack__card {
-    position: sticky;
-    top: var(--nav-h);
-    height: calc((100dvh - var(--nav-h) - var(--stack-gap) * 2) / 2);
+  .projects-stack__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* Ocupa el alto disponible para que el bloque de texto (margin-top: auto)
+       quede apoyado sobre la captura; en desktop es un item de grid y el
+       stretch hace lo mismo. */
+    flex: 1 1 auto;
   }
 
-  /* Desktop bajo (un 1366x768 con las barras del navegador ronda los 650-700px
-     utiles): el bloque queda justo, asi que se recorta la descripcion a 2 lineas
-     y se aprietan los espaciados. Arriba de 760px entra completa. */
+  .projects-stack__number {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: clamp(1.5rem, 2.6cqw, 2rem);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-cream);
+  }
+
+  .projects-stack__block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .projects-stack__client {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: clamp(0.65rem, 1.05cqw, 0.75rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-cream) 70%, transparent);
+  }
+
+  .projects-stack__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3.2cqw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .projects-stack__description {
+    font-size: clamp(0.875rem, 1.15cqw, 1rem);
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--color-cream) 80%, transparent);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .projects-stack__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .projects-stack__tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: clamp(0.6rem, 0.8cqw, 0.7rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-cream);
+  }
+
+  .projects-stack__cta {
+    margin-top: 0.5rem;
+  }
+
+  .projects-stack__shots {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .projects-stack__shot {
+    width: 100%;
+  }
+
+  /* Mobile: solo la captura grande (las dos chicas no entran en el alto util
+     de un celular manteniendo el mosaico legible). */
+  .projects-stack__thumbs {
+    display: none;
+  }
+
+  /* === Tipografia condensada del stage (la tarjeta manda, no el viewport) ===
+     Los `cqw` viven arriba contra `container-type: inline-size` del stage.
+     En mobile el stage mide menos y el texto baja; en desktop sube solo con
+     el ancho del stage, no del navegador. */
+
+  @media (min-width: 48rem) {
+    :global(.js) .projects-stack__stage {
+      /* A partir de 48rem el stage se dimensiona: ancho maximo para que la
+         tarjeta (relación 1.9:1) entre entera en el alto util de la pantalla.
+         `min(100%, 68rem, (100dvh - nav - 4rem) * 1.9)`: 68rem es el techo
+         editorial, `(100dvh - 4rem - nav) * 1.9` es el techo de viewport, y
+         el 4rem es el asomo del mazo debajo. */
+      width: min(100%, 68rem, (100dvh - var(--nav-h) - 4rem) * 1.9);
+      aspect-ratio: 1.9;
+      height: auto;
+    }
+
+    :global(.js) .projects-stack__panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--flip-gap);
+    }
+
+    .projects-stack__description {
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+    }
+
+    .projects-stack__thumbs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+  }
+
+  /* Una sola captura: queda centrada en la columna derecha (justify-content
+     ya lo hace); con dos capturas, la segunda ocupa la celda izquierda de la
+     fila de thumbs. Nunca hay una fila de tres: el mosaico es una grande
+     arriba y hasta dos chicas abajo. */
+
+  /* === Compactación por altura corta ===================================== */
+
+  /* Escritorio bajo (768 de alto con barras del navegador ronda los 650-700
+     utiles): la tarjeta queda justa, se recorta la descripcion a 2 lineas y
+     se aprietan los espaciados. */
   @media (min-width: 48rem) and (max-height: 760px) {
-    .projects-card__inner {
+    .projects-stack__panel {
       gap: 1rem;
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
-    .projects-card__title {
-      margin-top: 0.375rem;
-      font-size: 1.125rem;
+    .projects-stack__title {
+      font-size: 1.25rem;
     }
 
-    .projects-card__description {
-      margin-top: 0.5rem;
+    .projects-stack__description {
       -webkit-line-clamp: 2;
       line-clamp: 2;
     }
 
-    .projects-card__tags {
-      margin-top: 0.625rem;
+    .projects-stack__tags {
+      gap: 0.25rem;
     }
 
-    .projects-card__cta {
-      padding-top: 0.75rem;
+    .projects-stack__cta {
+      margin-top: 0.25rem;
     }
   }
 
-  /* Mismo umbral de celulares bajos que Hero.astro/Header.astro: con menos alto
-     el bloque de media pantalla no puede mostrar todo el detalle; se prioriza
-     capturas, titulo, tags, descripcion de 2 lineas y boton. */
+  /* Celular bajo: con menos alto el bloque no puede mostrar todo el detalle;
+     se priorizan capturas y titulo, descripcion de 2 lineas y CTA. */
   @media (max-width: 30rem) and (max-height: 620px) {
-    .projects-card__inner {
+    .projects-stack__panel {
       gap: 0.5rem;
       padding: 0.75rem;
     }
 
-    .projects-card__shots {
-      gap: 0.375rem;
+    .projects-stack__title {
+      font-size: 1rem;
     }
 
-    .projects-card__title {
-      margin-top: 0.25rem;
-      font-size: 0.9375rem;
-    }
-
-    .projects-card__description {
-      margin-top: 0.375rem;
+    .projects-stack__description {
       -webkit-line-clamp: 2;
       line-clamp: 2;
     }
 
-    .projects-card__tags {
-      margin-top: 0.375rem;
-    }
-
-    .projects-card__cta {
-      padding-top: 0.5rem;
+    .projects-stack__tags {
+      gap: 0.25rem;
     }
   }
+
 </style>
+
+<script>
+  // Importamos la matemática como módulo puro (sin DOM). El bundler de Astro
+  // emite un chunk por modulo y este vive en su propio archivo, lo que
+  // también ayuda al verificador de tipos de `astro check`.
+  import {
+    flipCardState,
+    flipExitPercent,
+    flipFront,
+    flipGeometry,
+    flipProgress,
+    springStep,
+    defaultSpringConfig,
+  } from "../lib/flip-stack";
+
+  // Estado de la ultima animacion en curso, a nivel de MODULO (no de init):
+  // asi la siguiente llamada a init() puede interrumpir el rAF anterior sin
+  // que se acumulen timers entre navegaciones SPA. El cleanup vive en
+  // init() y se llama antes de re-medir.
+  let cleanup: (() => void) | null = null;
+  let rafId: number | null = null;
+
+  // Bandera global: mientras el resorte no se asento (sea porque esta yendo
+  // hacia el target o porque recien empezo) el script pide mas frames y
+  // prende la clase que activa will-change. Cuando se asienta, deja de
+  // pedir frames y apaga la clase para no dejar capas GPU prendidas.
+  const init = () => {
+    // Limpieza del init anterior (navegacion SPA). Removemos listeners,
+    // desconectamos observers y cancelamos el rAF pendiente; sin esto, al
+    // volver a la pagina se sumarian dos juegos de handlers.
+    if (cleanup) {
+      cleanup();
+      cleanup = null;
+    }
+
+    const section = document.querySelector<HTMLElement>(".projects-stack");
+    const runway = document.querySelector<HTMLElement>("[data-flip-runway]");
+    const stage = document.querySelector<HTMLElement>("[data-flip-stage]");
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-flip-card]"),
+    );
+
+    if (!section || !runway || !stage || cards.length === 0) {
+      // La seccion no esta en esta pagina (SPA navego a otra ruta). Salimos
+      // sin colgar handlers vacios.
+      return;
+    }
+
+    // La geometria se recalcula en measure(): el % de salida no es la
+    // constante de la referencia sino que sale del alto real del stage (ver
+    // flipExitPercent).
+    let geometry = flipGeometry(cards.length);
+    const springConfig = defaultSpringConfig();
+
+    // Estado del resorte: a nivel de modulo via closure del init, asi el
+    // rAF del frame en curso puede leer y escribir la misma variable que el
+    // listener de scroll. No lo guardamos en mod-scope porque no queremos
+    // que sobreviva entre paginas (cleanup lo va a soltar).
+    let springValue = 0;
+    let springVelocity = 0;
+    let targetProgress = 0;
+    let lastFrameAt: number | null = null;
+    let reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // El "frente" del mazo: indice de la tarjeta visible al frente. Cambia
+    // cuando un nuevo segmento entra en juego; mientras no cambie, no tocamos
+    // el DOM (el inert no se vuelve a setear).
+    let currentFront = -1;
+
+    // Mediciones iniciales. Se releen en resize y via ResizeObserver cuando
+    // cambia la altura del runway (caso tipico: collapse de la URL bar en
+    // mobile).
+    let runwayTop = 0;
+    let runwayHeight = 0;
+    let stickyHeight = 0;
+
+    const measure = () => {
+      // runwayTop = distancia desde el top del documento al top del runway.
+      // Se mide sobre el documento, no el viewport, porque el scroll es del
+      // documento entero.
+      const runwayRect = runway.getBoundingClientRect();
+      runwayTop = runwayRect.top + window.scrollY;
+      runwayHeight = runwayRect.height;
+      const sticky = runway.querySelector<HTMLElement>(
+        ".projects-stack__sticky",
+      );
+      stickyHeight = sticky?.offsetHeight ?? window.innerHeight;
+
+      // La salida se MIDE, no se asume un porcentaje fijo: la tarjeta tiene
+      // que cruzar toda el area recortada del sticky, y esa area es la ventana
+      // entera. Se mide contra el sticky (no con offsetTop) para no depender de
+      // cual sea el offsetParent. Las dos rects se desplazan igual con el
+      // scroll, asi que la diferencia es estable.
+      const stageTop = sticky
+        ? stage.getBoundingClientRect().top -
+          sticky.getBoundingClientRect().top
+        : 0;
+      geometry = flipGeometry(
+        cards.length,
+        flipExitPercent(stageTop, stage.offsetHeight),
+      );
+    };
+
+    const syncDomFromProgress = (progress: number) => {
+      // Tarjeta activa al frente: el cambio se aplica solo si el indice
+      // cambio, asi no escribimos `inert` en cada frame. Importante para
+      // que el foco no caiga sobre un boton tapado por otra tarjeta.
+      const front = flipFront(progress, geometry);
+      if (front !== currentFront) {
+        currentFront = front;
+        for (let i = 0; i < cards.length; i++) {
+          if (i === front) {
+            cards[i].removeAttribute("inert");
+          } else {
+            cards[i].setAttribute("inert", "");
+          }
+        }
+      }
+
+      // Estado por tarjeta. Las tarjetas que no se mueven escriben igual
+      // porque el rAF solo corre mientras el resorte esta vivo; el costo es
+      // bajo y mantiene una sola fuente de verdad para el render.
+      for (let i = 0; i < cards.length; i++) {
+        const state = flipCardState(progress, i, geometry, reduceMotion);
+        const card = cards[i];
+
+        // .projects-stack__card (la que se pliega): translateY en % + el
+        // offset de apilado, mas el rotateX. translate3d abre una capa
+        // compuesta automaticamente y mantiene 60fps estables.
+        card.style.transform = `translate3d(0, calc(${state.yPercent}% + ${state.stackOffset}px), 0) rotateX(${state.rotateX}deg)`;
+
+        // .projects-stack__panel (el que sube con la entrada).
+        const panel = card.querySelector<HTMLElement>(
+          ".projects-stack__panel",
+        );
+        if (panel) {
+          panel.style.transform = `translate3d(0, ${state.entryY}px, 0) scale(${state.entryScale})`;
+        }
+
+        // Opacidad: solo se escribe bajo movimiento reducido. En el flujo
+        // normal ya esta en 1 y no tiene sentido tocarla por frame.
+        if (reduceMotion) {
+          card.style.opacity = String(state.opacity);
+        } else if (card.style.opacity) {
+          card.style.opacity = "";
+        }
+      }
+    };
+
+    // El rAF SOLO corre mientras el resorte no esta asentado. Si ya esta
+    // quieto, dejamos de pedir frames y dormimos hasta el proximo scroll.
+    // Es la pieza clave de "no dejar un rAF loop encendido para siempre":
+    // cuando el visitante deja de scrollear sobre la seccion, el frame loop
+    // se apaga.
+    const tick = (now: number) => {
+      rafId = null;
+      const dt =
+        lastFrameAt === null ? 1 / 60 : Math.max(0, (now - lastFrameAt) / 1000);
+      lastFrameAt = now;
+
+      const result = springStep(
+        springValue,
+        springVelocity,
+        targetProgress,
+        dt,
+        springConfig,
+      );
+      springValue = result.value;
+      springVelocity = result.velocity;
+
+      syncDomFromProgress(springValue);
+
+      if (!result.settled) {
+        // Todavia hay movimiento -> seguimos pidiendo frames y dejamos la
+        // clase que prende will-change.
+        if (!section.classList.contains("projects-stack--moving")) {
+          section.classList.add("projects-stack--moving");
+        }
+        rafId = requestAnimationFrame(tick);
+      } else {
+        // Asentado: cortamos el rAF y apagamos la capa compuesta para no
+        // gastar GPU con el mazo en reposo.
+        if (section.classList.contains("projects-stack--moving")) {
+          section.classList.remove("projects-stack--moving");
+        }
+      }
+    };
+
+    const requestTick = () => {
+      if (rafId !== null) return;
+      lastFrameAt = null;
+      rafId = requestAnimationFrame(tick);
+    };
+
+    // Scroll handler: solo lee el scroll, calcula el target y dispara el
+    // frame. Es passive para no bloquear el scroll nativo. coalescing por
+    // rAF: si llegan 10 eventos en un frame, escribimos una sola vez.
+    const onScroll = () => {
+      targetProgress = flipProgress(
+        window.scrollY,
+        runwayTop,
+        runwayHeight,
+        stickyHeight,
+      );
+      requestTick();
+    };
+
+    const onResize = () => {
+      measure();
+      // re-medido: recalculamos el target y dejamos al resorte converger.
+      targetProgress = flipProgress(
+        window.scrollY,
+        runwayTop,
+        runwayHeight,
+        stickyHeight,
+      );
+      requestTick();
+    };
+
+    measure();
+
+    // Estado inicial: el resorte arranca EXACTAMENTE en el target (no hay
+    // transicion en el primer frame). Esto es importante para cuando el
+    // navegador restaura una posicion de scroll dentro del runway: la
+    // tarjeta aparece en su lugar correcto sin pegarse desde p=0.
+    targetProgress = flipProgress(
+      window.scrollY,
+      runwayTop,
+      runwayHeight,
+      stickyHeight,
+    );
+    springValue = targetProgress;
+    springVelocity = 0;
+    syncDomFromProgress(springValue);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    let resizeObserver: ResizeObserver | null = null;
+    if ("ResizeObserver" in window) {
+      // Cubre cambios de altura del runway cuando se colapsa la URL bar de
+      // mobile o se rota el dispositivo, sin necesidad de un resize explicito.
+      resizeObserver = new ResizeObserver(() => onResize());
+      resizeObserver.observe(runway);
+    }
+
+    // Cambio en la preferencia de movimiento reducido: re-aplicamos el
+    // estado contra el target actual. La primera lectura ya quedo en
+    // `reduceMotion` arriba.
+    const motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const onMotionChange = () => {
+      reduceMotion = motionQuery.matches;
+      // Re-sincronizamos contra el valor actual del resorte, no contra el
+      // target, para no introducir un salto.
+      syncDomFromProgress(springValue);
+      // Si estabamos en una corrida, dejamos que el frame en curso termine.
+    };
+    // En todos los navegadores que soportan la API moderna (incluido Safari
+    // 14+) MediaQueryList tiene addEventListener. Si la deteccion falla,
+    // dejamos el listener prendido sin cleanup: la pagina se va a recargar
+    // antes de que eso importe.
+    if (typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", onMotionChange);
+    }
+
+    cleanup = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
+      if (typeof motionQuery.removeEventListener === "function") {
+        motionQuery.removeEventListener("change", onMotionChange);
+      }
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      // Limpiamos los transforms inline para no contaminar el cache de
+      // navegacion del ClientRouter.
+      for (const card of cards) {
+        card.style.transform = "";
+        card.style.opacity = "";
+        const panel = card.querySelector<HTMLElement>(
+          ".projects-stack__panel",
+        );
+        if (panel) panel.style.transform = "";
+      }
+    };
+  };
+
+  // Astro dispara `astro:page-load` despues de navegar dentro de la SPA.
+  // Tambien llamamos a init() directamente para la primera carga (donde el
+  // evento ya paso).
+  document.addEventListener("astro:page-load", init);
+  init();
+</script>

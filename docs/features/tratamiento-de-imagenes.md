@@ -12,6 +12,7 @@ lo que las capturas tienen que demostrar.
 | --- | --- | --- |
 | Fotos de personas (equipo) | **Duotono** al 25% sobre gris | Convierte una foto de celular en algo que se lee "diseñado" y fuerza la imagen a la paleta verde/crema |
 | Capturas del sistema (galerías de casos, portfolio) | **Duotono** al 25% más marco | Misma fuerza que las fotos: satura el tinte sin tocar la legibilidad, porque el blend preserva la luminosidad |
+| Capturas con revelado al hover (mazo de `/proyectos`) | **Duotono** al 25%, marco, y al hover se agrandan y muestran el color real | Es el único lugar donde el sitio expone el color real de la interfaz: la captura a color dice más que su versión en gris |
 
 ## Las capturas también llevan duotono
 
@@ -58,6 +59,22 @@ descartado por ahora; si se quiere, es un cambio acotado al mismo primitivo.
   **pegada al borde**: el marco es la ventana y el contenido llega hasta el borde,
   como en un navegador de verdad. El recorte de los vértices queda a cargo del
   `overflow` del marco.
+
+## El revelado al hover es opt-in por superficie
+
+El modificador que muestra el color real de la interfaz al hover no se aplica a
+todo el sistema: es opt-in por superficie, a través de la prop `hover` del
+componente `ScreenshotFrame`. Las superficies que muestran el color real son
+las capturas del mazo de `/proyectos`; el resto del sitio (el portfolio del
+home, la galería del detalle de cada caso y la foto del equipo) conserva el
+duotono fijo.
+
+La regla del sitio es reservar el color a lo interactivo: el duotono es el
+recurso de marca para que las fotos se lean "diseñadas" y no como资产 sueltos.
+Acá se rompe la regla de forma acotada, porque el motivo de mostrar la
+captura es probar que el software funciona y la captura a color dice más que
+su versión en gris. Por eso el revelado es opt-in y vive en el primitivo, no
+en la sección: cada superficie decide si lo adopta o no.
 
 ## Alcance
 

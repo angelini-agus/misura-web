@@ -177,6 +177,41 @@ textarea:autofill {
   pointer-events: none;
 }
 
+/* Modificador de revelado: es el único lugar donde el sitio expone el color
+   real de la interfaz a propósito. El resto del sistema usa el duotono como
+   recurso de marca para reservar el color a lo interactivo; acá se rompe
+   esa regla de forma acotada porque el motivo de mostrar la captura es
+   probar que el software funciona y la captura a color dice más que su
+   versión en gris. La transición cruza sólo transform y opacity (compositor),
+   y con movimiento reducido se neutraliza el zoom: la función no se quita. */
+.foto-duotono--hover img {
+  transition:
+    transform 320ms var(--ease-out),
+    filter 320ms var(--ease-out);
+}
+
+.foto-duotono--hover:hover img {
+  transform: scale(1.045);
+  filter: none;
+}
+
+.foto-duotono--hover::after {
+  transition: opacity 320ms var(--ease-out);
+}
+
+.foto-duotono--hover:hover::after {
+  opacity: 0;
+}
+
+/* Con movimiento reducido se neutraliza el zoom y queda el cambio de color:
+   se quita el movimiento, no la funcion. La duracion ya la anula la regla
+   global de prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  .foto-duotono--hover:hover img {
+    transform: none;
+  }
+}
+
 /* Marco de captura: lee el screenshot como "ventana al software" en vez de una
    imagen flotando. No desatura: el motivo de mostrar una captura es probar que
    el software funciona. El único agregado sobre los píxeles es el tinte de

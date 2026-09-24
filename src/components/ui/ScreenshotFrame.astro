@@ -1,10 +1,18 @@
 ---
 interface Props {
   compact?: boolean;
+  /** Activa el modificador que muestra el color real al hacer hover. Es
+      opcional porque el resto del sitio (home portfolio, galería de casos y
+      equipo) quiere el duotono fijo: el revelado es opt-in por superficie. */
+  hover?: boolean;
   class?: string;
 }
 
-const { compact = false, class: className = "" } = Astro.props;
+const {
+  compact = false,
+  hover = false,
+  class: className = "",
+} = Astro.props;
 ---
 
 <div
@@ -18,7 +26,7 @@ const { compact = false, class: className = "" } = Astro.props;
     <span></span><span></span><span></span>
   </div>
   <div class="screenshot-frame-shot">
-    <div class="foto-duotono">
+    <div class:list={["foto-duotono", hover && "foto-duotono--hover"]}>
       <slot />
     </div>
   </div>
