@@ -492,3 +492,10 @@ Corrección del autor (24-09): la solapa lleva el número del caso
 Cambia la decisión 4 de v2. Medido: escalón 45 px desktop / 43 px mobile,
 los 6 casos sin recorte en los 4 breakpoints, solapa del frente siempre bajo el
 navbar y tarjeta dentro del viewport.
+
+Corrección del autor (24-09, segunda): piel verde con letras crema (como las
+cards del sitio) y el mazo pegado arriba del stage para que el Proyecto 01 no
+deje un hueco grande bajo "Casos de éxito". Medido: `bg rgb(14,59,51)` /
+`color rgb(241,232,219)`, aire arriba de la solapa del primer folder 26 px
+(antes ~310), pila pegada arriba todo el recorrido, tarjeta siempre dentro del
+viewport y los 6 casos sin recorte en 1440x900, 1920x1080 y 375x667.

@@ -33,7 +33,7 @@ const projectCount = projects.length;
   class="projects-stack scroll-mt-24 border-t border-green"
   style={`--flip-count: ${projectCount}`}
 >
-  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+  <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 md:px-6 md:pt-24 md:pb-10">
     <div class="max-w-xl" data-reveal>
       <p class="text-xs font-semibold uppercase tracking-[0.2em]">
         {portfolio.eyebrow}
@@ -163,13 +163,17 @@ const projectCount = projects.length;
     position: relative;
   }
 
+  /* Superficie verde con letras crema: la misma piel de las cards del sitio
+     (CTA del navbar, barra de anuncios). El borde crema es hairline: se lee
+     dentro de la pila (separa solapas) y desaparece contra el fondo crema de
+     la pagina, asi la silueta la define el verde. */
   .folder__body {
     height: auto;
     overflow: hidden;
-    border: 1px solid var(--color-green);
+    border: 1px solid var(--color-cream);
     border-radius: 0.375rem;
-    background-color: var(--color-cream-light);
-    color: var(--color-green);
+    background-color: var(--color-green);
+    color: var(--color-cream);
   }
 
   /* Reglas CON JS (gate en .js del <html>): el runway se vuelve el carrete de
@@ -217,9 +221,9 @@ const projectCount = projects.length;
     position: relative;
     width: min(100%, 80rem, calc((100dvh - var(--nav-h) - 4rem) * 2));
     max-width: 80rem;
-    /* `auto` horizontal: el deck lo centra el navegador y el script solo
-       escribe `margin-top` (el desplazamiento de la pila). Sin el `auto`, en
-       pantallas anchas el mazo queda pegado a la izquierda del stage. */
+    /* `auto` horizontal: el deck lo centra el navegador; el script escribe el
+       `transform: translateY()` con el que la pila se pega arriba del stage.
+       Sin el `auto`, en pantallas anchas el mazo queda pegado a la izquierda. */
     margin: 0 auto;
   }
 
@@ -240,10 +244,10 @@ const projectCount = projects.length;
      pasa de 1 a 2 líneas. */
   .folder__tab {
     align-self: flex-start;
-    border: 1px solid var(--color-green);
+    border: 1px solid var(--color-cream);
     border-bottom: 0;
-    background-color: var(--color-cream-light);
-    color: var(--color-green);
+    background-color: var(--color-green);
+    color: var(--color-cream);
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     line-height: 1.25;
@@ -296,13 +300,13 @@ const projectCount = projects.length;
     font-size: 0.65rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-green) 70%, transparent);
+    color: color-mix(in srgb, var(--color-cream) 72%, transparent);
   }
 
   .folder__description {
     font-size: 0.875rem;
     line-height: 1.55;
-    color: color-mix(in srgb, var(--color-green) 80%, transparent);
+    color: color-mix(in srgb, var(--color-cream) 85%, transparent);
   }
 
   .folder__tags {
@@ -318,7 +322,7 @@ const projectCount = projects.length;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 0.2rem 0.45rem;
-    border: 1px solid var(--color-green);
+    border: 1px solid var(--color-cream);
   }
 
   .folder__cta {
@@ -364,7 +368,8 @@ const projectCount = projects.length;
        .projects-stack--moving, gestionada por el script). */
   }
 
-  :global(.js) .projects-stack--moving .folder {
+  :global(.js) .projects-stack--moving .folder,
+  :global(.js) .projects-stack--moving .projects-stack__deck {
     will-change: transform;
   }
 
@@ -648,6 +653,10 @@ const projectCount = projects.length;
     let runwayHeight = 0;
     let stickyHeight = 0;
     let deckMaxH = 0;
+    // Parametros del desplazamiento de la pila, recalculados en measure().
+    let pileStep = 44;
+    let pileTabH = 44;
+    let pileMaxOffset = 44;
 
     const measure = () => {
       const runwayRect = runway.getBoundingClientRect();
@@ -708,22 +717,16 @@ const projectCount = projects.length;
       const desiredDeckH = maxBodyHeight + maxTabHeight;
       deck.style.height = `${Math.min(desiredDeckH, deckMaxH)}px`;
 
-      // Centrado consciente del mazo. Las carpetas que ya pasaron se apilan
-      // HACIA ARRIBA del frente (un escalon por carpeta), asi que centrar solo
-      // la caja del frente deja la pila cortada contra el navbar y esconde la
-      // pestana del frente (medido: pestana en y=27 con navbar de 67px).
-      // Centramos la PILA completa (frente + escalones) en el alto util, con
-      // dos limites duros: la pestana del frente nunca queda debajo del navbar
-      // (minimo = alto de la pestana) y la carpeta del frente nunca se pasa del
-      // borde inferior (maximo = alto util - alto del deck). Si la pila no
-      // entra, lo que se recorta es el fondo de la pila contra el navbar,
-      // nunca el frente.
+      // La pila se pega ARRIBA del stage y el mazo baja un escalon por cada
+      // carpeta asentada (ver syncDomFromProgress). Con el centrado de la pila
+      // el arranque quedaba ~300px abajo de "Casos de exito" y dejaba un hueco
+      // grande arriba del Proyecto 01; pegado arriba, el primer folder arranca
+      // junto a la seccion y la pila crece hacia abajo sin cortarse contra el
+      // navbar.
       const deckH = deck.getBoundingClientRect().height;
-      const headroom = Math.max(folders.length - 1, 0) * step;
-      const rawOffset = (availH - (deckH + headroom)) / 2 + headroom;
-      const maxOffset = Math.max(maxTabHeight, availH - deckH);
-      const deckOffset = Math.min(Math.max(rawOffset, maxTabHeight), maxOffset);
-      deck.style.marginTop = `${Math.round(deckOffset)}px`;
+      pileStep = step;
+      pileTabH = maxTabHeight;
+      pileMaxOffset = Math.max(maxTabHeight, availH - deckH);
     };
 
     const syncDomFromProgress = (progress: number) => {
@@ -752,6 +755,20 @@ const projectCount = projects.length;
           folder.style.opacity = "";
         }
       }
+
+      // El mazo entero baja un escalon por cada carpeta asentada, para que la
+      // pila quede pegada arriba del stage (y no centrada, que dejaba un hueco
+      // grande arriba del Proyecto 01) sin cortarse contra el navbar. Con
+      // movimiento reducido no hay paneo. Se escribe con transform (no margin)
+      // para no disparar layout en cada frame.
+      const headroom = reduceMotion
+        ? 0
+        : progress * (folders.length - 1) * pileStep;
+      const deckOffset = Math.min(
+        Math.max(headroom, pileTabH),
+        pileMaxOffset,
+      );
+      deck.style.transform = `translateY(${Math.round(deckOffset)}px)`;
     };
 
     const tick = (now: number) => {

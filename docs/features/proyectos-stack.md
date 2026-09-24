@@ -561,3 +561,38 @@ Consecuencias medidas:
 - Se eliminó `.folder__number` (el número vive en la solapa) y la clase
   `.folder__title` pasó a ser el heading del cuerpo; la etiqueta de la solapa es
   `.folder__label`.
+
+## Corrección 24-09: piel verde y arranque pegado a la sección
+
+**Piel.** El folder pasó de crema con letras verdes a **verde con letras crema**,
+la misma piel de las cards del sitio (CTA del navbar, barra de anuncios):
+
+- Cuerpo y solapa: `background-color: var(--color-green)`, `color: var(--color-cream)`.
+- Hairline de 1px en crema: separa las solapas dentro de la pila y desaparece
+  contra el fondo crema de la página, así la silueta la define el verde.
+- Cliente al 72 % y descripción al 85 % de crema (contraste sobre verde ≥ 5:1
+  a los tamaños reales); tags con borde crema; el CTA sigue siendo el botón
+  crema del sistema (crema con texto verde), que sobre verde es el máximo
+  contraste posible.
+- El marco de la captura no cambió: ya era verde con el shot crema adentro.
+
+Medido: `backgroundColor: rgb(14, 59, 51)` y `color: rgb(241, 232, 219)` en los
+cuatro breakpoints probados (1440x900, 1920x1080, 375x667).
+
+**Arranque.** La pila se pega ARRIBA del stage en lugar de centrarse: el mazo
+baja un escalón por cada carpeta asentada y la pila crece hacia abajo.
+
+- Con el centrado de la pila, el arranque quedaba ~310 px abajo de "Casos de
+  éxito" y dejaba un hueco grande arriba del Proyecto 01 (medido: solapa en
+  `y=364` con navbar de 77).
+- Ahora el desplazamiento es `clamp(progreso × (n−1) × step, alto de solapa,
+  alto útil − alto del deck)` y se escribe con `transform: translateY()` en el
+  rAF (no `margin`, que dispararía layout por frame). Con `prefers-reduced-motion`
+  no hay paneo: la pila no se mueve.
+- Medido: aire arriba de la solapa del primer folder = **26 px** (1440x900 y
+  1920x1080) y **25 px** (375x667) contra ~300 px antes; la pila se mantiene
+  pegada arriba durante todo el recorrido (el transform del deck pasa de 35 a
+  223 px en desktop mientras el top de la pila queda en 150) y la tarjeta nunca
+  se pasa del viewport (`529-717 ≤ 900`, `611-627 ≤ 667`, `769 ≤ 1080`).
+- La intro de la sección bajó su padding inferior (`pb-8 md:pb-10`) para que el
+  primer folder arranque junto al título.
