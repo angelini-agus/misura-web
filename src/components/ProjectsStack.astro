@@ -386,7 +386,13 @@ const projectCount = projects.length;
     /* bottom: 100% deja la pestaña "apoyada" sobre el borde superior del
        cuerpo: su lado inferior coincide con el top del cuerpo. Es el gesto
        de "carpeta de Windows" del recorte. */
-    bottom: calc(100% - 1px);
+    /* El solape vertical tiene que ser MAYOR que el borde del cuerpo (1px),
+       porque las carpetas asentadas van con `scale(0.98)`: con 1px el solape
+       queda en 0.98px y el borde crema del cuerpo asoma como una linea blanca
+       entre la solapa y el cuerpo mientras la tarjeta se mueve. Con 2px el
+       solape escalado sigue tapando el borde entero. El verde de la solapa es
+       el mismo del cuerpo, asi que el solape no se ve. */
+    bottom: calc(100% - 2px);
     /* `left: 0` (no -1px): el borde izquierdo de la solapa tiene que caer
        EXACTAMENTE sobre el del cuerpo para leerse como una sola linea. Con
        -1px quedaban uno al lado del otro y el filo izquierdo hacia un escalon

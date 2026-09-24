@@ -620,3 +620,18 @@ izquierdo quedaba **al lado** del borde del cuerpo en vez de encima: 2 px de fil
 y un escalón de 1 px entre la solapa y el cuerpo. Con `left: 0` los dos bordes
 caen en la misma línea. Medido: `tabLeft === bodyLeft` (77 px) y el borde
 compartido sigue en `tabBottom 215` contra `bodyTop 214`.
+
+### El solape solapa–cuerpo tiene que superar el `scale`
+
+El solape vertical de la solapa sobre el cuerpo es de **2 px** (`bottom: calc(100% - 2px)`),
+no de 1. Con las carpetas asentadas a `scale(0.98)`, un solape de 1 px se reduce a
+0.98 px mientras el borde crema del cuerpo sigue midiendo su píxel: quedaba un pelo
+de borde expuesto y se veía como una **línea blanca** entre la solapa y el cuerpo
+justo mientras la tarjeta se movía (el transform cae en fracciones de píxel en cada
+frame). Con 2 px, el solape escalado (1.96 px) sigue tapando el borde entero
+(0.98 px) en todo el rango de escala (1 → 0.98). El fondo de la solapa es el mismo
+verde del cuerpo, así que el solape extra no se ve.
+
+Medido con el mazo en movimiento: solape real por carpeta = 1.96 px en las
+asentadas (`scale 0.98`), 1.98 px en las de `scale 0.99` y 2 px en la del frente
+(`scale 1`), contra un borde de 0.98-1 px.
