@@ -187,13 +187,12 @@ const projectCount = projects.length;
      cliente carga; sin ese gate, el contenido se ve como una lista. */
 
   :global(.js) .projects-stack__runway {
-    /* El carrete mide 100dvh (el tramo de entrada del sticky) + (n - 1) * 60dvh:
-       un 60% de pantalla de scroll por proyecto. Antes era n * 100dvh, o sea una
-       pantalla entera por proyecto: el autor lo sintio lento ("tarda mucho en
-       llegar") y dejaba un hueco grande visible mientras el primero estaba al
-       frente. La ultima carpeta sigue quedandose: el progreso llega a 1 justo al
-       final del carrete y el visitante sigue de largo hacia el footer. */
-    height: calc(100dvh + (var(--flip-count) - 1) * 60dvh);
+    /* El carrete mide 100dvh (el tramo de entrada del sticky) + n * 60dvh: un
+       60% de pantalla de scroll por proyecto, incluido el tramo final propio de
+       la ultima carpeta (ver flipGeometry: un tramo por carpeta). Antes era
+       n * 100dvh, o sea una pantalla entera por proyecto: el autor lo sintio
+       lento ("tarda mucho en llegar"). */
+    height: calc(100dvh + var(--flip-count) * 60dvh);
   }
 
   :global(.js) .projects-stack__sticky {
@@ -642,12 +641,11 @@ const projectCount = projects.length;
   let rafId: number | null = null;
 
   // Sliver: la cantidad de cuerpo que queda visible entre la pestaña de la
-  // carpeta de atrás y el top de la carpeta siguiente. Mantiene la "thin
-  // sliver of body" del spec visible. Constante: el alto real del escalón
-  // depende del alto de la pestaña más alta, pero la franja visible entre
-  // pestañas queda fija en este valor para que el ritmo visual sea
-  // consistente entre cards con pestañas de 1 línea y de 2.
-  const SLIVER = 10;
+  // carpeta de atrás y el top de la carpeta siguiente. El autor pidió que las
+  // carpetas apiladas estén más cerca entre sí, así que quedó en 3px: la pila
+  // se lee como pestañas casi pegadas, con apenas un filo de cuerpo entre una y
+  // otra. El alto del cuerpo no cambia (el padding-top sigue siendo el escalón).
+  const SLIVER = 3;
 
   const init = () => {
     if (cleanup) {

@@ -159,10 +159,7 @@ entra en el viewport (`634 ≤ 667`, `790 ≤ 900`). El escalón entre carpetas
 asentadas sigue siendo exactamente `step` (`60 px` mobile, `45 px` desktop), que
 es lo que garantiza que la franja expuesta sea solo `padding-top`.
 
-Efecto lateral aceptado: con la salida diferida, la última carpeta pasada queda
-flush detrás de la del frente (una pestaña menos en la pila), y por eso el
-padding-top del cuerpo (`--folder-step`) sigue alcanzando para tapar el
-contenido de la de atrás.
+Corregido el 24-09: ese efecto ya no existe. Con un tramo por carpeta y un escalon por tramo, la anteultima termina exactamente un escalon arriba de la ultima (ver "Final escalonado").
 
 ### Resorte
 
@@ -652,3 +649,39 @@ La última carpeta sigue quedándose al frente al final del carrete, y el cambio
 frente sigue cayendo exactamente en `i × (runway − sticky) / (n − 1)`: verificado
 por muestreo (`frente 0` a 60 px antes del punto calculado, `frente 1` a 60 px
 después, en los dos breakpoints).
+
+## Corrección 24-09: pila más cerca y final escalonado
+
+**Pila más cerca.** El `SLIVER` (el filo de cuerpo visible entre la pestaña de una
+carpeta apilada y el top de la siguiente) bajó de 10 a **3 px**: el escalón pasó de
+45 a **38 px** en desktop y de 43 a **36 px** en mobile. Medido: las franjas
+visibles entre cuerpos consecutivos son exactamente el escalón
+(`franjas: [38,38,38,38]`), y el `padding-top` del cuerpo (`--folder-step`) sigue
+siendo el escalón, así que esa franja sigue siendo cuerpo liso. Efecto lateral: el
+cuerpo baja 7 px por tarjeta porque el padding-top está atado al escalón; si se
+quiere el cuerpo igual de alto, el padding-top se puede desacoplar y dejar en el
+filo (3 px), que ahorraría otros 35 px por tarjeta.
+
+**Final escalonado.** Con la salida diferida (24-09) la última carpeta pasada
+quedaba en el MISMO lugar que la del frente: al final del carrete el proyecto 6
+tapaba por completo al 5 y su solapa no se veía. Causa: el recorrido era
+`-step * (total - 1) * drift`, que con el arranque diferido daba un escalón menos
+de recorrido total (`total - 2 - index`), y la anteúltima no tenía scroll para
+subir su escalón.
+
+Ahora la geometría usa **un tramo por carpeta** (`segment = 1 / n`, no
+`1 / (n - 1)`), así el carrete tiene un tramo final propio de la última carpeta, y
+la salida sube **un escalón por tramo**:
+`y = -step * clamp((p - (index + 1) * segment) / segment)`. Al final del carrete
+cada carpeta queda exactamente `(n - 1 - index)` escalones arriba, que es el
+apilado escalonado pedido. El carrete mide ahora `100dvh + n * 60dvh` para
+mantener 60 vh de scroll por proyecto, incluido el tramo final (la última carpeta
+queda al frente mientras la anterior sube su escalón).
+
+Medido al final del carrete (1440x900, frente = Proyecto 06):
+`y = [-187.71, -149.71, -111.71, -73.71, -35.71, 0]` → diferencias exactas de
+38 px entre todas las carpetas apiladas (antes terminaban `…, 0, 0`, la última
+tapando a la anterior). En los dos breakpoints: pestaña del frente bajo el navbar,
+tarjeta dentro del viewport y los 6 casos sin recorte. La matemática se ejercitó
+en Node: escalonado final exacto, monotonía, rangos, frente por tramo (con el
+tramo propio de la última) y movimiento reducido sin translate.

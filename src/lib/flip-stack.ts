@@ -69,7 +69,12 @@ export const flipGeometry = (
   entryOffset: number,
 ): FlipGeometry => {
   const safeTotal = Math.max(0, Math.floor(total));
-  const m = Math.max(safeTotal - 1, 1);
+  // Un tramo por carpeta (`1 / n`), no `1 / (n - 1)`: asi el carrete tiene un
+  // tramo final propio de la ultima carpeta, que se queda al frente mientras la
+  // anterior termina de asentarse. Con `1 / (n - 1)` la ultima llegaba justo al
+  // final del carrete y la anteultima no tenia scroll para subir su escalon
+  // (quedaba tapada por la ultima).
+  const m = Math.max(safeTotal, 1);
   return {
     total: safeTotal,
     segment: 1 / m,
@@ -167,11 +172,17 @@ export const flipCardState = (
     // todo su tramo y recien sube cuando la siguiente llega y la tapa (la
     // siguiente tiene z mayor), que es como se comporta una pila fisica.
     //   - p <= exitStart: y = 0
-    //   - p = 1: y = -step * (total - 2 - index). La ultima (index = total - 1)
-    //     tiene exitStart = 1, asi que nunca se mueve.
-    const exitStart = Math.min(index + 1, total - 1) * segment;
-    const drift = Math.max(0, p - exitStart);
-    y = -step * (total - 1) * drift;
+    //   - p = 1: y = -step * (total - 1 - index): la anteultima sube su escalon
+    //     (asi su solapa asoma sobre la ultima, escalonada como el resto) y la
+    //     ultima (exitStart = 1, fuera del rango) nunca se mueve.
+    // Correccion 24-09: antes el recorrido era `-step * (total - 1) * drift`, que
+    // en p = 1 dejaba a la anteultima en el MISMO lugar que la ultima (el
+    // proyecto 6 tapaba por completo al 5, sin solapa visible). Ahora sube UN
+    // ESCALON POR TRAMO: con un tramo final propio de la ultima carpeta (ver
+    // flipGeometry), cada una termina (total - 1 - index) escalones arriba.
+    const exitStart = (index + 1) * segment;
+    const escalones = Math.max(0, (p - exitStart) / segment);
+    y = -step * escalones;
     // La escala se interpola entre 1 (al frente) y 0.98 (un escalón atrás),
     // y se queda en 0.98 cuando |y| >= step.
     const scaleT = clamp01(Math.abs(y) / Math.max(step, 1e-6));
