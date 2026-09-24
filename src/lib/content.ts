@@ -676,9 +676,9 @@ export const contactForm = {
     backAriaLabel: "Volver a elegir el servicio",
   },
   serviceOptions: [
-    { value: "erp", label: "Sistemas de Gestión (ERP)" },
-    { value: "crm", label: "Herramientas de Ventas (CRM)" },
-    { value: "web", label: "Páginas Web y\nE-commerce" },
+    { value: "erp", label: "Sistemas de gestión (ERP)" },
+    { value: "crm", label: "Herramientas de ventas (CRM)" },
+    { value: "web", label: "Páginas web y\ne-commerce" },
     { value: "otros", label: "Otros" },
   ],
   errors: {
