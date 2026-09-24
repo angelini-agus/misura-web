@@ -678,7 +678,7 @@ export const contactForm = {
   serviceOptions: [
     { value: "erp", label: "Sistemas de Gestión (ERP)" },
     { value: "crm", label: "Herramientas de Ventas (CRM)" },
-    { value: "web", label: "Páginas Web y E-commerce" },
+    { value: "web", label: "Páginas Web y\nE-commerce" },
     { value: "otros", label: "Otros" },
   ],
   errors: {
