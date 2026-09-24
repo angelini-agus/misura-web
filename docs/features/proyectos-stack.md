@@ -141,6 +141,29 @@ La función pura devuelve `{ y, scale, opacity }`:
   segmento hacia cualquier lado. Sin movimiento, las carpetas que se cruzan
   en un segmento se intercalan por opacidad.
 
+### Salida diferida de la carpeta activa (24-09)
+
+La carpeta que pasa empieza a subir **al principio del tramo siguiente**, no en
+el propio. Con la salida inmediata, la carpeta activa se desasentaba mientras
+seguía siendo la del frente y su pestaña —el título del caso— se metía debajo
+del navbar durante medio tramo: medido en mobile, pestaña en `y=38` con navbar
+de 67 px. Ahora se queda quieta en `y = 0` todo su tramo y recién sube cuando la
+siguiente llega y la tapa (la siguiente tiene `z-index` mayor, así que puede
+taparla), que es como se comporta una pila física: la carpeta nueva aterriza
+encima y la vieja se corre al fondo.
+
+Medido después del cambio, en las seis posiciones de scroll (0.1 a 0.99) y en
+los dos breakpoints: la pestaña del frente nunca baja del navbar (`93-109` con
+navbar de 67 en mobile; `364` con 77 en desktop) y la carpeta del frente siempre
+entra en el viewport (`634 ≤ 667`, `790 ≤ 900`). El escalón entre carpetas
+asentadas sigue siendo exactamente `step` (`60 px` mobile, `45 px` desktop), que
+es lo que garantiza que la franja expuesta sea solo `padding-top`.
+
+Efecto lateral aceptado: con la salida diferida, la última carpeta pasada queda
+flush detrás de la del frente (una pestaña menos en la pila), y por eso el
+padding-top del cuerpo (`--folder-step`) sigue alcanzando para tapar el
+contenido de la de atrás.
+
 ### Resorte
 
 El progreso pasa por un resorte con `stiffness 120`, `damping 22`, `mass 0.8`

@@ -159,7 +159,19 @@ export const flipCardState = (
     //   - p = 1: y = -step * (total - 1 - index)
     // La última carpeta (index === total - 1) tiene `(total - 1 - index) = 0`,
     // así que su y final es 0: nunca se mueve después de llegar al frente.
-    y = -step * (total - 1) * (p - incomingEnd);
+    // La salida arranca al PRINCIPIO DEL TRAMO SIGUIENTE, no en el propio.
+    // Con la version anterior la carpeta empezaba a subir mientras todavia era
+    // la del frente, asi que su pestaña (el titulo del caso) se metia debajo del
+    // navbar durante medio tramo: medido en mobile, pestaña en y=38 con navbar
+    // de 67px. Con el arranque diferido, la carpeta se queda quieta en y = 0
+    // todo su tramo y recien sube cuando la siguiente llega y la tapa (la
+    // siguiente tiene z mayor), que es como se comporta una pila fisica.
+    //   - p <= exitStart: y = 0
+    //   - p = 1: y = -step * (total - 2 - index). La ultima (index = total - 1)
+    //     tiene exitStart = 1, asi que nunca se mueve.
+    const exitStart = Math.min(index + 1, total - 1) * segment;
+    const drift = Math.max(0, p - exitStart);
+    y = -step * (total - 1) * drift;
     // La escala se interpola entre 1 (al frente) y 0.98 (un escalón atrás),
     // y se queda en 0.98 cuando |y| >= step.
     const scaleT = clamp01(Math.abs(y) / Math.max(step, 1e-6));

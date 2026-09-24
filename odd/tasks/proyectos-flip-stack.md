@@ -469,6 +469,14 @@ y el modificador del duotono del v1 quedaron como estaban.
   410 px a 375x667 (cap 267) y 428 px a 320x568 (cap 227), porque a los pisos de
   legibilidad el contenido no entra en 40vh. Decisión del 24-09: preservar
   contenido antes que tope; queda la mirada del autor en el teléfono.
+- Pasada 5 (fix de motion): la salida de la carpeta activa pasa a arrancar en
+  el tramo SIGUIENTE (`src/lib/flip-stack.ts`). Antes la carpeta empezaba a
+  subir mientras todavía era la del frente y su pestaña —el título— se metía
+  debajo del navbar: medido `y=38` con navbar de 67 px en mobile. Después del
+  cambio, en 6 posiciones de scroll (0.1 a 0.99) y 2 breakpoints: pestaña del
+  frente en `93-109` (mobile, navbar 67) y `364` (desktop, navbar 77),
+  `cardFits` siempre true (`634 ≤ 667`, `790 ≤ 900`) y escalón entre asentadas
+  exactamente `step` (60 px mobile, 45 px desktop). `astro check` 0/0/0.
 - Capturas: `c-desktop.png`, `c-375.png`, `c-320.png` en
   `C:/Users/angel/AppData/Local/Temp/flipshot/`.
 - `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
