@@ -217,7 +217,10 @@ const projectCount = projects.length;
     position: relative;
     width: min(100%, 80rem, calc((100dvh - var(--nav-h) - 4rem) * 2));
     max-width: 80rem;
-    margin: 0;
+    /* `auto` horizontal: el deck lo centra el navegador y el script solo
+       escribe `margin-top` (el desplazamiento de la pila). Sin el `auto`, en
+       pantallas anchas el mazo queda pegado a la izquierda del stage. */
+    margin: 0 auto;
   }
 
   /* === Geometría de la carpeta (mobile y base) ===========================
