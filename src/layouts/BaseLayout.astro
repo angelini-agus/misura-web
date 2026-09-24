@@ -214,6 +214,14 @@ gtag('config', '${gaId}');`
           "(prefers-reduced-motion: reduce)"
         ).matches;
         const navH = document.querySelector("header")?.offsetHeight ?? 0;
+        // El header sticky tapa el arranque del destino, así que el anclaje lleva
+        // scroll-margin de navH - 2px (con el header tapando esos 2px, la línea que
+        // separa la sección no queda pegada a la del header: se ve una sola). Se
+        // aplica acá y no sólo en CSS porque el handler frena la navegación al hash
+        // con preventDefault: la URL no recibe el fragmento, `:target` no matchea y
+        // el margen declarado en la hoja no llega. Para la llegada desde OTRA página
+        // (donde el hash sí queda en la URL) sigue valiendo la regla `:target`.
+        target.style.scrollMarginTop = `${navH - 2}px`;
         const card = target.querySelector<HTMLElement>("[data-scroll-card]");
         // Centrar solo si la tarjeta entra en la franja entre el header y el borde
         // inferior. Si es mas alta que la ventana (mobile), centrarla esconde el

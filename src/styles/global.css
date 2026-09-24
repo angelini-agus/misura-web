@@ -25,6 +25,30 @@
   scroll-margin-top: var(--contact-nav-h, 4.1875rem);
 }
 
+/* Alto del header sticky, en un solo lugar: lo usan todos los anclajes internos.
+   Mobile = py-4 (32px) + summary del menu (34px) + border-b (1px) = 67px;
+   md+ = py-4 + CTA de escritorio (44px) + border-b (1px) = 77px. Si cambia el
+   padding del header, su contenido mas alto o su borde, hay que tocar los dos. */
+:root {
+  --nav-h: 4.1875rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --nav-h: 4.8125rem;
+  }
+}
+
+/* Todo anclaje interno aterriza PEGADO al header, y 2px antes para que la linea
+   que separa la seccion (su border-t) no quede pegada a la del header: con el
+   header tapando esos 2px se ve una sola linea. Vale para cualquier destino con
+   id (`#preguntas`, `#portfolio`, `#contenido`, un item de FAQ), asi que ningun
+   componente tiene que declarar su propio scroll-margin ni acordarse del alto
+   del header. Los `scroll-mt-24` que quedan en las secciones son redundantes. */
+:target {
+  scroll-margin-top: calc(var(--nav-h) - 2px);
+}
+
 html {
   background: var(--color-cream);
   scroll-behavior: smooth;
