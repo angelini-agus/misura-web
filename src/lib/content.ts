@@ -121,7 +121,7 @@ export const privacy = {
     {
       title: "Qué datos pedimos",
       body: [
-        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono (opcional), el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
+        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono, el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
         "No pedimos datos sensibles, información financiera ni nada que no esté en ese formulario.",
       ],
     },

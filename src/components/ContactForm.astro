@@ -141,13 +141,14 @@ const { web3forms } = contactForm;
             for="cf-phone"
             class="text-xs font-semibold uppercase tracking-[0.2em] text-green"
           >
-            {contactForm.labels.phone} <span class="normal-case tracking-normal text-green/75">(opcional)</span>
+            {contactForm.labels.phone} <span aria-hidden="true" class="text-error">*</span>
           </label>
           <input
             id="cf-phone"
             name="phone"
             type="tel"
             autocomplete="tel"
+            required
             aria-describedby="cf-phone-error"
             data-error-message={contactForm.errors.phone}
             placeholder={contactForm.placeholders.phone}
@@ -304,7 +305,8 @@ const { web3forms } = contactForm;
     const validators = {
       name: (value) => value.trim().length >= 2,
       email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
-      phone: (value) => value.trim().length === 0 || value.trim().length >= 6,
+      // Obligatorio: es el canal para contactar al interesado (WhatsApp).
+      phone: (value) => value.trim().length >= 6,
       service: (value) => value.length > 0,
     };
 

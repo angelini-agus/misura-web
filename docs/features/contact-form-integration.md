@@ -46,8 +46,9 @@ backend propio.
    (`cf-name-error`, `cf-email-error`, `cf-phone-error`, `cf-service-error`) y
    arranca en `sr-only` en vez de `hidden`, para seguir en el árbol de
    accesibilidad; cada control lo referencia con `aria-describedby` y `setError`
-   alterna `sr-only` + `aria-invalid`. El teléfono pasó a ser opcional: vacío es
-   válido, y si se completa exige al menos 6 caracteres.
+   alterna `sr-only` + `aria-invalid`. El teléfono es **obligatorio** (pedido del
+   autor: es el canal para contactar al interesado, incluso por WhatsApp) y exige
+   al menos 6 caracteres; el label lleva el asterisco, como nombre y email.
 6. **Entrada al formulario: siempre paso 1.** El servicio elegido no se recuerda
    entre visitas. El flujo vuelve al paso 1 en cada `astro:page-load`, en la
    vuelta desde la bfcache (`pageshow`) y al clickear un link que apunta a
