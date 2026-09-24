@@ -12,6 +12,8 @@ siguiendo el diseño flat de la marca (inspiración estructural: geiko.dev).
 - Usar el componente `<Image>` de `astro:assets` (optimización automática),
   con `src/assets/team-placeholder.png` como placeholder actual.
 - Grilla responsive: 1 columna mobile, 2 tablet, 4 desktop.
+- Redes sociales como botones pill (icono + label) con hover invertido
+  (crema→verde) y press `active:translate`, en sintonía con el botón `cream`.
 
 ## Datos
 - `team.members[]`: `name`, `role`, `description`, `socials.{linkedin,github}`.

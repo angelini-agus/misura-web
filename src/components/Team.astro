@@ -2,7 +2,11 @@
 import { team, isPending } from "../lib/content";
 import { Image } from "astro:assets";
 import teamPlaceholder from "../assets/team-placeholder.png";
+import GithubIcon from "./ui/GithubIcon.astro";
+import LinkedinIcon from "./ui/LinkedinIcon.astro";
 import Placeholder from "./ui/Placeholder.astro";
+
+const socialIcons = { linkedin: LinkedinIcon, github: GithubIcon } as const;
 ---
 
 <section id="nosotros" class="scroll-mt-24 border-t border-green">
@@ -48,15 +52,21 @@ import Placeholder from "./ui/Placeholder.astro";
             <p class="mt-1 text-sm leading-relaxed text-cream/80">
               {member.description}
             </p>
-            <div class="mt-auto flex flex-wrap gap-3 pt-4">
+            <div class="mt-auto flex flex-wrap gap-2.5 pt-4">
               {Object.entries(team.socialLabels).map(([key, label]) => {
                 const href =
                   member.socials[key as keyof typeof member.socials];
+                const Icon =
+                  socialIcons[key as keyof typeof socialIcons];
                 return href && !isPending(href) ? (
                   <a
                     href={href}
-                    class="link-ink inline-block text-sm text-cream hover:text-cream-dark"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${label} de ${member.name}`}
+                    class="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-cream/50 px-3.5 py-2 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-cream hover:bg-cream hover:text-green active:translate-x-[-2px] active:translate-y-[2px] active:duration-75"
                   >
+                    <Icon class="h-4 w-4 shrink-0" />
                     {label}
                   </a>
                 ) : (
