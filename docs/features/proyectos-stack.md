@@ -635,3 +635,20 @@ verde del cuerpo, así que el solape extra no se ve.
 Medido con el mazo en movimiento: solape real por carpeta = 1.96 px en las
 asentadas (`scale 0.98`), 1.98 px en las de `scale 0.99` y 2 px en la del frente
 (`scale 1`), contra un borde de 0.98-1 px.
+
+## Corrección 24-09: distancia de scroll entre proyectos
+
+El carrete medía `n * 100dvh`: **una pantalla entera de scroll por proyecto**, que
+el autor sintió lento ("tarda mucho en llegar"). Ahora mide
+`100dvh + (n − 1) * 60dvh`: 60 % de pantalla por proyecto.
+
+| | antes | ahora |
+| --- | --- | --- |
+| scroll por proyecto (1440x900) | 900 px | **540 px** (60 vh) |
+| scroll por proyecto (375x667) | 667 px | **400 px** (60 vh) |
+| alto total del carrete (1440x900) | 5400 px (600 vh) | **3600 px** (400 vh) |
+
+La última carpeta sigue quedándose al frente al final del carrete, y el cambio de
+frente sigue cayendo exactamente en `i × (runway − sticky) / (n − 1)`: verificado
+por muestreo (`frente 0` a 60 px antes del punto calculado, `frente 1` a 60 px
+después, en los dos breakpoints).

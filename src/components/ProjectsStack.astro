@@ -187,11 +187,13 @@ const projectCount = projects.length;
      cliente carga; sin ese gate, el contenido se ve como una lista. */
 
   :global(.js) .projects-stack__runway {
-    /* El runway mide n * 100dvh y NO (n + 1) * 100dvh como la referencia:
-       con n * 100dvh la última carpeta se queda al final del scroll y el
-       visitante sigue hasta el footer; con (n+1) el mazo terminaba con la
-       ventana vacía. */
-    height: calc(var(--flip-count) * 100dvh);
+    /* El carrete mide 100dvh (el tramo de entrada del sticky) + (n - 1) * 60dvh:
+       un 60% de pantalla de scroll por proyecto. Antes era n * 100dvh, o sea una
+       pantalla entera por proyecto: el autor lo sintio lento ("tarda mucho en
+       llegar") y dejaba un hueco grande visible mientras el primero estaba al
+       frente. La ultima carpeta sigue quedandose: el progreso llega a 1 justo al
+       final del carrete y el visitante sigue de largo hacia el footer. */
+    height: calc(100dvh + (var(--flip-count) - 1) * 60dvh);
   }
 
   :global(.js) .projects-stack__sticky {
@@ -260,6 +262,21 @@ const projectCount = projects.length;
     font-size: 0.875rem;
     line-height: 1.25;
     max-width: 100%;
+  }
+
+  /* Faldon verde que tapa el borde superior del cuerpo justo debajo de la
+     solapa, sin agregarle bordes laterales (esos quedan sobre la linea del
+     cuerpo). 2px de alto para que el solape siga tapando el borde del cuerpo
+     con el `scale(0.98)` de las carpetas asentadas, y 1px extra a cada lado
+     para cubrir el ancho de los bordes laterales de la solapa. */
+  :global(.js) .folder__tab::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    right: -1px;
+    height: 2px;
+    background-color: var(--color-green);
   }
 
   .folder__label {
@@ -386,13 +403,14 @@ const projectCount = projects.length;
     /* bottom: 100% deja la pestaña "apoyada" sobre el borde superior del
        cuerpo: su lado inferior coincide con el top del cuerpo. Es el gesto
        de "carpeta de Windows" del recorte. */
-    /* El solape vertical tiene que ser MAYOR que el borde del cuerpo (1px),
-       porque las carpetas asentadas van con `scale(0.98)`: con 1px el solape
-       queda en 0.98px y el borde crema del cuerpo asoma como una linea blanca
-       entre la solapa y el cuerpo mientras la tarjeta se mueve. Con 2px el
-       solape escalado sigue tapando el borde entero. El verde de la solapa es
-       el mismo del cuerpo, asi que el solape no se ve. */
-    bottom: calc(100% - 2px);
+    /* La caja de la solapa termina EXACTAMENTE en el borde superior del cuerpo
+       (`bottom: 100%`): asi sus bordes laterales no bajan ni un pixel por
+       debajo de la linea del cuerpo. El borde crema del cuerpo se tapa con el
+       faldon verde de `::after`, que no tiene bordes laterales. Con el solape
+       hecho por la caja (`bottom: calc(100% - 2px)`), la linea vertical derecha
+       de la solapa quedaba 2px mas abajo que el borde del cuerpo: se veia un
+       escalon en la esquina inferior derecha. */
+    bottom: 100%;
     /* `left: 0` (no -1px): el borde izquierdo de la solapa tiene que caer
        EXACTAMENTE sobre el del cuerpo para leerse como una sola linea. Con
        -1px quedaban uno al lado del otro y el filo izquierdo hacia un escalon
