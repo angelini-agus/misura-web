@@ -12,6 +12,7 @@
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html {
@@ -295,6 +296,65 @@ textarea:autofill {
   transform: scaleX(1);
 }
 
+/* Elevación del navbar: el link sube 2px y oscurece en hover. Al clickear se
+   hunde en diagonal (translate(-4px, 4px), 75ms) como todos los botones de la
+   pagina. La pagina activa se marca con el texto oscuro y un trazo corto
+   estilo sello bajo el label. */
+.nav-lift {
+  display: inline-block;
+  position: relative;
+  padding-block: 0.375rem;
+  color: var(--color-green);
+  transition:
+    color 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.nav-lift[aria-current="page"] {
+  color: var(--color-green-dark);
+}
+
+.nav-lift[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background-color: var(--color-green);
+  transform: scaleX(1);
+  transform-origin: center;
+  animation: nav-dash-in 200ms var(--ease-out);
+}
+
+@keyframes nav-dash-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-lift:hover,
+  .nav-lift:focus-visible {
+    transform: translateY(-2px);
+    color: var(--color-green-dark);
+  }
+}
+
+/* El press va despues del hover para ganar cuando ambos aplican (mouse encima
+   mientras se clickea). Hundimiento diagonal estandar de los botones:
+   translate(-4px, 4px) en 75ms. */
+.nav-lift:active {
+  transform: translate(-4px, 4px);
+  color: var(--color-green-dark);
+  transition:
+    color 75ms var(--ease-out),
+    transform 75ms var(--ease-out);
+}
+
 .js .draw-check path,
 .js .draw-cross path {
   stroke-dasharray: 22;
@@ -388,4 +448,28 @@ details[open] .details-collapse {
 ::view-transition-group(site-announcement),
 ::view-transition-group(site-header) {
   z-index: 100;
+}
+
+/* Salto de los iconos de redes en las tarjetas del equipo: el icono se eleva
+   3px con un micro overshoot (--ease-back). Excepcion 3 de design-philosophy:
+   el doc prohibe rebotes elasticos; este es transform-only, dentro del umbral
+   de duracion y no se repite. Solo en dispositivos con hover real: en touch el
+   hover no existe y el efecto se sentiria como un tap inesperado. */
+@media (hover: hover) and (pointer: fine) {
+  .social-icon {
+    transition: transform 250ms var(--ease-back);
+  }
+
+  a:hover .social-icon,
+  a:focus-visible .social-icon,
+  .group:hover .social-icon {
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-icon {
+    transition: none;
+    transform: none;
+  }
 }

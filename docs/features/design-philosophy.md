@@ -137,6 +137,20 @@ chico y decorativo, dentro de una ilustración, y con
 Lo que sigue prohibido sin excepción: `requestAnimationFrame` en loop, canvas,
 WebGL, partículas, y animar propiedades de layout de forma continua.
 
+#### 3. El icono de redes del equipo salta con un micro-rebote en hover
+
+`src/styles/global.css` (`--ease-back`: `cubic-bezier(0.34, 1.56, 0.64, 1)`)
+eleva el icono de redes `translateY(-3px)` en 250ms, y el anti-patrón
+prohíbe los rebotes elásticos.
+
+Se mantiene porque es la excepción más chica posible del espíritu de la regla:
+el rebote prohibido es un efecto protagonista y repetido; acá es una
+micro-interacción de hover (disparada por el usuario, no continua), de solo
+`transform` (costo de compositor, sin layout ni paint), dentro del umbral de
+duración, en un elemento lúdico, y limitada a `@media (hover: hover) and
+(pointer: fine)`. Con `prefers-reduced-motion: reduce` queda estático. Si el
+rebote llega a usarse en más de un punto del sitio, se revisa esta excepción.
+
 ## Reglas de implementación
 
 - El copy vive en `src/lib/content.ts`. **No se hardcodea texto** en
