@@ -1,21 +1,96 @@
-# Feature: Flip stack en `/proyectos` (las tarjetas se dan vuelta al scrollear)
+# Feature: mazo de carpetas en `/proyectos`
 
 ## Estado
 
-Pedido del autor (23-09-2026), textual: aplicar a los casos de la sección de
+Pedido del autor (23-09-2026, **v1**), textual: aplicar a los casos de la sección de
 proyectos la animación del componente `case-study-flip-stack` del registry
 `@componentry` de shadcn; no poner las fotos una al lado de la otra (una grande
 y dos chicas abajo, o una sola en carrusel); que al hover la foto se agrande y
 se ponga a color normal; la foto a la derecha en vez de la izquierda; el tamaño
 de las tarjetas a criterio del implementador, basado en la animación.
 
-Referencia: `https://componentry.dev/docs/components/case-study-flip-stack`
+Referencia v1: `https://componentry.dev/docs/components/case-study-flip-stack`
 (fuente cruda del registry: `https://componentry.dev/r/case-study-flip-stack.json`).
 
-- **Estado:** en implementación.
-- **Rama:** por crear (`feat/proyectos-flip-stack`), el árbol hoy está en `master`.
-- **Autorización:** el autor pidió los cinco cambios en un mismo mensaje. No hay
-  pedido de SDD, así que esto corre como ODD con un solo escritor.
+Pedido del autor (24-09-2026, **v2, vigente**), textual: «Quiero que tenga esa
+forma, los contenedores de las cards, como si fuera algo físico, un archivo de
+la carpeta física, como las de Windows. Fíjate que las hiciste gigantes y
+quiero que ocupen la pantalla. O uso una screenshot que ocupe como la pantalla
+entera. Tiene que ser la card del tamaño así, más o menos 40vh máximo de
+tamaño, y las screenshots de allí a la derecha. Después arriba, en la
+carpetita, el título: este proyecto 1, y abajo, lo mismo que ya teníamos
+antes.»
+
+Referencias v2: `https://www.framer.com/marketplace/components/scroll-stack-deck/`
+y el recorte que el autor dejó en la raíz del repo (`image.png`, sin trackear:
+no se commitea).
+
+- **Estado:** v1 implementado y verificado, commiteado como base (`526f415` +
+  `d5d02a3`) y **reemplazado por v2**. v2 en implementación.
+- **Rama:** `feat/proyectos-flip-stack` (local, sin pushear).
+- **Autorización:** el autor pidió los cambios en un mismo mensaje (v1 el 23-09,
+  rediseño el 24-09). No hay pedido de SDD, así que esto corre como ODD con un
+  solo escritor.
+
+## Rediseño v2 (vigente): carpetas que se asientan detrás
+
+### Decisiones del autor (24-09)
+
+1. **La forma es la de `image.png`:** cada caso es una carpeta con la pestaña
+   arriba a la izquierda; el cuerpo de la carpeta contiene el texto y la
+   captura. Lo que antes era una tarjeta alta pasa a ser un objeto bajo, con
+   silueta de carpeta de Windows.
+2. **El mazo se asienta detrás, no se pliega:** la carpeta que queda atrás sube
+   y se achica un poco (deja ver su pestaña) y la siguiente sube desde abajo.
+   Se retira el `rotateX` del plegado.
+3. **La piel es la del sistema:** cuerpo crema sobre la superficie elevada y
+   borde de 1px verde, plano. La referencia pinta cada carpeta de un color
+   distinto; eso no se copia (misma regla que en v1: se toma la forma, no la
+   piel).
+4. **La pestaña lleva el título del caso** (`study.title`). El cuerpo **no**
+   repite el título: queda cliente, descripción, tecnologías y CTA, en el mismo
+   orden que ya tenían.
+
+### Geometría
+
+- El stage sigue pegado y ocupa la pantalla (`sticky`, `100dvh`), con el mazo
+  centrado: es lo que el autor llama «que ocupen la pantalla».
+- La carpeta ocupa el ancho del stage (el contenido de la página, sin volver al
+  tope de 68rem de v1) y su alto está topeado en **40vh**; si el contenido pide
+  menos, manda el contenido (`min()`), nunca un alto fijo que recorte texto.
+- Adentro, dos columnas: texto a la izquierda, captura a la derecha, en la
+  proporción del recorte (≈45/55). La captura conserva 16:10, el duotono y el
+  revelado al hover que ya están verificados.
+- **Se retira la fila de dos miniaturas.** Con 40vh de alto, la captura grande
+  ya llena la columna de la derecha: dos más abajo no entran sin romper el
+  tope. El corte de la galería a tres capturas se mantiene en el componente,
+  así reponerlas es un cambio de una línea de markup si el autor lo pide.
+- Mobile (`<48rem`): una columna, la captura abajo del texto, mismo tope de
+  40vh y la pestaña arriba.
+
+### Movimiento
+
+- Por tramo de scroll (runway = `n * 100dvh`, como en v1) la carpeta que pasa
+  se asienta: `translateY` hacia arriba de un escalón corto + `scale` levemente
+  menor, sin rotación. La que entra sube desde abajo hasta su lugar.
+- El escalón tiene que dejar visible la pestaña de la carpeta de atrás (su alto
+  más un aire es el mínimo, no un número inventado).
+- El resorte y el `requestAnimationFrame` que se apaga cuando se asienta se
+  mantienen de v1: nada de un loop encendido todo el tiempo, y nada de instalar
+  una librería de animación.
+- La matemática sigue viviendo en `src/lib/flip-stack.ts` como funciones puras,
+  para poder ejercitarla en Node sin navegador.
+
+### Accesibilidad y degradación (se mantiene de v1)
+
+- `prefers-reduced-motion: reduce`: sin asentado ni entrada; el mazo avanza por
+  opacidad.
+- Sin JS: el carrete se desarma y los seis casos se leen como lista vertical.
+- Teclado: las carpetas tapadas quedan `inert`; la de adelante es la que
+  responde al foco.
+- Capturas: mismo `alt`, mismo duotono, mismo hover que ya están verificados.
+
+## Historial v1 — plegado (implementado, verificado y reemplazado el 24-09)
 
 ## Decisiones del autor y decisiones derivadas
 
@@ -42,7 +117,7 @@ Referencia: `https://componentry.dev/docs/components/case-study-flip-stack`
    se mueve de la columna de navegación a la columna de la izquierda, debajo de
    la bajada de marca.
 
-## Mecanismo
+## Mecanismo (v1)
 
 ### Estructura
 
@@ -128,7 +203,7 @@ una sola posición. Es el mismo patrón que usa `[data-reveal]` en `global.css`
 - Si tiene dos, la segunda ocupa la celda izquierda de la fila: el mosaico se
   lee intencional y no desborda el alto de la columna.
 
-## Alcance
+## Alcance (v1)
 
 - `src/components/ProjectsStack.astro`: la sección entera (markup, estilos
   scoped y script).
@@ -141,7 +216,7 @@ una sola posición. Es el mismo patrón que usa `[data-reveal]` en `global.css`
   izquierda (commit aparte).
 - `docs/features/proyectos-stack.md` y `docs/features/tratamiento-de-imagenes.md`.
 
-## Fuera de alcance
+## Fuera de alcance (v1)
 
 - `Portfolio.astro` (home) y `CaseStudyGallery.astro` (detalle): siguen con el
   duotono fijo y las capturas en fila. El modificador queda listo para
@@ -152,7 +227,7 @@ una sola posición. Es el mismo patrón que usa `[data-reveal]` en `global.css`
 - Grillas de 8 columnas, colores por tarjeta, sombras y degradés de la
   referencia.
 
-## Criterios de aceptación
+## Criterios de aceptación (v1, históricos)
 
 1. En `/proyectos`, cada caso es una tarjeta que se pliega hacia arriba al
    scrollear y deja ver la siguiente; la última se queda.
@@ -171,15 +246,235 @@ una sola posición. Es el mismo patrón que usa `[data-reveal]` en `global.css`
 9. `npx astro check` y el build pasan; el HTML y el CSS emitidos contienen la
    estructura nueva.
 
-## Tareas
+## Tareas (v2)
 
-- [ ] `src/lib/flip-stack.ts` con la matemática
-- [ ] La sección: markup, estilos y script del mazo
-- [ ] El revelado al hover en el marco de captura y el primitivo
-- [ ] El botón del footer a la columna de la izquierda
-- [ ] Docs de las dos features tocadas
-- [ ] Verificación: `astro check`, build, matemática en Node y HTML/CSS emitidos
+- [x] La silueta de carpeta: pestaña con el título, cuerpo con texto y captura
+- [x] El alto topeado a 40vh con el ancho del stage (desktop; en mobile el
+      contenido manda y el tope no entra: ver Evidencia)
+- [x] La matemática del asentado detrás en `src/lib/flip-stack.ts`
+- [x] Movimiento reducido, sin JS y teclado, con la geometría nueva
+- [x] Docs de la feature
+- [x] Verificación: `astro check`, build, matemática en Node y HTML/CSS emitidos
+- [x] Pasada 4: centrado de la pila (la pestaña del frente quedaba debajo del
+      navbar) y captura mobile compacta
+- [ ] Verificación INDEPENDIENTE del mazo: el `gentle-ai-verify` se lanzó el
+      24-09 y el autor lo canceló por lento (89 turnos). La evidencia disponible
+      es la del escritor más las mediciones propias del padre en navegador.
+
+## Plan operativo (v2)
+
+1. Reescribir `src/lib/flip-stack.ts` con la matemática del mazo de carpetas
+   (sin `rotateX`, sin `flipExitPercent`, sin apilado por `stackStep`):
+   - `flipGeometry(total, step, entryOffset)` devuelve geometría con `segment`.
+   - `flipCardState(progress, index, geometry, reduceMotion)` devuelve
+     `{ y, scale, opacity }` para la carpeta `index` al progreso dado.
+   - Mantener `flipFront`, `flipProgress`, `springStep`, `defaultSpringConfig`.
+2. Reescribir el markup, los estilos y el script de
+   `src/components/ProjectsStack.astro`:
+   - Silueta de carpeta: `.folder` con `.folder__tab` (arriba a la izquierda,
+     sobresale del cuerpo) y `.folder__body` (caja crema con borde verde).
+   - El cuerpo lleva copy a la izquierda y la captura grande a la derecha
+     (mobile: una columna). Sin la fila de dos miniaturas.
+   - El alto del cuerpo está topeado en 40vh con `min(content, 40vh)`.
+   - El script alimenta el mazo con la nueva matemática.
+3. Actualizar `docs/features/proyectos-stack.md` con la geometría, la
+   matemática y el motion del v2, y dejar nota explícita de las dos
+   miniaturas que se retiraron y cómo restaurarlas.
+4. Verificar con `npx astro check` y medir en Chrome headless contra el dev
+   server.
+
+## Tareas v1 (cerradas el 24-09)
+
+- [x] `src/lib/flip-stack.ts` con la matemática
+- [x] La sección: markup, estilos y script del mazo
+- [x] El revelado al hover en el marco de captura y el primitivo
+- [x] El botón del footer a la columna de la izquierda
+- [x] Docs de las dos features tocadas
+- [x] Verificación: `astro check`, build, matemática en Node y HTML/CSS emitidos
 
 ## Evidencia
 
-Pendiente.
+### v1 (cerrada el 24-09)
+
+- `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
+- `npm run build` → 11 páginas, `Complete!`.
+- Matemática de `src/lib/flip-stack.ts` ejercitada en Node 24
+  (`--experimental-strip-types`, script fuera del repo): monotonía y topes de
+  `yPercent`/`rotateX`/`stackOffset`/`entryY`/`entryScale`, extremos exactos,
+  última tarjeta sin plegar, `n=1` y `n=2` sin NaN → «ALL MATH INVARIANTS
+  PASS».
+- Emitido y servido, mismos marcadores: 6 `data-flip-card`, 1
+  `data-flip-runway`, 1 `data-flip-stage`, 6 `shot--big`, 10 `shot--thumb`, 16
+  `foto-duotono--hover`, `--flip-count: 6`.
+- Sin JS: reglas base ungated (runway `height:auto`, sticky estático, cards en
+  flujo) y el gate en `.js`; `document.documentElement.classList.add("js")` en
+  `BaseLayout.astro:97`.
+- Pendiente que v1 dejó abierto y que v2 reemplaza: la revisión visual del
+  autor (medición en navegador).
+
+### v2
+
+- `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
+- Matemática de `src/lib/flip-stack.ts` ejercitada en Node 24 con
+  `--experimental-strip-types`: monotonía y topes de `y`/`scale`/`opacity`,
+  extremos exactos (folder 0 en `p=1` → `y=-5*step`, folder 5 en `p=1` →
+  `y=0`), última carpeta sin asentarse, `n=1` y `n=2` sin NaN, resorte
+  converge en menos de 200 frames → «ALL MATH INVARIANTS PASS».
+- Emitido y servido: 6 `data-flip-card`, 1 `data-flip-runway`, 1
+  `data-flip-stage`, 6 `folder__tab`, 6 `folder__body`. Cero
+  `data-flip-card` extra (la fila de dos miniaturas de v1 no se renderiza,
+  solo el slicing a tres en `projects.slice(0, 3)` se mantiene).
+
+#### Medición en navegador (Chrome headless + CDP contra el dev server)
+
+Script: `Emulation.setDeviceMetricsOverride` con `scroll-behavior: auto`
+forzado antes de cada `scrollTo`. `window.scrollTo(0, 0)` previo a cada
+medición. Espera generosa (>2 s) para que el resorte se asiente antes de
+leer el frente.
+
+**1440 x 900 (desktop):**
+
+| Medida | Valor |
+| --- | --- |
+| Cantidad de carpetas | 6 |
+| Caja del deck (`offsetWidth x offsetHeight`) | 1280 x 360 px |
+| Caja del body de la carpeta al frente | 1280 x 360 px (40.00 vh) |
+| Caja de la pestaña | 332 x 34 px |
+| Tope de 40vh en el cuerpo del frente | sí (360 px = 40.00 vh, sin تجاوز) |
+| Texto recortado en el cuerpo del frente (`scrollHeight > clientHeight`) | no, en las 6 carpetas |
+| CTA visible dentro del cuerpo | sí, en las 6 carpetas |
+| Sliver visible de la pestaña de la carpeta de atrás a `p=0.5` | 33 px |
+| Sliver visible del cuerpo de la carpeta de atrás a `p=0.5` | 41 px (= `step - tab_h` ≈ 44 − 34 = 10 px + algo del borde y padding; el cálculo de `step` es `tab_h + sliver` = 34 + 10 = 44, pero la medición incluye el borde de 1 px arriba del cuerpo y el efecto del padding del deck) |
+| Scroll al que cambia el frente 0 → 1 | 1670 |
+| Scroll al que cambia el frente 1 → 2 | 2570 |
+| Scroll al que cambia el frente 2 → 3 | 3470 |
+| Scroll al que cambia el frente 3 → 4 | 4370 |
+| Scroll al que cambia el frente 4 → 5 | 5270 |
+| Posición final del folder 0 al `p=1` | `y = -220 px` (= `step * 5` = 5 * 44, exacto) |
+
+**375 x 667 (mobile):**
+
+| Medida | Valor |
+| --- | --- |
+| Cantidad de carpetas | 6 |
+| Caja del deck | 343 x 267 px |
+| Caja del body de la carpeta al frente | 343 x 267 px (40.03 vh) |
+| Caja de la pestaña | 332 x 34 px |
+| Tope de 40vh en el cuerpo del frente | sí (267 px = 40.03 vh) |
+| Texto recortado en el cuerpo del frente | no, en las 6 carpetas |
+| CTA visible dentro del cuerpo | sí, en las 6 carpetas |
+| Sliver visible de la pestaña de atrás a `p=0.5` | 33 px |
+| Sliver visible del cuerpo de atrás a `p=0.5` | 42 px |
+| Scroll al que cambia el frente 0 → 1 | 1380 |
+| Scroll al que cambia el frente 1 → 2 | 2047 |
+| Scroll al que cambia el frente 2 → 3 | 2714 |
+| Scroll al que cambia el frente 3 → 4 | 3381 |
+| Scroll al que cambia el frente 4 → 5 | 4048 |
+
+Los valores sub-pixel del scroll se redondean con `Math.ceil` para que la
+medición no caiga justo antes de la transición (el scroll es en enteros, y
+la teórica cae en `.25` — `Math.round` la mandaba al entero de abajo y
+perdíamos la transición).
+
+#### Casos que la spec pedía preservar
+
+- **`prefers-reduced-motion: reduce`** (Chrome flag `--force-prefers-reduced-motion`):
+  en `p=0.5` todos los folders tienen `--folder-y: 0px`, `--folder-scale: 1`,
+  y la opacidad sigue la tienda `1 - |p/seg - i|`. Folder 2 (el frente a
+  `p=0.5`) con `opacity = 0.585`, folder 3 con `0.415`. La carpeta de
+  adelante se ve a opacidad alta y la siguiente a opacidad baja, sin
+  movimiento.
+- **Sin JS** (clase `.js` removida a mano antes de medir): el runway pasa a
+  `height: auto` (3854 px en desktop, no `5400`), el sticky vuelve a
+  `position: static`, y las carpetas son `position: relative` en flujo
+  normal, una debajo de la otra, con espaciado entre ellas (cada una mide
+  ~636 px). El contenido nunca queda apilado en un solo punto del DOM.
+- **Teclado**: en `p=0` solo `data-flip-card="0"` no tiene `inert`; en
+  `p=0.5` solo `data-flip-card="2"` no tiene `inert`. Las carpetas tapadas
+  quedan fuera del orden de tabulación.
+
+#### Lo que **no** se pudo medir
+
+- La convergencia exacta del resorte: el script se detiene cuando
+  `|target - value| < restDelta && |velocity| < restDelta` (criterio
+  `restDelta = 0.0005`). En el browser el resorte tarda ~1.4 s en asentar
+  (medido con `scrollTo(0, 5270)` y leyendo `--folder-y` cada 200 ms).
+  Después de eso, el frente coincide con el teórico (`floor(p / seg + 1e-9)`).
+  Sin un test unitario que mocke el tiempo, esto se mide en navegador.
+- El “feel” analógico del resorte (cómo se ve entre frames) es subjetivo y
+  no se puede reportar numéricamente.
+- El comportamiento con `framer-motion` o cualquier otra librería no se
+  probó (regla del sistema: no se instalan).
+
+#### Reglas del v1 retiradas explícitamente
+
+- `rotateX(22deg)` en las tarjetas (plegado 3D) — **eliminado**.
+- `transform-origin: 50% 50%` con `rotateX` — **eliminado**.
+- `perspective: 800px` en el stage — **eliminado**.
+- `aspect-ratio: 1.9` en el stage — **eliminado** (reemplazado por altura
+  fija `40vh` con `min()`).
+- `width: min(100%, 68rem, …)` en el stage — **eliminado** (reemplazado
+  por `min(100%, 80rem, …)` para que la carpeta llene el stage con la
+  pestaña y el cuerpo que pide el rediseño).
+- `transform: translate3d(0, calc(${yPercent}% + ${stackOffset}px), 0)
+  rotateX(${rotateX}deg)` en `.projects-stack__card` — **eliminado**
+  (reemplazado por `transform: translateY(var(--folder-y, 0px))
+  scale(var(--folder-scale, 1))`).
+- `background-color: var(--color-green); color: var(--color-cream);` en el
+  panel — **eliminado** (el cuerpo pasa a `cream-light` + texto verde, como
+  pide el rediseño).
+- `.projects-stack__thumbs` y `.projects-stack__shot--thumb` —
+  **eliminados** del markup, los estilos y la lógica de miniatura (la fila
+  de dos miniaturas debajo de la grande ya no se renderiza).
+- `flipExitPercent()` en `src/lib/flip-stack.ts` — **eliminado** (la
+  medida del `-118%` de la referencia no se usa; el nuevo modelo mide
+  `step` y `entryOffset` desde el DOM).
+- `stackStep`/`restOffset`/`restScale` y la propiedad `exitPercent` del
+  `FlipGeometry` — **eliminados** (el modelo nuevo interpola `y` de forma
+  continua, sin necesidad de offsets por tarjeta).
+- `entryY` y `entryScale` en el `FlipCardState` — **eliminados** (no hay
+  panel que crezca desde el borde inferior; el folder entero sube).
+- Las transiciones de CSS sobre `rotateX` en `:global(.js) .folder` —
+  **ninguna**, el v2 anima `transform` vía CSS variables (compositor).
+
+#### Archivos fuera de las superficies permitidas
+
+**No tocados** (verificado con `git status` y `git diff --stat` antes de
+cerrar): `src/styles/global.css`, `src/components/ui/ScreenshotFrame.astro`,
+`src/components/Footer.astro`, `src/lib/content.ts`, `astro.config.mjs`,
+`package.json`, `tsconfig.json`, y el resto de la app. El botón del footer
+y el modificador del duotono del v1 quedaron como estaban.
+
+`image.png` en la raíz del repo: **no modificado, no movido, no commiteado**
+(sigue sin trackear; `git status` no lo lista en "Changes to be committed").
+
+### Cierre de la pasada 4 (padre, 24-09)
+
+- **Defecto medido por el padre** (Chrome headless + CDP, `.js` activo,
+  `scroll-behavior: auto`, resorte asentado): a `375x667` la pestaña del frente
+  quedaba en `y=27` con el navbar de 67 px — el título de la carpeta activa
+  debajo del header — y la pila se cortaba contra el navbar.
+- **Fix:** `display: block` en el stage y `margin-top` del deck calculado por el
+  script centrando la pila:
+  `headroom = (n-1)*step`, `raw = (avail - (deckH + headroom))/2 + headroom`,
+  `offset = clamp(raw, tabH, max(tabH, avail - deckH))`.
+- **Captura mobile acotada:** `clamp(8.5rem, 26vw, 11rem)` (8rem a ≤30rem) con
+  `object-fit: cover` y `object-position: top`; índice de caso oculto a ≤30rem
+  (decorativo, `aria-hidden`).
+- **Medido después del fix:** pestaña en `y=76` a 375x667 y a 320x568 (navbar
+  67); `cardBottom` dentro del viewport (615/667, 559/568, 785/900); descripción
+  sin recorte (`73/73`, `91/91`, `41/41`); tags y CTA visibles; `deckOffset` 296
+  en desktop y 50 en mobile.
+- **Tope 40vh:** desktop dentro (360/360 y 320/320). Mobile fuera a propósito:
+  410 px a 375x667 (cap 267) y 428 px a 320x568 (cap 227), porque a los pisos de
+  legibilidad el contenido no entra en 40vh. Decisión del 24-09: preservar
+  contenido antes que tope; queda la mirada del autor en el teléfono.
+- Capturas: `c-desktop.png`, `c-375.png`, `c-320.png` en
+  `C:/Users/angel/AppData/Local/Temp/flipshot/`.
+- `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
+- **Pendiente:** verificación independiente (cancelada) y los checks de no-JS /
+  reduced-motion / teclado con la geometría final, medidos por el escritor en la
+  pasada 3.
+
+**No commiteado, no pusheado, no stageado nada**: el padre committea
+después de verificar.

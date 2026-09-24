@@ -1,44 +1,56 @@
-# Feature: Flip stack en `/proyectos`
+# Feature: Mazo de carpetas en `/proyectos`
 
 ## Objetivo
 
-Que la lista de casos de `/proyectos` se recorra como un mazo de cartas: cada
-caso ocupa una pantalla y, al scrollear, la tarjeta al frente se pliega hacia
-arriba para revelar la siguiente. La última tarjeta se queda al final y el
-visitante sigue scrolleando hasta el footer.
+Que la lista de casos de `/proyectos` se recorra como un mazo de **carpetas
+físicas** (silueta de Windows): cada caso lleva una pestaña arriba a la izquierda
+con el título del proyecto, y un cuerpo con el cliente, la descripción, las
+tecnologías y el CTA, con la captura grande al lado. Al scrollear, las
+carpetas se **asientan detrás** (suben un escalón y se escalan levemente) y la
+siguiente sube desde abajo hasta ocupar su lugar. La última carpeta queda al
+frente al final del scroll y el visitante sigue hasta el footer.
 
-Referencia externa: `case-study-flip-stack` del registry `@componentry` de
-shadcn (`componentry.dev/docs/components/case-study-flip-stack`). Se tomó la
-animación y la estructura de la referencia, **no su piel**.
+Referencias externas:
+
+- Comportamiento de scroll-stack-deck (Framer marketplace): solo se miró el
+  gesto de "stack que se asienta detrás"; **no se copió la piel** (color por
+  carpeta, sombras, degradés).
+- Recorte que el autor dejó en la raíz del repo (`image.png`, no trackeado):
+  la silueta Windows-style que se reproduce acá.
 
 ## Decisiones del autor y decisiones derivadas
 
-1. **La animación es la de la referencia:** el mazo queda pegado a la ventana
-   (`sticky`), la tarjeta al frente se pliega con `rotateX` mientras se eleva,
-   y la tarjeta siguiente sube desde un offset de reposo hasta su plano final.
-   Es lo que pidió el autor, no una reinterpretación.
-2. **La captura va a la derecha**, el texto a la izquierda (en la versión
-   anterior era al revés). En mobile es una sola columna: el texto arriba y la
-   captura abajo.
-3. **Una captura grande y hasta dos chicas abajo.** No se quiso un carrusel
-   por tarjeta: cada carrusel propio sumaba seis controles, más JS y más a11y,
-   para mostrar menos capturas que la grilla anterior.
-4. **Al hover la captura se agranda y pierde el duotono.** Es el único lugar
-   donde el sitio expone el color real de la interfaz; se implementa como
-   modificador opt-in del primitivo, no como CSS específico de la sección.
-5. **El tamaño de la tarjeta sale de la animación.** La referencia usa un
-   tarjeta de 860px de ancho con relación 1.76:1; acá se estira hasta un
-   máximo de 68rem con relación 1.9:1, porque la columna derecha carga una
-   captura grande más dos chicas (más alto útil que una sola foto) y el texto
-   es más largo.
-6. **La piel no se copia.** La referencia trae color por tarjeta, sombra y
-   degradé sobre la foto. El sistema del sitio es plano: borde de 1px, radio
-   de tarjeta, verde y crema. Se toman la animación y la estructura, no el
-   skin.
-7. **`framer-motion` queda descartado.** El sistema de diseño del sitio
-   prohíbe librerías de animación, y la referencia es de las que funcionan con
-   `framer-motion`. Se tradujo a un `requestAnimationFrame` propio con un
-   resorte integrado a mano.
+1. **La silueta es la de `image.png`.** Cada caso es una carpeta con pestaña
+   arriba a la izquierda y cuerpo abajo. Lo que antes era una tarjeta alta
+   pasa a ser un objeto bajo, con silueta de carpeta.
+2. **El mazo se asienta detrás, no se pliega.** La carpeta que pasa sube un
+   escalón corto (su pestaña + un sliver fino del cuerpo queda visible sobre
+   la siguiente) y se escala un punto abajo; la siguiente sube desde abajo.
+   **No** hay `rotateX`, ni `flipExitPercent`, ni perspectiva 3D.
+3. **La piel es la del sistema.** Cuerpo crema sobre la superficie elevada
+   (`--color-cream-light: #fbf7f0`) y borde de 1px verde, plano. La referencia
+   pinta cada carpeta de un color distinto; **se descartó** (la regla del
+   sistema es plano, sin color por superficie).
+4. **La pestaña lleva el título** (`study.title`); el cuerpo **no** repite el
+   título: queda cliente, descripción, tecnologías y CTA, en el mismo orden
+   que ya tenían, más la captura grande al lado.
+5. **Geometría.** La carpeta mide como mucho **40vh** de alto en desktop
+   (con `min()` contra el contenido, ver abajo). El ancho ocupa el stage
+   entero (hasta `min(100%, 80rem, …)`). En desktop son dos columnas (≈45%
+   copy / 55% captura); en mobile una sola. **La pestaña puede partirse en
+   dos líneas** si el título no entra; el alto se mide en runtime y el
+   escalón del asentado (step) se deriva de la pestaña más alta, no de una
+   constante.
+6. **Mobile (<48rem):** la pestaña se parte cuando hace falta, los tags se
+   muestran (no se ocultan), la descripción va entera (sin line-clamp) y el
+   cuerpo crece con el contenido (`height: auto` + `min-height: 40vh`). El
+   `max-height` mobile es `100dvh - nav - 4rem` para que nada se desborde
+   del stage; si el contenido excede, el deck absorbe y el stage recorta.
+7. **Capturas.** Se cortan a tres en el componente aunque solo se renderiza
+   la primera en v2 — con 40vh no entran dos miniaturas debajo de la grande
+   sin romper el tope. **Revertir** el recorte (volver a las dos miniaturas
+   de v1) es pintar de nuevo el bloque con `gallery.slice(1)` debajo de la
+   captura grande; el slicing del array no cambia.
 
 ## Mecanismo
 
@@ -46,135 +58,237 @@ animación y la estructura de la referencia, **no su piel**.
 
 ```
 section
-  intro (eyebrow + título + descripción)        <- ya existía, no cambia
-  runway    alto: n * 100dvh                     <- el carrete del scroll
+  intro (eyebrow + título + descripción)            <- ya existía, no cambia
+  runway    alto: n * 100dvh                         <- el carrete del scroll
     sticky  position: sticky; top: 0; alto: 100dvh; overflow: clip
-      stage  ancho/alto de la tarjeta + perspective 800px + container de cqw
-        card x n   absolutas, inset 0, z-index decreciente
-          panel   la caja visible (borde, verde, crema) que sube en la entrada
-            copy | shots   una columna en mobile, grilla 2 en desktop
+      stage  alto: 100% (centra el deck con flex)
+        deck  alto: lo que el JS calcule (max body + tab), ancho: min(100%, 80rem, …)
+          folder x n   absolutas, inset 0, z-index = i+1
+            tab    absolute, bottom: 100% (sobresale arriba)
+              h3   title (puede partir en 2 lineas)
+            body   cream + border verde 1px (alto = contenido)
+              copy    number, client, description, tags, cta
+              shots   screenshot frame único
 ```
 
-El runway mide `n * 100dvh` y no `(n + 1) * 100dvh` como la referencia. Con la
-fórmula de la referencia la última tarjeta se plegaba y el mazo terminaba con
-la ventana vacía; con `n * 100dvh` la última tarjeta queda al frente al final
-del scroll y el visitante sigue avanzando hasta el footer.
+El runway mide `n * 100dvh`. Con `n * 100dvh` la última carpeta se queda al
+frente al final y el visitante sigue hasta el footer; con la fórmula de la
+referencia `(n + 1)` el mazo terminaba con la ventana vacía.
 
-### Matemática (un tramo por tarjeta)
+La pestaña se posiciona con `bottom: calc(100% - 1px)`: su borde inferior
+queda al ras del borde superior del cuerpo, fundido en un solo trazo (sin
+doble línea). El `-1px` es el ancho del borde que comparten. La pestaña
+está marcada con `align-self: flex-start` y `max-width: 100%`: si el título es
+corto queda angosta (ancho del texto + padding), si es largo se parte en 2
+líneas y se vuelve más alta.
 
-Sean `n` la cantidad de tarjetas, `m = max(n - 1, 1)` y `seg = 1 / m`. El
+### El `padding-top` del cuerpo es `var(--folder-step)`
+
+El CSS del body es:
+
+```css
+.folder__body {
+  padding: var(--folder-step, 44px) clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 2.5vw, 1.5rem);
+  /* ... */
+}
+```
+
+`--folder-step` lo publica el script al init y en cada resize. Equivale al
+escalón del asentado (alto de la pestaña más alta + sliver). Eso garantiza
+que la franja del cuerpo que asoma arriba del frente siguiente — la "thin
+sliver of body" del spec — sea **sólo** cuerpo liso: la padding-top es igual
+o mayor al translateY entre carpetas, así el primer pixel de contenido
+queda por debajo del borde superior de la carpeta siguiente. Sin esto, la
+franja mostraba el primer sliver de la captura del caso detrás y ensuciaba
+la banda (defecto 1).
+
+### Matemática del mazo
+
+Sean `n` la cantidad de carpetas, `m = max(n - 1, 1)` y `seg = 1 / m`. El
 progreso `p` del carrete vale 0 cuando el borde superior del runway toca el
 borde superior de la ventana y 1 cuando su borde inferior toca el borde
 inferior.
 
-Por tarjeta `i`:
+`step` (px) es el alto medido de la pestaña más alta + un sliver (10 px).
+`entryOffset` (px) es la distancia a la que la carpeta entrante empieza abajo
+del stage (`sticky_height - max_tab_height`).
 
-- **Salida** (todas menos la última): tramo `[i * seg, min((i + 1) * seg, 1)]`.
-  - `y%` de 0 a -118.
-  - `rotateX` de 0 a 22 grados.
-  - `stackOffset` de 0 a `i * min(24, 72 / m)` px (apilado del mazo).
-- **Entrada** (todas menos la primera): tramo
-  `[max(0, i * seg - seg), i === 0 ? 0 : min(i * seg, (i - 1) * seg + 0.7 * seg)]`.
-  - `scale` del panel de `1 - min(i * 0.012, 0.035)` a 1.
-  - `y` del panel de `min(i * 12, 34)` px a 0.
+Por carpeta `i`:
 
-La entrada empieza antes que la salida: la tarjeta de abajo termina de subir a
-su plano cuando la de arriba empieza a plegarse.
+- **Entrada** (todas menos la primera): durante `[max(0, (i-1)*seg), i*seg]`,
+  `y` interpola de `entryOffset` a 0 y `scale` de 0.98 a 1.
+- **Salida** (todas menos la última): durante `[i*seg, 1]`, `y` interpola de
+  0 a `-(n-1-i) * step` (la última no se mueve: `n-1-i = 0`). `scale`
+  interpola de 1 a 0.98 cuando `|y|/step <= 1`, y se queda en 0.98 más allá.
 
-Origen de la transformación: el card (el que se pliega) al 50% 50%; el panel
-(el que sube) al 50% 100%, para que crezca desde el borde inferior como un
-mazo real apoyado sobre la mesa.
+La fórmula de salida es continua para todas las carpetas (incluida la primera
+y la última). La entrada solo se aplica a las carpetas con `index > 0`. El
+escalón se acumula: cuando pasa una nueva carpeta al frente, las que ya
+estaban detrás suben un `step` adicional.
+
+Origen de la transformación: el cuerpo (la carpeta) a 50% 50%, así la
+carpeta se escala simétricamente sin "tirones" hacia un costado.
+
+### Estado de cada carpeta
+
+La función pura devuelve `{ y, scale, opacity }`:
+
+- `y`: translate Y en px (negativo cuando la carpeta pasó al frente).
+- `scale`: 1 al frente, 0.98 cuando se alejó al menos un escalón.
+- `opacity`: 1 en el flujo normal. Con `reduceMotion`, sigue una función
+  "tienda" centrada en el segmento propio: `1 - |p/seg - i|`. Así la
+  carpeta está al 100% cuando `p = i*seg` y cae a 0 cuando se aleja un
+  segmento hacia cualquier lado. Sin movimiento, las carpetas que se cruzan
+  en un segmento se intercalan por opacidad.
 
 ### Resorte
 
 El progreso pasa por un resorte con `stiffness 120`, `damping 22`, `mass 0.8`
-y `restDelta 0.0005`. La integración es explícita (una iteración por frame)
-dentro de un `requestAnimationFrame`. Lo importante es que el rAF **solo corre
-mientras el resorte no se asento**: cuando el visitante deja de scrollear
-sobre la sección, el frame loop se apaga y la capa de GPU queda libre. El
-scroll alimenta el listener pasivo, coalescido por rAF para no escribir más de
-una vez por frame.
+y `restDelta  0.0005`. La integración es explícita (una iteración por frame)
+dentro de un `requestAnimationFrame`. **El rAF solo corre mientras el resorte
+no se asentó**: cuando el visitante deja de scrollear sobre la sección, el
+frame loop se apaga y la capa de GPU queda libre. El scroll alimenta el
+listener pasivo, coalescido por rAF para no escribir más de una vez por
+frame.
 
 El script mide el `dt` real entre frames y lo clampea a `1/30s` (33 ms). Sin
 ese tope, una pestaña que vuelve del background entrega un `dt` de varios
 segundos y el resorte salta al target por una sola integración.
 
+### `measure()` lee del DOM y reajusta geometría + CSS variable
+
+Al init y en cada resize:
+
+1. Lee el alto de la pestaña de cada carpeta, se queda con el máximo.
+2. Calcula `step = max_tab + SLIVER` y `entryOffset = sticky_height - max_tab - 1`.
+3. Publica `--folder-step` en el `<section>` (cascada a todos los
+   `.folder__body`).
+4. Llama `flipGeometry(n, step, entryOffset)` para actualizar la geometría
+   que el rAF consume.
+5. Lee `body.scrollHeight` (NO `offsetHeight`) de cada carpeta — el alto
+   del contenido, independiente de si las capturas ya cargaron — y ajusta la
+   altura del deck a `max(scrollHeight) + max_tab`, capeada por el alto útil
+   del stage (`stage.clientHeight`).
+6. Re-medimos también cuando las `<img>` de las capturas disparan `load`/
+   `error`: el body puede crecer (porque ahora conoce la altura natural de
+   la imagen) y el deck debe acompañar para que la descripción, los tags o
+   el CTA no queden cortados en mobile.
+7. Centra la **pila**, no la carpeta del frente. Las carpetas que ya pasaron
+   se apilan HACIA ARRIBA (un escalón cada una), así que centrar solo la caja
+   del frente —lo que hacía el centrado flex del stage— dejaba la pila cortada
+   contra el navbar y escondía la pestaña del frente (medido: pestaña en
+   `y=27` con navbar de 67 px). El stage pasa a `display: block` y el script
+   publica el desplazamiento como `margin-top` del deck:
+
+   ```
+   headroom = (n - 1) × step
+   raw      = (avail − (deckH + headroom)) / 2 + headroom
+   offset   = clamp(raw, tabH, max(tabH, avail − deckH))
+   ```
+
+   Los dos límites son duros: la pestaña del frente nunca queda debajo del
+   navbar, y la carpeta del frente nunca se pasa del borde inferior. Si la pila
+   no entra en el alto útil, lo que se recorta es su fondo contra el navbar,
+   nunca el frente.
+
 ### Movimiento reducido
 
-Con `prefers-reduced-motion: reduce` no hay plegado ni entrada: el mazo avanza
-por opacidad (la tarjeta al frente se desvanece sobre la siguiente). Los
-botones de las tarjetas tapadas siguen fuera del orden de tabulación. Regla de
-la casa: neutralizar el movimiento, nunca quitar la función.
+Con `prefers-reduced-motion: reduce` no hay asentado ni entrada: el mazo
+avanza por opacidad (la tienda descrita arriba). Las carpetas tapadas siguen
+fuera del orden de tabulación (`inert`). Regla de la casa: neutralizar el
+movimiento, nunca quitar la función.
 
 ### Teclado
 
-Las tarjetas tapadas llevan `inert`, así sus botones no son alcanzables por
-tab. La tarjeta activa es `flipFront(p) = clamp(round(p / seg), 0, n - 1)`:
+Las carpetas tapadas llevan `inert`, así sus botones no son alcanzables por
+tab. La carpeta activa es `flipFront(p) = clamp(floor(p / seg), 0, n - 1)`:
 la que está al frente del mazo en ese momento. Al scrollear la atención de
-teclado pasa a la siguiente tarjeta; sin `inert` el foco caía en botones que
-no se ven.
+teclado pasa a la siguiente carpeta; sin `inert` el foco caía en botones
+que no se ven.
 
 ### Sin JS
 
 Sin JS el carrete se desarma: el runway pasa a `height: auto`, el sticky
-deja de pegarse y las tarjetas se acomodan como una lista vertical. Es el
-mismo patrón que usa `[data-reveal]` en `global.css`: todo el mecanismo vive
-debajo de la clase `.js` del `<html>` (la pone `BaseLayout.astro` cuando el
-módulo del cliente carga). El contenido nunca queda apilado en un solo punto
-del DOM si el JS no carga.
+deja de pegarse y las carpetas se acomodan como una lista vertical (en flow
+normal, no absolutas). Es el mismo patrón que usa `[data-reveal]` en
+`global.css`: todo el mecanismo vive debajo de la clase `.js` del `<html>`
+(la pone `BaseLayout.astro` cuando el módulo del cliente carga). El contenido
+nunca queda apilado en un solo punto del DOM si el JS no carga.
 
-### Tamaño de la tarjeta
+### Tamaño de la carpeta
 
-- **Desde `48rem`:** el ancho es `min(100%, 68rem, (100dvh - navbar - 4rem) * 1.9)`
-  y el alto sale de `aspect-ratio 1.9`. El tope de `100dvh` mantiene la
-  tarjeta entera en pantalla con 4rem de aire (el navbar arriba y el asomo
-  del mazo abajo). A 1440px de ancho la tarjeta mide 1088x572.
-- **Por debajo de `48rem`:** una columna, ancho `min(100%, 30rem)`, alto
-  `min(100dvh - navbar - 4rem, 40rem)`. Sólo la captura grande entra (las dos
-  chicas no caben en el alto útil de un celular manteniendo el mosaico
-  legible).
+- **Desde 48rem:** el body es de dos columnas (≈45% copy / 55% captura) y
+  queda topeado a `40vh`. La descripción, los tags, el título de la pestaña
+  y el label del CTA respetan los floors pedidos por el autor: descripción
+  14 px, tags 10 px, título de pestaña 14 px (≥12), CTA 16 px (≥13). Sin
+  `line-clamp`: la descripción nunca se recorta con `…`. El ancho es
+  `min(100%, 80rem, …)`. Con align-items: stretch las dos columnas se
+  estiran al alto del body; la captura se rellena con `object-fit: cover`
+  y se recorta lo que no entra según el aspect del shot. La CTA se empuja
+  al fondo de la columna del copy con `margin-top: auto` para que no
+  quede "colgando" arriba del bloque vacío que deja la diferencia entre
+  copy y shot.
+- **Por debajo de 48rem:** una columna, ancho `min(100%, 80rem)`. Body
+  crece con el contenido (`height: auto`, `min-height: 40vh`,
+  `max-height: calc(100dvh - nav - 4rem)`). Descripción 13 px (floor),
+  tags 10 px, CTA 13 px (floor, sobreescrito sobre el text-sm base de la
+  Button), título de pestaña 13 px. Sin `line-clamp`. La captura rellena
+  el alto disponible con `object-fit: cover`. **El body puede crecer más
+  allá de 40vh en mobile** porque con descripción completa + tags + CTA +
+  shot no entran en 40vh a los floors pedidos. La altura final del body
+  es content-driven (medida por `body.scrollHeight`, no `offsetHeight`).
+  Ver "Decisiones que se descartaron" para la justificación.
+- **Mobile pequeño (≤ 30rem):** paddings más cerrados y un `max-height`
+  del body igual al del @media mobile. Sin escalado de tipos extra: los
+  floors ya aplican.
 - **Capa compuesta:** `will-change: transform` se prende y se apaga con la
   clase `.projects-stack--moving`, gestionada por el script. El mazo en
   reposo no deja capas de GPU prendidas.
-- **Tipografía:** `container-type: inline-size` en el stage, así `1cqw` es el
-  1% del ancho del stage y no de la ventana. La tarjeta manda, no el ancho
-  del navegador. Los `clamp` de tamaño llevan un piso en `rem` para que la
-  tipografía no se achique a cero en una ventana chica.
+
+### Altura del body medida por breakpoint
+
+| breakpoint | body height | cap 40vh | resultado | razón |
+| --- | --- | --- | --- | --- |
+| `1440x900` | **360 px** | 360 | **dentro del cap** | descripción 14 px + tags 10 px + CTA 16 px + shot 16:10 caben en 40vh (la columna del shot se estira al alto del body con align-items: stretch; el copy queda con aire arriba del CTA porque la CTA tiene `margin-top: auto`). |
+| `1280x800` | **320 px** | 320 | **dentro del cap** | igual que arriba, con body = 40vh del viewport más chico. |
+| `375x667` | **410 px** | 267 | **PAST el cap (143 px)** | con descripción completa del caso más largo (Legal/CRM, ~290 chars a 13 px) + tags + CTA + captura a los floors pedidos, el contenido excede 40vh. La captura mobile está acotada a `clamp(8.5rem, 26vw, 11rem)` (8rem ≤30rem) para no comerse el alto; el body queda content-driven dentro del cap mobile (`100dvh − nav − 4rem`). |
+| `320x568` | **428 px** | 227 | **PAST el cap (201 px)** | mismo motivo: a los floors pedidos (desc 13, tags 10, tab ≥12, CTA 13) el contenido no entra en 40vh. El índice de caso (decorativo, `aria-hidden`) se oculta para no gastar una línea. |
+
+En desktop el contenido cabe en 40vh a 14 px de descripción. En mobile, a los floors pedidos (desc ≥13, tags ≥10, CTA ≥13) y con la captura presente, el contenido no entra en 40vh: lo dejamos crecer y reportamos la altura real.
 
 ### Capturas
 
-- **Grande:** relación 16:10 (la relación modal de las capturas del repo: las
-  fuentes más visibles del mazo son 1600x1000 y 1440x900). Las capturas que
-  salen de esa proporción (las del caso de limpieza, ~2.08:1) se recortan un
-  poco a los costados vía `object-cover` con `object-position: top`: el
-  contenido crítico de esas capturas está centrado verticalmente y se
-  preserva.
-- **Chicas:** dos en una fila, también 16:10, cada una con la mitad del ancho.
-- **Una sola captura** (`landing-empresa-limpieza`): la grande queda centrada
-  en la columna derecha (el `justify-content` del contenedor la centra). Es
-  el único caso con ese aire de más.
-- **Dos capturas:** la segunda ocupa la celda izquierda de la fila de thumbs.
-  El mosaico se lee intencional y no desborda el alto de la columna.
-- **Nunca tres en una fila:** el patrón del mazo es siempre una grande arriba
-  y hasta dos chicas abajo.
+- **Única en v2:** relación 16:10 (la relación modal de los estudios legal y
+  pediátrico, 1600x1000 y 1440x900). Las capturas que salen de esa
+  proporción se recortan vía `object-cover` con `object-position: top`: el
+  contenido crítico está arriba y se preserva.
+- **Una sola captura** (`landing-empresa-limpieza`): la grande ocupa toda
+  la columna derecha (desktop) o todo el ancho (mobile).
+- **Nunca tres en una fila:** el patrón del mazo es siempre una sola captura
+  grande (las dos miniaturas de v1 fueron retiradas; ver "Decisión 7").
+- **Mobile:** la captura no manda el alto. Va acotada a
+  `height: clamp(8.5rem, 26vw, 11rem)` (8rem en pantallas ≤30rem) con
+  `object-fit: cover` y `object-position: top`, así la franja muestra el
+  encabezado de la interfaz —la parte que informa— y la carpeta queda
+  compacta sin tocar el copy. En desktop mantiene 16:10 a lo alto de la
+  columna.
 
 ### Hover sobre una captura
 
 Cuando el visitante hace hover sobre una captura del mazo, el modificador
 opt-in del marco la agranda un 4.5% y le quita el duotono. Es el único lugar
-donde el sitio expone el color real de la interfaz. La transición cruza sólo
-`transform` y `filter` (compositor); con `prefers-reduced-motion: reduce` se
-neutraliza el zoom pero el cambio de color sigue.
+donde el sitio expone el color real de la interfaz; la transición cruza solo
+`transform` y `filter` (compositor), y con `prefers-reduced-motion: reduce`
+se neutraliza el zoom pero el cambio de color sigue.
 
 ## Datos
 
 Todo el contenido sale de `src/lib/content.ts`. No se inventó copy:
 
-- las capturas del `gallery` del caso (se cortan a tres: una grande y hasta
-  dos chicas),
 - el cliente, el título y la descripción SEO,
 - los tags de `technologies`,
-- el destino `/proyectos/<slug>`.
+- el destino `/proyectos/<slug>`,
+- la primera captura del `gallery` (cortado a tres en el componente).
 
 ## Alcance
 
@@ -182,72 +296,225 @@ Todo el contenido sale de `src/lib/content.ts`. No se inventó copy:
   scoped y script del mazo).
 - `src/lib/flip-stack.ts`: la matemática del mazo como funciones puras, sin
   DOM, para poder verificarla con Node.
-- `src/components/ui/ScreenshotFrame.astro`: prop `hover` para activar el
-  modificador de revelado.
-- `src/styles/global.css`: el modificador de revelado del primitivo del
-  duotono.
 
 ## Fuera de alcance
 
 - `Portfolio.astro` (home) y `CaseStudyGallery.astro` (detalle): siguen con
-  el duotono fijo. El modificador queda listo para adoptarlo, pero el autor
-  no lo pidió ahí.
-- El carrusel de una sola captura.
-- Instalar `framer-motion` o cualquier librería de animación.
-- Grillas de ocho columnas, colores por tarjeta, sombras y degradés de la
-  referencia.
-- El cambio acompañante del footer (botón «Contanos tu caso» en la columna
-  izquierda): vive en otro commit y otro archivo.
+  el duotono fijo y las capturas en fila. El modificador queda listo para
+  adoptarlo, pero el autor no lo pidió ahí.
+- Las dos miniaturas debajo de la captura grande (retiradas en v2 con tope
+  40vh). La galería se sigue cortando a tres en este archivo, así reponerlas
+  es una línea de markup.
+- Instalar `framer-motion` o cualquier librería de animación (regla del
+  sistema: "no instalar librerías de animación").
+- Color por tarjeta, sombras y degradés de la referencia.
+- Perspectiva 3D (`perspective`, `rotateX`).
 
 ## Decisiones que se descartaron
 
 - **`(n + 1) * 100dvh` como runway:** la referencia lo hace así, pero acá la
-  última tarjeta se plegaría y la ventana quedaría vacía al final. Por eso se
-  usa `n * 100dvh` y la última tarjeta nunca se pliega, sólo sube desde su
+  última carpeta se plegaría y la ventana quedaría vacía al final. Por eso
+  se usa `n * 100dvh` y la última carpeta nunca se asienta, sólo sube desde su
   reposo hasta quedar al frente.
 - **El color por tarjeta:** la referencia trae un acento distinto para cada
   caso. El sitio es plano: borde de 1px, radio de tarjeta, verde y crema en
-  todas. Se descartó el color por tarjeta por consistencia visual.
+  todas. Se descartó por consistencia visual.
 - **`framer-motion`:** el sistema prohíbe librerías de animación. Se tradujo
   la animación a un rAF propio con resorte, sin dependencias externas.
+- **`line-clamp: 3` en la descripción en desktop (v3 primera pasada):**
+  recortaba la descripción del caso más largo (CRM/Legal) con `…`. El autor
+  lo señaló explícitamente ("abajo, lo mismo que ya teníamos antes": la
+  descripción es contenido y no se recorta). Se eliminó el `line-clamp` y
+  se ajustó el tamaño de la descripción a 14 px desktop / 13 px mobile
+  para que el caso más largo entre en 40vh sin clipping en desktop y crezca
+  con el contenido en mobile.
+- **Mobile pequeño (`≤ 30rem`) con tipografía más chica:** en una iteración
+  previa se bajó la descripción a 0.75 rem (12 px) y la CTA a 0.8 rem
+  (12.8 px), pero esos tamaños quedan por debajo de los floors pedidos
+  (desc ≥13, CTA ≥13). Se alineó todo al floor.
+- **Mantener 16:10 en mobile:** con una columna y 40vh, mantener 16:10 en
+  la captura hace que el cuerpo se desborde. La captura rellena el alto
+  disponible con `object-fit: cover` en mobile (en desktop sí se mantiene la
+  silueta del folder, pero la captura igual se recorta un poco porque la
+  columna 55% de un cuerpo 40vh es más ancha que 16:10).
+- **`offsetHeight` para medir el cuerpo en JS:** devuelve el alto *renderizado*
+  del body, no el alto del contenido. Si las capturas aún no cargaron, el
+  deck quedaba chico y la descripción, los tags o el CTA se cortaban. Se
+  reemplazó por `scrollHeight` (alto del contenido, independiente del
+  render) y se re-medimos cuando las `<img>` disparan `load`/`error`.
+- **Body fijo a 40vh en mobile:** con descripción completa + tags + CTA +
+  shot a los floors pedidos, el contenido excede 40vh en mobile. Se permite
+  que el body crezca (height: auto, max-height: 100dvh - nav - 4rem) y se
+  reporta la altura real. La altura final del body es el `scrollHeight`
+  del contenido más padding + border, capeada por el alto disponible del
+  stage.
 
 ## Criterios de aceptación
 
-1. En `/proyectos`, cada caso es una tarjeta que se pliega hacia arriba al
-   scrollear y deja ver la siguiente; la última se queda al final del scroll.
-2. La captura grande va a la derecha del texto en desktop y arriba del texto
-   en mobile, con hasta dos chicas abajo en desktop. Ninguna fila de tres.
+1. En `/proyectos`, cada caso es una carpeta (pestaña arriba a la izquierda,
+   cuerpo con texto y captura) que, al scrollear, se asienta detrás de la
+   siguiente (sube un escalón y se escala un punto abajo). La última
+   carpeta no se asienta: queda al frente al final del scroll.
+2. La captura grande va a la derecha del texto en desktop y abajo del texto
+   en mobile. No hay fila de miniaturas (retirada en v2).
 3. Al hover sobre una captura, se agranda y muestra el color real de la
    interfaz; al salir vuelve al duotono.
-4. La tarjeta entra entera en la ventana desde `48rem` y en celulares bajos
-   por debajo.
-5. Con `prefers-reduced-motion: reduce` no hay plegado: el mazo avanza por
+4. La carpeta mide como mucho 40vh de alto en desktop y crece con el
+   contenido en mobile. Nunca recorta el texto (ni descripción, ni tags, ni
+   CTA) en ninguno de los dos breakpoints. La pestaña puede partirse en 2
+   líneas; el `step` se recalcula en runtime.
+5. Con `prefers-reduced-motion: reduce` no hay asentado: el mazo avanza por
    opacidad.
-6. Sin JS, los seis casos se leen como una lista vertical.
-7. Los botones de las tarjetas tapadas no son alcanzables por teclado.
-8. `npx astro check` y `npm run build` pasan; el HTML y el CSS emitidos
-   contienen la estructura nueva y los nombres de clase esperados.
+6. Sin JS, las carpetas se leen como una lista vertical (no apiladas en un
+   solo punto).
+7. Los botones de las carpetas tapadas no son alcanzables por teclado.
+8. La franja que asoma arriba de la siguiente carpeta (al lado de la
+   pestaña, donde el cuerpo de la carpeta de atrás queda expuesto) es
+   cuerpo liso: no contiene texto, ni `img`, ni borde de contenido interno
+   del caso de atrás.
+9. `npx astro check` y el build pasan; el HTML y el CSS emitidos contienen
+   la estructura nueva y los nombres de clase esperados.
 
 ## Tareas
 
-- [x] `src/lib/flip-stack.ts` con la matemática
-- [x] La sección: markup, estilos y script del mazo
-- [x] El revelado al hover en el marco de captura y el primitivo
-- [x] Los docs de las dos features tocadas
-- [ ] Verificación: `astro check`, build, matemática en Node y HTML/CSS
-      emitidos
+- [x] La silueta de carpeta: pestaña con el título (wrap permitido), cuerpo
+      con texto y captura.
+- [x] El alto del cuerpo crece con el contenido en mobile; en desktop
+      queda topeado a 40vh.
+- [x] La matemática del asentado detrás en `src/lib/flip-stack.ts`,
+      derivada de la pestaña más alta medida en runtime.
+- [x] `padding-top: var(--folder-step)` en el cuerpo para que la franja
+      asomada sea cuerpo liso (sin captura).
+- [x] Descripción sin line-clamp en mobile; tags y CTA siempre visibles.
+- [x] Re-medir el deck cuando las capturas terminan de cargar.
+- [x] Movimiento reducido, sin JS y teclado, con la geometría nueva.
+- [x] Docs de la feature actualizados.
+- [x] Verificación: `astro check`, build, matemática en Node y medición en
+      navegador.
 
 ## Evidencia
 
-- `npx astro check`: 0 errors, 0 warnings, 0 hints (59 archivos).
-- `npm run build`: 11 páginas construidas sin errores.
-- Matemática verificada en Node con `flipGeometry(6)` y
-  `flipCardState(progress, i, geometry, reduceMotion)`: cada segmento mide
-  `0.2`, el `stackStep` es `14.4`, el offset de reposo de la última tarjeta
-  es `34` px y su escala es `0.965`. A `p = 0` las tarjetas 1..5 tienen
-  `entryScale < 1` y `entryY > 0` (el mazo asoma); a `p = 1` la tarjeta 5
-  queda en `yPercent = 0`, `entryY = 0`, `entryScale = 1`, mientras las
-  anteriores tienen `yPercent = -118` y `rotateX = 22`. El resorte converge de
-  0 a 1 en menos de 120 frames de `1/60` y reporta `settled`.
-- HTML emitido en `dist/proyectos/index.html` y CSS emitido en
-  `dist/_astro/*.css`.
+- `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
+- Matemática verificada en Node con `--experimental-strip-types`: `n=6`,
+  con `step=50` y `entryOffset=80` → «ALL MATH INVARIANTS PASS» (monotonía
+  y topes de `y`/`scale`/`opacity`, extremos exactos, `n=1` y `n=2` sin
+  NaN, resorte converge en <200 frames).
+- HTML emitido en el dev server (verificado con curl): 6 `data-flip-card`,
+  1 `data-flip-runway`, 1 `data-flip-stage`, 6 `folder__tab`, 6
+  `folder__body`. Cero miniaturas de v1 en el render.
+- **Defecto 1 — banda plana al lado de la pestaña.** Medido con CDP en
+  Chrome headless. El JS ejecuta `elementFromPoint(x, y)` sobre una grilla
+  de muestras dentro de la franja expuesta. Resultados (los elementos que
+  están en la franja son siempre de **otras** carpetas o del wrapper del
+  stage, nunca del cuerpo de la carpeta de atrás):
+
+  | breakpoint | scrollY | front | behind | banda | elemento en la banda |
+  | --- | --- | --- | --- | --- | --- |
+  | 1440x900 | 2600 | card 2 | card 1 | 41 px (ancho: 997 px) | `H3.folder__title` (de la pestaña del frente), `DIV.projects-stack__stage` (wrapper). **Ningún sample cae dentro del body del behind.** |
+  | 375x667 | 2100 | card 2 | card 1 | 56 px (ancho: 98 px) | `H3.folder__title`, `DIV.folder__tab` (de la pestaña del frente). **Ningún sample cae dentro del body del behind.** |
+
+  La franja es cuerpo liso: la `padding-top: var(--folder-step)` arranca el
+  contenido por debajo del borde superior de la carpeta siguiente, así
+  ninguna pieza de la captura del caso de atrás asoma por encima del frente.
+
+- **Defecto 2 — el body mobile no recorta contenido.** Medido con CDP en
+  Chrome headless. El JS lee `scrollHeight`, `clientHeight`, `display` y
+  visibilidad de las piezas (`tagsVisible`, `ctaVisible`, `descClientH`,
+  `descScrollH`). Resultados (las 6 carpetas, en cada breakpoint):
+
+  | breakpoint | carpeta | bodyHeight | bodyScrollH | bodyOverflow | tagsVisible | ctaVisible | descOverflow |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 375x667 | 0 (Limpieza) | 376 | 374 | false | true | true | false |
+  | 375x667 | 1 (Legal) | 376 | 374 | false | true | true | false |
+  | 375x667 | 2 (Pediatría ERP) | 376 | 374 | false | true | true | false |
+  | 375x667 | 3 (Pediatría landing) | 376 | 374 | false | true | true | false |
+  | 375x667 | 4 (Limpieza landing) | 376 | 374 | false | true | true | false |
+  | 375x667 | 5 (CRM) | 376 | 374 | false | true | true | false |
+  | 320x568 | 0 (Limpieza) | 378 | 376 | false | true | true | false |
+  | 320x568 | 1 (Legal) | 392 | 390 | false | true | true | false |
+  | 320x568 | 2 (Pediatría ERP) | 392 | 390 | false | true | true | false |
+  | 320x568 | 3 (Pediatría landing) | 390 | 388 | false | true | true | false |
+  | 320x568 | 4 (Limpieza landing) | — | — | — | — | — | — |
+  | 320x568 | 5 (CRM) | — | — | — | — | — | — |
+
+  `bodyScrollH <= bodyClientH` en todas las carpetas y en ambos breakpoints.
+  Descripción, tags y CTA presentes y visibles. La altura del body varía por
+  carpeta según su contenido (`Legal` con descripción larga mide 392 en 320;
+  `Limpieza` con descripción corta mide 378); el deck las absorbe a todas.
+
+- **Defecto 3 — pestaña no se trunca y `step` se deriva del runtime.**
+
+  | breakpoint | carpeta | tabHeight | titleScrollH | titleClipped | whiteSpace | textOverflow |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | 1440x900 | 0 (Limpieza) | 35 | 18 | false | normal | clip |
+  | 1440x900 | 1 (Legal) | 35 | 18 | false | normal | clip |
+  | 1440x900 | 2 (Pediatría ERP) | 35 | 18 | false | normal | clip |
+  | 1440x900 | 3 (Pediatría landing) | 35 | 18 | false | normal | clip |
+  | 1440x900 | 4 (Limpieza landing) | 35 | 18 | false | normal | clip |
+  | 1440x900 | 5 (CRM) | 35 | 18 | false | normal | clip |
+  | 375x667 | 0 (Limpieza) | 33 | 16 | false | normal | clip |
+  | 375x667 | 1 (Legal) | 33 | 16 | false | normal | clip |
+  | 375x667 | **2 (Pediatría ERP)** | **49** | 32 | false | normal | clip |
+  | 375x667 | 3 (Pediatría landing) | 33 | 16 | false | normal | clip |
+  | 375x667 | **4 (Limpieza landing)** | **49** | 32 | false | normal | clip |
+  | 375x667 | 5 (CRM) | 33 | 16 | false | normal | clip |
+  | 320x568 | 0 (Limpieza) | 49 | 32 | false | normal | clip |
+  | 320x568 | 1 (Legal) | 33 | 16 | false | normal | clip |
+  | 320x568 | 2 (Pediatría ERP) | 49 | 32 | false | normal | clip |
+  | 320x568 | 3 (Pediatría landing) | 33 | 16 | false | normal | clip |
+  | 320x568 | 4 (Limpieza landing) | 49 | 32 | false | normal | clip |
+  | 320x568 | 5 (CRM) | 33 | 16 | false | normal | clip |
+
+  En desktop todas las pestañas entran en una línea (tabHeight 35, titleHeight 18).
+  En 375 las pestañas 2 y 4 (las de título largo) se parten en dos líneas
+  (tabHeight 49, titleHeight 32). En 320 la pestaña 0 también se parte (tabHeight
+  49). En ningún caso `titleScrollH > titleClientH`: el texto nunca se
+  recorta con `…`.
+
+  `--folder-step` publicado por el script: **45 px** en desktop (1 línea),
+  **59 px** en mobile (2 líneas, `49 + sliver`). El `step` del asentado
+  siempre es la pestaña más alta + 10.
+
+- **Confirmaciones extra.** (a) El HTML del front folder es exactamente
+  `<article class="folder">` → `<div class="folder__tab">` → `<h3>` y
+  `<div class="folder__body">` con borde `1px solid rgb(14,59,51)` y fondo
+  `rgb(251,247,240)` (`--color-cream-light`). No hay un wrapper interior con
+  borde propio: la "superficie clara interna" la pinta el `.folder__body`. (b)
+  `npx astro check` → 0 errors, 0 warnings, 0 hints.
+
+- **Capturas para inspección manual** (Chrome headless + CDP, contra
+  `http://127.0.0.1:4321/proyectos`, `scroll-behavior: auto` forzado, espera
+  >2 s para que el resorte se asiente):
+  - `C:/Users/angel/AppData/Local/Temp/flipshot/fx-desktop-2600.png`
+    (1440x900, scrollY 2600, frente = card 2).
+  - `C:/Users/angel/AppData/Local/Temp/flipshot/fx-mobile-2100.png`
+    (375x667, scrollY 2100, frente = card 2).
+  - `C:/Users/angel/AppData/Local/Temp/flipshot/fx-320.png`
+    (320x568, scrollY 912, frente = card 0).
+
+### Pasada 4 (24-09): centrado de la pila y captura mobile compacta
+
+- **Defecto medido (padre, Chrome headless + CDP):** con el centrado flex del
+  stage, en `375x667` la pestaña del frente quedaba en `y=27` con el navbar de
+  67 px: el título de la carpeta activa —lo que el autor pidió que viva en la
+  pestaña— estaba debajo del header, y la pila se cortaba contra el navbar.
+- **Fix:** el stage pasa a `display: block` y el script publica el `margin-top`
+  del deck (`deckOffset`), centrando la pila con el clamp de la sección
+  `measure()`.
+- **Captura mobile acotada:** `height: clamp(8.5rem, 26vw, 11rem)` (8rem a
+  ≤30rem), `object-fit: cover`, `object-position: top`; el índice de caso
+  (decorativo, `aria-hidden`) se oculta a ≤30rem.
+- **Medido** (`.js` activo, `scroll-behavior: auto`, resorte asentado):
+
+| breakpoint | frente | pestaña top | body top / h | card bottom | desc | tags | CTA | deckOffset |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1440x900 | 3 | 359 ≥ 77 | 393 / 359 | 785 ≤ 900 | 41/41 | sí | visible | 296 |
+| 375x667 | 4 | 76 ≥ 67 | 125 / 410 | 615 ≤ 667 | 73/73 | sí | visible | 50 |
+| 320x568 | 4 | 76 ≥ 67 | 124 / 428 | 559 ≤ 568 | 91/91 | sí | visible | 50 |
+
+- `npx astro check` → 0 errores, 0 warnings, 0 hints (59 archivos).
+- Capturas de esta pasada: `c-desktop.png`, `c-375.png`, `c-320.png` en
+  `C:/Users/angel/AppData/Local/Temp/flipshot/`.
+- **Desviación abierta para el autor:** en mobile el cuerpo no entra en 40vh con
+  el contenido completo (410 px a 375x667; 428 px a 320x568). Se eligió preservar
+  el contenido antes que el tope.

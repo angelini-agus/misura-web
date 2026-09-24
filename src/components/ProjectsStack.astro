@@ -4,13 +4,16 @@ import { caseStudies, portfolio } from "../lib/content";
 import Button from "./ui/Button.astro";
 import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
 
-// Un mazo "flip stack" por proyecto, en el orden curado de `portfolio.items`.
+// Un mazo de "carpetas" por proyecto, en el orden curado de `portfolio.items`.
 // El href de cada item (`/proyectos/<slug>`) cruza con el caso correspondiente
 // para tomar cliente, título, descripción, tecnologías, slug y la galería.
-// No se inventa copy: todo sale de content.ts. La galería se corta a tres
-// capturas: una grande arriba y dos chicas abajo, en la columna de la derecha
-// (es el mosaico pedido por el autor). Si el caso tiene menos, se muestran
-// las que haya.
+// No se inventa copy: todo sale de content.ts.
+//
+// La galería se corta a tres capturas aunque SOLO se renderiza la primera en
+// v2: con 40vh de tope para el cuerpo de la carpeta no entran dos miniaturas
+// debajo de la grande sin romper el límite. Revertir ese recorte es volver a
+// pintar el bloque `gallery.slice(1)` debajo de la captura grande (mismo
+// patrón de v1); la parte de slicing en este archivo no cambia.
 const projects = portfolio.items.flatMap((item) => {
   const slug = item.href?.replace("/proyectos/", "") ?? "";
   const study = Object.values(caseStudies).find((cs) => cs.slug === slug);
@@ -49,29 +52,29 @@ const projectCount = projects.length;
   <div class="projects-stack__runway" data-flip-runway>
     <div class="projects-stack__sticky">
       <div class="projects-stack__stage" data-flip-stage>
-        {projects.map(({ study, gallery }, index) => (
-          <article
-            class="projects-stack__card"
-            data-flip-card={index}
-            style={`z-index: ${projectCount - index}`}
-          >
-            <div class="projects-stack__panel">
-              <div class="projects-stack__copy">
-                <p class="projects-stack__number" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <div class="projects-stack__block">
-                  <p class="projects-stack__client">{study.client}</p>
-                  <h3 class="projects-stack__title">{study.title}</h3>
-                  <p class="projects-stack__description">
-                    {study.seo.description}
+        <div class="projects-stack__deck">
+          {projects.map(({ study, gallery }, index) => (
+            <article
+              class="folder"
+              data-flip-card={index}
+              style={`z-index: ${index + 1}`}
+            >
+              <div class="folder__tab">
+                <h3 class="folder__title">{study.title}</h3>
+              </div>
+              <div class="folder__body">
+                <div class="folder__copy">
+                  <p class="folder__number" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
                   </p>
-                  <div class="projects-stack__tags">
+                  <p class="folder__client">{study.client}</p>
+                  <p class="folder__description">{study.seo.description}</p>
+                  <div class="folder__tags">
                     {study.technologies.map((tech) => (
-                      <span class="projects-stack__tag">{tech}</span>
+                      <span class="folder__tag">{tech}</span>
                     ))}
                   </div>
-                  <div class="projects-stack__cta">
+                  <div class="folder__cta">
                     <Button
                       variant="cream"
                       href={`/proyectos/${study.slug}`}
@@ -80,55 +83,24 @@ const projectCount = projects.length;
                     </Button>
                   </div>
                 </div>
-              </div>
-
-              <div class="projects-stack__shots">
-                <div class="projects-stack__shot projects-stack__shot--big">
-                  <ScreenshotFrame compact hover>
-                    {/*
-                      Nota: la relación 16:10 está elegida a propósito. Es la
-                      relación modal de los estudios legal y pediátrico (1600x1000
-                      y 1440x900), las fuentes más visibles del mazo. Las
-                      capturas de limpieza (1903x916, ~2.08:1) se recortan un
-                      poco a los costados vía object-cover — el contenido crítico
-                      (la grilla, las tablas) está centrado verticalmente y se
-                      preserva. Si más adelante aparece una captura fuera de 16:10
-                      con texto a un costado, conviene revisar este aspect.
-                    */}
-                    <Image
-                      src={gallery[0].src}
-                      alt={gallery[0].alt}
-                      widths={[480, 768, 1088]}
-                      sizes="(min-width: 48rem) 30rem, 88vw"
-                      class="aspect-[16/10] w-full object-cover object-top"
-                      loading={index === 0 ? "eager" : "lazy"}
-                    />
-                  </ScreenshotFrame>
-                </div>
-
-                {gallery.length > 1 && (
-                  <div class="projects-stack__thumbs">
-                    {gallery.slice(1).map((shot) => (
-                      <div class="projects-stack__shot projects-stack__shot--thumb">
-                        <ScreenshotFrame compact hover>
-                          <Image
-                            src={shot.src}
-                            alt={shot.alt}
-                            widths={[256, 512]}
-                            sizes="(min-width: 48rem) 15rem, 45vw"
-                            class="aspect-[16/10] w-full object-cover object-top"
-                            loading="lazy"
-                          />
-                        </ScreenshotFrame>
-                      </div>
-                    ))}
-                    {/* Ver la nota sobre aspect 16:10 en el bloque del shot grande. */}
+                <div class="folder__shots">
+                  <div class="folder__shot">
+                    <ScreenshotFrame compact hover>
+                      <Image
+                        src={gallery[0].src}
+                        alt={gallery[0].alt}
+                        widths={[480, 768, 1088]}
+                        sizes="(min-width: 48rem) 30rem, 88vw"
+                        class="folder__image"
+                        loading={index === 0 ? "eager" : "lazy"}
+                      />
+                    </ScreenshotFrame>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -139,7 +111,7 @@ const projectCount = projects.length;
      mobile = py-4 (2 x 16px) + el summary del menu (34px) + border-b (1px) = 67px
      = 4.1875rem; desde md = py-4 + el CTA de escritorio (44px) + border-b (1px)
      = 77px = 4.8125rem. La barra de anuncio NO se cuenta: cuando el visitante
-     llega a estas tarjetas ya scrolleo y la barra no esta visible. Si cambia el
+     llega a estas carpetas ya scrolleo y la barra no esta visible. Si cambia el
      padding del header, su contenido mas alto o su borde, hay que tocar los dos
      valores. */
   .projects-stack {
@@ -152,21 +124,8 @@ const projectCount = projects.length;
     }
   }
 
-  /* Tamaño de la tarjeta desde la geometría (no el viewport): el stage es un
-     container de cqw y la escala tipográfica cuelga de él con mínimos en rem.
-     Así una tarjeta compacta en mobile y una grande en desktop comparten la
-     misma curva de tipo, sin saltos al rotar el dispositivo. */
-  .projects-stack__stage {
-    --flip-pad: clamp(1.25rem, 3cqw, 3rem);
-    --flip-gap: clamp(1rem, 3cqw, 2.5rem);
-
-    /* Container queries sobre inline-size para que 1cqw = 1% del ancho del
-       stage, no de la ventana. */
-    container-type: inline-size;
-  }
-
   /* Reglas BASE (sin JS): el carrete se desarma. El runway es alto automatico,
-     el sticky no se pega, las tarjetas se ven una debajo de la otra en flujo
+     el sticky no se pega, las carpetas se ven una debajo de la otra en flujo
      normal. Es el patron de [data-reveal] en global.css y la misma idea: con
      JS deshabilitado o fallando, el contenido no queda apilado en un solo
      punto del DOM. */
@@ -185,37 +144,44 @@ const projectCount = projects.length;
     position: relative;
     width: 100%;
     margin: 0 auto;
-    perspective: none;
   }
 
-  /* La caja visible (borde, radio, verde, texto crema) vive en el PANEL y no
-     en la tarjeta: el panel es lo que sube en la entrada (crece desde su borde
-     inferior), asi que la superficie entera tiene que moverse, no solo su
-     contenido. La tarjeta es el envoltorio de posicionamiento que se pliega en
-     la salida. */
-  .projects-stack__card {
-    margin-bottom: 1rem;
+  .projects-stack__deck {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 32rem;
+    margin: 0 auto;
   }
 
-  .projects-stack__panel {
+  /* La caja visible (borde, crema) vive en el BODY de la carpeta: la pestaña
+     se posiciona absolutamente arriba a la izquierda y sobresale por arriba
+     del cuerpo. Sin JS cada carpeta se ve como una entrada propia en la
+     lista vertical del deck. */
+  .folder {
+    position: relative;
+  }
+
+  .folder__body {
     height: auto;
     overflow: hidden;
     border: 1px solid var(--color-green);
     border-radius: 0.375rem;
-    background-color: var(--color-green);
-    color: var(--color-cream);
+    background-color: var(--color-cream-light);
+    color: var(--color-green);
   }
 
   /* Reglas CON JS (gate en .js del <html>): el runway se vuelve el carrete de
-     scroll y el sticky se pega a la ventana. Las tarjetas pasan a estar
-     apiladas en el stage. .js lo pone BaseLayout.astro cuando el modulo
-     del cliente carga; sin ese gate, el contenido se ve como una lista. */
+     scroll y el sticky se pega a la ventana. Las carpetas pasan a estar
+     apiladas en el stage. .js lo pone BaseLayout.astro cuando el modulo del
+     cliente carga; sin ese gate, el contenido se ve como una lista. */
 
   :global(.js) .projects-stack__runway {
     /* El runway mide n * 100dvh y NO (n + 1) * 100dvh como la referencia:
-       con n * 100dvh la última tarjeta se queda al final del scroll y el
+       con n * 100dvh la última carpeta se queda al final del scroll y el
        visitante sigue hasta el footer; con (n+1) el mazo terminaba con la
-       ventana vacía. La diferencia se calcula en el spec de la feature. */
+       ventana vacía. */
     height: calc(var(--flip-count) * 100dvh);
   }
 
@@ -223,7 +189,7 @@ const projectCount = projects.length;
     position: sticky;
     top: 0;
     height: 100dvh;
-    /* overflow: clip (no hidden) recorta las tarjetas que se pliegan fuera del
+    /* overflow: clip (no hidden) recorta las carpetas que se asientan fuera del
        viewport sin crear un scroll container interno. */
     overflow: clip;
     display: flex;
@@ -234,244 +200,391 @@ const projectCount = projects.length;
 
   :global(.js) .projects-stack__stage {
     position: relative;
-    perspective: 800px;
-    perspective-origin: 50% 50%;
-  }
-
-  /* Mobile: el stage toma el alto util de la pantalla en vez de una relacion
-     fija, porque la tarjeta es de una columna y el texto necesita mas alto
-     relativo que en desktop. El tope de 40rem evita que en un celular muy alto
-     el texto quede flotando lejos de la captura. */
-  :global(.js) .projects-stack__stage {
-    width: min(100%, 30rem);
-    height: min(calc(100dvh - var(--nav-h) - 4rem), 40rem);
-  }
-
-  :global(.js) .projects-stack__card {
-    position: absolute;
-    inset: 0;
-    margin-bottom: 0;
-    transform-origin: 50% 50%;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    /* will-change se aplica SOLO mientras el mazo está en movimiento (clase
-       .projects-stack--moving, gestionada por el script). Sin esa capa
-       permanente, las tarjetas no gastan memoria de GPU cuando el visitante
-       ya pasó la sección. */
-  }
-
-  /* Capa compuesta solo mientras el mazo se mueve: la clase la pone y la saca
-     el script. El mazo en reposo no deja capas de GPU prendidas. */
-  :global(.js) .projects-stack--moving .projects-stack__card,
-  :global(.js) .projects-stack--moving .projects-stack__panel {
-    will-change: transform;
-  }
-
-  :global(.js) .projects-stack__panel {
-    /* El origen del panel es el borde inferior: la tarjeta crece desde abajo
-       cuando entra, como un mazo real apoyado sobre la mesa. */
-    transform-origin: 50% 100%;
-    height: 100%;
     width: 100%;
+    height: 100%;
+    /* Bloque, no flex: el desplazamiento vertical del mazo lo calcula el
+       script (`margin-top` sobre el deck), porque el centrado tiene que
+       tener en cuenta la PILA que se asienta hacia arriba del frente. */
+    display: block;
   }
 
-  /* === Layout: una columna en mobile, dos en desktop ===================== */
+  /* El deck tiene la altura que el JS le ponga (ver medida). Por defecto en
+     desktop ocupa 40vh; en mobile se ajusta al contenido del cuerpo (que a
+     su vez puede crecer si la descripción, los tags y el CTA no entran en
+     40vh). El `max-height` evita que un contenido excepcional desborde el
+     stage. */
+  :global(.js) .projects-stack__deck {
+    position: relative;
+    width: min(100%, 80rem, calc((100dvh - var(--nav-h) - 4rem) * 2));
+    max-width: 80rem;
+    margin: 0;
+  }
 
-  .projects-stack__panel {
+  /* === Geometría de la carpeta (mobile y base) ===========================
+     Mobile: una columna, ancho util del stage, alto del cuerpo crece con el
+     contenido y la pestaña arriba a la izquierda. */
+
+  .folder {
     display: flex;
     flex-direction: column;
-    gap: var(--flip-gap);
-    padding: var(--flip-pad);
   }
 
-  .projects-stack__copy {
+  /* La pestaña NO usa `white-space: nowrap` ni ellipsis: si el título es largo
+     y no entra en una línea, se parte en dos y la pestaña crece en alto.
+     El script mide la altura real de la pestaña más alta al init y en cada
+     resize, y deriva de ahí el escalón del asentado (step = tab + sliver).
+     Eso es lo que mantiene el "tab + sliver" coherente cuando una pestaña
+     pasa de 1 a 2 líneas. */
+  .folder__tab {
+    align-self: flex-start;
+    border: 1px solid var(--color-green);
+    border-bottom: 0;
+    background-color: var(--color-cream-light);
+    color: var(--color-green);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    max-width: 100%;
+  }
+
+  .folder__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    font-size: inherit;
+    line-height: inherit;
+    /* Sin wrap forzado: el navegador parte en espacios. max-width lo da la
+       pestaña; el h3 fluye adentro. */
+    display: block;
+  }
+
+  .folder__body {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    /* Ocupa el alto disponible para que el bloque de texto (margin-top: auto)
-       quede apoyado sobre la captura; en desktop es un item de grid y el
-       stretch hace lo mismo. */
-    flex: 1 1 auto;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    /* padding-top usa --folder-step (medido en runtime): equivale al alto
+       del escalón, así la franja que asoma arriba del cuerpo de la carpeta
+       siguiente es SOLO cuerpo liso (sin contenido) y NO muestra un
+       pedazo de la captura. Ver defecto 1. */
+    padding: var(--folder-step, 44px) clamp(1rem, 2.5vw, 1.5rem)
+      clamp(1rem, 2.5vw, 1.5rem) clamp(1rem, 2.5vw, 1.5rem);
   }
 
-  .projects-stack__number {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: clamp(1.5rem, 2.6cqw, 2rem);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--color-cream);
-  }
-
-  .projects-stack__block {
+  .folder__copy {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: auto;
+    min-width: 0;
   }
 
-  .projects-stack__client {
+  .folder__number {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: clamp(0.65rem, 1.05cqw, 0.75rem);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-green) 60%, transparent);
+  }
+
+  .folder__client {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.65rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-cream) 70%, transparent);
+    color: color-mix(in srgb, var(--color-green) 70%, transparent);
   }
 
-  .projects-stack__title {
-    font-family: var(--font-display);
-    font-size: clamp(1.35rem, 3.2cqw, 2.5rem);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-  }
-
-  .projects-stack__description {
-    font-size: clamp(0.875rem, 1.15cqw, 1rem);
+  .folder__description {
+    font-size: 0.875rem;
     line-height: 1.55;
-    color: color-mix(in srgb, var(--color-cream) 80%, transparent);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    color: color-mix(in srgb, var(--color-green) 80%, transparent);
   }
 
-  .projects-stack__tags {
+  .folder__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.375rem;
   }
 
-  .projects-stack__tag {
+  .folder__tag {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: clamp(0.6rem, 0.8cqw, 0.7rem);
+    /* floor del spec: tags >= 10px. Antes 0.6rem (9.6px). */
+    font-size: 0.625rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--color-cream);
+    padding: 0.2rem 0.45rem;
+    border: 1px solid var(--color-green);
   }
 
-  .projects-stack__cta {
-    margin-top: 0.5rem;
+  .folder__cta {
+    margin-top: 0.25rem;
   }
 
-  .projects-stack__shots {
+  .folder__shots {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    min-width: 0;
+    min-height: 0;
   }
 
-  .projects-stack__shot {
+  .folder__shot {
     width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
   }
 
-  /* Mobile: solo la captura grande (las dos chicas no entran en el alto util
-     de un celular manteniendo el mosaico legible). */
-  .projects-stack__thumbs {
-    display: none;
+  .folder__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
   }
 
-  /* === Tipografia condensada del stage (la tarjeta manda, no el viewport) ===
-     Los `cqw` viven arriba contra `container-type: inline-size` del stage.
-     En mobile el stage mide menos y el texto baja; en desktop sube solo con
-     el ancho del stage, no del navegador. */
+  /* === JS-gated: posiciones y dimensiones cuando el mazo esta vivo ====== */
+
+  :global(.js) .folder {
+    /* Cada carpeta es una caja absoluta del tamaño del deck, llena el deck
+       entero. La pestaña se posiciona para sobresalir arriba. */
+    position: absolute;
+    inset: 0;
+    /* Animacion: translateY + scale, manejados por el script. */
+    transform: translateY(var(--folder-y, 0px)) scale(var(--folder-scale, 1));
+    transform-origin: 50% 50%;
+    /* will-change se aplica SOLO mientras el mazo esta en movimiento (clase
+       .projects-stack--moving, gestionada por el script). */
+  }
+
+  :global(.js) .projects-stack--moving .folder {
+    will-change: transform;
+  }
+
+  :global(.js) .folder__tab {
+    position: absolute;
+    /* bottom: 100% deja la pestaña "apoyada" sobre el borde superior del
+       cuerpo: su lado inferior coincide con el top del cuerpo. Es el gesto
+       de "carpeta de Windows" del recorte. */
+    bottom: calc(100% - 1px);
+    left: -1px;
+    /* Para que el borde inferior de la pestaña se fusione con el borde
+       superior del cuerpo, sin que se vea una línea doble: el offset de -1px
+       sube la pestaña para superponerse con el borde de 1px del cuerpo. */
+    border-bottom: 0;
+    /* Tope de ancho: la pestaña no excede el ancho del cuerpo. Por defecto
+       se queda con el ancho de su contenido (un título corto da una pestaña
+       estrecha, un título largo que parte en 2 líneas da una pestaña más
+       ancha). */
+    max-width: calc(100% - 0px);
+  }
+
+  :global(.js) .folder__body {
+    /* El cuerpo crece con su contenido (alto = scrollHeight del JS, ver
+       `measure()`). Con `height: auto` el body deja de "llenar" el deck y
+       pasa a ser content-driven: en mobile, si la descripción + tags + CTA
+       + captura suman más que 40vh, el body crece para que nada se corte
+       (ver defecto 2). En desktop, el `max-height: 40vh` del @media mantiene
+       el tope pedido por el autor y se respeta por arriba. El `min-height`
+       asegura que el cuerpo nunca quede más bajo que 40vh aunque el contenido
+       sea corto. */
+    height: auto;
+    min-height: 40vh;
+  }
+
+  /* === Desktop (>= 48rem): dos columnas, mas aire, tope 40vh ============ */
 
   @media (min-width: 48rem) {
-    :global(.js) .projects-stack__stage {
-      /* A partir de 48rem el stage se dimensiona: ancho maximo para que la
-         tarjeta (relación 1.9:1) entre entera en el alto util de la pantalla.
-         `min(100%, 68rem, (100dvh - nav - 4rem) * 1.9)`: 68rem es el techo
-         editorial, `(100dvh - 4rem - nav) * 1.9` es el techo de viewport, y
-         el 4rem es el asomo del mazo debajo. */
-      width: min(100%, 68rem, (100dvh - var(--nav-h) - 4rem) * 1.9);
-      aspect-ratio: 1.9;
-      height: auto;
-    }
-
-    :global(.js) .projects-stack__panel {
+    :global(.js) .folder__body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: var(--flip-gap);
+      grid-template-columns: 45fr 55fr;
+      gap: clamp(0.75rem, 2vw, 1.5rem);
+      align-items: stretch;
+      padding: var(--folder-step, 44px) clamp(1.25rem, 2.5vw, 2rem)
+        clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
+      /* En desktop el cuerpo se queda en 40vh: la captura se recorta con
+         object-fit: cover dentro de su columna (lo que no entra se pierde
+         por arriba/abajo según el aspect del shot). */
+      max-height: 40vh;
     }
 
-    .projects-stack__description {
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
+    .folder__copy {
+      /* El contenido va al tope y la CTA al fondo con margin-top: auto.
+         La columna se estira al alto del body (que lo dicta el shot en 16:10);
+         con el contenido arriba y la CTA abajo queda un aire controlado en
+         el medio, no un bloque vacío al final. */
+      justify-content: flex-start;
     }
 
-    .projects-stack__thumbs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+    .folder__cta {
+      /* Empuja la CTA al fondo de la columna del copy para que no quede
+         colgando arriba del bloque vacío que deja la diferencia entre el
+         contenido del copy y el alto del shot (que es quien define el alto
+         de la columna con align-items: stretch). */
+      margin-top: auto;
+    }
+
+    .folder__shots {
+      align-items: stretch;
+    }
+
+    .folder__shot {
+      max-height: 100%;
+    }
+
+    .folder__description {
+      /* Sin line-clamp en ningún breakpoint: la descripción es contenido
+        (per la brief del autor "abajo, lo mismo que ya teníamos antes")
+        y no se recorta con … nunca. Reducimos el tamaño (14 px en desktop,
+        13 px en mobile) y el interlineado para que el caso más largo
+        (CRM / Legal, ~290 chars) entre en el alto 40vh sin clipping. El
+        line-height 1.45 mantiene lectura cómoda a 14 px. */
+      font-size: 0.875rem;
+      line-height: 1.45;
     }
   }
 
-  /* Una sola captura: queda centrada en la columna derecha (justify-content
-     ya lo hace); con dos capturas, la segunda ocupa la celda izquierda de la
-     fila de thumbs. Nunca hay una fila de tres: el mosaico es una grande
-     arriba y hasta dos chicas abajo. */
+  /* === Mobile (< 48rem): una columna, contenido compaginado para entrar ===
+     El autor pidió no esconder contenido: la descripción va entera, los tags
+     van, el CTA va. Para que entren en 40vh en mobile, ajusto type scale y
+     spacing. Lo que cede primero: el shot (en mobile la captura se renderiza
+     con object-fit: cover rellenando el alto disponible, no manteniendo
+     16:10 estricto, porque la columna es estrecha y 16:10 daría un cuerpo
+     de ~60vh que se come el resto). */
 
-  /* === Compactación por altura corta ===================================== */
-
-  /* Escritorio bajo (768 de alto con barras del navegador ronda los 650-700
-     utiles): la tarjeta queda justa, se recorta la descripcion a 2 lineas y
-     se aprietan los espaciados. */
-  @media (min-width: 48rem) and (max-height: 760px) {
-    .projects-stack__panel {
-      gap: 1rem;
-      padding: 1.25rem;
+  @media (max-width: 47.99rem) {
+    :global(.js) .folder__body {
+      /* Permite que el cuerpo crezca con el contenido. El JS acota la
+         altura del deck para que el cuerpo no se desborde del stage. */
+      max-height: calc(100dvh - var(--nav-h) - 4rem);
     }
 
-    .projects-stack__title {
-      font-size: 1.25rem;
+    .folder__body {
+      padding: var(--folder-step, 44px) 12px 12px 12px;
     }
 
-    .projects-stack__description {
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
+    .folder__number {
+      font-size: 0.75rem;
     }
 
-    .projects-stack__tags {
-      gap: 0.25rem;
+    .folder__client {
+      font-size: 0.6rem;
     }
 
-    .projects-stack__cta {
+    .folder__description {
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      /* La descripción va entera en mobile (sin line-clamp). El alto del
+         cuerpo absorbe las líneas extra; el JS acota el deck para que no
+         se desborde. */
+    }
+
+    .folder__tags {
+      gap: 0.3rem;
+    }
+
+    .folder__tag {
+      /* floor del spec: tags >= 10px en mobile. */
+      font-size: 0.625rem;
+      padding: 0.2rem 0.45rem;
+    }
+
+    .folder__cta :global(a) {
+      /* floor CTA >= 13px. 0.8125rem = 13px (16 base). */
+      font-size: 0.8125rem;
+      padding: 0.45rem 1rem;
+    }
+
+    .folder__cta {
       margin-top: 0.25rem;
     }
+
+    .folder__number {
+      /* El índice es decoración (aria-hidden): en la pantalla más chica se
+         saca para no gastar una línea del cuerpo. */
+      display: none;
+    }
+
+    .folder__copy {
+      flex: 0 0 auto;
+    }
+
+    .folder__shots {
+      /* La captura deja de mandar el alto en mobile: es una foto apoyada
+         dentro de la carpeta, no el bloque principal. */
+      flex: 0 0 auto;
+      min-height: 0;
+    }
+
+    .folder__shot {
+      width: 100%;
+      /* Alto acotado (136-176px según ancho): muestra el encabezado de la
+         interfaz, que es la parte que informa, y deja la carpeta compacta
+         sin tocar el copy. */
+      height: clamp(8.5rem, 26vw, 11rem);
+      aspect-ratio: auto;
+    }
+
+    .folder__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      aspect-ratio: auto;
+    }
   }
 
-  /* Celular bajo: con menos alto el bloque no puede mostrar todo el detalle;
-     se priorizan capturas y titulo, descripcion de 2 lineas y CTA. */
-  @media (max-width: 30rem) and (max-height: 620px) {
-    .projects-stack__panel {
+  /* Mobile pequeño (≤ 30rem): paddings más cerrados y type scale más chico
+     para que entre todo el contenido en viewports estrechos. Sin line-clamp:
+     la descripción va entera (el body crece con el contenido). Respetamos
+     los floors del brief: desc >= 13px, tags >= 10px, tab >= 12px,
+     CTA >= 13px. */
+  @media (max-width: 30rem) {
+    /* Captura todavía más baja en la pantalla más chica: la carpeta tiene
+       que entrar en el alto útil sin mutilar el copy. */
+    .folder__shot {
+      height: 8rem;
+    }
+
+    :global(.js) .folder__body {
       gap: 0.5rem;
-      padding: 0.75rem;
+      padding: var(--folder-step, 44px) 0.75rem 0.75rem 0.75rem;
     }
 
-    .projects-stack__title {
-      font-size: 1rem;
+    .folder__title {
+      /* floor tab >= 12px. 0.8125rem = 13px. */
+      font-size: 0.8125rem;
     }
 
-    .projects-stack__description {
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
+    .folder__description {
+      /* floor desc >= 13px. 0.8125rem = 13px. */
+      font-size: 0.8125rem;
+      line-height: 1.4;
     }
 
-    .projects-stack__tags {
-      gap: 0.25rem;
+    .folder__cta :global(a) {
+      /* floor CTA >= 13px. 0.8125rem = 13px. */
+      font-size: 0.8125rem;
+      padding: 0.45rem 1rem;
+    }
+
+    .folder__body {
+      gap: 0.4rem;
+    }
+
+    .folder__tags {
+      gap: 0.2rem;
     }
   }
-
 </style>
 
 <script>
   // Importamos la matemática como módulo puro (sin DOM). El bundler de Astro
   // emite un chunk por modulo y este vive en su propio archivo, lo que
-  // también ayuda al verificador de tipos de `astro check`.
+  // también ayuda al verizador de tipos de `astro check`.
   import {
     flipCardState,
-    flipExitPercent,
     flipFront,
     flipGeometry,
     flipProgress,
@@ -486,14 +599,15 @@ const projectCount = projects.length;
   let cleanup: (() => void) | null = null;
   let rafId: number | null = null;
 
-  // Bandera global: mientras el resorte no se asento (sea porque esta yendo
-  // hacia el target o porque recien empezo) el script pide mas frames y
-  // prende la clase que activa will-change. Cuando se asienta, deja de
-  // pedir frames y apaga la clase para no dejar capas GPU prendidas.
+  // Sliver: la cantidad de cuerpo que queda visible entre la pestaña de la
+  // carpeta de atrás y el top de la carpeta siguiente. Mantiene la "thin
+  // sliver of body" del spec visible. Constante: el alto real del escalón
+  // depende del alto de la pestaña más alta, pero la franja visible entre
+  // pestañas queda fija en este valor para que el ritmo visual sea
+  // consistente entre cards con pestañas de 1 línea y de 2.
+  const SLIVER = 10;
+
   const init = () => {
-    // Limpieza del init anterior (navegacion SPA). Removemos listeners,
-    // desconectamos observers y cancelamos el rAF pendiente; sin esto, al
-    // volver a la pagina se sumarian dos juegos de handlers.
     if (cleanup) {
       cleanup();
       cleanup = null;
@@ -502,26 +616,15 @@ const projectCount = projects.length;
     const section = document.querySelector<HTMLElement>(".projects-stack");
     const runway = document.querySelector<HTMLElement>("[data-flip-runway]");
     const stage = document.querySelector<HTMLElement>("[data-flip-stage]");
-    const cards = Array.from(
+    const deck = stage?.querySelector<HTMLElement>(".projects-stack__deck");
+    const folders = Array.from(
       document.querySelectorAll<HTMLElement>("[data-flip-card]"),
     );
 
-    if (!section || !runway || !stage || cards.length === 0) {
-      // La seccion no esta en esta pagina (SPA navego a otra ruta). Salimos
-      // sin colgar handlers vacios.
+    if (!section || !runway || !stage || !deck || folders.length === 0) {
       return;
     }
 
-    // La geometria se recalcula en measure(): el % de salida no es la
-    // constante de la referencia sino que sale del alto real del stage (ver
-    // flipExitPercent).
-    let geometry = flipGeometry(cards.length);
-    const springConfig = defaultSpringConfig();
-
-    // Estado del resorte: a nivel de modulo via closure del init, asi el
-    // rAF del frame en curso puede leer y escribir la misma variable que el
-    // listener de scroll. No lo guardamos en mod-scope porque no queremos
-    // que sobreviva entre paginas (cleanup lo va a soltar).
     let springValue = 0;
     let springVelocity = 0;
     let targetProgress = 0;
@@ -530,22 +633,22 @@ const projectCount = projects.length;
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    // El "frente" del mazo: indice de la tarjeta visible al frente. Cambia
-    // cuando un nuevo segmento entra en juego; mientras no cambie, no tocamos
-    // el DOM (el inert no se vuelve a setear).
     let currentFront = -1;
 
-    // Mediciones iniciales. Se releen en resize y via ResizeObserver cuando
-    // cambia la altura del runway (caso tipico: collapse de la URL bar en
-    // mobile).
+    // Geometría: la recalculamos en cada medición leyendo el alto real del
+    // cuerpo y de la pestaña. Sale del DOM, no de constantes. Esto es lo que
+    // mantiene el "tab + sliver" honesto aunque el visitante rote el
+    // dispositivo o cambie el tamaño de fuente (y la pestaña pase de 1 a 2
+    // líneas en un viewport estrecho).
+    let geometry = flipGeometry(folders.length, 44, 80);
+    const springConfig = defaultSpringConfig();
+
     let runwayTop = 0;
     let runwayHeight = 0;
     let stickyHeight = 0;
+    let deckMaxH = 0;
 
     const measure = () => {
-      // runwayTop = distancia desde el top del documento al top del runway.
-      // Se mide sobre el documento, no el viewport, porque el scroll es del
-      // documento entero.
       const runwayRect = runway.getBoundingClientRect();
       runwayTop = runwayRect.top + window.scrollY;
       runwayHeight = runwayRect.height;
@@ -554,72 +657,102 @@ const projectCount = projects.length;
       );
       stickyHeight = sticky?.offsetHeight ?? window.innerHeight;
 
-      // La salida se MIDE, no se asume un porcentaje fijo: la tarjeta tiene
-      // que cruzar toda el area recortada del sticky, y esa area es la ventana
-      // entera. Se mide contra el sticky (no con offsetTop) para no depender de
-      // cual sea el offsetParent. Las dos rects se desplazan igual con el
-      // scroll, asi que la diferencia es estable.
-      const stageTop = sticky
-        ? stage.getBoundingClientRect().top -
-          sticky.getBoundingClientRect().top
-        : 0;
-      geometry = flipGeometry(
-        cards.length,
-        flipExitPercent(stageTop, stage.offsetHeight),
-      );
+      // Paso: alto de la pestaña MÁS ALTA + sliver. Medimos TODAS las
+      // pestañas (no solo la primera) y tomamos el máximo, porque el spec
+      // permite que el título se parta en 2 líneas en viewports estrechos
+      // y eso cambia el alto de la pestaña de esa carpeta. El escalón del
+      // asentado se deriva de la pestaña más alta para que TODAS las
+      // carpetas (incluidas las de pestaña corta) suban exactamente lo
+      // mismo.
+      const tabHeights = folders.map((f) => {
+        const t = f.querySelector<HTMLElement>(".folder__tab");
+        return t?.offsetHeight ?? 34;
+      });
+      const maxTabHeight = Math.max(...tabHeights);
+      const step = maxTabHeight + SLIVER;
+
+      // entryOffset: la distancia desde la posición de reposo (carpeta al
+      // frente) hasta donde aparece la carpeta entrante. Sale del alto util
+      // del sticky: el cuerpo debe quedar casi debajo del stage para que
+      // SOLO la pestaña asome en el borde inferior del stage cuando la
+      // carpeta esta "esperando abajo".
+      const entryOffset = Math.max(stickyHeight - maxTabHeight - 1, step);
+
+      // El CSS lee --folder-step para decidir la padding-top del cuerpo (asi
+      // la franja que asoma arriba es cuerpo liso sin contenido). Lo
+      // publicamos en el <section> para que todos los .folder__body lo
+      // hereden por cascada.
+      section.style.setProperty("--folder-step", `${step}px`);
+
+      geometry = flipGeometry(folders.length, step, entryOffset);
+
+      // Alto del deck: en mobile, donde el cuerpo puede crecer con el
+      // contenido (descripción + tags + CTA + captura), el deck tiene que
+      // acompañar para que la carpeta siguiente no se apile sobre la
+      // actual. Usamos scrollHeight (alto del contenido, independiente de
+      // cómo esté renderizado el body) en vez de offsetHeight, porque
+      // offsetHeight puede ser chico si las capturas aún no terminaron de
+      // cargar y eso nos haría setear un deck subdimensionado.
+      const bodyHeights = folders.map((f) => {
+        const b = f.querySelector<HTMLElement>(".folder__body");
+        return b?.scrollHeight ?? 0;
+      });
+      const maxBodyHeight = Math.max(...bodyHeights);
+
+      // Tope por stage: no dejamos que el deck crezca más allá del alto
+      // disponible dentro del sticky (que tiene overflow: clip).
+      const availH = stage.clientHeight;
+      deckMaxH = availH;
+
+      const desiredDeckH = maxBodyHeight + maxTabHeight;
+      deck.style.height = `${Math.min(desiredDeckH, deckMaxH)}px`;
+
+      // Centrado consciente del mazo. Las carpetas que ya pasaron se apilan
+      // HACIA ARRIBA del frente (un escalon por carpeta), asi que centrar solo
+      // la caja del frente deja la pila cortada contra el navbar y esconde la
+      // pestana del frente (medido: pestana en y=27 con navbar de 67px).
+      // Centramos la PILA completa (frente + escalones) en el alto util, con
+      // dos limites duros: la pestana del frente nunca queda debajo del navbar
+      // (minimo = alto de la pestana) y la carpeta del frente nunca se pasa del
+      // borde inferior (maximo = alto util - alto del deck). Si la pila no
+      // entra, lo que se recorta es el fondo de la pila contra el navbar,
+      // nunca el frente.
+      const deckH = deck.getBoundingClientRect().height;
+      const headroom = Math.max(folders.length - 1, 0) * step;
+      const rawOffset = (availH - (deckH + headroom)) / 2 + headroom;
+      const maxOffset = Math.max(maxTabHeight, availH - deckH);
+      const deckOffset = Math.min(Math.max(rawOffset, maxTabHeight), maxOffset);
+      deck.style.marginTop = `${Math.round(deckOffset)}px`;
     };
 
     const syncDomFromProgress = (progress: number) => {
-      // Tarjeta activa al frente: el cambio se aplica solo si el indice
-      // cambio, asi no escribimos `inert` en cada frame. Importante para
-      // que el foco no caiga sobre un boton tapado por otra tarjeta.
       const front = flipFront(progress, geometry);
       if (front !== currentFront) {
         currentFront = front;
-        for (let i = 0; i < cards.length; i++) {
+        for (let i = 0; i < folders.length; i++) {
           if (i === front) {
-            cards[i].removeAttribute("inert");
+            folders[i].removeAttribute("inert");
           } else {
-            cards[i].setAttribute("inert", "");
+            folders[i].setAttribute("inert", "");
           }
         }
       }
 
-      // Estado por tarjeta. Las tarjetas que no se mueven escriben igual
-      // porque el rAF solo corre mientras el resorte esta vivo; el costo es
-      // bajo y mantiene una sola fuente de verdad para el render.
-      for (let i = 0; i < cards.length; i++) {
+      for (let i = 0; i < folders.length; i++) {
         const state = flipCardState(progress, i, geometry, reduceMotion);
-        const card = cards[i];
+        const folder = folders[i];
 
-        // .projects-stack__card (la que se pliega): translateY en % + el
-        // offset de apilado, mas el rotateX. translate3d abre una capa
-        // compuesta automaticamente y mantiene 60fps estables.
-        card.style.transform = `translate3d(0, calc(${state.yPercent}% + ${state.stackOffset}px), 0) rotateX(${state.rotateX}deg)`;
+        folder.style.setProperty("--folder-y", `${state.y}px`);
+        folder.style.setProperty("--folder-scale", String(state.scale));
 
-        // .projects-stack__panel (el que sube con la entrada).
-        const panel = card.querySelector<HTMLElement>(
-          ".projects-stack__panel",
-        );
-        if (panel) {
-          panel.style.transform = `translate3d(0, ${state.entryY}px, 0) scale(${state.entryScale})`;
-        }
-
-        // Opacidad: solo se escribe bajo movimiento reducido. En el flujo
-        // normal ya esta en 1 y no tiene sentido tocarla por frame.
         if (reduceMotion) {
-          card.style.opacity = String(state.opacity);
-        } else if (card.style.opacity) {
-          card.style.opacity = "";
+          folder.style.opacity = String(state.opacity);
+        } else if (folder.style.opacity) {
+          folder.style.opacity = "";
         }
       }
     };
 
-    // El rAF SOLO corre mientras el resorte no esta asentado. Si ya esta
-    // quieto, dejamos de pedir frames y dormimos hasta el proximo scroll.
-    // Es la pieza clave de "no dejar un rAF loop encendido para siempre":
-    // cuando el visitante deja de scrollear sobre la seccion, el frame loop
-    // se apaga.
     const tick = (now: number) => {
       rafId = null;
       const dt =
@@ -639,15 +772,11 @@ const projectCount = projects.length;
       syncDomFromProgress(springValue);
 
       if (!result.settled) {
-        // Todavia hay movimiento -> seguimos pidiendo frames y dejamos la
-        // clase que prende will-change.
         if (!section.classList.contains("projects-stack--moving")) {
           section.classList.add("projects-stack--moving");
         }
         rafId = requestAnimationFrame(tick);
       } else {
-        // Asentado: cortamos el rAF y apagamos la capa compuesta para no
-        // gastar GPU con el mazo en reposo.
         if (section.classList.contains("projects-stack--moving")) {
           section.classList.remove("projects-stack--moving");
         }
@@ -660,9 +789,6 @@ const projectCount = projects.length;
       rafId = requestAnimationFrame(tick);
     };
 
-    // Scroll handler: solo lee el scroll, calcula el target y dispara el
-    // frame. Es passive para no bloquear el scroll nativo. coalescing por
-    // rAF: si llegan 10 eventos en un frame, escribimos una sola vez.
     const onScroll = () => {
       targetProgress = flipProgress(
         window.scrollY,
@@ -675,7 +801,6 @@ const projectCount = projects.length;
 
     const onResize = () => {
       measure();
-      // re-medido: recalculamos el target y dejamos al resorte converger.
       targetProgress = flipProgress(
         window.scrollY,
         runwayTop,
@@ -687,10 +812,27 @@ const projectCount = projects.length;
 
     measure();
 
-    // Estado inicial: el resorte arranca EXACTAMENTE en el target (no hay
-    // transicion en el primer frame). Esto es importante para cuando el
-    // navegador restaura una posicion de scroll dentro del runway: la
-    // tarjeta aparece en su lugar correcto sin pegarse desde p=0.
+    // Re-medimos cuando las capturas terminen de cargar: el body puede
+    // crecer (porque ahora conoce la altura natural de la <img>) y el deck
+    // debe acompañar para que no se corte la descripción, los tags o el CTA
+    // en mobile.
+    const imageLoadListeners: Array<() => void> = [];
+    folders.forEach((f) => {
+      const img = f.querySelector<HTMLImageElement>(".folder__image");
+      if (img && !img.complete) {
+        const onLoad = () => {
+          // Una vez que la imagen cargó, scrollHeight puede haber cambiado.
+          measure();
+        };
+        img.addEventListener("load", onLoad, { once: true });
+        img.addEventListener("error", onLoad, { once: true });
+        imageLoadListeners.push(() => {
+          img.removeEventListener("load", onLoad);
+          img.removeEventListener("error", onLoad);
+        });
+      }
+    });
+
     targetProgress = flipProgress(
       window.scrollY,
       runwayTop,
@@ -705,29 +847,17 @@ const projectCount = projects.length;
     window.addEventListener("resize", onResize, { passive: true });
     let resizeObserver: ResizeObserver | null = null;
     if ("ResizeObserver" in window) {
-      // Cubre cambios de altura del runway cuando se colapsa la URL bar de
-      // mobile o se rota el dispositivo, sin necesidad de un resize explicito.
       resizeObserver = new ResizeObserver(() => onResize());
       resizeObserver.observe(runway);
     }
 
-    // Cambio en la preferencia de movimiento reducido: re-aplicamos el
-    // estado contra el target actual. La primera lectura ya quedo en
-    // `reduceMotion` arriba.
     const motionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
     const onMotionChange = () => {
       reduceMotion = motionQuery.matches;
-      // Re-sincronizamos contra el valor actual del resorte, no contra el
-      // target, para no introducir un salto.
       syncDomFromProgress(springValue);
-      // Si estabamos en una corrida, dejamos que el frame en curso termine.
     };
-    // En todos los navegadores que soportan la API moderna (incluido Safari
-    // 14+) MediaQueryList tiene addEventListener. Si la deteccion falla,
-    // dejamos el listener prendido sin cleanup: la pagina se va a recargar
-    // antes de que eso importe.
     if (typeof motionQuery.addEventListener === "function") {
       motionQuery.addEventListener("change", onMotionChange);
     }
@@ -746,22 +876,17 @@ const projectCount = projects.length;
         cancelAnimationFrame(rafId);
         rafId = null;
       }
-      // Limpiamos los transforms inline para no contaminar el cache de
-      // navegacion del ClientRouter.
-      for (const card of cards) {
-        card.style.transform = "";
-        card.style.opacity = "";
-        const panel = card.querySelector<HTMLElement>(
-          ".projects-stack__panel",
-        );
-        if (panel) panel.style.transform = "";
+      for (const folder of folders) {
+        folder.style.removeProperty("--folder-y");
+        folder.style.removeProperty("--folder-scale");
+        if (folder.style.opacity) folder.style.opacity = "";
       }
+      section.style.removeProperty("--folder-step");
+      deck.style.removeProperty("height");
+      for (const cleanupFn of imageLoadListeners) cleanupFn();
     };
   };
 
-  // Astro dispara `astro:page-load` despues de navegar dentro de la SPA.
-  // Tambien llamamos a init() directamente para la primera carga (donde el
-  // evento ya paso).
   document.addEventListener("astro:page-load", init);
   init();
 </script>
