@@ -776,8 +776,15 @@ const projectCount = projects.length;
       const front = flipFront(progress, geometry);
       if (front !== currentFront) {
         currentFront = front;
+        // `inert` sólo en las carpetas TAPADAS: la pila de arriba y la cola que
+        // quedó fuera de cuadro. La del frente y la que viene (visible debajo,
+        // subiendo por encima) tienen que seguir respondiendo al mouse: con
+        // `inert` el navegador les bloquea el click y el hover, así que el botón
+        // "Ver caso completo" y el revelado de la captura quedaban muertos justo
+        // mientras se movían, que es cuando el visitante los ve.
+        const interactivas = front + 1;
         for (let i = 0; i < folders.length; i++) {
-          if (i === front) {
+          if (i === front || i === interactivas) {
             folders[i].removeAttribute("inert");
           } else {
             folders[i].setAttribute("inert", "");

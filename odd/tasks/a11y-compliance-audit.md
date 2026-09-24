@@ -130,6 +130,11 @@ Pedido posterior del usuario, no viene de la auditoría.
 5. El JSON-LD publicado no contiene placeholders.
 6. `npx astro check` y `npm run build` pasan en cada unidad.
 
+> Corrección (24-09-2026): el criterio 3 dejó de valer. El teléfono pasó a ser
+> **obligatorio** a pedido del autor (canal para contactar por WhatsApp) y la
+> política de privacidad se actualizó para no declararlo opcional. Ver
+> `docs/features/contact-form-integration.md`.
+
 ## Tareas
 
 - [x] U1 — Formulario: accesibilidad y minimización

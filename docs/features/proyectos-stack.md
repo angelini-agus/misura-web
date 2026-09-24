@@ -218,13 +218,25 @@ avanza por opacidad (la tienda descrita arriba). Las carpetas tapadas siguen
 fuera del orden de tabulación (`inert`). Regla de la casa: neutralizar el
 movimiento, nunca quitar la función.
 
-### Teclado
+### Teclado y mouse
 
-Las carpetas tapadas llevan `inert`, así sus botones no son alcanzables por
-tab. La carpeta activa es `flipFront(p) = clamp(floor(p / seg), 0, n - 1)`:
-la que está al frente del mazo en ese momento. Al scrollear la atención de
-teclado pasa a la siguiente carpeta; sin `inert` el foco caía en botones
-que no se ven.
+Las carpetas TAPADAS llevan `inert` (la pila de arriba y la cola que quedó fuera
+de cuadro), así sus botones no son alcanzables por tab. La carpeta activa es
+`flipFront(p) = clamp(floor(p / seg), 0, n - 1)`: la que está al frente del mazo
+en ese momento. Al scrollear la atención de teclado pasa a la siguiente carpeta;
+sin `inert` el foco caía en botones que no se ven.
+
+`inert` también desactiva el mouse y el `:hover` del navegador, así que **no** se
+le pone a la carpeta que viene subiendo: durante la animación es la que está
+arriba y visible, y con `inert` el botón "Ver caso completo" y el revelado de la
+captura quedaban muertos justo mientras el visitante los mira. Quedan
+interactivas la del frente y la siguiente; `inert` sólo en las tapadas.
+
+Medido con eventos de mouse reales sobre el mazo en movimiento: al 50 % de la
+subida, `inert` = `[true, true, true, false, false, true]`; el hit test sobre el
+CTA de la que sube devuelve su `<a>` (`dentroDeInert: false`); el hover sobre su
+captura deja `filter: none`, `transform: scale(1.045)` y el tinte en `opacity: 0`;
+y un click real dispara el `<a>` con el `href` del caso correcto.
 
 ### Sin JS
 

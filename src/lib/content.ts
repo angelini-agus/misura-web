@@ -121,7 +121,7 @@ export const privacy = {
     {
       title: "Qué datos pedimos",
       body: [
-        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono (opcional), el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
+        "Solo los que cargás en el formulario de contacto: nombre, empresa (opcional), email, teléfono, el tipo de servicio que te interesa y, si querés, los detalles que nos cuentes.",
         "No pedimos datos sensibles, información financiera ni nada que no esté en ese formulario.",
       ],
     },
@@ -624,7 +624,7 @@ export const contact: ContactInfo = {
     {
       label: "MODALIDAD",
       value:
-        "Entrevistas presenciales en Rosario y alrededores y a distancia en todo el país.",
+        "Entrevistas presenciales en Rosario y alrededores. A distancia en todo el país.",
     },
   ],
   socials: [
@@ -676,9 +676,9 @@ export const contactForm = {
     backAriaLabel: "Volver a elegir el servicio",
   },
   serviceOptions: [
-    { value: "erp", label: "Sistemas de Gestión (ERP)" },
-    { value: "crm", label: "Herramientas de Ventas (CRM)" },
-    { value: "web", label: "Páginas Web y E-commerce" },
+    { value: "erp", label: "Sistemas de gestión (ERP)" },
+    { value: "crm", label: "Herramientas de ventas (CRM)" },
+    { value: "web", label: "Páginas web y\ne-commerce" },
     { value: "otros", label: "Otros" },
   ],
   errors: {

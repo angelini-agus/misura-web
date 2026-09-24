@@ -46,8 +46,9 @@ backend propio.
    (`cf-name-error`, `cf-email-error`, `cf-phone-error`, `cf-service-error`) y
    arranca en `sr-only` en vez de `hidden`, para seguir en el árbol de
    accesibilidad; cada control lo referencia con `aria-describedby` y `setError`
-   alterna `sr-only` + `aria-invalid`. El teléfono pasó a ser opcional: vacío es
-   válido, y si se completa exige al menos 6 caracteres.
+   alterna `sr-only` + `aria-invalid`. El teléfono es **obligatorio** (pedido del
+   autor: es el canal para contactar al interesado, incluso por WhatsApp) y exige
+   al menos 6 caracteres; el label lleva el asterisco, como nombre y email.
 6. **Entrada al formulario: siempre paso 1.** El servicio elegido no se recuerda
    entre visitas. El flujo vuelve al paso 1 en cada `astro:page-load`, en la
    vuelta desde la bfcache (`pageshow`) y al clickear un link que apunta a
@@ -82,3 +83,17 @@ Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
   limpia todo detrás del modal y el fallido conserva las respuestas y muestra
   la región de error. El textarea reporta `resize: none` y una scrollbar de
   ancho cero.
+
+## Anclaje del CTA al formulario (24-09-2026)
+
+El CTA que lleva al formulario (`/contacto#contacto` desde el navbar, el footer y el
+hero) aterrizaba con `scroll-margin-top: 96px` mientras el header mide 67 px en
+mobile y 77 px en desktop: dejaba 19-29 px de hueco arriba y **cortaba 81 px del
+formulario abajo**. Ahora el `scroll-margin-top` es exactamente el alto del header
+(`var(--contact-nav-h)`), así que la sección arranca pegada a él.
+
+Medido con click real: 1440x1080 → la sección entra completa (1003 px visibles de
+1004, sin hueco arriba); 1440x900 → 823 de 885 px (los 62 px que sobran son la
+sección misma: su contenido supera los `100dvh − nav`); 375x667 → arranca pegada al
+header (67) y el resto se scrollea. Idéntico al entrar por client-side desde
+`/proyectos` que desde la misma página.
