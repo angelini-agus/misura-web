@@ -50,11 +50,14 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
             {contact.description}
           </p>
         </div>
-        <ul class="flex flex-col gap-4 text-sm text-cream/75">
-          <li class="flex items-center gap-3">
-            <MailIcon class="h-5 w-5 shrink-0 text-cream/70" />
+        <ul class="flex flex-col gap-4 text-sm text-cream">
+          <li class="group flex items-center gap-3">
+            <MailIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
             {emailHref ? (
-              <a href={emailHref} class="underline underline-offset-4">
+              <a
+                href={emailHref}
+                class="text-cream transition-[color,transform] duration-150 ease-out hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+              >
                 {contact.email}
               </a>
             ) : (
@@ -63,31 +66,38 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
           </li>
           {contact.socials.map((social) => (
             <li class="flex items-center gap-3">
-              {social.label === "LinkedIn" ? (
-                <LinkedinIcon class="h-5 w-5 shrink-0 text-cream/70" />
-              ) : (
-                <InstagramIcon class="h-5 w-5 shrink-0 text-cream/70" />
-              )}
               {isPending(social.url) ? (
-                <Placeholder inverse label={`${social.label} [PENDIENTE]`} />
+                <span class="flex items-center gap-3 text-cream">
+                  {social.label === "LinkedIn" ? (
+                    <LinkedinIcon class="h-5 w-5 shrink-0 text-cream" />
+                  ) : (
+                    <InstagramIcon class="h-5 w-5 shrink-0 text-cream" />
+                  )}
+                  <Placeholder inverse label={`${social.label} [PENDIENTE]`} />
+                </span>
               ) : (
                 <a
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="underline underline-offset-4"
+                  class="flex items-center gap-3 text-cream transition-[color,transform] duration-150 ease-out hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
                 >
-                  {social.displayLabel ?? social.label}
+                  {social.label === "LinkedIn" ? (
+                    <LinkedinIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
+                  ) : (
+                    <InstagramIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
+                  )}
+                  <span>{social.displayLabel ?? social.label}</span>
                 </a>
               )}
             </li>
           ))}
           {contact.locationItems.map((item) => (
-            <li class="flex items-center gap-3">
+            <li class="group flex items-center gap-3">
               {item.label.includes("UBI") ? (
-                <PinIcon class="h-5 w-5 shrink-0 text-cream/70" />
+                <PinIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
               ) : (
-                <LaptopIcon class="h-5 w-5 shrink-0 text-cream/70" />
+                <LaptopIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
               )}
               <span>{item.value}</span>
             </li>
