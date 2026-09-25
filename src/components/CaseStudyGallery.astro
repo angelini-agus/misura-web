@@ -45,7 +45,7 @@ const total = images.length;
               type="button"
               data-gallery-prev
               aria-label="Imagen anterior"
-              class="absolute left-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition-colors hover:bg-green hover:text-cream"
+              class="absolute left-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition hover:bg-green hover:text-cream active:translate-x-[-4px] active:translate-y-[calc(50%+4px)] active:duration-75"
             >
               <span aria-hidden="true">←</span>
             </button>
@@ -53,7 +53,7 @@ const total = images.length;
               type="button"
               data-gallery-next
               aria-label="Imagen siguiente"
-              class="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition-colors hover:bg-green hover:text-cream"
+              class="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 border-green bg-cream text-lg text-green transition hover:bg-green hover:text-cream active:translate-x-[-4px] active:translate-y-[calc(50%+4px)] active:duration-75"
             >
               <span aria-hidden="true">→</span>
             </button>
@@ -76,7 +76,7 @@ const total = images.length;
                 type="button"
                 data-gallery-dot={index}
                 aria-label={`Ver imagen ${index + 1}: ${image.alt}`}
-                class="flex h-6 w-6 items-center justify-center rounded-full border border-transparent bg-clip-content p-1.5 transition-colors"
+                class="flex h-6 w-6 items-center justify-center rounded-full border border-transparent bg-clip-content p-1.5 transition active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
               >
                 <span class="block h-2.5 w-2.5 rounded-full border border-green"></span>
               </button>

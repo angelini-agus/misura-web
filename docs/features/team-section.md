@@ -14,6 +14,8 @@ siguiendo el diseño flat de la marca (inspiración estructural: geiko.dev).
 - Grilla responsive: 1 columna mobile, 2 tablet, 4 desktop.
 - Redes sociales como botones pill (icono + label) con hover invertido
   (crema→verde) y press `active:translate`, en sintonía con el botón `cream`.
+- El icono salta 3px en hover con `--ease-back` (excepción 3 de
+  `design-philosophy.md`), solo en dispositivos con hover real.
 
 ## Datos
 - `team.members[]`: `name`, `role`, `description`, `socials.{linkedin,github}`.

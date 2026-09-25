@@ -636,7 +636,7 @@ export const contact: ContactInfo = {
     {
       label: "Instagram",
       url: "https://www.instagram.com/misure.dev",
-      displayLabel: "@misure.dev",
+      displayLabel: "misure.dev",
     },
   ],
 };
