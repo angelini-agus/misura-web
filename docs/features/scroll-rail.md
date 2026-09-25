@@ -28,10 +28,15 @@ evento de scroll. Por frame solo corre la aritmética y se escribe
 - El scroll es `window` (el documento) con `{ passive: true }`, y la actualización se
   encola con `requestAnimationFrame`: como máximo una por frame.
 - Detección de desktop: `matchMedia("(min-width: 48rem)")`, el mismo corte que usa el
-  sitio para el header sticky. La barra nativa se oculta con la clase `has-rail` que
-  agrega el script: si el JS no corre, la nativa queda intacta (mejora progresiva).
-  El CSS de ocultado respeta el criterio de `global.css`: la vía webkit para
-  Chromium/Safari y la estándar solo bajo `@supports not selector(::-webkit-scrollbar)`.
+  sitio para el header sticky. La barra nativa se oculta con la clase `has-rail`: si el JS
+  no corre, la nativa queda intacta (mejora progresiva).
+- La clase se marca en el `<head>` (`BaseLayout.astro`, junto a `js`) y se repone en
+  `astro:after-swap`, porque el router pisa el atributo `class` del `<html>` en cada
+  navegación. Marcarla desde el script del componente llega después del primer pintado:
+  liberar el espacio de la barra reflowea el contenido 6px (medido: CLS 0,032 contra
+  0,011 de base).
+- Quién oculta la barra: `html.has-rail { scrollbar-width: none }`. La vía webkit queda
+  como respaldo de Safari viejo. Ver la corrección del 2026-09-25 más abajo.
 - Arrastre del thumb y click en el riel con pointer events (con captura, en `try` para
   los eventos sintéticos). El arrastre usa `behavior: "instant"` para responder 1:1;
   el click usa `smooth`, salvo con `prefers-reduced-motion`.
@@ -44,10 +49,25 @@ evento de scroll. Por frame solo corre la aritmética y se escribe
 | thumb | 127px = railH x (1080 / 9180), con el mínimo de 28 |
 | posición del thumb | solo `transform: translate3d()`: `top` y `margin` en 0, y el `cssText` no tiene otra propiedad de posición |
 | seguimiento | a 0 %, 50 % y 95 % del scroll: delta 0px contra el esperado |
-| CLS al ocultar la nativa | `clientWidth` y ancho del body idénticos con y sin la clase (delta 0) |
+| barra nativa | 0 píxeles del gris `#b0b1a1` en la franja derecha de 1280x800 (muestreo de píxeles sobre el build) |
+| borde del riel | `x = 1270`, borde derecho 1280 = borde real de la ventana, y `innerWidth - clientWidth = 0` (sin gutter reservado) |
+| CLS | 0,0108 con la clase marcada en el `<head>` (base sin el espacio de la barra: 0,0109) |
 | arrastre | scrollY de 0 a 1700 arrastrando el thumb 200px |
 | click en un tramo libre del riel | salta al punto clickeado; si el click cae sobre el thumb, inicia un arrastre |
 | mobile 375x667 | sin la clase, riel `display: none`, la nativa intacta |
+
+## Corrección del 2026-09-25: la nativa seguía visible
+
+Con el riel entregado, la barra nativa seguía pintada a su derecha, con los 6px de
+gutter reservados: el riel no llegaba al borde real de la ventana.
+
+- `html.has-rail::-webkit-scrollbar { display: none }` **no la oculta** cuando la barra ya
+  está estilizada por el `::-webkit-scrollbar { width: 6px }` de `global.css`: queda
+  pintada al lado del riel. `scrollbar-width: none` sí la oculta y libera el espacio.
+- La medición anterior (`delta 0` de `clientWidth` con y sin la clase) no probaba que la
+  barra estuviera oculta: ese espacio lo reservaba `scrollbar-gutter: stable`, así que el
+  delta daba 0 con la barra todavía pintada. La verificación ahora mira píxeles.
+- Anotado en `global.css` y en el script del `<head>` de `BaseLayout.astro`.
 
 ## Ciclo de vida (View Transitions)
 

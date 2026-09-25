@@ -51,19 +51,25 @@
 }
 
 /* Con el riel propio activo (solo desktop, lo decide el script), la barra nativa
-   se oculta. Sigue el criterio del resto del archivo: la via webkit es la que usan
-   Chromium y Safari, y la sintaxis estandar se declara SOLO donde no existe
-   ::-webkit-scrollbar, porque declarar scrollbar-width en Chromium hace que el
-   navegador descarte todo el bloque webkit. En mobile la clase no existe, asi que
-   la barra nativa del sistema queda intacta. */
-html.has-rail::-webkit-scrollbar {
-  display: none;
+   se oculta y libera su espacio: asi el riel queda pegado al borde real de la
+   ventana y no al borde del area de contenido.
+
+   MEDIDO en Chromium (1280x800, con la barra ya estilizada por el `width: 6px`
+   de mas abajo): `display: none` en `html::-webkit-scrollbar` NO la oculta
+   (queda pintada al lado del riel, con los 6px de gutter todavia reservados), y
+   `scrollbar-width: none` si. Por eso la via estandar va primero y sin
+   `@supports`: es la que decide en Chromium y Firefox. La webkit queda como
+   respaldo de Safari viejo, que no soporta la estandar. Nota: declarar
+   `scrollbar-width` en Chromium hace que ese elemento use la barra estandar e
+   ignore el bloque webkit SOLO para el, asi que la barra de `html` no se puede
+   estilizar por webkit mientras esto valga; da igual, esta oculta. En mobile la
+   clase no existe y la barra nativa del sistema queda intacta. */
+html.has-rail {
+  scrollbar-width: none;
 }
 
-@supports not selector(::-webkit-scrollbar) {
-  html.has-rail {
-    scrollbar-width: none;
-  }
+html.has-rail::-webkit-scrollbar {
+  display: none;
 }
 
 html {

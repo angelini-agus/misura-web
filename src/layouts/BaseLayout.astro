@@ -96,6 +96,14 @@ gtag('config', '${gaId}');`
     />
     <script is:inline>
       document.documentElement.classList.add("js");
+      // El riel propio (ScrollRail.astro) oculta la barra nativa bajo esta clase.
+      // Se marca aca, en el <head>, y no en el script del componente: ahi llega
+      // despues del primer pintado, y liberar el espacio de la barra reflowea el
+      // contenido 6px (medido: CLS 0,032 con la clase post-pintado contra 0,011
+      // de base). El corte es el mismo desktop del riel (48rem).
+      if (window.matchMedia("(min-width: 48rem)").matches) {
+        document.documentElement.classList.add("has-rail");
+      }
       // El ClientRouter reemplaza el atributo `class` del <html> con el del
       // HTML servido en cada navegacion client-side (entrar a /proyectos desde
       // el navbar), asi que la clase se pierde y el sitio entero cae al estado
@@ -103,6 +111,9 @@ gtag('config', '${gaId}');`
       // cada swap (astro:after-swap corre antes de la transicion, sin flash).
       document.addEventListener("astro:after-swap", () => {
         document.documentElement.classList.add("js");
+        if (window.matchMedia("(min-width: 48rem)").matches) {
+          document.documentElement.classList.add("has-rail");
+        }
       });
     </script>
   </head>
