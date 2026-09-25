@@ -39,14 +39,21 @@ import CodePanel from "./ui/CodePanel.astro";
       </h1>
       <p
         data-reveal
-        style={{ transitionDelay: "60ms" }}
+        style={{ transitionDelay: "50ms" }}
+        class="hero-subtitle font-display mt-3 max-w-xl text-lg font-medium leading-snug tracking-tight sm:text-xl md:text-2xl"
+      >
+        {hero.subtitle}
+      </p>
+      <p
+        data-reveal
+        style={{ transitionDelay: "100ms" }}
         class="hero-lead mt-4 max-w-xl text-base leading-relaxed text-green/80 sm:text-lg"
       >
         <MisureWord text={hero.lead} />
       </p>
       <div
         data-reveal
-        style={{ transitionDelay: "120ms" }}
+        style={{ transitionDelay: "150ms" }}
         class="hero-actions mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
       >
         <Button href={hero.ctaPrimary.href} class="w-full sm:w-auto">
@@ -81,6 +88,12 @@ import CodePanel from "./ui/CodePanel.astro";
       line-height: 1.15;
     }
 
+    .hero-subtitle {
+      margin-top: 0.5rem;
+      font-size: 0.9375rem;
+      line-height: 1.35;
+    }
+
     .hero-lead {
       margin-top: 0.75rem;
       font-size: 0.9375rem;
@@ -95,10 +108,45 @@ import CodePanel from "./ui/CodePanel.astro";
     }
   }
 
+  /* Celulares bajos de verdad: 360x640 en adelante. Medido con el subtitulo
+     puesto, el bloque de texto no entraba en los 100dvh (faltaban ~28px a
+     360x640 y ~13px a 320x568) y los dos CTAs quedaban abajo del pliegue. Se
+     achica escala otra vez (panel, padding, gaps y margenes), nunca el copy.
+     El corte es 660px de alto a proposito: 375x667 tiene 82,8px libres y no
+     necesita este escalon, asi que conserva el panel y el aire del anterior. */
+  @media (max-width: 30rem) and (max-height: 660px) {
+    .hero-grid {
+      gap: 0.5rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+      margin-top: 0.375rem;
+      font-size: 0.875rem;
+      line-height: 1.3;
+    }
+
+    .hero-lead {
+      margin-top: 0.5rem;
+    }
+
+    .hero-visual {
+      max-width: min(10rem, 20dvh);
+    }
+
+    .hero-actions {
+      margin-top: 0.75rem;
+    }
+  }
+
   /* Pantallas muy bajas (un iPhone SE con las barras del navegador a la vista
      ronda los 550px utiles): un escalon mas. Los dos CTAs pasan a dos
      columnas y el panel achica otra vez, asi los botones entran sin tocar la
-     tipografia ni el copy. */
+     tipografia ni el copy. El 18dvh del panel es por el subtitulo: a 320x568,
+     con 20dvh quedaban solo 5,3px libres dentro del hero (medido con el
+     build), y eso deja el pliegue a merced de como mida la fuente de
+     reemplazo mientras carga la variable. */
   @media (max-width: 30rem) and (max-height: 620px) {
     .hero-grid {
       padding-top: 0.75rem;
@@ -106,7 +154,7 @@ import CodePanel from "./ui/CodePanel.astro";
     }
 
     .hero-visual {
-      max-width: min(9rem, 20dvh);
+      max-width: min(9rem, 18dvh);
     }
 
     .hero-actions {
