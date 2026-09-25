@@ -87,16 +87,6 @@ const year = new Date().getFullYear();
             </a>
           )
         )}
-        {contact.locationItems.map((item) => (
-          <span class="group flex w-fit items-center gap-3 text-green">
-            {item.label.includes("UBI") ? (
-              <PinIcon class="social-icon h-5 w-5 shrink-0 text-green/75" />
-            ) : (
-              <LaptopIcon class="social-icon h-5 w-5 shrink-0 text-green/75" />
-            )}
-            <span>{item.value}</span>
-          </span>
-        ))}
       </nav>
     </div>
     <div
