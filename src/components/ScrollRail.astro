@@ -1,55 +1,98 @@
 ---
-// Riel de scroll propio, SOLO desktop. La barra nativa se corta en el borde de
-// cada sección (el fondo alterna crema y verde) y no queda pegada al borde real
-// de la ventana; este riel es `fixed`, opaco y vive fuera del contenido, así que
-// se ve igual sobre cualquier superficie. En mobile no se activa nada: ahí sigue
-// la barra nativa del sistema.
+// Riel de scroll propio, SOLO desktop, con la forma de un pie de rey vertical: la
+// regla es el riel (dos escalas grabadas: fina cada 8px, gruesa cada 40px), el
+// nonio es el thumb, y la pieza vive despegada del borde de la ventana, debajo del
+// header. En mobile no hay riel: queda una marca de lectura de 2x12px y la barra
+// nativa se oculta (la navegacion por scroll la da lo propio, tambien ahi).
 //
 // Approach, medidas y verificación: docs/features/scroll-rail.md
 ---
 
-<div id="scroll-rail" aria-hidden="true">
-  <div id="scroll-rail-thumb"></div>
+<div id="scroll-rail-track" aria-hidden="true">
+  <div id="scroll-rail">
+    <div id="scroll-rail-jaw-top"></div>
+    <div id="scroll-rail-thumb">
+      <div id="scroll-rail-vernier"></div>
+      <div id="scroll-rail-screw"></div>
+    </div>
+    <div id="scroll-rail-jaw-bottom"></div>
+  </div>
 </div>
 
+<div id="scroll-mark" aria-hidden="true"></div>
+
 <style>
-  /* El riel: pegado al borde derecho de la ventana, opaco (esto es lo que lo hace
-     consistente sobre cualquier sección), con marcas de regla cada 8px y una marca
-     larga cada 40px, dibujadas con dos gradientes de hard stops: sin elementos
-     extra, sin sombras difusas, sin radius. */
+  /* La pista: un wrapper absoluto que mide TODO el documento (body es
+     `position: relative` exactamente por esto). El riel de adentro es `sticky`:
+     arranca debajo del bloque completo y se estaciona a 8px del header cuando el
+     header se pega. Es la unica forma de que el riel nunca quede tapado y nunca
+     deje hueco: un riel `fixed` con el offset de scroll 0 deja un hueco de 36px
+     (lo que mide la barra de anuncio) apenas el usuario scrollea.
+
+     `pointer-events: none` en la pista es obligatorio: cubre el documento entero
+     y sin eso se comeria todos los clicks. El riel lo reactiva. */
+  #scroll-rail-track {
+    position: absolute;
+    inset: 0;
+    /* Debajo del header (z-50) y encima del contenido. */
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  /* El riel: 14px con las dos escalas grabadas, despegado 8px del borde derecho y
+     8px del inferior. La franja de aire es la que lo convierte en una pieza
+     apoyada sobre la pagina y no en el borde de la ventana. */
   #scroll-rail {
     display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 10px;
-    /* Por encima del header sticky. */
-    z-index: 60;
-    background-color: var(--color-cream);
-    border-left: 1px solid var(--color-green);
-    background-image:
-      repeating-linear-gradient(
-        to bottom,
-        var(--color-green) 0 1px,
-        transparent 1px 40px
-      ),
-      repeating-linear-gradient(
-        to bottom,
-        var(--color-green) 0 1px,
-        transparent 1px 8px
-      );
-    background-size:
-      8px 40px,
-      4px 8px;
-    background-position:
-      0 0,
-      0 0;
-    background-repeat: repeat, repeat;
+    position: sticky;
+    top: calc(var(--nav-h) + 0.5rem);
+    margin-block-start: calc(
+      var(--announcement-h) + var(--nav-h) + 0.5rem
+    );
+    margin-inline-start: auto;
+    margin-inline-end: 0.5rem;
+    width: 14px;
+    /* El alto se mide para el estado de scroll 0 (arranque debajo del bloque
+       completo: anuncio + header + 8px) y no para el estado pegado. Con el alto
+       del estado pegado (100dvh - nav-h - 1rem) el extremo inferior caia 28px por
+       debajo del pliegue en el primer golpe de vista, o sea que el tope de abajo
+       no se veia. Asi la pieza se ve entera siempre: en scroll 0 va de 121px a
+       (pliegue - 8px), y cuando el header se pega sube 36px y le quedan 44px de
+       aire abajo. El alto es constante a proposito: cambiarlo al cruzar el umbral
+       seria un salto de layout visible. */
+    height: calc(100dvh - var(--announcement-h) - var(--nav-h) - 1rem);
+    pointer-events: auto;
     cursor: pointer;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    /* Opaco y del tono base: el riel tiene que leerse igual sobre cualquier
+       superficie de la pagina, que alterna crema y verde. */
+    background-color: var(--color-cream);
+    border-inline: 1px solid var(--color-green);
+    /* Doble escala en dos columnas de 4px separadas por una canaleta de 4px: la
+       fina (1px de alto) cada 8px a la izquierda y la gruesa (2px) cada 40px a la
+       derecha. Cada capa es un tile de 4px de ancho por el alto del riel y sin
+       repetir: la repeticion vertical la hace el gradiente, no el tile, asi cada
+       columna cae una sola vez en su lugar. */
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1px,
+        transparent 1px 8px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 2px,
+        transparent 2px 40px
+      );
+    background-size:
+      4px 100%,
+      4px 100%;
+    background-position:
+      0 0,
+      100% 0;
+    background-repeat: no-repeat, no-repeat;
   }
 
   /* Solo cuando el script lo activó: desktop y JS disponible. Si el script no
@@ -58,9 +101,28 @@
     display: block;
   }
 
-  /* El thumb: pieza maciza, esquinas rectas, sin transición (mapeo 1:1 con el
-     scroll). El alto lo fija el script en proporción al contenido y la posición
-     se actualiza SOLO con transform. Las dos líneas crema son la marca
+  /* Quijada fija y tope: los extremos macizos que sujetan la escala. No son
+     adorno: sin ellos la pieza se lee como un borde y no como un instrumento. */
+  #scroll-rail-jaw-top,
+  #scroll-rail-jaw-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-green);
+  }
+
+  #scroll-rail-jaw-top {
+    top: 0;
+  }
+
+  #scroll-rail-jaw-bottom {
+    bottom: 0;
+  }
+
+  /* El nonio: pieza maciza verde, esquinas rectas, sin transición (mapeo 1:1 con
+     el scroll). El alto lo fija el script en proporción al contenido y la
+     posición se actualiza SOLO con transform. Las dos líneas crema son la marca
      mecanizada de los extremos. */
   #scroll-rail-thumb {
     position: absolute;
@@ -71,12 +133,97 @@
     border-top: 1px solid var(--color-cream);
     border-bottom: 1px solid var(--color-cream);
   }
+
+  /* Las marcas de vernier: 5 líneas crema cada 6.4px, que es 4/5 de la división
+     fina de la regla (8px). Esa es la relación real de un nonio de 5 divisiones:
+     con eso el nonio lee la quinta parte de la escala, que es lo que hace un pie
+     de rey. El bloque arranca 2px abajo del borde del nonio y mide 27px, asi que
+     entra completo en el alto mínimo del thumb (40px). */
+  #scroll-rail-vernier {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 2px;
+    height: 27px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--color-cream) 0 1px,
+      transparent 1px 6.4px
+    );
+  }
+
+  /* El tornillo de fijación: gira 45° mientras se arrastra el nonio, como el que
+     traba la corredera de un calibre. Solo `rotate`, que corre en el compositor. */
+  #scroll-rail-screw {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    translate: -50% 0;
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-cream);
+    transition: rotate 150ms var(--ease-out);
+  }
+
+  #scroll-rail-screw::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    margin-top: -0.5px;
+    background-color: var(--color-green);
+  }
+
+  #scroll-rail.is-dragging #scroll-rail-screw {
+    rotate: 45deg;
+  }
+
+  /* Asentamiento al soltar: el nonio cae 2px y se acomoda. Va en `translate`, la
+     propiedad independiente, para no pisar el `transform` que mapea el scroll.
+     `--ease-back` es la excepción 4 documentada en design-philosophy.md. */
+  #scroll-rail-thumb.is-settling {
+    animation: rail-settle 260ms var(--ease-back);
+  }
+
+  @keyframes rail-settle {
+    from {
+      translate: 0 2px;
+    }
+
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* Marca de lectura de mobile: ahí no hay riel (ni ancho ni hover), así que la
+     referencia es un trazo de 2x12px sobre el borde derecho que sigue el scroll.
+     El alto lo maneja el script con transform, igual que el nonio. */
+  #scroll-mark {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 4px;
+    width: 2px;
+    height: 12px;
+    z-index: 40;
+    background-color: var(--color-green);
+    pointer-events: none;
+  }
+
+  :global(html.has-mark) #scroll-mark {
+    display: block;
+  }
 </style>
 
 <script>
   // Alto mínimo del thumb: en páginas largas la proporción pura daría un hilo de
-  // 3 o 4px y tiene que leerse como una pieza, no como un pelo.
-  const MIN_THUMB = 28;
+  // 3 o 4px y tiene que leerse como una pieza, no como un pelo. 40px es lo que
+  // piden las 5 marcas de vernier (27px) más el tornillo (6px) con sus aires.
+  const MIN_THUMB = 40;
+  // Alto de la marca de mobile (2x12px, ver el style).
+  const MARK_H = 12;
   // Mismo corte de desktop que usa el sitio para el header sticky.
   const CONSULTA_DESKTOP = "(min-width: 48rem)";
 
@@ -84,15 +231,19 @@
   const reducir = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // La clase que oculta la barra nativa vive en el <html>, y el router la pisa en
-  // cada navegación con la del HTML servido: se repone en after-swap, antes de la
-  // transición, para que la nativa no alcance a asomar.
+  // Las clases que ocultan la barra nativa viven en el <html>, y el router las
+  // pisa en cada navegación con las del HTML servido: se reponen en after-swap,
+  // antes de la transición, para que la nativa no alcance a asomar. `has-rail` es
+  // el riel de desktop; `has-mark` es la marca de mobile. El marcado inicial
+  // también vive en el <head> (BaseLayout.astro), porque llegar después del
+  // primer pintado reflowea el contenido cuando la barra libera su espacio.
   const marcarSuperficie = () => {
     document.documentElement.classList.toggle("has-rail", medio.matches);
+    document.documentElement.classList.toggle("has-mark", !medio.matches);
   };
   document.addEventListener("astro:after-swap", marcarSuperficie);
 
-  let cleanup = null;
+  let cleanup: (() => void) | null = null;
 
   const init = () => {
     cleanup?.();
@@ -100,19 +251,26 @@
 
     const rail = document.getElementById("scroll-rail");
     const thumb = document.getElementById("scroll-rail-thumb");
+    const mark = document.getElementById("scroll-mark");
     if (!rail || !thumb) return;
 
     let railH = 0;
     let thumbH = 0;
     let travel = 0;
     let maxY = 0;
+    let markTravel = 0;
     let frame = 0;
 
-    // Pinta el thumb. SOLO transform: nada de top ni margin, y sin leer layout
-    // adentro del frame (las métricas ya están cacheadas).
+    // Pinta el nonio (desktop) o la marca (mobile). SOLO transform: nada de top
+    // ni margin, y sin leer layout adentro del frame (las métricas ya están
+    // cacheadas).
     const pintar = () => {
       const p = maxY === 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxY));
-      thumb.style.transform = `translate3d(0, ${(p * travel).toFixed(2)}px, 0)`;
+      if (medio.matches) {
+        thumb.style.transform = `translate3d(0, ${(p * travel).toFixed(2)}px, 0)`;
+      } else if (mark) {
+        mark.style.transform = `translate3d(0, ${(p * markTravel).toFixed(2)}px, 0)`;
+      }
     };
 
     // Mide el contenido. Se llama en carga, resize y cuando cambia el alto del
@@ -129,11 +287,12 @@
       );
       travel = Math.max(0, railH - thumbH);
       thumb.style.height = `${thumbH}px`;
+      markTravel = Math.max(0, viewH - MARK_H);
       pintar();
     };
 
     const alScrollear = () => {
-      if (frame || !medio.matches) return;
+      if (frame) return;
       frame = window.requestAnimationFrame(() => {
         frame = 0;
         pintar();
@@ -153,16 +312,34 @@
       alRedimensionar();
     };
 
-    // --- arrastre del thumb y click en el riel ---
+    // --- arrastre del nonio y click en el riel ---
     let arrastrando = false;
+    let movio = false;
     let inicioY = 0;
     let inicioScroll = 0;
 
-    const alBajar = (event) => {
+    // Asentamiento al soltar: la pieza cae 2px y se acomoda (rail-settle, con
+    // --ease-back). La clase se saca en animationend para poder re-disparar la
+    // animación si se suelta dos veces seguidas.
+    const asentar = () => {
+      if (reducir()) return;
+      thumb.classList.remove("is-settling");
+      // Lectura de layout a propósito: reinicia la animación aunque la clase se
+      // haya sacado y puesto en el mismo frame.
+      void thumb.offsetHeight;
+      thumb.classList.add("is-settling");
+    };
+
+    const alBajar = (event: PointerEvent) => {
       if (!medio.matches) return;
       event.preventDefault();
-      const sobreThumb = event.target === thumb;
+      // El tornillo y las marcas son hijos del nonio: el arrastre tiene que
+      // empezar también cuando el puntero cae sobre ellos.
+      const objetivo = event.target as Node | null;
+      const sobreThumb = objetivo === thumb || thumb.contains(objetivo);
       arrastrando = true;
+      movio = false;
+      rail.classList.add("is-dragging");
       inicioY = event.clientY;
       inicioScroll = window.scrollY;
       // setPointerCapture puede tirar si el pointerId no existe (eventos
@@ -191,9 +368,10 @@
       }
     };
 
-    const alMover = (event) => {
+    const alMover = (event: PointerEvent) => {
       if (!arrastrando || travel <= 0) return;
       const delta = event.clientY - inicioY;
+      if (delta !== 0) movio = true;
       // instant: el arrastre tiene que responder 1:1, no con scroll suave.
       window.scrollTo({
         top: inicioScroll + (delta / travel) * maxY,
@@ -201,13 +379,21 @@
       });
     };
 
-    const alSoltar = (event) => {
+    const alSoltar = (event: PointerEvent) => {
+      // Solo asienta si hubo arrastre real: un click en el riel ya es un salto.
+      const asentarAhora = arrastrando && movio;
       arrastrando = false;
+      rail.classList.remove("is-dragging");
       try {
         rail.releasePointerCapture(event.pointerId);
       } catch {
         /* ya liberado */
       }
+      if (asentarAhora) asentar();
+    };
+
+    const alTerminarAsentamiento = () => {
+      thumb.classList.remove("is-settling");
     };
 
     // El documento crece o encoge sin resize de ventana (imágenes, acordeones,
@@ -222,6 +408,7 @@
     rail.addEventListener("pointermove", alMover);
     rail.addEventListener("pointerup", alSoltar);
     rail.addEventListener("pointercancel", alSoltar);
+    thumb.addEventListener("animationend", alTerminarAsentamiento);
 
     cleanup = () => {
       window.removeEventListener("scroll", alScrollear);
@@ -231,6 +418,9 @@
       rail.removeEventListener("pointermove", alMover);
       rail.removeEventListener("pointerup", alSoltar);
       rail.removeEventListener("pointercancel", alSoltar);
+      thumb.removeEventListener("animationend", alTerminarAsentamiento);
+      rail.classList.remove("is-dragging");
+      thumb.classList.remove("is-settling");
       observador.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;

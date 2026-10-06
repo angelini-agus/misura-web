@@ -32,6 +32,12 @@
    padding del header, su contenido mas alto o su borde, hay que tocar los dos. */
 :root {
   --nav-h: 4.1875rem;
+  /* Alto de la barra de anuncio, arriba del header. La usa el riel de scroll
+     (ScrollRail.astro) para arrancar debajo del bloque completo: el anuncio no es
+     sticky y scrollea, pero en scroll 0 empuja al header hacia abajo. Medido:
+     36px = py-2.5 (20px) + linea de 16px. El unico escalon que la cambia es
+     `max-width: 30rem`, asi que en el rango del riel (48rem+) siempre son 36px. */
+  --announcement-h: 2.25rem;
 }
 
 @media (min-width: 48rem) {
@@ -62,13 +68,20 @@
    respaldo de Safari viejo, que no soporta la estandar. Nota: declarar
    `scrollbar-width` en Chromium hace que ese elemento use la barra estandar e
    ignore el bloque webkit SOLO para el, asi que la barra de `html` no se puede
-   estilizar por webkit mientras esto valga; da igual, esta oculta. En mobile la
-   clase no existe y la barra nativa del sistema queda intacta. */
-html.has-rail {
+   estilizar por webkit mientras esto valga; da igual, esta oculta.
+
+   `has-rail` es el modo desktop (riel, ScrollRail.astro) y `has-mark` el modo
+   mobile (marca de lectura de 2x12px): en los dos la nativa se oculta, porque en
+   los dos hay una referencia propia. Las dos clases las marca el <head>
+   (BaseLayout.astro) antes del primer pintado, y el script del riel las repone en
+   `astro:after-swap`. */
+html.has-rail,
+html.has-mark {
   scrollbar-width: none;
 }
 
-html.has-rail::-webkit-scrollbar {
+html.has-rail::-webkit-scrollbar,
+html.has-mark::-webkit-scrollbar {
   display: none;
 }
 
@@ -124,6 +137,11 @@ html {
 }
 
 body {
+  /* El riel de scroll (ScrollRail.astro) es `absolute` con `inset: 0` y un hijo
+     `sticky`: necesita un ancestro posicionado para medir el documento entero, y
+     ese ancestro es el body. Sin esto la pista se resuelve contra el viewport y
+     el riel no puede viajar con el scroll. */
+  position: relative;
   background: var(--color-cream);
   color: var(--color-green);
   font-family: var(--font-sans);

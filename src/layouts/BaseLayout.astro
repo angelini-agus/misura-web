@@ -96,24 +96,30 @@ gtag('config', '${gaId}');`
     />
     <script is:inline>
       document.documentElement.classList.add("js");
-      // El riel propio (ScrollRail.astro) oculta la barra nativa bajo esta clase.
-      // Se marca aca, en el <head>, y no en el script del componente: ahi llega
+      // El riel propio (ScrollRail.astro) oculta la barra nativa bajo estas clases.
+      // Se marcan aca, en el <head>, y no en el script del componente: ahi llega
       // despues del primer pintado, y liberar el espacio de la barra reflowea el
       // contenido 6px (medido: CLS 0,032 con la clase post-pintado contra 0,011
-      // de base). El corte es el mismo desktop del riel (48rem).
-      if (window.matchMedia("(min-width: 48rem)").matches) {
-        document.documentElement.classList.add("has-rail");
+      // de base). El corte es el mismo desktop del riel (48rem): `has-rail` es el
+      // riel y `has-mark` la marca de lectura de mobile, que reemplaza a la nativa
+      // ahi donde el riel no existe.
+      function marcarRiel() {
+        const desktop = window.matchMedia("(min-width: 48rem)").matches;
+        document.documentElement.classList.toggle("has-rail", desktop);
+        document.documentElement.classList.toggle("has-mark", !desktop);
       }
+      marcarRiel();
       // El ClientRouter reemplaza el atributo `class` del <html> con el del
       // HTML servido en cada navegacion client-side (entrar a /proyectos desde
-      // el navbar), asi que la clase se pierde y el sitio entero cae al estado
-      // sin JS: mazos, reveals y animaciones desarmados. Hay que reponerla en
+      // el navbar), asi que las clases se pierden y el sitio entero cae al estado
+      // sin JS: mazos, reveals y animaciones desarmados. Hay que reponerlas en
       // cada swap (astro:after-swap corre antes de la transicion, sin flash).
+      // `marcarRiel` es una declaracion de funcion a proposito: si el <head> se
+      // vuelve a ejecutar en una navegacion, volver a declararla es valido, cosa
+      // que no pasa con un `const`.
       document.addEventListener("astro:after-swap", () => {
         document.documentElement.classList.add("js");
-        if (window.matchMedia("(min-width: 48rem)").matches) {
-          document.documentElement.classList.add("has-rail");
-        }
+        marcarRiel();
       });
     </script>
   </head>
