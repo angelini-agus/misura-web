@@ -101,8 +101,8 @@ reales, sin llegar nunca a lo caricaturesco.
 - Antes de inventar una animación nueva, se reutiliza un primitivo existente
   (`.details-collapse`, `link-ink`, `data-reveal`, `stamp-in`, `page-in/out`).
 
-Hay **dos excepciones deliberadas** a estas reglas. Están documentadas abajo con
-su motivo y su costo, para que la regla y el código no se contradigan.
+Hay **cuatro excepciones deliberadas** a estas reglas. Están documentadas abajo
+con su motivo y su costo, para que la regla y el código no se contradigan.
 
 ### Excepciones documentadas
 
@@ -148,8 +148,26 @@ el rebote prohibido es un efecto protagonista y repetido; acá es una
 micro-interacción de hover (disparada por el usuario, no continua), de solo
 `transform` (costo de compositor, sin layout ni paint), dentro del umbral de
 duración, en un elemento lúdico, y limitada a `@media (hover: hover) and
-(pointer: fine)`. Con `prefers-reduced-motion: reduce` queda estático. Si el
-rebote llega a usarse en más de un punto del sitio, se revisa esta excepción.
+(pointer: fine)`. Con `prefers-reduced-motion: reduce` queda estático. El rebote
+se usa hoy en **dos** puntos (este icono y el asentamiento del nonio del riel,
+excepción 4): la revisión que pedía esta cláusula se hizo el 2026-10-06 y se
+mantiene porque los dos son micro-interacciones disparadas por el usuario, de
+solo `transform`/`translate`, dentro del umbral y neutralizadas con movimiento
+reducido. Un tercer punto vuelve a abrir la revisión.
+
+#### 4. El nonio del riel de scroll se asienta con un micro-rebote al soltar
+
+`src/components/ScrollRail.astro` (`#scroll-rail-thumb.is-settling`) aplica
+`animation: rail-settle 260ms var(--ease-back)`: usa el mismo rebote elástico que
+la excepción 3, en un segundo punto del sitio.
+
+Se mantiene por el mismo motivo que la 3, y por lo que la hace todavía más chica:
+la animación mueve `translate` (la propiedad independiente, justamente para no
+pisar el `transform` que mapea el scroll), solo existe mientras se suelta un
+arrastre real del nonio (disparada por el usuario, no continua), el elemento
+mide 14px de ancho, y con `prefers-reduced-motion: reduce` la duración global
+queda en 0,01ms. Un rebote que no sea de arrastre o de hover, o un tercer punto,
+reabre la revisión.
 
 ## Reglas de implementación
 
