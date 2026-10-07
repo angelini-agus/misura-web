@@ -7,6 +7,17 @@ import HighlightWords from "./ui/HighlightWords.astro";
 // y la firma va en la monoespaciada que el sitio ya usa para el rol del equipo.
 // El link al caso sale de `portfolio.detailsLabel`, el mismo label que usan los
 // otros accesos a los casos: esta sección no agrega copy nuevo salvo el eyebrow.
+//
+// Reveal por oración, en tres tiempos: 450ms entre una y otra, así cada oración
+// termina de entrar antes de que arranque la siguiente. La cita se lee mientras
+// el visitante scrollea, y con todo entrando de una sola vez la última parte (que
+// es donde va el resaltado) se perdía. El marcador espera a su propia oración
+// porque hereda el `--reveal-delay` del span que la contiene.
+const LEAD = 120;
+const STEP = 450;
+const sentences = clientQuote.text
+  .split(/(?<=[.!?])\s+/)
+  .map((text, index) => ({ text, delay: LEAD + index * STEP }));
 ---
 <section class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
@@ -20,10 +31,20 @@ import HighlightWords from "./ui/HighlightWords.astro";
       <blockquote
         class="font-display mt-4 text-2xl font-medium leading-snug tracking-tight md:text-3xl"
       >
-        <HighlightWords
-          text={clientQuote.text}
-          phrases={clientQuote.highlights}
-        />
+        {sentences.map((sentence) => (
+          <span
+            data-reveal
+            style={{
+              transitionDelay: `${sentence.delay}ms`,
+              "--reveal-delay": `${sentence.delay}ms`,
+            }}
+          >
+            <HighlightWords
+              text={sentence.text}
+              phrases={clientQuote.highlights}
+            />{" "}
+          </span>
+        ))}
       </blockquote>
       <figcaption class="mt-6">
         <p class="font-mono text-xs uppercase tracking-widest text-green/70">
@@ -32,11 +53,15 @@ import HighlightWords from "./ui/HighlightWords.astro";
         <p class="mt-1 text-sm text-green/70">{clientQuote.source}</p>
       </figcaption>
       <p class="mt-5">
+        {/* La barrita de `.link-ink` va solo en el label: el subrayado nativo no
+            se usa (el repo lo evita porque aparece de golpe) y la flecha nunca
+            queda subrayada, ni con el hover ni sin él. */}
         <a
           href={clientQuote.caseHref}
-          class="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4 transition-colors duration-150 ease-out hover:text-green-dark"
+          class="inline-flex items-center gap-2 text-sm font-semibold transition-colors duration-150 ease-out hover:text-green-dark"
         >
-          {portfolio.detailsLabel} <span aria-hidden="true">→</span>
+          <span class="link-ink inline-block">{portfolio.detailsLabel}</span>
+          <span aria-hidden="true">→</span>
         </a>
       </p>
     </figure>
