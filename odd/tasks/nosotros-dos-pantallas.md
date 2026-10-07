@@ -125,10 +125,19 @@ a la izquierda).
 personas, un mismo objetivo..." aparece de golpe sobre las tarjetas, se
 desvanece y deja las 2 tarjetas a la vista, que se quedan ahí.
 
-**Estado: pendiente de implementar.** Diseño acordado para cuando se retome: con el
-encabezado convertido en tapa de entrada, la columna izquierda de 18rem deja de
-existir y las tarjetas pasan a una grilla centrada de `max-w-3xl`, conservando su
-ancho (372px cada una), así que los altos de la tabla de arriba no deberían
-cambiar. La tapa es una capa absoluta con el fondo crema de la sección: arranca
-opaca (las tarjetas quedan detrás, sin destello), el texto entra de golpe, y al
-irse se desvanece la capa entera y las tarjetas quedan a la vista.
+**Estado: implementada y medida (2026-10-07).**
+
+- Intro del equipo: implementada en `Team.astro`. Medida por CDP en 5 momentos:
+  pop del título a los 160ms, legible a los 760ms, tapa desvanecida a los 1210ms y
+  fuera del DOM a los 2110ms, con un click sobre LinkedIn llegando al link. Sin JS,
+  con `prefers-reduced-motion` o en mobile (menos de 64rem) la tapa no se pinta y
+  las 2 tarjetas se ven de una. El encabezado dejó de ocupar alto, así que la
+  columna izquierda de 18rem desapareció: las tarjetas viven en una grilla centrada
+  de `max-w-3xl` (372px cada una) y los altos de la tabla de arriba no cambiaron.
+- Centrar la primera pantalla: **revertido el mismo día por pedido del autor** ("no
+  me gusta centrado, dejala tirada para la izquierda"). El texto vuelve a apoyarse
+  en el borde izquierdo del contenedor (`max-w-6xl`), con la columna de `max-w-3xl`
+  alineada a la izquierda: sin `text-center` y sin `mx-auto`. Las dos variantes que
+  se habían ofrecido eran bloque centrado con texto a la izquierda, o todo centrado
+  (la que se probó y no gustó). No volver a centrarlo sin un pedido explícito.
+- El espacio doble de "en la facultad  U de Rosario" quedó corregido.
