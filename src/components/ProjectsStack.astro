@@ -30,7 +30,7 @@ const projectCount = projects.length;
 
 <section
   id="portfolio"
-  class="projects-stack scroll-mt-24 border-t border-green"
+  class="projects-stack scroll-mt-24"
   style={`--flip-count: ${projectCount}`}
 >
   <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 md:px-6 md:pt-24 md:pb-10">
@@ -38,11 +38,11 @@ const projectCount = projects.length;
       <p class="text-xs font-semibold uppercase tracking-[0.2em]">
         {portfolio.eyebrow}
       </p>
-      <h2
-        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+      <h1
+        class="font-display mt-3 text-4xl font-medium leading-tight tracking-tight sm:text-5xl"
       >
         {portfolio.title}
-      </h2>
+      </h1>
       <p class="mt-4 leading-relaxed text-green/80">
         {portfolio.description}
       </p>
@@ -187,12 +187,13 @@ const projectCount = projects.length;
      cliente carga; sin ese gate, el contenido se ve como una lista. */
 
   :global(.js) .projects-stack__runway {
-    /* El carrete mide 100dvh (el tramo de entrada del sticky) + n * 60dvh: un
-       60% de pantalla de scroll por proyecto, incluido el tramo final propio de
+    /* El carrete mide 100dvh (el tramo de entrada del sticky) + n * 80dvh: un
+       80% de pantalla de scroll por proyecto, incluido el tramo final propio de
        la ultima carpeta (ver flipGeometry: un tramo por carpeta). Antes era
        n * 100dvh, o sea una pantalla entera por proyecto: el autor lo sintio
-       lento ("tarda mucho en llegar"). */
-    height: calc(100dvh + var(--flip-count) * 60dvh);
+       lento ("tarda mucho en llegar"); despues bajo a 60dvh y ahora sube a
+       80dvh para que el flip se llegue a apreciar. */
+    height: calc(100dvh + var(--flip-count) * 80dvh);
   }
 
   :global(.js) .projects-stack__sticky {

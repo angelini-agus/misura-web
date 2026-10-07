@@ -94,8 +94,6 @@ export const pages = {
     description:
       "Casos de éxito de misure: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario. Resultados reales, no promesas.",
     h1: "Proyectos",
-    intro:
-      "Resultados reales de software a medida para pymes: sistemas de gestión, herramientas de ventas y páginas web.",
   },
   contacto: {
     title: "Contacto | misure",
