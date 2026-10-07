@@ -8,16 +8,19 @@ import HighlightWords from "./ui/HighlightWords.astro";
 // El link al caso sale de `portfolio.detailsLabel`, el mismo label que usan los
 // otros accesos a los casos: esta sección no agrega copy nuevo salvo el eyebrow.
 //
-// Reveal por oración, en tres tiempos: 450ms entre una y otra, así cada oración
-// termina de entrar antes de que arranque la siguiente. La cita se lee mientras
-// el visitante scrollea, y con todo entrando de una sola vez la última parte (que
-// es donde va el resaltado) se perdía. El marcador espera a su propia oración
-// porque hereda el `--reveal-delay` del span que la contiene.
+// Reveal en dos mitades: la primera entra al principio y la segunda cuando el
+// visitante sigue scrolleando. Antes eran tres tiempos, uno por oración, y la
+// parte resaltada tardaba demasiado en aparecer; con dos mitades entra enseguida.
+// El corte es por oración (la primera mitad es la primera oración y la segunda
+// las dos que siguen) para no partir una oración al medio. El marcador espera a
+// su propia mitad porque hereda el `--reveal-delay` del span que la contiene.
 const LEAD = 120;
-const STEP = 450;
-const sentences = clientQuote.text
-  .split(/(?<=[.!?])\s+/)
-  .map((text, index) => ({ text, delay: LEAD + index * STEP }));
+const STEP = 500;
+const sentences = clientQuote.text.split(/(?<=[.!?])\s+/);
+const halves = [
+  { text: sentences.slice(0, 1).join(" "), delay: LEAD },
+  { text: sentences.slice(1).join(" "), delay: LEAD + STEP },
+];
 ---
 <section class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
@@ -31,18 +34,15 @@ const sentences = clientQuote.text
       <blockquote
         class="font-display mt-4 text-2xl font-medium leading-snug tracking-tight md:text-3xl"
       >
-        {sentences.map((sentence) => (
+        {halves.map((half) => (
           <span
             data-reveal
             style={{
-              transitionDelay: `${sentence.delay}ms`,
-              "--reveal-delay": `${sentence.delay}ms`,
+              transitionDelay: `${half.delay}ms`,
+              "--reveal-delay": `${half.delay}ms`,
             }}
           >
-            <HighlightWords
-              text={sentence.text}
-              phrases={clientQuote.highlights}
-            />{" "}
+            <HighlightWords text={half.text} phrases={clientQuote.highlights} />{" "}
           </span>
         ))}
       </blockquote>
