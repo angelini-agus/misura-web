@@ -1,66 +1,34 @@
 ---
-import type { ImageMetadata } from "astro";
-import { Image } from "astro:assets";
-import { about, caseStudies, pages } from "../lib/content";
+import { about, pages } from "../lib/content";
 import MisureWord from "./ui/MisureWord.astro";
-import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
-import limpiezaAdmin2 from "../assets/proyectos/limpieza/admin2.png";
-import legalExpediente from "../assets/proyectos/legal/expediente.png";
 
-// Capturas reusadas desde los casos de estudio: misma imagen, mismo alt.
-// Buscamos por referencia al asset para que reordenar la galería no rompa el
-// binding. Si en algún caso no se encuentra, no se renderiza (no rompemos el
-// build): el `?? null` lo deja fuera del flujo.
-const limpiezaShot =
-  caseStudies.limpieza.gallery?.find(
-    (cover: { src: ImageMetadata; alt: string }) =>
-      cover.src === limpiezaAdmin2,
-  ) ?? null;
-const legalShot =
-  caseStudies.legal.gallery?.find(
-    (cover: { src: ImageMetadata; alt: string }) =>
-      cover.src === legalExpediente,
-  ) ?? null;
-
-// Bloques en orden de aparición: cada párrafo va seguido, cuando corresponde,
-// por la captura que lo afirma. El delay es un contador único que atraviesa
-// todo: 60ms por oración y 60ms extra por captura, para que la evidencia
-// respalde la oración en vez de saltarla.
-const STEP = 60;
+// Reveal por oración: esta es la única sección animada de /nosotros, así que el
+// contador arranca después de la apertura (eyebrow + h1) para que el texto se
+// escriba detrás de ella y no encima. 80ms entre oraciones: las 4 oraciones del
+// cuerpo entran en 320ms y se leen como una escritura, no como un parpadeo.
+const LEAD = 120;
+const STEP = 80;
 type Sentence = { text: string; delay: number };
-type Block =
-  | { kind: "p"; sentences: Sentence[] }
-  | { kind: "shot"; src: ImageMetadata; alt: string; delay: number };
-const blocks: Block[] = [];
-let cursor = 0;
-about.body.forEach((paragraph, index) => {
+
+const blocks: Sentence[][] = [];
+let cursor = LEAD;
+about.body.forEach((paragraph) => {
   const sentences = paragraph.split(/(?<=[.!?])\s+/);
-  blocks.push({
-    kind: "p",
-    sentences: sentences.map((text) => {
+  blocks.push(
+    sentences.map((text) => {
       const delay = cursor;
       cursor += STEP;
       return { text, delay };
     }),
-  });
-  // La evidencia va pegada al párrafo que la afirma, no al final del texto: el
-  // párrafo 1 habla del sistema de limpieza y el 2 del estudio jurídico. La
-  // captura suma un paso del mismo contador, así entra después de las oraciones
-  // que respalda y antes de las del párrafo siguiente.
-  const shot = index === 0 ? limpiezaShot : index === 1 ? legalShot : null;
-  if (shot) {
-    blocks.push({ kind: "shot", src: shot.src, alt: shot.alt, delay: cursor });
-    cursor += STEP;
-  }
+  );
 });
 ---
 
 <section>
-  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-28">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.2em]"
-      data-reveal
-    >
+  <div
+    class="mx-auto flex min-h-[calc(100dvh-var(--nav-h))] max-w-6xl flex-col justify-center px-4 py-[clamp(1.5rem,4dvh,3rem)] md:px-6"
+  >
+    <p class="text-xs font-semibold uppercase tracking-[0.2em]" data-reveal>
       <MisureWord text={about.eyebrow} />
     </p>
     <h1
@@ -69,63 +37,27 @@ about.body.forEach((paragraph, index) => {
     >
       {pages.nosotros.h1}
     </h1>
-    <p
-      class="mt-4 max-w-3xl text-xl leading-relaxed text-green md:text-2xl"
-      data-reveal
-    >
-      <MisureWord text={pages.nosotros.intro} />
-    </p>
-    <h2
-      data-reveal
-      class="font-display mt-12 max-w-3xl text-2xl font-medium leading-tight tracking-tight md:text-3xl"
-    >
-      {about.title}
-    </h2>
-    <div class="mt-8 flex max-w-6xl flex-col gap-5">
-      {blocks.map((block) =>
-        block.kind === "p" ? (
-          <p
-            class="max-w-3xl text-xl leading-relaxed text-green/80 md:text-2xl"
-          >
-            {/*
-              Cada oración es un <span> inline con su propio data-reveal y
-              transitionDelay. Los <span> inline no aceptan transform en
-              navegadores modernos (transform no aplica a cajas inline no
-              reemplazadas), así que el translateY del primitivo [data-reveal]
-              lo ignora el navegador y el efecto queda solo de opacidad: la
-              línea se escribe sin que cada span mueva layout ni corte de
-              línea. No hace falta display: inline-block; agregarlo haría
-              visibles los translateY y cambiaría los wraps del párrafo.
-              Si parece un bug, es a propósito: el reveal es de opacidad pura.
-            */}
-            {block.sentences.map((sentence) => (
-              <span
-                data-reveal
-                style={{ transitionDelay: `${sentence.delay}ms` }}
-              >
-                <MisureWord text={sentence.text} />{" "}
-              </span>
-            ))}
-          </p>
-        ) : (
-          <div
-            class="my-3"
-            data-reveal
-            style={{ transitionDelay: `${block.delay}ms` }}
-          >
-            <ScreenshotFrame>
-              <Image
-                src={block.src}
-                alt={block.alt}
-                loading="lazy"
-                class="w-full"
-                widths={[640, 1104]}
-                sizes="(min-width: 1200px) 1104px, calc(100vw - 3rem)"
-              />
-            </ScreenshotFrame>
-          </div>
-        ),
-      )}
+    <div class="mt-8 flex max-w-3xl flex-col gap-5">
+      {blocks.map((sentences) => (
+        <p class="text-xl leading-relaxed text-green/80 md:text-2xl">
+          {/*
+            Cada oración es un <span> inline con su propio data-reveal y
+            transitionDelay. Los <span> inline no aceptan transform en
+            navegadores modernos (transform no aplica a cajas inline no
+            reemplazadas), así que el translateY del primitivo [data-reveal]
+            lo ignora el navegador y el efecto queda solo de opacidad: la
+            línea se escribe sin que cada span mueva layout ni corte de
+            línea. No hace falta display: inline-block; agregarlo haría
+            visibles los translateY y cambiaría los wraps del párrafo.
+            Si parece un bug, es a propósito: el reveal es de opacidad pura.
+          */}
+          {sentences.map((sentence) => (
+            <span data-reveal style={{ transitionDelay: `${sentence.delay}ms` }}>
+              <MisureWord text={sentence.text} />{" "}
+            </span>
+          ))}
+        </p>
+      ))}
     </div>
   </div>
 </section>

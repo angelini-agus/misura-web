@@ -9,74 +9,90 @@ import Placeholder from "./ui/Placeholder.astro";
 const socialIcons = { linkedin: LinkedinIcon, github: GithubIcon } as const;
 ---
 
+{/*
+  Sección de una pantalla: de `lg` para arriba mide exactamente
+  `100dvh - --nav-h` y el encabezado pasa a columna izquierda para devolverle ese
+  alto a la foto. El alto de la foto es un valor definido
+  (`min(30rem, 100dvh - --nav-h - 20.5rem)`): 20.5rem son el padding vertical de
+  la sección (3rem) más el bloque de texto más alto medido (17.5rem), y el tope de
+  30rem deja aire alrededor de la tarjeta en pantallas altas en vez de estirar la
+  foto. En mobile la sección apila y no entra en una pantalla: la foto mantiene su
+  piso de 22rem y el `min-h` deja crecer a la sección, no la recorta.
+*/}
 <section id="nosotros" class="scroll-mt-24 border-t border-green">
-  <div class="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-24">
-    <div class="max-w-xl" data-reveal>
-      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-        {team.eyebrow}
-      </p>
-      <h2
-        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
-      >
-        {team.title}
-      </h2>
-      <p class="mt-4 leading-relaxed text-green/80">{team.description}</p>
-    </div>
-    <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-      {team.members.map((member, index) => (
-        <article
-          class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:border-green-dark"
-          data-reveal
-          style={{ transitionDelay: `${index * 60}ms` }}
+  <div
+    class="mx-auto flex min-h-[calc(100dvh-var(--nav-h))] max-w-6xl flex-col justify-center px-4 py-[clamp(1.5rem,4dvh,3rem)] md:px-6"
+  >
+    <div
+      class="grid min-h-0 gap-8 lg:grid-cols-[18rem_1fr] lg:gap-10"
+    >
+      <div class="max-w-xl lg:self-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+          {team.eyebrow}
+        </p>
+        <h2
+          class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
         >
-          {/* Placeholder photo shared by every member: decorative, so alt is empty.
-              When real per-member photos replace the placeholder, describe the photo
-              instead of repeating the member name, which is already the adjacent h3.
-              El duotono envuelve solo la foto: si cubriera la tarjeta entera,
-              también teñiría el nombre y el texto de abajo. */}
-          <div class="foto-duotono">
-            <Image
-              src={teamPlaceholder}
-              alt=""
-              widths={[400]}
-              sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-              class="aspect-[4/5] w-full object-cover"
-              loading="lazy"
-            />
-          </div>
-          <div class="flex flex-1 flex-col gap-2 border-t border-green p-6">
-            <h3 class="font-display text-xl font-medium">{member.name}</h3>
-            <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
-              {member.role}
-            </p>
-            <p class="mt-1 text-sm leading-relaxed text-cream/80">
-              {member.description}
-            </p>
-            <div class="mt-auto flex flex-wrap gap-2.5 pt-4">
-              {Object.entries(team.socialLabels).map(([key, label]) => {
-                const href =
-                  member.socials[key as keyof typeof member.socials];
-                const Icon =
-                  socialIcons[key as keyof typeof socialIcons];
-                return href && !isPending(href) ? (
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${label} de ${member.name}`}
-                    class="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-cream/50 px-3.5 py-2 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-cream hover:bg-cream hover:text-green active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-                  >
-                    <Icon class="social-icon h-4 w-4 shrink-0" />
-                    {label}
-                  </a>
-                ) : (
-                  <Placeholder inverse label={`${label} [PENDIENTE]`} />
-                );
-              })}
+          {team.title}
+        </h2>
+        <p class="mt-4 leading-relaxed text-green/80">{team.description}</p>
+      </div>
+      <div class="grid min-h-0 grid-cols-1 gap-6 sm:grid-cols-2">
+        {team.members.map((member) => (
+          <article
+            class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:border-green-dark"
+          >
+            {/* Placeholder photo shared by every member: decorative, so alt is empty.
+                When real per-member photos replace the placeholder, describe the photo
+                instead of repeating the member name, which is already the adjacent h3.
+                El duotono envuelve solo la foto: si cubriera la tarjeta entera,
+                también teñiría el nombre y el texto de abajo. La imagen va absoluta
+                dentro del marco porque el alto del marco lo decide el flex de la
+                tarjeta, no la imagen: así el recorte lo hace object-cover. */}
+            <div class="foto-duotono h-[22rem] lg:h-[min(30rem,calc(100dvh-var(--nav-h)-20.5rem))]">
+              <Image
+                src={teamPlaceholder}
+                alt=""
+                widths={[400, 800]}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                class="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
-          </div>
-        </article>
-      ))}
+            <div class="flex flex-1 flex-col gap-2 border-t border-green p-5 md:p-6">
+              <h3 class="font-display text-xl font-medium">{member.name}</h3>
+              <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
+                {member.role}
+              </p>
+              <p class="mt-1 text-sm leading-relaxed text-cream/80">
+                {member.description}
+              </p>
+              <div class="mt-auto flex flex-wrap gap-2.5 pt-4">
+                {Object.entries(team.socialLabels).map(([key, label]) => {
+                  const href =
+                    member.socials[key as keyof typeof member.socials];
+                  const Icon =
+                    socialIcons[key as keyof typeof socialIcons];
+                  return href && !isPending(href) ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${label} de ${member.name}`}
+                      class="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-cream/50 px-3.5 py-2 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-cream hover:bg-cream hover:text-green active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+                    >
+                      <Icon class="social-icon h-4 w-4 shrink-0" />
+                      {label}
+                    </a>
+                  ) : (
+                    <Placeholder inverse label={`${label} [PENDIENTE]`} />
+                  );
+                })}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </div>
 </section>

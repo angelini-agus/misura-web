@@ -1,0 +1,134 @@
+# Feature: /nosotros en dos pantallas, historia general y equipo a una pantalla
+
+## Objetivo
+
+Pedido del autor (2026-10-07, dos mensajes):
+
+1. Sacar las 2 capturas de la primera sección y unificar el background: los dos
+   párrafos que explicaban por separado el recorrido de cada socio se reemplazan
+   por uno general (compañeros de facultad, varios proyectos juntos, un año antes
+   de recibirse deciden convertirlo en negocio). No hace falta aclarar la
+   experiencia previa al proyecto.
+2. Las animaciones viven solo en la primera sección; después de eso, directamente
+   las 2 fotos del equipo.
+3. La sección "Conocé al equipo" es muy grande: tiene que ocupar 100vh menos el
+   header.
+
+## Diagnóstico medido
+
+Medido en Chrome headless (CDP) contra `npm run dev`, con el bloque
+`anuncio + header` (var `--nav-h`) como techo:
+
+| Viewport | Presupuesto (100dvh − --nav-h) | Equipo hoy | Exceso |
+| --- | --- | --- | --- |
+| 1280×800 | 723px | 1140px | +417px |
+| 1440×900 | 823px | 1140px | +317px |
+| 375×667 | 600px | 1704px | +1104px |
+
+Desglose de la sección de equipo a 1280×800: 192px de padding vertical + 141px de
+encabezado + 48px de separación + tarjeta de 758px (foto 4/5 de **513px** + texto
+de 243px). Con la sección alineada al header solo entran los 490px de arriba de
+las fotos: nombre, rol, bio y redes quedan fuera de pantalla.
+
+`about.body` hoy: 4 párrafos, 1187 caracteres, 9 oraciones. Los párrafos 1 y 2 son
+el recorrido individual de cada socio.
+
+## Decisiones (autor, 2026-10-07)
+
+| Tema | Decisión |
+| --- | --- |
+| Alcance del 100vh | Solo desktop: de `lg` para arriba la sección entra exacta. En mobile las 2 tarjetas se apilan y la sección scrollea (el presupuesto a 375×667 es 600px: dos tarjetas con foto no entran). |
+| Tarjeta | Vertical como hoy (foto arriba, texto abajo), con la bio. Se permite ensanchar la tarjeta y, de última, sacar el subtítulo de la sección para ganar alto. |
+| Primera sección | También una pantalla exacta: historia en una pantalla, equipo en la siguiente. Las animaciones quedan ahí. |
+| Encabezado | Se van el intro viejo de `pages.nosotros` y el h2 "Quiénes somos". Queda eyebrow + h1 "Nosotros" + los 2 párrafos nuevos. |
+| Capturas | Se van las 2 capturas de `caseStudies` que hoy acompañan al cuerpo. |
+
+## Decisión de diseño (agente)
+
+Para que la foto pueda ser vertical y la sección entre igual en una pantalla, el
+encabezado deja de ocupar alto propio: de `lg` para arriba va como columna
+izquierda y las 2 tarjetas ocupan la derecha. Eso libera 189px de alto (el
+encabezado más su separación) y los pone en la foto.
+
+- Grilla: `lg:grid-cols-[18rem_1fr]`, encabezado `max-w-xl` a la izquierda,
+  tarjetas `sm:grid-cols-2` a la derecha.
+- Alto de la sección: `min-h-[calc(100dvh-var(--nav-h))]`, la misma var que usan
+  `Hero` y `Contact`. El contenido se centra con `justify-center`.
+- Foto: contenedor `relative flex-1 min-h-[22rem] max-h-[30rem]` con la imagen
+  `absolute inset-0 h-full w-full object-cover`. El alto lo resuelve el layout
+  (no hay aritmética de píxeles que mantener): en desktop la foto crece con la
+  ventana hasta 30rem, en mobile queda el piso de 22rem. En ningún caso cambia
+  `aspect-ratio`, así que no hay CLS por recálculo.
+- Variante descartada: mantener el encabezado arriba y recortar la foto a un
+  apaisado 5/3. Fuerza un recorte horizontal de una foto de persona y desperdicia
+  el ancho que el texto no usa.
+
+## Alcance
+
+- `src/lib/content.ts`: `about` (nuevo `body` de 2 párrafos, se va `title`) y
+  `pages.nosotros` (se va `intro`).
+- `src/components/About.astro`: una pantalla, sin capturas, reveal por oración.
+- `src/components/Team.astro`: layout de una pantalla.
+- `docs/copy-completo.md`: secciones 3.2 y 3.3.
+
+## Fuera de alcance
+
+- `team.description` (el subtítulo) se mantiene: entra en la columna izquierda.
+- La bio por miembro se mantiene (decisión del autor).
+- `HowWeWork` y `CtaBanner` conservan su reveal: el pedido de "animaciones solo en
+  la primera sección" es sobre el arranque de la página, no sobre el resto.
+- Los casos de estudio siguen mostrando esas capturas en `/proyectos`.
+
+## Criterios de aceptación
+
+1. `/nosotros` renderiza un solo eyebrow y un solo h1 antes del cuerpo.
+2. `about.body` tiene 2 párrafos y el texto es el que escribió el autor.
+3. De `lg` para arriba, `#nosotros` mide ≤ `100dvh − --nav-h` a 1024×768,
+   1280×800, 1440×900 y 1920×1080, con la tarjeta completa visible (foto, nombre,
+   rol, bio y redes).
+4. La primera sección mide exactamente `100dvh − --nav-h` de `lg` para arriba.
+5. En mobile (375×667) las 2 tarjetas se apilan y nada se solapa ni se corta.
+6. Con `prefers-reduced-motion: reduce` el texto de la historia queda visible y
+   estático.
+7. `npx astro check` y `npm run build` pasan.
+
+## Estado
+
+Primera ola implementada y verificada (2026-10-07). Medido en Chrome headless por
+CDP, con `--nav-h` real de cada breakpoint y la sección alineada bajo el header:
+
+| Viewport | Presupuesto | Historia | Equipo | Tarjeta | Foto |
+| --- | --- | --- | --- | --- | --- |
+| 1024×768 | 691px | 691px | 693px | 631px | 310×363 (0.85) |
+| 1280×800 | 723px | 723px | 724px | 640px | 374×395 (0.95) |
+| 1440×900 | 823px | 823px | 824px | 725px | 374×480 (0.78, tope) |
+| 1920×1080 | 1003px | 1003px | 1004px | 725px | 374×480 (tope) |
+| 375×667 | 600px | 702px (crece) | 1448px (apila) | 589px | 341×352 (0.97) |
+
+La sección mide el presupuesto exacto más su propio `border-t` de 1px (más el
+redondeo del navegador): el contenido nunca pasa del presupuesto y la tarjeta
+entera, con nombre, rol, bio y redes, entra en una pantalla en los cuatro
+desktop.
+
+Corregido sobre la primera versión: la tarjeta se estiraba al alto de la fila
+mientras la foto ya estaba en su tope de 30rem, así que quedaban ~200px de verde
+vacío dentro de la tarjeta debajo de los botones a 1920×1080 (y ~26px a 1440×900).
+La grilla dejó de estirarse y la foto pasó a tener alto propio.
+
+`npx astro check`: 0 errores, 0 warnings, 0 hints. `npm run build`: 11 páginas, OK.
+
+## Segunda ola (pedido del autor, 2026-10-07)
+
+1. Centrar mejor el contenido de la primera pantalla (hoy la columna queda pegada
+a la izquierda).
+2. Intro de la sección de equipo: el texto "Equipo / Conocé al equipo / Dos
+personas, un mismo objetivo..." aparece de golpe sobre las tarjetas, se
+desvanece y deja las 2 tarjetas a la vista, que se quedan ahí.
+
+**Estado: pendiente de implementar.** Diseño acordado para cuando se retome: con el
+encabezado convertido en tapa de entrada, la columna izquierda de 18rem deja de
+existir y las tarjetas pasan a una grilla centrada de `max-w-3xl`, conservando su
+ancho (372px cada una), así que los altos de la tabla de arriba no deberían
+cambiar. La tapa es una capa absoluta con el fondo crema de la sección: arranca
+opaca (las tarjetas quedan detrás, sin destello), el texto entra de golpe, y al
+irse se desvanece la capa entera y las tarjetas quedan a la vista.

@@ -88,8 +88,6 @@ export const pages = {
     description:
       "Conocé al equipo detrás de misure: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario y alrededores.",
     h1: "Nosotros",
-    intro:
-      "Somos dos socios de Rosario que se cansaron de ver pymes pagando de más por sistemas genéricos que no resuelven nada. Así nació misure.",
   },
   proyectos: {
     title: "Proyectos | misure",
@@ -254,16 +252,12 @@ export const explore = {
 
 export const about: {
   eyebrow: string;
-  title: string;
   body: string[];
 } = {
   eyebrow: "Nuestra historia",
-  title: "Quiénes somos",
   body: [
-    "Uno de nosotros empezó haciendo desarrollo freelance para pymes de Rosario a principios de 2025. Uno de esos trabajos fue un sistema para una empresa de limpieza: geolocalización para controlar asistencia, cálculo automático de sueldos e impuestos, stock por edificio. Cuando terminamos, habían eliminado un puesto administrativo completo.",
-    "El otro socio arrancó por su lado, desarrollando sistemas a medida para conocidos y amigos de familiares. Un ejemplo es el sistema de gestión jurídica que armamos a pedido de un estudio jurídico que opera en Argentina y Paraguay: gestión de clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y una biblioteca jurídica con verificación de fuentes oficiales asistida por IA, todo adaptado a la normativa de ambos países.",
-    "Ahí entendimos que había un problema real: las pymes locales pagan de más por sistemas genéricos que no encajan con cómo trabajan. Formamos misure para poder resolver eso a escala, con un modelo que entiende el negocio en persona o a distancia antes de escribir una línea de código.",
-    "No somos una empresa con décadas de historia. Somos dos personas con un caso de éxito concreto y un método que funciona.",
+    "Nos conocimos cursando en la facultad  U de Rosario. Armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos ir en serio: dejar de hacerlo como trabajo práctico y empezar a venderlo como negocio.",
+    "La idea de misure nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
   ],
 };
 
