@@ -201,7 +201,7 @@ export const clients = {
 };
 
 export const problem: ProblemSection = {
-  eyebrow: "El problema",
+  eyebrow: "Tu problema",
   title:
     "Cada semana que seguís gestionando con Excel y WhatsApp, perdés plata y control.",
   bullets: [
@@ -255,7 +255,7 @@ export const about: {
 } = {
   eyebrow: "Nuestra historia",
   body: [
-    "Nos conocimos cursando en la facultad U de Rosario. Armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos ir en serio: dejar de hacerlo como trabajo práctico y empezar a venderlo como negocio.",
+    "Nos conocimos cursando en la facultad, armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos dejar de hacerlo como practica y empezar a hacerlo como trabajo.",
     "La idea de misure nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
   ],
   highlights: ["un solo sistema, construido a tu medida"],
@@ -271,15 +271,15 @@ export const dictionaryEntry: {
   phonetic: "/mi-sú-re/",
   category: "sustantivo · del italiano",
   senses: [
-    "Plural de misura: medida, la dimensión exacta de algo hecho a propósito.",
-    "En este proyecto: software construido a la medida real de tu negocio, nunca de una plantilla genérica.",
+    "misura: medida, la dimensión exacta de algo hecho con propósito.",
+    "software construido a la medida real de tu negocio",
   ],
 };
 
 export const hero = {
-  title: "¿Sabías que un sistema a medida puede reemplazar un sueldo completo?",
-  subtitle: "No necesitas más manos, necesitas mejor organización.",
-  highlights: ["necesitas mejor organización"],
+  title: "¿Todavía corrés tu negocio entre Excel, WhatsApp y papeles sueltos?",
+  subtitle: "El sistema que le devuelve a tu equipo lo que hoy se les va en planillas.",
+  highlights: ["le devuelve"],
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida. Entendemos el problema completo de tu negocio antes de proponerte una solución.",
   ctaPrimary: { label: "Quiero mi prototipo gratis", href: "/contacto#contacto" },
