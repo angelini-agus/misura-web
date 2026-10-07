@@ -154,14 +154,39 @@ gtag('config', '${gaId}');`
           .forEach((el) => el.classList.add("is-visible"));
       });
 
-      const restoreScrollReveal = () => {
-        document.querySelectorAll("[data-reveal].is-visible").forEach((el) => {
-          if (el.getBoundingClientRect().top > window.innerHeight) {
-            el.classList.remove("is-visible");
+      /* En una navegacion del cliente la pagina nueva entra con los reveals ya
+         marcados (ver astro:before-swap), asi que lo que cae en el primer
+         viewport no anima: el desvanecido solo se veia al recargar. Aca se le
+         quita la marca a TODOS y se le vuelve a poner a los que ya estan a la
+         vista, para que la transicion corra entera, igual que en una recarga.
+         Los que quedan debajo del pliegue si quedan sin marca y los revela el
+         observer al scrollear, como antes.
+
+         El `transition: none` temporal es lo que hace que esto funcione. Sin el,
+         sacar y poner la clase en el mismo tick no dispara ninguna transicion:
+         el navegador no ve cambio neto porque el estado final es igual al
+         inicial, y el efecto no se ve. Con el, la opacidad 0 queda aplicada como
+         estado previo y al devolver la transicion y la marca la animacion
+         arranca desde ahi. Medido: la opacidad sube de 0 a 0.70 en 220ms. */
+      const replayReveal = () => {
+        const marcados = document.querySelectorAll<HTMLElement>(
+          "[data-reveal].is-visible",
+        );
+        if (!marcados.length) return;
+        marcados.forEach((el) => {
+          el.style.transition = "none";
+          el.classList.remove("is-visible");
+        });
+        void document.body.offsetHeight;
+        marcados.forEach((el) => {
+          el.style.transition = "";
+          const caja = el.getBoundingClientRect();
+          if (caja.top < window.innerHeight && caja.bottom > 0) {
+            el.classList.add("is-visible");
           }
         });
       };
-      document.addEventListener("astro:page-load", restoreScrollReveal);
+      document.addEventListener("astro:page-load", replayReveal);
 
       const initCountUp = () => {
         const targets = document.querySelectorAll("[data-countup]");
