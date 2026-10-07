@@ -126,6 +126,65 @@ gtag('config', '${gaId}');`
   <body class="flex min-h-full flex-col bg-cream antialiased">
     <slot />
     <script>
+      /* El texto suelto sobre el fondo de la pagina entra con desenfoque; el que
+         vive adentro de un contenedor visual (tarjeta con fondo propio o caja
+         con borde) se queda con el reveal simple. La distincion se resuelve
+         mirando los estilos desde el elemento hasta su seccion, asi que una
+         seccion nueva hereda la regla sin que nadie tenga que acordarse de
+         marcarla. Para forzar el reveal simple, el elemento se marca a mano con
+         data-reveal="plain" (cualquier valor explicito manda). */
+      const tieneContenedorVisual = (nodo: Element) => {
+        if (/^(img|svg|canvas|video|picture)$/i.test(nodo.tagName)) return true;
+        const cs = getComputedStyle(nodo);
+        const fondo = cs.backgroundColor;
+        const pintado = fondo !== "rgba(0, 0, 0, 0)" && fondo !== "transparent";
+        const conBorde =
+          cs.borderTopStyle !== "none" && parseFloat(cs.borderTopWidth) > 0;
+        return pintado || conBorde;
+      };
+
+      const contieneContenedorVisual = (el: Element) => {
+        if (tieneContenedorVisual(el)) return true;
+        return [...el.querySelectorAll("*")].some(tieneContenedorVisual);
+      };
+
+      const marcarTextoConDesenfoque = () => {
+        const nuevos: HTMLElement[] = [];
+        document
+          .querySelectorAll<HTMLElement>("[data-reveal]")
+          .forEach((el) => {
+            if (el.getAttribute("data-reveal") !== "") return;
+            // Si el bloque trae adentro su propio contenedor visual (los botones
+            // del hero, la ilustracion del panel), no es texto suelto: se queda
+            // con el reveal simple.
+            if (contieneContenedorVisual(el)) return;
+            let nodo: Element | null = el;
+            while (nodo && nodo.tagName !== "SECTION") {
+              // Un bloque con desenfoque ya cubre lo que tiene adentro: las
+              // oraciones de la historia, por ejemplo, no llevan uno propio.
+              if (nodo !== el && nodo.getAttribute("data-reveal") === "blur") {
+                return;
+              }
+              if (tieneContenedorVisual(nodo)) return;
+              nodo = nodo.parentElement;
+            }
+            // El atributo entra sin transicion, igual que en replayReveal: si
+            // entrara animado, el observer revela el elemento un frame despues y
+            // la animacion se corta a la mitad. Medido: el filtro se quedaba en
+            // blur(0px) y el desenfoque no se veia nunca.
+            el.style.transition = "none";
+            el.setAttribute("data-reveal", "blur");
+            nuevos.push(el);
+          });
+        if (!nuevos.length) return;
+        void document.body.offsetHeight;
+        nuevos.forEach((el) => {
+          el.style.transition = "";
+        });
+      };
+      document.addEventListener("astro:page-load", marcarTextoConDesenfoque);
+      marcarTextoConDesenfoque();
+
       const initReveal = () => {
         const targets = document.querySelectorAll("[data-reveal]");
         if (!("IntersectionObserver" in window)) {
