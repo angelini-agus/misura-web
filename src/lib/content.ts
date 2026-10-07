@@ -256,7 +256,7 @@ export const about: {
 } = {
   eyebrow: "Nuestra historia",
   body: [
-    "Nos conocimos cursando en la facultad  U de Rosario. Armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos ir en serio: dejar de hacerlo como trabajo práctico y empezar a venderlo como negocio.",
+    "Nos conocimos cursando en la facultad U de Rosario. Armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos ir en serio: dejar de hacerlo como trabajo práctico y empezar a venderlo como negocio.",
     "La idea de misure nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
   ],
 };
