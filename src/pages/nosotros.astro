@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
 import About from "../components/About.astro";
+import Dictionary from "../components/Dictionary.astro";
 import Team from "../components/Team.astro";
 import HowWeWork from "../components/HowWeWork.astro";
 import ClientQuote from "../components/ClientQuote.astro";
@@ -17,6 +18,7 @@ import { pages, nosotrosCta } from "../lib/content";
 >
   <Header />
   <main id="contenido" class="flex-1" tabindex="-1">
+    <Dictionary />
     <About />
     <Team />
     <HowWeWork />

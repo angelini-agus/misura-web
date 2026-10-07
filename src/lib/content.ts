@@ -261,6 +261,21 @@ export const about: {
   highlights: ["un solo sistema, construido a tu medida"],
 };
 
+export const dictionaryEntry: {
+  word: string;
+  phonetic: string;
+  category: string;
+  senses: string[];
+} = {
+  word: "misure",
+  phonetic: "/mi-sú-re/",
+  category: "sustantivo · del italiano",
+  senses: [
+    "Plural de misura: medida, la dimensión exacta de algo hecho a propósito.",
+    "En este proyecto: software construido a la medida real de tu negocio, nunca de una plantilla genérica.",
+  ],
+};
+
 export const hero = {
   title: "¿Sabías que un sistema a medida puede reemplazar un sueldo completo?",
   subtitle: "No necesitas más manos, necesitas mejor organización.",

@@ -1,0 +1,55 @@
+---
+import { dictionaryEntry } from "../lib/content";
+
+// La entrada de diccionario abre /nosotros: la marca definida antes de que se
+// cuente la historia, con los márgenes normales de sección. No ocupa una
+// pantalla: el bloque solo pide el aire de una ficha técnica.
+//
+// Las dos líneas de 1px en verde, arriba y abajo, hacen de marca de cinta
+// métrica: no hay caja cerrada, no es una tarjeta. La jerarquía es la de un
+// diccionario: la palabra manda (36px), la fonética y la categoría son datos
+// técnicos chicos (12px mono con espaciado amplio) y las acepciones se leen como
+// texto (20px con interlineado de 32.5px). Solo dos colores: verde y crema, con
+// opacidades del verde para el resto.
+//
+// La palabra va con la display del sitio: el logo del header es un SVG trazado,
+// no una fuente, así que no hay tipografía que igualar.
+//
+// Sin `border-t`: es el primer bloque debajo del header, que ya trae su propio
+// borde inferior.
+---
+<section class="scroll-mt-24">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <div
+      class="mx-auto w-full max-w-3xl border-t border-b border-green py-8 md:py-10"
+      data-reveal="blur"
+    >
+      <p
+        class="font-display text-3xl font-medium leading-none tracking-tight sm:text-4xl"
+      >
+        {dictionaryEntry.word}
+      </p>
+      <p class="mt-3 font-mono text-xs tracking-[0.25em] text-green/60">
+        {dictionaryEntry.phonetic}
+      </p>
+      <p class="mt-1 font-mono text-xs tracking-[0.25em] text-green/70">
+        {dictionaryEntry.category}
+      </p>
+      <dl class="mt-6 flex flex-col gap-5">
+        {dictionaryEntry.senses.map((sense, index) => (
+          <div class="flex items-baseline gap-3 md:gap-4">
+            <dt
+              class="font-mono text-xs tracking-[0.2em] text-green/60"
+              aria-hidden="true"
+            >
+              {`${index + 1}.`}
+            </dt>
+            <dd class="max-w-xl text-lg leading-relaxed text-green/80 md:text-xl">
+              {sense}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>

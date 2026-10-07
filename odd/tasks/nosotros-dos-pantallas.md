@@ -155,3 +155,21 @@ desvanece y deja las 2 tarjetas a la vista, que se quedan ahí.
   se habían ofrecido eran bloque centrado con texto a la izquierda, o todo centrado
   (la que se probó y no gustó). No volver a centrarlo sin un pedido explícito.
 - El espacio doble de "en la facultad  U de Rosario" quedó corregido.
+
+## Tercera pantalla: el diccionario (2026-10-07)
+
+El autor pidió una entrada tipo diccionario que defina la marca. Primero se probó
+debajo del h1 de la historia: el bloque de 340px llevaba la primera pantalla de
+723px exactos a 892px y dejaba de entrar, así que se le dio su propia pantalla
+centrada. Después pidió lo contrario: que abra la página, antes de la historia, y
+con márgenes normales de sección, sin ocupar una pantalla. La página queda:
+diccionario, historia, equipo, cómo trabajamos, cita y CTA. El borde de arriba
+pasa del diccionario a la historia: el primer bloque debajo del header no lleva
+borde propio.
+
+- El bloque: 1px arriba y abajo en verde, sin caja cerrada, palabra a 36px,
+  fonética y categoría a 12px mono con 0.25em de espaciado, acepciones a 20px con
+  interlineado de 32.5px. Solo verde y crema.
+- La palabra usa la display del sitio porque el logo del header es un SVG
+  trazado, no una fuente.
+- La ficha entra con el desenfoque como el resto del texto suelto.
