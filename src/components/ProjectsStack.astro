@@ -264,16 +264,25 @@ const projectCount = projects.length;
   }
 
   /* Faldon verde que tapa el borde superior del cuerpo justo debajo de la
-     solapa, sin agregarle bordes laterales (esos quedan sobre la linea del
-     cuerpo). 2px de alto para que el solape siga tapando el borde del cuerpo
-     con el `scale(0.98)` de las carpetas asentadas, y 1px extra a cada lado
-     para cubrir el ancho de los bordes laterales de la solapa. */
+     solapa, para que la solapa se fusione con el cuerpo. 2px de alto para que el
+     solape siga tapando el borde del cuerpo con el `scale(0.98)` de las carpetas
+     asentadas.
+
+     El ancho es EXACTAMENTE el de la caja de padding de la solapa (`left: 0` y
+     `right: 0`, no -1px). Con el 1px extra el faldon tapaba tambien las columnas
+     donde caen los bordes laterales de la solapa, y ahi el borde IZQUIERDO del
+     cuerpo (que va en la misma x que el de la solapa) quedaba cortado por 2px de
+     verde: una muesca en la linea crema, justo en la union. Medido en Chrome a
+     dpr 2 sobre `/proyectos`: en la columna x=40 la crema se cortaba 1px antes
+     durante 2px de alto. Con el ancho del padding, la linea de la solapa y la del
+     cuerpo se leen como una sola, y la esquina derecha cierra igual porque ahi el
+     borde superior del cuerpo dobla y queda visible. */
   :global(.js) .folder__tab::after {
     content: "";
     position: absolute;
     top: 100%;
-    left: -1px;
-    right: -1px;
+    left: 0;
+    right: 0;
     height: 2px;
     background-color: var(--color-green);
   }

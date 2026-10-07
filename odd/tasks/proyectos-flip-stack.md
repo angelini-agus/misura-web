@@ -499,3 +499,28 @@ deje un hueco grande bajo "Casos de éxito". Medido: `bg rgb(14,59,51)` /
 `color rgb(241,232,219)`, aire arriba de la solapa del primer folder 26 px
 (antes ~310), pila pegada arriba todo el recorrido, tarjeta siempre dentro del
 viewport y los 6 casos sin recorte en 1440x900, 1920x1080 y 375x667.
+
+Corrección del autor (07-10): en la unión de la solapa con el cuerpo se veía un
+píxel verde que se escapaba sobre la línea crema de la izquierda. Causa: el
+faldón verde (`folder__tab::after`) medía 1px más a cada lado que la caja de
+padding de la solapa (`left: -1px; right: -1px`), así que tapaba también la
+columna donde cae el borde IZQUIERDO del cuerpo, que va en la misma x que el de la
+solapa: la línea crema quedaba cortada por 2px de verde justo en la unión.
+
+Medido en Chrome headless + CDP a dpr 2 sobre `/proyectos` (1280x900, con
+`scroll-behavior: auto` forzado antes del `scrollTo`: con el `smooth` del sitio
+las rectas se leían a mitad de animación y la captura no correspondía a lo
+medido, que fue el primer falso negativo de esta investigación):
+
+| Columna del borde izquierdo (x=40) | Antes (`left: -1px`) | Después (`left: 0`) |
+| --- | --- | --- |
+| Filas fuera de la unión | crema hasta x=41 | crema hasta x=41 |
+| Filas de la unión (2px de alto) | crema hasta x=40 | crema hasta x=41 |
+| Resultado | muesca verde de 1x2px en la línea | línea continua |
+
+La esquina derecha también cierra con el mismo cambio: el borde superior del
+cuerpo queda visible en la columna del borde derecho de la solapa y las dos
+líneas se encuentran, en vez de dejar el píxel verde que las separaba.
+
+`npx astro check` → 0 errores, 0 warnings, 0 hints (61 archivos), y build OK. El
+arreglo no está dentro de ningún `@media`: vale igual en desktop y en mobile.
