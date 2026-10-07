@@ -1,21 +1,38 @@
 ---
-// Riel de scroll propio, SOLO desktop, con la forma de un pie de rey vertical: la
-// regla es el riel (dos escalas grabadas: fina cada 8px, gruesa cada 40px), el
-// nonio es el thumb, y la pieza vive despegada del borde de la ventana, debajo del
-// header. En mobile no hay riel: queda una marca de lectura de 2x12px y la barra
-// nativa se oculta (la navegacion por scroll la da lo propio, tambien ahi).
+// Riel de scroll propio, SOLO desktop, con la forma de una cinta métrica colgada:
+// la punta (el gancho) queda clavada arriba, 8px debajo del navbar, y la caja
+// viaja hacia abajo mientras se scrollea, escupiendo la cinta graduada. El número
+// que queda contra la boca de la caja es el avance de la página en porcentaje.
+// En mobile no hay cinta: queda una marca de lectura de 2x12px y la barra nativa
+// se oculta (la navegación por scroll la da lo propio, también ahí).
 //
-// Approach, medidas y verificación: docs/features/scroll-rail.md
+// Física de la pieza: la cinta es una tira del largo máximo, graduada una sola vez
+// y recortada a la altura de la boca de la caja. Es lo que pasa en el objeto real:
+// el material sale de la caja y las graduaciones quedan fijas respecto de la punta,
+// así que las marcas no se mueven al scrollear, solo aparecen.
+//
+// Approach, medidas y verificación: docs/features/scroll-tape.md
+
+const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 ---
 
 <div id="scroll-rail-track" aria-hidden="true">
   <div id="scroll-rail">
-    <div id="scroll-rail-jaw-top"></div>
-    <div id="scroll-rail-thumb">
-      <div id="scroll-rail-vernier"></div>
-      <div id="scroll-rail-screw"></div>
+    <div id="scroll-tip"></div>
+    <div id="scroll-tape">
+      <div id="scroll-tape-scale"></div>
+      {
+        PASOS.map((paso) => (
+          <span class="scroll-tape-num" data-p={paso}>
+            {paso}
+          </span>
+        ))
+      }
     </div>
-    <div id="scroll-rail-jaw-bottom"></div>
+    <div id="scroll-tape-case">
+      <div id="scroll-tape-mouth"></div>
+      <div id="scroll-tape-stud"></div>
+    </div>
   </div>
 </div>
 
@@ -23,14 +40,14 @@
 
 <style>
   /* La pista: un wrapper absoluto que mide TODO el documento (body es
-     `position: relative` exactamente por esto). El riel de adentro es `sticky`:
+     `position: relative` exactamente por esto). La cinta de adentro es `sticky`:
      arranca debajo del bloque completo y se estaciona a 8px del header cuando el
-     header se pega. Es la unica forma de que el riel nunca quede tapado y nunca
-     deje hueco: un riel `fixed` con el offset de scroll 0 deja un hueco de 36px
+     header se pega. Es la única forma de que la pieza nunca quede tapada y nunca
+     deje hueco: una pieza `fixed` con el offset de scroll 0 deja un hueco de 36px
      (lo que mide la barra de anuncio) apenas el usuario scrollea.
 
      `pointer-events: none` en la pista es obligatorio: cubre el documento entero
-     y sin eso se comeria todos los clicks. El riel lo reactiva. */
+     y sin eso se comería todos los clicks. Cada pieza lo reactiva donde toca. */
   #scroll-rail-track {
     position: absolute;
     inset: 0;
@@ -39,9 +56,12 @@
     pointer-events: none;
   }
 
-  /* El riel: 14px con las dos escalas grabadas, despegado 8px del borde derecho y
-     8px del inferior. La franja de aire es la que lo convierte en una pieza
-     apoyada sobre la pagina y no en el borde de la ventana. */
+  /* El riel es el escenario, no la pieza: 16px de ancho pegados al borde derecho
+     (6px de aire) y sin fondo ni bordes. La cinta y la caja son las que se ven, y
+     lo que no está pintado no recibe clicks: debajo de la caja el borde de la
+     página queda libre. Los 6px no son un gusto: el glifo más cercano al borde
+     (el mail del footer) está a 24px en 768 y 1024, así que la banda entera
+     (16 + 6 = 22px) tiene que entrar ahí. Medido en docs/features/scroll-tape.md. */
   #scroll-rail {
     display: none;
     position: sticky;
@@ -50,49 +70,15 @@
       var(--announcement-h) + var(--nav-h) + 0.5rem
     );
     margin-inline-start: auto;
-    margin-inline-end: 0.5rem;
-    width: 14px;
+    margin-inline-end: 0.375rem;
+    width: 16px;
     /* El alto se mide para el estado de scroll 0 (arranque debajo del bloque
        completo: anuncio + header + 8px) y no para el estado pegado. Con el alto
-       del estado pegado (100dvh - nav-h - 1rem) el extremo inferior caia 28px por
-       debajo del pliegue en el primer golpe de vista, o sea que el tope de abajo
-       no se veia. Asi la pieza se ve entera siempre: en scroll 0 va de 121px a
-       (pliegue - 8px), y cuando el header se pega sube 36px y le quedan 44px de
-       aire abajo. El alto es constante a proposito: cambiarlo al cruzar el umbral
-       seria un salto de layout visible. */
+       del estado pegado (100dvh - nav-h - 1rem) el extremo inferior caía 28px por
+       debajo del pliegue en el primer golpe de vista. El alto es constante a
+       propósito: cambiarlo al cruzar el umbral sería un salto de layout visible. */
     height: calc(100dvh - var(--announcement-h) - var(--nav-h) - 1rem);
-    pointer-events: auto;
-    cursor: pointer;
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-    /* Opaco y del tono base: el riel tiene que leerse igual sobre cualquier
-       superficie de la pagina, que alterna crema y verde. */
-    background-color: var(--color-cream);
-    border-inline: 1px solid var(--color-green);
-    /* Doble escala en dos columnas de 4px separadas por una canaleta de 4px: la
-       fina (1px de alto) cada 8px a la izquierda y la gruesa (2px) cada 40px a la
-       derecha. Cada capa es un tile de 4px de ancho por el alto del riel y sin
-       repetir: la repeticion vertical la hace el gradiente, no el tile, asi cada
-       columna cae una sola vez en su lugar. */
-    background-image:
-      repeating-linear-gradient(
-        to bottom,
-        var(--color-green) 0 1px,
-        transparent 1px 8px
-      ),
-      repeating-linear-gradient(
-        to bottom,
-        var(--color-green) 0 2px,
-        transparent 2px 40px
-      );
-    background-size:
-      4px 100%,
-      4px 100%;
-    background-position:
-      0 0,
-      100% 0;
-    background-repeat: no-repeat, no-repeat;
+    pointer-events: none;
   }
 
   /* Solo cuando el script lo activó: desktop y JS disponible. Si el script no
@@ -101,62 +87,148 @@
     display: block;
   }
 
-  /* Quijada fija y tope: los extremos macizos que sujetan la escala. No son
-     adorno: sin ellos la pieza se lee como un borde y no como un instrumento. */
-  #scroll-rail-jaw-top,
-  #scroll-rail-jaw-bottom {
+  /* La punta (el gancho) es el 0 de la cinta y no se mueve nunca. El diente sube
+     hacia el navbar: es lo que la engancha al borde, y por eso la pieza se lee
+     apoyada y no flotando. El script usa su alto como origen de la cinta.
+     Responde al click: apoyarse en el 0 devuelve la página arriba. */
+  #scroll-tip {
     position: absolute;
+    top: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 7px;
+    background-color: var(--color-green);
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  #scroll-tip::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    translate: -50% 0;
+    width: 5px;
+    height: 4px;
     background-color: var(--color-green);
   }
 
-  #scroll-rail-jaw-top {
-    top: 0;
+  /* La cinta: tira crema opaca con los bordes verdes, graduada en una sola escala.
+     El alto (el recorrido de la caja) y la unidad de 1% los fija el script al
+     medir; hasta entonces no tiene alto y el recorte la deja invisible.
+
+     El recorte por `clip-path` es la boca de la caja: la tira no se estira, se
+     tapa. No es propiedad de layout y el área es de 16x727px, pero es paint por
+     frame (medido en docs/features/scroll-tape.md). */
+  #scroll-tape {
+    --tape-unit: 7.27px;
+    position: absolute;
+    top: 7px;
+    left: 0;
+    right: 0;
+    height: 0;
+    background-color: var(--color-cream);
+    border-inline: 1px solid var(--color-green);
+    clip-path: inset(0 0 100% 0);
+    pointer-events: auto;
+    cursor: pointer;
   }
 
-  #scroll-rail-jaw-bottom {
+  /* Las tres graduaciones, en tres capas del mismo gradiente: fina de 2px cada 1%,
+     media de 3px cada 5% y mayor de 5px cada 10%. El ancho de cada capa es el
+     largo de su marca y todas arrancan contra el borde derecho de la cinta; el
+     largo vertical lo repite el gradiente, no el tile. */
+  #scroll-tape-scale {
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
+    width: 5px;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1px,
+        transparent 1px var(--tape-unit)
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1px,
+        transparent 1px calc(var(--tape-unit) * 5)
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--color-green) 0 1.5px,
+        transparent 1.5px calc(var(--tape-unit) * 10)
+      );
+    background-size:
+      2px 100%,
+      3px 100%,
+      5px 100%;
+    background-position: right top;
+    background-repeat: no-repeat;
   }
 
-  /* El nonio: pieza maciza verde, esquinas rectas, sin transición (mapeo 1:1 con
-     el scroll). El alto lo fija el script en proporción al contenido y la
-     posición se actualiza SOLO con transform. Las dos líneas crema son la marca
-     mecanizada de los extremos. */
-  #scroll-rail-thumb {
+  /* El 0 no se imprime. El tile del gradiente arranca en 0, así que la marca
+     gruesa quedaba pegada a la punta y se leía como parte de la cabeza metálica
+     (el gancho), no como una graduación. Se tapa el primer renglón de marcas con
+     el crema de la cinta: la primera gruesa que se ve es la del 10, como en la
+     cinta real, donde el gancho tiene un tramo en blanco antes de la primera
+     marca. Mide lo que la marca más alta (1.5px) y el ancho de la más larga
+     (5px), así que tapa las tres capas a la vez. */
+  #scroll-tape-scale::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 1.5px;
+    background-color: var(--color-cream);
+  }
+
+  /* Los números, rotados 90° en la columna de 9px de la izquierda: es como se
+     imprime una cinta que cuelga con el 0 arriba (el texto corre hacia abajo y
+     cada dígito queda con su cabeza hacia el borde). El `top` lo pone el script,
+     centrado en su marca y sin salirse del largo de la cinta. */
+  #scroll-tape .scroll-tape-num {
+    position: absolute;
+    left: 0;
+    width: 9px;
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    line-height: 9px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--color-green);
+  }
+
+  /* La caja: bloque verde macizo con la ranura de la boca (crema, corta: se lee
+     agujero y no borde), tope crema abajo y el remache que gira al arrastrar. El
+     alto lo lee el script: el recorrido es el alto del riel menos este alto. */
+  #scroll-tape-case {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    background-color: var(--color-green);
-    border-top: 1px solid var(--color-cream);
-    border-bottom: 1px solid var(--color-cream);
-  }
-
-  /* Las marcas de vernier: 5 líneas crema cada 6.4px, que es 4/5 de la división
-     fina de la regla (8px). Esa es la relación real de un nonio de 5 divisiones:
-     con eso el nonio lee la quinta parte de la escala, que es lo que hace un pie
-     de rey. El bloque arranca 2px abajo del borde del nonio y mide 27px, asi que
-     entra completo en el alto mínimo del thumb (40px). */
-  #scroll-rail-vernier {
-    position: absolute;
-    left: 0;
     right: 0;
-    top: 2px;
-    height: 27px;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      var(--color-cream) 0 1px,
-      transparent 1px 6.4px
-    );
+    height: 44px;
+    background-color: var(--color-green);
+    border-bottom: 1px solid var(--color-cream);
+    pointer-events: auto;
+    cursor: pointer;
+    /* Solo transform: el script escribe la posición del scroll en cada frame. */
+    transform: translate3d(0, 7px, 0);
   }
 
-  /* El tornillo de fijación: gira 45° mientras se arrastra el nonio, como el que
-     traba la corredera de un calibre. Solo `rotate`, que corre en el compositor. */
-  #scroll-rail-screw {
+  #scroll-tape-mouth {
     position: absolute;
-    bottom: 2px;
+    top: 3px;
+    left: 2px;
+    right: 2px;
+    height: 1px;
+    background-color: var(--color-cream);
+  }
+
+  #scroll-tape-stud {
+    position: absolute;
+    bottom: 4px;
     left: 50%;
     translate: -50% 0;
     width: 6px;
@@ -165,7 +237,7 @@
     transition: rotate 150ms var(--ease-out);
   }
 
-  #scroll-rail-screw::after {
+  #scroll-tape-stud::after {
     content: "";
     position: absolute;
     left: 0;
@@ -176,18 +248,22 @@
     background-color: var(--color-green);
   }
 
-  #scroll-rail.is-dragging #scroll-rail-screw {
+  /* El remache gira 45° mientras la pieza está en movimiento: con el arrastre y
+     también con la rueda. Antes solo respondía al puntero, así que scrollear con
+     la ruedita dejaba el remache quieto y la pieza se leía apagada. */
+  #scroll-rail.is-dragging #scroll-tape-stud,
+  #scroll-rail.is-scrolling #scroll-tape-stud {
     rotate: 45deg;
   }
 
-  /* Asentamiento al soltar: el nonio cae 2px y se acomoda. Va en `translate`, la
+  /* Asentamiento al soltar: la caja cae 2px y se acomoda. Va en `translate`, la
      propiedad independiente, para no pisar el `transform` que mapea el scroll.
      `--ease-back` es la excepción 4 documentada en design-philosophy.md. */
-  #scroll-rail-thumb.is-settling {
-    animation: rail-settle 260ms var(--ease-back);
+  #scroll-tape-case.is-settling {
+    animation: tape-settle 260ms var(--ease-back);
   }
 
-  @keyframes rail-settle {
+  @keyframes tape-settle {
     from {
       translate: 0 2px;
     }
@@ -197,9 +273,9 @@
     }
   }
 
-  /* Marca de lectura de mobile: ahí no hay riel (ni ancho ni hover), así que la
+  /* Marca de lectura de mobile: ahí no hay cinta (ni ancho ni hover), así que la
      referencia es un trazo de 2x12px sobre el borde derecho que sigue el scroll.
-     El alto lo maneja el script con transform, igual que el nonio. */
+     El alto lo maneja el script con transform, igual que la caja. */
   #scroll-mark {
     display: none;
     position: fixed;
@@ -218,12 +294,13 @@
 </style>
 
 <script>
-  // Alto mínimo del thumb: en páginas largas la proporción pura daría un hilo de
-  // 3 o 4px y tiene que leerse como una pieza, no como un pelo. 40px es lo que
-  // piden las 5 marcas de vernier (27px) más el tornillo (6px) con sus aires.
-  const MIN_THUMB = 40;
   // Alto de la marca de mobile (2x12px, ver el style).
   const MARK_H = 12;
+  // Cuánto dura el giro del remache después del último scroll con la rueda. Corto
+  // a propósito: acompaña el movimiento y suelta enseguida (la transición de
+  // `rotate` es de 150ms). Con la rueda inercial del trackpad el timer se
+  // reinicia solo, así que el giro dura lo que dura la inercia.
+  const GIRO_MS = 200;
   // Mismo corte de desktop que usa el sitio para el header sticky.
   const CONSULTA_DESKTOP = "(min-width: 48rem)";
 
@@ -234,7 +311,7 @@
   // Las clases que ocultan la barra nativa viven en el <html>, y el router las
   // pisa en cada navegación con las del HTML servido: se reponen en after-swap,
   // antes de la transición, para que la nativa no alcance a asomar. `has-rail` es
-  // el riel de desktop; `has-mark` es la marca de mobile. El marcado inicial
+  // la cinta de desktop; `has-mark` es la marca de mobile. El marcado inicial
   // también vive en el <head> (BaseLayout.astro), porque llegar después del
   // primer pintado reflowea el contenido cuando la barra libera su espacio.
   const marcarSuperficie = () => {
@@ -250,45 +327,82 @@
     cleanup = null;
 
     const rail = document.getElementById("scroll-rail");
-    const thumb = document.getElementById("scroll-rail-thumb");
+    const tip = document.getElementById("scroll-tip");
+    const tape = document.getElementById("scroll-tape");
+    const box = document.getElementById("scroll-tape-case");
     const mark = document.getElementById("scroll-mark");
-    if (!rail || !thumb) return;
+    if (!rail || !tip || !tape || !box) return;
 
-    let railH = 0;
-    let thumbH = 0;
+    const nums = Array.from(
+      tape.querySelectorAll<HTMLElement>(".scroll-tape-num"),
+    );
+
+    let tipH = 0;
     let travel = 0;
     let maxY = 0;
     let markTravel = 0;
     let frame = 0;
 
-    // Pinta el nonio (desktop) o la marca (mobile). SOLO transform: nada de top
-    // ni margin, y sin leer layout adentro del frame (las métricas ya están
-    // cacheadas).
+    // Pinta la caja (desktop) o la marca (mobile). SOLO transform y clip-path:
+    // nada de alto ni top, y sin leer layout adentro del frame (las métricas ya
+    // están cacheadas).
     const pintar = () => {
       const p = maxY === 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxY));
       if (medio.matches) {
-        thumb.style.transform = `translate3d(0, ${(p * travel).toFixed(2)}px, 0)`;
+        const y = p * travel;
+        // La caja viaja: su boca (el borde de arriba) es la lectura.
+        box.style.transform = `translate3d(0, ${(tipH + y).toFixed(2)}px, 0)`;
+        // Y la cinta se descubre hasta esa boca: la tira no se mueve.
+        tape.style.clipPath = `inset(0 0 ${(travel - y).toFixed(2)}px 0)`;
       } else if (mark) {
         mark.style.transform = `translate3d(0, ${(p * markTravel).toFixed(2)}px, 0)`;
       }
     };
 
-    // Mide el contenido. Se llama en carga, resize y cuando cambia el alto del
-    // documento: nunca en el evento de scroll.
+    // Mide el contenido. Se llama en carga, resize, cambio de media query, cambio
+    // de alto del documento y cuando la tipografía real ya está: nunca en scroll.
     const medir = () => {
-      railH = rail.clientHeight;
+      tipH = tip.offsetHeight;
+      const railH = rail.clientHeight;
+      const boxH = box.offsetHeight;
+      travel = Math.max(0, railH - tipH - boxH);
       const docH = document.documentElement.scrollHeight;
       const viewH = window.innerHeight;
       maxY = Math.max(0, docH - viewH);
-      const proporcion = viewH / Math.max(docH, 1);
-      thumbH = Math.min(
-        railH,
-        Math.max(MIN_THUMB, Math.round(railH * proporcion)),
-      );
-      travel = Math.max(0, railH - thumbH);
-      thumb.style.height = `${thumbH}px`;
+
+      // La cinta: tira del largo del recorrido, graduada una sola vez.
+      tape.style.height = `${travel}px`;
+      tape.style.setProperty("--tape-unit", `${travel / 100}px`);
+
+      // Los números, centrados en su marca y recortados al largo de la cinta: el
+      // 100 cae justo en la boca a caja llena y centrado quedaría cortado.
+      const altos = nums.map((num) => num.offsetHeight);
+      nums.forEach((num, i) => {
+        const marca = (Number(num.dataset.p) / 100) * travel;
+        const alto = altos[i];
+        const top = Math.min(travel - alto, Math.max(0, marca - alto / 2));
+        num.style.top = `${top}px`;
+      });
+
       markTravel = Math.max(0, viewH - MARK_H);
       pintar();
+    };
+
+    // El remache gira también con la rueda, no solo con el arrastre: la clase
+    // entra en el primer frame de scroll y sale sola GIRO_MS después del último.
+    // El timer se reinicia en cada frame (la inercia del trackpad mantiene el
+    // giro) pero la clase se toca una sola vez por movimiento: el `contains`
+    // evita invalidar estilo frame a frame. En mobile no hay remache que girar.
+    let girandoTimer = 0;
+    const avisarGiro = () => {
+      if (!medio.matches) return;
+      if (!rail.classList.contains("is-scrolling")) {
+        rail.classList.add("is-scrolling");
+      }
+      window.clearTimeout(girandoTimer);
+      girandoTimer = window.setTimeout(() => {
+        rail.classList.remove("is-scrolling");
+      }, GIRO_MS);
     };
 
     const alScrollear = () => {
@@ -296,6 +410,7 @@
       frame = window.requestAnimationFrame(() => {
         frame = 0;
         pintar();
+        avisarGiro();
       });
     };
 
@@ -309,34 +424,38 @@
 
     const alCambiarMedio = () => {
       marcarSuperficie();
+      // Al cruzar a mobile el remache no existe: si quedó girando por un scroll de
+      // desktop, se limpia para que no reaparezca girado al volver a desktop.
+      window.clearTimeout(girandoTimer);
+      rail.classList.remove("is-scrolling");
       alRedimensionar();
     };
 
-    // --- arrastre del nonio y click en el riel ---
+    // --- arrastre de la caja y click en la cinta ---
     let arrastrando = false;
     let movio = false;
     let inicioY = 0;
     let inicioScroll = 0;
 
-    // Asentamiento al soltar: la pieza cae 2px y se acomoda (rail-settle, con
+    // Asentamiento al soltar: la pieza cae 2px y se acomoda (tape-settle, con
     // --ease-back). La clase se saca en animationend para poder re-disparar la
     // animación si se suelta dos veces seguidas.
     const asentar = () => {
       if (reducir()) return;
-      thumb.classList.remove("is-settling");
+      box.classList.remove("is-settling");
       // Lectura de layout a propósito: reinicia la animación aunque la clase se
       // haya sacado y puesto en el mismo frame.
-      void thumb.offsetHeight;
-      thumb.classList.add("is-settling");
+      void box.offsetHeight;
+      box.classList.add("is-settling");
     };
 
     const alBajar = (event: PointerEvent) => {
       if (!medio.matches) return;
       event.preventDefault();
-      // El tornillo y las marcas son hijos del nonio: el arrastre tiene que
+      // La ranura y el remache son hijos de la caja: el arrastre tiene que
       // empezar también cuando el puntero cae sobre ellos.
       const objetivo = event.target as Node | null;
-      const sobreThumb = objetivo === thumb || thumb.contains(objetivo);
+      const sobreCaja = objetivo === box || box.contains(objetivo);
       arrastrando = true;
       movio = false;
       rail.classList.add("is-dragging");
@@ -350,19 +469,19 @@
         /* sin captura igual funciona el arrastre dentro del riel */
       }
 
-      if (!sobreThumb && travel > 0) {
-        // Click en el riel: el thumb se centra en ese punto y la página salta ahí.
+      if (!sobreCaja && travel > 0) {
+        // Click en la cinta: la boca se clava en esa graduación, o sea que la
+        // cinta se estira hasta ahí, y el arrastre sigue desde ese punto.
         const caja = rail.getBoundingClientRect();
         const deseado = Math.min(
           travel,
-          Math.max(0, event.clientY - caja.top - thumbH / 2),
+          Math.max(0, event.clientY - caja.top - tipH),
         );
         const destino = (deseado / travel) * maxY;
         window.scrollTo({
           top: destino,
           behavior: reducir() ? "auto" : "smooth",
         });
-        // El arrastre sigue desde donde quedó el salto, no desde el click.
         inicioScroll = destino;
         inicioY = event.clientY;
       }
@@ -380,7 +499,7 @@
     };
 
     const alSoltar = (event: PointerEvent) => {
-      // Solo asienta si hubo arrastre real: un click en el riel ya es un salto.
+      // Solo asienta si hubo arrastre real: un click en la cinta ya es un salto.
       const asentarAhora = arrastrando && movio;
       arrastrando = false;
       rail.classList.remove("is-dragging");
@@ -393,11 +512,11 @@
     };
 
     const alTerminarAsentamiento = () => {
-      thumb.classList.remove("is-settling");
+      box.classList.remove("is-settling");
     };
 
     // El documento crece o encoge sin resize de ventana (imágenes, acordeones,
-    // pasos del formulario): el riel se re-mide.
+    // pasos del formulario): la pieza se re-mide.
     const observador = new ResizeObserver(alRedimensionar);
     observador.observe(document.body);
 
@@ -408,7 +527,11 @@
     rail.addEventListener("pointermove", alMover);
     rail.addEventListener("pointerup", alSoltar);
     rail.addEventListener("pointercancel", alSoltar);
-    thumb.addEventListener("animationend", alTerminarAsentamiento);
+    box.addEventListener("animationend", alTerminarAsentamiento);
+
+    // Los altos de los números dependen de la tipografía real: con la de reemplazo
+    // miden distinto y quedarían descentrados.
+    document.fonts?.ready.then(medir).catch(() => {});
 
     cleanup = () => {
       window.removeEventListener("scroll", alScrollear);
@@ -418,9 +541,11 @@
       rail.removeEventListener("pointermove", alMover);
       rail.removeEventListener("pointerup", alSoltar);
       rail.removeEventListener("pointercancel", alSoltar);
-      thumb.removeEventListener("animationend", alTerminarAsentamiento);
+      box.removeEventListener("animationend", alTerminarAsentamiento);
+      window.clearTimeout(girandoTimer);
       rail.classList.remove("is-dragging");
-      thumb.classList.remove("is-settling");
+      rail.classList.remove("is-scrolling");
+      box.classList.remove("is-settling");
       observador.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;
