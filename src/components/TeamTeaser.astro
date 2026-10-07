@@ -1,0 +1,49 @@
+---
+import { team } from "../lib/content";
+import { Image } from "astro:assets";
+import teamPlaceholder from "../assets/team-placeholder.png";
+import Button from "./ui/Button.astro";
+
+// Versión corta para el inicio: solo las 2 fotos y el link a las tarjetas
+// completas de /nosotros. No repite el copy del equipo (ni la descripción ni las
+// bios): eso vive en la sección de /nosotros, junto al ancla #nosotros. El label
+// del link sale de `team.title` y el eyebrow de `team.eyebrow`, así que esta
+// sección no agrega copy nuevo a content.ts.
+---
+<section class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
+    <h2 class="sr-only">{team.title}</h2>
+    <p
+      class="text-center text-xs font-semibold uppercase tracking-[0.2em]"
+      data-reveal
+    >
+      {team.eyebrow}
+    </p>
+    <div class="mt-8 grid grid-cols-2 gap-4 md:gap-6">
+      {team.members.map((_, index) => (
+        <div
+          class="foto-duotono overflow-hidden rounded-md border border-green"
+          data-reveal
+          style={{ transitionDelay: `${index * 60}ms` }}
+        >
+          {/* Placeholder photo shared by every member: decorative, so alt is empty.
+              When real per-member photos replace the placeholder, describe the photo
+              instead of repeating the member name, que acá no se muestra. */}
+          <Image
+            src={teamPlaceholder}
+            alt=""
+            widths={[400, 800]}
+            sizes="(min-width: 768px) 348px, calc(50vw - 2rem)"
+            class="aspect-[4/3] w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+    <div class="mt-8 flex justify-center">
+      <Button href="/nosotros#nosotros" variant="outline">
+        {team.title} <span aria-hidden="true">→</span>
+      </Button>
+    </div>
+  </div>
+</section>
