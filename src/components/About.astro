@@ -28,16 +28,16 @@ about.body.forEach((paragraph) => {
   <div
     class="mx-auto flex min-h-[calc(100dvh-var(--nav-h))] max-w-6xl flex-col justify-center px-4 py-[clamp(1.5rem,4dvh,3rem)] md:px-6"
   >
-    <p class="text-xs font-semibold uppercase tracking-[0.2em]" data-reveal>
+    <p class="mx-auto w-full max-w-3xl text-xs font-semibold uppercase tracking-[0.2em]" data-reveal>
       <MisureWord text={about.eyebrow} />
     </p>
     <h1
       data-reveal
-      class="font-display mt-4 max-w-3xl text-4xl font-medium leading-tight tracking-tight sm:text-5xl"
+      class="font-display mx-auto mt-4 w-full max-w-3xl text-4xl font-medium leading-tight tracking-tight sm:text-5xl"
     >
       {pages.nosotros.h1}
     </h1>
-    <div class="mt-8 flex max-w-3xl flex-col gap-5">
+    <div class="mx-auto mt-8 flex w-full max-w-3xl flex-col gap-5">
       {blocks.map((sentences) => (
         <p class="text-xl leading-relaxed text-green/80 md:text-2xl">
           {/*
