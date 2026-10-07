@@ -264,6 +264,7 @@ export const about: {
 export const hero = {
   title: "¿Sabías que un sistema a medida puede reemplazar un sueldo completo?",
   subtitle: "No necesitas más manos, necesitas mejor organización.",
+  highlights: ["necesitas mejor organización"],
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida. Entendemos el problema completo de tu negocio antes de proponerte una solución.",
   ctaPrimary: { label: "Quiero mi prototipo gratis", href: "/contacto#contacto" },
@@ -271,6 +272,7 @@ export const hero = {
 } satisfies {
   title: string;
   subtitle: string;
+  highlights: string[];
   lead: string;
   ctaPrimary: Cta;
   ctaSecondary: Cta;

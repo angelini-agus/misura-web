@@ -252,22 +252,27 @@ textarea:autofill {
    escalonamiento: así el marcador no barre mientras la oración todavía está
    invisible. */
 .resaltado {
-  background-image: linear-gradient(
-    var(--color-cream-dark),
-    var(--color-cream-dark)
-  );
+  background-image: linear-gradient(var(--color-green), var(--color-green));
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 100% 100%;
-  color: var(--color-green);
+  color: var(--color-cream);
   padding: 0 0.12em;
 }
 
-.js [data-reveal="blur"] .resaltado {
+/* Variante para superficies verdes: marcador crema con texto verde. Se aplica
+   con la clase extra `resaltado--inverso` sobre texto que vive dentro de una
+   sección `bg-green`. */
+.resaltado--inverso {
+  background-image: linear-gradient(var(--color-cream), var(--color-cream));
+  color: var(--color-green);
+}
+
+.js [data-reveal] .resaltado {
   background-size: 0% 100%;
 }
 
-.js [data-reveal="blur"].is-visible .resaltado {
+.js [data-reveal].is-visible .resaltado {
   background-size: 100% 100%;
   transition: background-size 520ms var(--ease-out)
     calc(var(--reveal-delay, 0ms) + 160ms);

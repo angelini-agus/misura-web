@@ -1,5 +1,6 @@
 ---
 import { hero } from "../lib/content";
+import HighlightWords from "./ui/HighlightWords.astro";
 import Button from "./ui/Button.astro";
 import MisureWord from "./ui/MisureWord.astro";
 import CodePanel from "./ui/CodePanel.astro";
@@ -42,7 +43,7 @@ import CodePanel from "./ui/CodePanel.astro";
         style={{ transitionDelay: "50ms" }}
         class="hero-subtitle font-display mt-3 max-w-xl text-lg font-medium leading-snug tracking-tight sm:text-xl md:text-2xl"
       >
-        {hero.subtitle}
+        <HighlightWords text={hero.subtitle} phrases={hero.highlights} />
       </p>
       <p
         data-reveal
