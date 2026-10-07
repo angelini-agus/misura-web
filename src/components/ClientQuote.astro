@@ -8,19 +8,14 @@ import HighlightWords from "./ui/HighlightWords.astro";
 // El link al caso sale de `portfolio.detailsLabel`, el mismo label que usan los
 // otros accesos a los casos: esta sección no agrega copy nuevo salvo el eyebrow.
 //
-// Reveal en dos mitades: la primera entra al principio y la segunda cuando el
-// visitante sigue scrolleando. Antes eran tres tiempos, uno por oración, y la
-// parte resaltada tardaba demasiado en aparecer; con dos mitades entra enseguida.
-// El corte es por oración (la primera mitad es la primera oración y la segunda
-// las dos que siguen) para no partir una oración al medio. El marcador espera a
-// su propia mitad porque hereda el `--reveal-delay` del span que la contiene.
-const LEAD = 120;
-const STEP = 500;
+// Reveal en dos mitades, las dos por scroll: la primera entra con la banda cuando
+// la cita se detecta en pantalla, y la segunda espera a que el visitante siga
+// scrolleando. Antes la segunda entraba por reloj, con un retraso fijo, y eso no
+// es como se comporta el resto del sitio: acá, si todavía no scrolleó, la segunda
+// mitad no se muestra. El corte es por oración para no partir una al medio.
 const sentences = clientQuote.text.split(/(?<=[.!?])\s+/);
-const halves = [
-  { text: sentences.slice(0, 1).join(" "), delay: LEAD },
-  { text: sentences.slice(1).join(" "), delay: LEAD + STEP },
-];
+const primeraMitad = sentences.slice(0, 1).join(" ");
+const segundaMitad = sentences.slice(1).join(" ");
 ---
 <section class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
@@ -34,17 +29,10 @@ const halves = [
       <blockquote
         class="font-display mt-4 text-2xl font-medium leading-snug tracking-tight md:text-3xl"
       >
-        {halves.map((half) => (
-          <span
-            data-reveal
-            style={{
-              transitionDelay: `${half.delay}ms`,
-              "--reveal-delay": `${half.delay}ms`,
-            }}
-          >
-            <HighlightWords text={half.text} phrases={clientQuote.highlights} />{" "}
-          </span>
-        ))}
+        <HighlightWords text={primeraMitad} phrases={clientQuote.highlights} />{" "}
+        <span data-quote-second>
+          <HighlightWords text={segundaMitad} phrases={clientQuote.highlights} />
+        </span>
       </blockquote>
       <figcaption class="mt-6">
         <p class="font-mono text-xs uppercase tracking-widest text-green/70">
@@ -67,3 +55,66 @@ const halves = [
     </figure>
   </div>
 </section>
+
+<style>
+  /* La segunda mitad espera al scroll, no a un reloj: su propio observer le pone
+     `is-visible` cuando el visitante la sube a la parte alta de la pantalla. El
+     marcador que vive adentro hereda ese estado, así que barre recién ahí.
+     Las reglas del marcador se anclan en el `figure` a propósito: la regla global
+     `.js [data-reveal].is-visible .resaltado` también matchea acá, porque el figure
+     ya está revelado, y con la misma especificidad ganaría ella. */
+  :global(.js [data-quote-second]) {
+    opacity: 0;
+    transition: opacity 420ms ease-out;
+  }
+
+  :global(.js [data-quote-second].is-visible) {
+    opacity: 1;
+  }
+
+  :global(.js figure[data-reveal] [data-quote-second] .resaltado) {
+    background-size: 0% 100%;
+  }
+
+  :global(.js figure[data-reveal] [data-quote-second].is-visible .resaltado) {
+    background-size: 100% 100%;
+    transition: background-size 780ms var(--ease-out) 160ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js [data-quote-second]) {
+      opacity: 1;
+      transition: none;
+    }
+
+    :global(.js figure[data-reveal] [data-quote-second] .resaltado) {
+      background-size: 100% 100%;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // La segunda mitad de la cita entra por scroll: este observer espera a que la
+  // cita haya subido lo suficiente como para que la mitad quede en la parte alta
+  // de la pantalla. Si el visitante todavía no scrolleó, no se muestra.
+  const iniciarSegundaMitad = () => {
+    const segunda = document.querySelector<HTMLElement>("[data-quote-second]");
+    if (!segunda || segunda.classList.contains("is-visible")) return;
+
+    const observador = new IntersectionObserver(
+      (entradas, obs) => {
+        for (const entrada of entradas) {
+          if (!entrada.isIntersecting) continue;
+          obs.disconnect();
+          segunda.classList.add("is-visible");
+        }
+      },
+      { threshold: 0, rootMargin: "0px 0px -30% 0px" },
+    );
+    observador.observe(segunda);
+  };
+
+  document.addEventListener("astro:page-load", iniciarSegundaMitad);
+  iniciarSegundaMitad();
+</script>
