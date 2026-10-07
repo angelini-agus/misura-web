@@ -86,7 +86,11 @@ encabezado más su separación) y los pone en la foto.
 3. De `lg` para arriba, `#nosotros` mide ≤ `100dvh − --nav-h` a 1024×768,
    1280×800, 1440×900 y 1920×1080, con la tarjeta completa visible (foto, nombre,
    rol, bio y redes).
-4. La primera sección mide exactamente `100dvh − --nav-h` de `lg` para arriba.
+4. El equipo mide exactamente `100dvh − --nav-h` de `lg` para arriba. La historia
+   usó el mismo alto forzado hasta el 2026-10-07 y se le quitó: con el contenido
+   en ~520px el bloque dejaba ~100px de aire arriba y abajo, y el autor lo sintió
+   como espacio en blanco. Ahora usa los márgenes normales de sección
+   (`py-16 md:py-24`) y mide lo que mide su contenido.
 5. En mobile (375×667) las 2 tarjetas se apilan y nada se solapa ni se corta.
 6. Con `prefers-reduced-motion: reduce` el texto de la historia queda visible y
    estático.
@@ -99,11 +103,17 @@ CDP, con `--nav-h` real de cada breakpoint y la sección alineada bajo el header
 
 | Viewport | Presupuesto | Historia | Equipo | Tarjeta | Foto |
 | --- | --- | --- | --- | --- | --- |
-| 1024×768 | 691px | 691px | 693px | 631px | 310×363 (0.85) |
-| 1280×800 | 723px | 723px | 724px | 640px | 374×395 (0.95) |
-| 1440×900 | 823px | 823px | 824px | 725px | 374×480 (0.78, tope) |
-| 1920×1080 | 1003px | 1003px | 1004px | 725px | 374×480 (tope) |
-| 375×667 | 600px | 702px (crece) | 1448px (apila) | 589px | 341×352 (0.97) |
+| 1024×768 | 691px | 649px (margen normal) | 692px | 608px | 310×363 (0.85) |
+| 1280×800 | 723px | 649px (margen normal) | 724px | 640px | 374×395 (0.95) |
+| 1440×900 | 823px | 649px (margen normal) | 824px | 725px | 374×480 (0.78, tope) |
+| 1920×1080 | 1003px | 649px (margen normal) | 1004px | 725px | 374×480 (tope) |
+| 375×667 | 600px | 746px (margen normal) | 1440px (apila) | 589px | 341×352 (0.97) |
+
+La historia dejó de medir una pantalla: el 2026-10-07 el autor pidió que use los
+márgenes normales de la página, porque el `min-h` forzado dejaba unos 100px de
+aire arriba y abajo. Con `py-16 md:py-24` mide 649px en los cuatro desktop (el
+contenido es de ~520px) y 746px en mobile. El equipo sigue siendo una pantalla
+exacta.
 
 La sección mide el presupuesto exacto más su propio `border-t` de 1px (más el
 redondeo del navegador): el contenido nunca pasa del presupuesto y la tarjeta
@@ -157,6 +167,12 @@ desvanece y deja las 2 tarjetas a la vista, que se quedan ahí.
 - El espacio doble de "en la facultad  U de Rosario" quedó corregido.
 
 ## Tercera pantalla: el diccionario (2026-10-07)
+
+> **Rehecha por el autor después de este registro.** La entrada con las dos líneas
+de 1px se reemplazó por un title card con el logo a gran escala, un bloque que
+alterna con desenfoque y un morph del logo hacia el navbar. Es trabajo en curso en
+el árbol, sin commitear al 2026-10-07, así que este documento ya no describe esa
+pantalla.
 
 El autor pidió una entrada tipo diccionario que defina la marca. Primero se probó
 debajo del h1 de la historia: el bloque de 340px llevaba la primera pantalla de
