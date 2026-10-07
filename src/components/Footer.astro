@@ -96,9 +96,14 @@ const year = new Date().getFullYear();
         © {year} <MisureWord text={site.name} />. {footer.legal}.
       </p>
       <ShareButton />
+      {/* Mismo hover que el botón Compartir de al lado: el color pasa a opaco y
+          la barrita de `.link-ink` se dibuja de izquierda a derecha subrayando
+          el label. Antes era `hover:underline`, el subrayado nativo: aparece de
+          golpe y desentona con el botón que tiene al lado. El copy sigue
+          saliendo de `content.ts` (`footer.privacyLabel`). */}
       <a
         href="/privacidad"
-        class="text-green/75 underline-offset-4 hover:underline"
+        class="link-ink w-fit text-xs text-green/75 transition-transform duration-150 ease-out hover:text-green active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
       >
         {footer.privacyLabel}
       </a>
