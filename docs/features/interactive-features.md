@@ -45,7 +45,12 @@ en el header.
    elegir, el formulario aparece con el servicio visible como título clickeable
    (`data-service-change`) que vuelve al paso 1 y devuelve el foco a la opción
    elegida; el value viaja igual por el input oculto `name="service"` hacia
-   Web3Forms. Los dos pasos comparten una única celda de grilla y se alternan
+   Web3Forms. El foco del paso nuevo va a la **región** del formulario
+   (`tabindex="-1"`, sin anillo), nunca al primer campo: enfocar un input abre
+   el teclado solo en mobile, sin que el visitante lo haya pedido, y la región
+   no es un tab stop, así que `Tab` sigue hacia el botón "Cambiar" y después
+   por los campos en orden.
+   Los dos pasos comparten una única celda de grilla y se alternan
    con `visibility: hidden`, así el panel conserva el mismo tamaño entre pasos y
    el paso oculto queda fuera del foco y del árbol de accesibilidad. La sección
    ocupa un viewport menos el alto del navbar (`--contact-nav-h`) mediante

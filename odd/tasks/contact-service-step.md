@@ -50,8 +50,12 @@ Queda como follow-up.
 - El paso 1 es un `role="group"` con `aria-labelledby` apuntando a la pregunta,
   y las opciones son `<button type="button">` nativos: teclado y lector de
   pantalla funcionan sin roving tabindex.
-- Al elegir, el foco pasa al primer campo del formulario. Al tocar "Cambiar", el
-  foco vuelve a la opción elegida.
+- Al elegir, el foco pasa a la **región** del paso 2 (el propio `<form>`, con
+  `tabindex="-1"`), nunca al primer campo: enfocar un input abre el teclado solo
+  en mobile, sin que el visitante lo haya pedido. La región no es un tab stop, así
+  que `Tab` sigue hacia "Cambiar" y después por los campos en orden, y su foco
+  programático no dibuja anillo (no es un control). Al tocar "Cambiar", el foco
+  vuelve a la opción elegida.
 - Sin JS el formulario debe seguir siendo alcanzable: la visibilidad se resuelve
   con el patrón `.js` que el repo ya usa en `global.css`
   (`.js [data-reveal]`, `.js dialog[open] …`), dentro de un `<style>` scoped del
@@ -78,6 +82,9 @@ Queda como follow-up.
 2. Elegir una opción muestra el formulario con el servicio elegido visible y el
    input `name="service"` con el value correcto.
 3. "Cambiar" vuelve al paso 1 y devuelve el foco a la opción elegida.
+3.b Al elegir una opción el foco queda en la región del paso 2 y **no** en el
+   primer campo, y con `prefers-reduced-motion` o sin él no se dispara ningún
+   teclado en mobile (`astro check` + inspección del atributo `tabindex="-1"`).
 4. El POST a Web3Forms sigue enviando `service` con el value elegido.
 5. Tras un envío exitoso el flujo vuelve al paso 1 con todo limpio.
 6. Sin JS el formulario sigue siendo alcanzable y usable (degradado).

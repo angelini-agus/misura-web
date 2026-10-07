@@ -41,6 +41,7 @@ const { web3forms } = contactForm;
   <form
     id="contact-form"
     data-service-form
+    tabindex="-1"
     data-form-error-message={contactForm.formError}
     class="flex h-full flex-col gap-8"
     novalidate
@@ -253,6 +254,13 @@ const { web3forms } = contactForm;
   :global(.js) [data-service-flow][data-step="form"] [data-service-form] {
     visibility: visible;
   }
+
+  /* El foco programático de la región del paso 2 no dibuja anillo: no es un
+     control ni un tab stop, y un anillo rodeando todo el formulario se lee como
+     error de layout. Los controles de adentro conservan su :focus-visible. */
+  [data-service-form]:focus {
+    outline: none;
+  }
 </style>
 
 <script is:inline>
@@ -420,10 +428,12 @@ const { web3forms } = contactForm;
       if (serviceInput) {
         serviceInput.dispatchEvent(new Event("input", { bubbles: true }));
       }
-      const firstField = document.getElementById("cf-name");
-      if (firstField) {
-        firstField.focus();
-      }
+      // El paso cambió y el botón que tenía el foco queda oculto: hay que moverlo.
+      // Va a la región del paso 2 (el propio formulario), NUNCA al primer campo:
+      // enfocar un input abre el teclado solo en mobile, sin que el visitante lo
+      // haya pedido. La región no es un tab stop (`tabindex="-1"`), así que el Tab
+      // sigue de largo hacia "Cambiar" y después por los campos, en orden.
+      form.focus({ preventScroll: true });
     };
 
     const changeService = () => {
