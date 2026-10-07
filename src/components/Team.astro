@@ -11,200 +11,91 @@ const socialIcons = { linkedin: LinkedinIcon, github: GithubIcon } as const;
 
 {/*
   Sección de una pantalla: de `lg` para arriba mide exactamente
-  `100dvh - --nav-h`. El encabezado no ocupa alto: es la tapa de la entrada (ver
-  los estilos .team-tapa y el script al final), así que todo el alto se lo quedan
-  las 2 tarjetas, centradas. El alto de la foto lo resuelve una fórmula del
-  viewport (min(30rem, 100dvh - --nav-h - 20.5rem)), no una cuenta de píxeles: en
-  pantallas altas la foto crece sola y el aire sobrante queda repartido por
-  `justify-center`. En mobile la sección no entra en una pantalla y apila las dos
-  tarjetas: el `min-h` la deja crecer, no la recorta.
+  `100dvh - --nav-h`. El encabezado entra arriba de las tarjetas, en una fila
+  (eyebrow y título a la izquierda, descripción a la derecha: el mismo patrón que
+  usa "Cómo trabajamos"), y las 2 tarjetas van centradas abajo. La fila del
+  encabezado ocupa alto, así que la foto lo paga: su fórmula descuenta las 3rem
+  del padding de la sección, los 4.5rem de esa fila y los 17.5rem del bloque de
+  texto de la tarjeta. En mobile la sección no entra en una pantalla y apila: el
+  `min-h` la deja crecer, no la recorta.
 */}
-<section
-  id="nosotros"
-  class="scroll-mt-24 border-t border-green"
-  data-team-intro
->
+<section id="nosotros" class="scroll-mt-24 border-t border-green">
   <div
     class="mx-auto flex min-h-[calc(100dvh-var(--nav-h))] max-w-6xl flex-col justify-center px-4 py-[clamp(1.5rem,4dvh,3rem)] md:px-6"
   >
-    <div class="relative mx-auto w-full max-w-3xl">
-      {/* Tapa de entrada: cubre las tarjetas con el crema de la sección mientras
-          el título aparece de golpe. Sin JS, con movimiento reducido o en mobile
-          no se pinta (ver .team-tapa) y las 2 tarjetas se ven de una. */}
-      <div class="team-tapa" data-team-tapa>
-        <div
-          class="team-tapa__texto mx-auto max-w-xl text-center"
-          data-team-tapa-texto
+    <div
+      class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
+      data-reveal
+    >
+      <div class="max-w-xl">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+          {team.eyebrow}
+        </p>
+        <h2
+          class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
         >
-          <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-            {team.eyebrow}
-          </p>
-          <h2
-            class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
-          >
-            {team.title}
-          </h2>
-          <p class="mt-4 leading-relaxed text-green/80">{team.description}</p>
-        </div>
+          {team.title}
+        </h2>
       </div>
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {team.members.map((member) => (
-          <article
-            class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:border-green-dark"
+      <p class="max-w-sm leading-relaxed text-green/80">{team.description}</p>
+    </div>
+    <div class="mx-auto mt-6 grid w-full max-w-3xl grid-cols-1 gap-6 sm:grid-cols-2">
+      {team.members.map((member) => (
+        <article
+          class="flex flex-col overflow-hidden rounded-md border border-green bg-green text-cream transition-colors hover:border-green-dark"
+        >
+          {/* Placeholder photo shared by every member: decorative, so alt is empty.
+              When real per-member photos replace the placeholder, describe the photo
+              instead of repeating the member name, which is already the adjacent h3.
+              El duotono envuelve solo la foto: si cubriera la tarjeta entera,
+              también teñiría el nombre y el texto de abajo. La imagen va absoluta
+              dentro del marco porque el alto del marco lo decide la fórmula del
+              viewport, no la imagen: así el recorte lo hace object-cover. */}
+          <div
+            class="foto-duotono h-[22rem] lg:h-[min(30rem,calc(100dvh-var(--nav-h)-27rem))]"
           >
-            {/* Placeholder photo shared by every member: decorative, so alt is empty.
-                When real per-member photos replace the placeholder, describe the photo
-                instead of repeating the member name, which is already the adjacent h3.
-                El duotono envuelve solo la foto: si cubriera la tarjeta entera,
-                también teñiría el nombre y el texto de abajo. La imagen va absoluta
-                dentro del marco porque el alto del marco lo decide la fórmula del
-                viewport, no la imagen: así el recorte lo hace object-cover. */}
-            <div
-              class="foto-duotono h-[22rem] lg:h-[min(30rem,calc(100dvh-var(--nav-h)-20.5rem))]"
-            >
-              <Image
-                src={teamPlaceholder}
-                alt=""
-                widths={[400, 800]}
-                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-                class="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-              />
+            <Image
+              src={teamPlaceholder}
+              alt=""
+              widths={[400, 800]}
+              sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+              class="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div class="flex flex-1 flex-col gap-2 border-t border-green p-5 md:p-6">
+            <h3 class="font-display text-xl font-medium">{member.name}</h3>
+            <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
+              {member.role}
+            </p>
+            <p class="mt-1 text-sm leading-relaxed text-cream/80">
+              {member.description}
+            </p>
+            <div class="mt-auto flex flex-wrap gap-2.5 pt-4">
+              {Object.entries(team.socialLabels).map(([key, label]) => {
+                const href =
+                  member.socials[key as keyof typeof member.socials];
+                const Icon =
+                  socialIcons[key as keyof typeof socialIcons];
+                return href && !isPending(href) ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${label} de ${member.name}`}
+                    class="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-cream/50 px-3.5 py-2 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-cream hover:bg-cream hover:text-green active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+                  >
+                    <Icon class="social-icon h-4 w-4 shrink-0" />
+                    {label}
+                  </a>
+                ) : (
+                  <Placeholder inverse label={`${label} [PENDIENTE]`} />
+                );
+              })}
             </div>
-            <div class="flex flex-1 flex-col gap-2 border-t border-green p-5 md:p-6">
-              <h3 class="font-display text-xl font-medium">{member.name}</h3>
-              <p class="font-mono text-xs uppercase tracking-widest text-cream/70">
-                {member.role}
-              </p>
-              <p class="mt-1 text-sm leading-relaxed text-cream/80">
-                {member.description}
-              </p>
-              <div class="mt-auto flex flex-wrap gap-2.5 pt-4">
-                {Object.entries(team.socialLabels).map(([key, label]) => {
-                  const href =
-                    member.socials[key as keyof typeof member.socials];
-                  const Icon =
-                    socialIcons[key as keyof typeof socialIcons];
-                  return href && !isPending(href) ? (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${label} de ${member.name}`}
-                      class="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-cream/50 px-3.5 py-2 text-sm font-semibold text-cream transition duration-150 ease-out hover:border-cream hover:bg-cream hover:text-green active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
-                    >
-                      <Icon class="social-icon h-4 w-4 shrink-0" />
-                      {label}
-                    </a>
-                  ) : (
-                    <Placeholder inverse label={`${label} [PENDIENTE]`} />
-                  );
-                })}
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+          </div>
+        </article>
+      ))}
     </div>
   </div>
 </section>
-
-<style>
-  /* Entrada de la sección: una tapa opaca con el título cubre las 2 tarjetas, el
-     texto aparece de golpe, y la tapa se desvanece y deja las tarjetas a la
-     vista, que ya no se mueven más. La tapa arranca opaca (el mismo crema del
-     fondo de la sección), así que durante la entrada no hay destello de
-     tarjetas: lo único que anima es el texto de adentro.
-
-     La regla base la deja sin pintar: sin JS las tarjetas se ven de una y la
-     sección no queda tapada por una caja vacía. El gate `.js` lo pone
-     BaseLayout.astro, el mismo que usan el reveal y el mazo de proyectos. */
-  .team-tapa {
-    display: none;
-  }
-
-  :global(.js) .team-tapa {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    background: var(--color-cream);
-    /* La tapa es decorativa: nunca se queda con un click de las tarjetas. */
-    pointer-events: none;
-    transition: opacity 300ms var(--ease-out);
-  }
-
-  :global(.js) .team-tapa--fuera {
-    opacity: 0;
-  }
-
-  .team-tapa__texto {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  .team-tapa__texto--entra {
-    opacity: 1;
-    transform: scale(1);
-    transition:
-      opacity 240ms var(--ease-out),
-      transform 260ms var(--ease-back);
-  }
-
-  /* En mobile la sección apila las 2 tarjetas y mide más de una pantalla: una
-     tapa que las cubra todas dejaría el título fuera de la vista. Ahí la
-     entrada no corre y las tarjetas se ven de una. */
-  @media (max-width: 63.999rem), (prefers-reduced-motion: reduce) {
-    :global(.js) .team-tapa {
-      display: none;
-    }
-  }
-</style>
-
-<script>
-  // La entrada corre una sola vez por carga y solo cuando la sección entra en
-  // pantalla: el título aparece de golpe, se queda legible y la tapa se
-  // desvanece con él adentro. Después la tapa sale del DOM y quedan las
-  // tarjetas. Con movimiento reducido o en mobile no hay entrada (el CSS ya
-  // deja la tapa sin pintar) y acá se saca para no dejar un nodo tapando nada.
-  const iniciarIntroEquipo = () => {
-    const seccion = document.querySelector<HTMLElement>("[data-team-intro]");
-    if (!seccion || seccion.dataset.introCorrida === "si") return;
-    seccion.dataset.introCorrida = "si";
-
-    const tapa = seccion.querySelector<HTMLElement>("[data-team-tapa]");
-    const texto = seccion.querySelector<HTMLElement>("[data-team-tapa-texto]");
-    if (!tapa || !texto) return;
-
-    const sinEntrada =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      !window.matchMedia("(min-width: 64rem)").matches;
-    if (sinEntrada) {
-      tapa.remove();
-      return;
-    }
-
-    const observador = new IntersectionObserver(
-      (entradas, obs) => {
-        for (const entrada of entradas) {
-          if (!entrada.isIntersecting) continue;
-          obs.disconnect();
-          // 1) el título entra de golpe
-          texto.classList.add("team-tapa__texto--entra");
-          // 2) se queda legible y recién ahí la tapa se desvanece con él adentro
-          window.setTimeout(() => tapa.classList.add("team-tapa--fuera"), 900);
-          // 3) la tapa sale del DOM y quedan las 2 tarjetas
-          window.setTimeout(() => tapa.remove(), 1300);
-        }
-      },
-      { threshold: 0.35 },
-    );
-    observador.observe(seccion);
-  };
-
-  document.addEventListener("astro:page-load", iniciarIntroEquipo);
-  iniciarIntroEquipo();
-</script>
