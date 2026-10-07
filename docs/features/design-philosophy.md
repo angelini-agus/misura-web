@@ -73,6 +73,13 @@ Fuente de verdad: `src/styles/global.css` (bloque `@theme`).
 > Nota de coherencia: `docs/features/interactive-features.md` cita el crema como
 > `#F6EFE8`. El valor real es `#f1e8db`. Si hay que elegir, manda `global.css`.
 
+El resaltado de selección **invierte la superficie donde se apoya**. Sobre
+crema el bloque es `green-light` con letras crema (la página dada vuelta);
+sobre las superficies verdes (`[class~="bg-green"]`) va al revés (bloque
+crema, letras verdes), porque `green-light` (#0f4238) y `green` (#0e3b33) son
+casi el mismo tono y el resaltado se perdía contra el fondo. El selector
+matchea el token de clase entero y no `hover:bg-green`, un token distinto.
+
 ## Movimiento
 
 El movimiento es **analógico**: imita el comportamiento físico de objetos

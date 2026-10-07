@@ -152,9 +152,25 @@ body {
   outline-offset: 2px;
 }
 
+/* Selección: el resaltado invierte la superficie donde se apoya. Sobre crema el
+   bloque es verde con letras crema (la página dada vuelta). Sobre las tarjetas
+   verdes ese mismo bloque se pierde contra el fondo, porque `green-light`
+   (#0f4238) y `green` (#0e3b33) son casi el mismo tono: ahí la inversión va al
+   revés, bloque crema con letras verdes.
+
+   `[class~="bg-green"]` matchea el token de clase entero, no `hover:bg-green`:
+   un control crema que se pone verde solo en hover no cambia su selección. Si
+   aparece una superficie con otro token de fondo (`bg-green-dark`,
+   `bg-green-light`), hay que sumar su selector acá. */
 ::selection {
   background-color: var(--color-green-light);
   color: var(--color-cream);
+}
+
+[class~="bg-green"]::selection,
+[class~="bg-green"] ::selection {
+  background-color: var(--color-cream);
+  color: var(--color-green);
 }
 
 /* Autofill: Chrome, Edge y Firefox pintan el campo con su propio fondo
