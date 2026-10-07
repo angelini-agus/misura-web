@@ -1,5 +1,6 @@
 ---
 import { about, pages } from "../lib/content";
+import HighlightWords from "./ui/HighlightWords.astro";
 import MisureWord from "./ui/MisureWord.astro";
 
 // Reveal por oración: esta es la única sección animada de /nosotros, así que el
@@ -39,7 +40,10 @@ about.body.forEach((paragraph) => {
     </h1>
     <div class="mx-auto mt-8 flex w-full max-w-3xl flex-col gap-5">
       {blocks.map((sentences) => (
-        <p class="text-xl leading-relaxed text-green/80 md:text-2xl">
+        <p
+          class="text-xl leading-relaxed text-green/80 md:text-2xl"
+          data-reveal="blur"
+        >
           {/*
             Cada oración es un <span> inline con su propio data-reveal y
             transitionDelay. Los <span> inline no aceptan transform en
@@ -52,8 +56,18 @@ about.body.forEach((paragraph) => {
             Si parece un bug, es a propósito: el reveal es de opacidad pura.
           */}
           {sentences.map((sentence) => (
-            <span data-reveal style={{ transitionDelay: `${sentence.delay}ms` }}>
-              <MisureWord text={sentence.text} />{" "}
+            <span
+              data-reveal
+              style={{
+                transitionDelay: `${sentence.delay}ms`,
+                "--reveal-delay": `${sentence.delay}ms`,
+              }}
+            >
+              <HighlightWords
+                text={sentence.text}
+                phrases={about.highlights}
+                brand
+              />{" "}
             </span>
           ))}
         </p>

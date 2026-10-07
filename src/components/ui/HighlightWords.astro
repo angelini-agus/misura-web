@@ -1,0 +1,37 @@
+---
+import MisureWord from "./MisureWord.astro";
+
+interface Props {
+  text: string;
+  phrases?: string[];
+  /** Resalta la marca (misure en negrita) en los tramos que no son resaltado. */
+  brand?: boolean;
+}
+
+const { text, phrases = [], brand = false } = Astro.props;
+
+// Parte el texto por las frases a resaltar y envuelve cada coincidencia en el
+// marcador. Si una frase no aparece en el texto, el render no se rompe: el texto
+// sale entero y sin resaltado, así el copy puede cambiar sin tocar este archivo.
+// Las frases viven en content.ts. El escapado del patrón es para que una frase
+// con paréntesis o punto no rompa la expresión regular.
+const encontradas = phrases.filter((phrase) => text.includes(phrase));
+const escapadas = encontradas.map((phrase) =>
+  phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+);
+const partes = encontradas.length
+  ? text.split(new RegExp(`(${escapadas.join("|")})`, "g"))
+  : [text];
+---
+
+{
+  partes.map((parte) =>
+    encontradas.includes(parte) ? (
+      <span class="resaltado">{parte}</span>
+    ) : brand ? (
+      <MisureWord text={parte} />
+    ) : (
+      <span>{parte}</span>
+    ),
+  )
+}

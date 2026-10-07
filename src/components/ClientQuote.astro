@@ -1,5 +1,6 @@
 ---
 import { clientQuote, portfolio } from "../lib/content";
+import HighlightWords from "./ui/HighlightWords.astro";
 
 // Cita de una clienta real, entre "Cómo trabajamos" y el CTA: el último texto
 // que se lee antes de pedir la reunión. La regla vertical de 2px hace de comilla
@@ -9,14 +10,20 @@ import { clientQuote, portfolio } from "../lib/content";
 ---
 <section class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
-    <figure class="mx-auto max-w-3xl border-l-2 border-green pl-6 md:pl-8" data-reveal>
+    <figure
+      class="mx-auto max-w-3xl border-l-2 border-green pl-6 md:pl-8"
+      data-reveal="blur"
+    >
       <p class="text-xs font-semibold uppercase tracking-[0.2em] text-green/70">
         {clientQuote.eyebrow}
       </p>
       <blockquote
         class="font-display mt-4 text-2xl font-medium leading-snug tracking-tight md:text-3xl"
       >
-        {clientQuote.text}
+        <HighlightWords
+          text={clientQuote.text}
+          phrases={clientQuote.highlights}
+        />
       </blockquote>
       <figcaption class="mt-6">
         <p class="font-mono text-xs uppercase tracking-widest text-green/70">

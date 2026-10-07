@@ -227,11 +227,58 @@ textarea:autofill {
   transform: translateY(0);
 }
 
+/* Variante de entrada con desenfoque: el párrafo espera borroso y apagado y se
+   enfoca al entrar en pantalla. Es el mismo primitivo de arriba (misma opacidad
+   y mismo translateY, mismo observer) más el filtro. El 0.3 de opacidad es a
+   propósito: con 0 no se vería el desenfoque, que es el efecto. */
+.js [data-reveal="blur"] {
+  opacity: 0.3;
+  filter: blur(8px);
+  transition:
+    opacity 420ms ease-out,
+    transform 520ms ease-out,
+    filter 600ms ease-out;
+}
+
+.js [data-reveal="blur"].is-visible {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Resaltado tipo marcador: el subrayador entra de izquierda a derecha después
+   del texto. Va con degradé y no con background-color porque lo que anima es el
+   tamaño del fondo, y el tamaño solo se anima sobre una imagen de fondo. El
+   retraso sale de --reveal-delay, que cada oración declara con su propio
+   escalonamiento: así el marcador no barre mientras la oración todavía está
+   invisible. */
+.resaltado {
+  background-image: linear-gradient(
+    var(--color-cream-dark),
+    var(--color-cream-dark)
+  );
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 100%;
+  color: var(--color-green);
+  padding: 0 0.12em;
+}
+
+.js [data-reveal="blur"] .resaltado {
+  background-size: 0% 100%;
+}
+
+.js [data-reveal="blur"].is-visible .resaltado {
+  background-size: 100% 100%;
+  transition: background-size 520ms var(--ease-out)
+    calc(var(--reveal-delay, 0ms) + 160ms);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
+    filter: none;
   }
 }
 

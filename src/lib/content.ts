@@ -251,12 +251,14 @@ export const explore = {
 export const about: {
   eyebrow: string;
   body: string[];
+  highlights: string[];
 } = {
   eyebrow: "Nuestra historia",
   body: [
     "Nos conocimos cursando en la facultad U de Rosario. Armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos ir en serio: dejar de hacerlo como trabajo práctico y empezar a venderlo como negocio.",
     "La idea de misure nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
   ],
+  highlights: ["un solo sistema, construido a tu medida"],
 };
 
 export const hero = {
@@ -444,12 +446,14 @@ export const clientQuote: {
   author: string;
   source: string;
   caseHref: string;
+  highlights: string[];
 } = {
   eyebrow: "Testimonio",
   text: "Antes perdíamos horas cruzando planillas para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza todos los meses. Con el sistema de misure eso desapareció: ahora todo se carga solo, y lo que antes le ocupaba el día entero a una persona, hoy lo resuelve el sistema. Si estás dudando si vale la pena, para mí fue de las mejores decisiones que tomé en la empresa.",
   author: "Paola Zorila",
   source: "AZ Servicios de Limpieza, Rosario",
   caseHref: "/proyectos/empresa-limpieza-rosario",
+  highlights: ["hoy lo resuelve el sistema"],
 };
 
 
