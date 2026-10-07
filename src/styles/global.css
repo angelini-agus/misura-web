@@ -250,7 +250,8 @@ textarea:autofill {
    tamaño del fondo, y el tamaño solo se anima sobre una imagen de fondo. El
    retraso sale de --reveal-delay, que cada oración declara con su propio
    escalonamiento: así el marcador no barre mientras la oración todavía está
-   invisible. */
+   invisible. El barrido dura 780ms, un 50% más que los 520ms originales: a esa
+   velocidad el subrayador se lee como un trazo y no como un parpadeo. */
 .resaltado {
   background-image: linear-gradient(var(--color-green), var(--color-green));
   background-repeat: no-repeat;
@@ -274,7 +275,7 @@ textarea:autofill {
 
 .js [data-reveal].is-visible .resaltado {
   background-size: 100% 100%;
-  transition: background-size 520ms var(--ease-out)
+  transition: background-size 780ms var(--ease-out)
     calc(var(--reveal-delay, 0ms) + 160ms);
 }
 
