@@ -1,0 +1,37 @@
+---
+import { clientQuote, portfolio } from "../lib/content";
+
+// Cita de una clienta real, entre "Cómo trabajamos" y el CTA: el último texto
+// que se lee antes de pedir la reunión. La regla vertical de 2px hace de comilla
+// y la firma va en la monoespaciada que el sitio ya usa para el rol del equipo.
+// El link al caso sale de `portfolio.detailsLabel`, el mismo label que usan los
+// otros accesos a los casos: esta sección no agrega copy nuevo salvo el eyebrow.
+---
+<section class="scroll-mt-24 border-t border-green">
+  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+    <figure class="max-w-3xl border-l-2 border-green pl-6 md:pl-8" data-reveal>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-green/70">
+        {clientQuote.eyebrow}
+      </p>
+      <blockquote
+        class="font-display mt-4 text-2xl font-medium leading-snug tracking-tight md:text-3xl"
+      >
+        {clientQuote.text}
+      </blockquote>
+      <figcaption class="mt-6">
+        <p class="font-mono text-xs uppercase tracking-widest text-green/70">
+          {clientQuote.author}
+        </p>
+        <p class="mt-1 text-sm text-green/70">{clientQuote.source}</p>
+      </figcaption>
+      <p class="mt-5">
+        <a
+          href={clientQuote.caseHref}
+          class="inline-flex items-center gap-2 text-sm font-semibold underline underline-offset-4 transition-colors duration-150 ease-out hover:text-green-dark"
+        >
+          {portfolio.detailsLabel} <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </figure>
+  </div>
+</section>

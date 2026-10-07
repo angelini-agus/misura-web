@@ -117,6 +117,20 @@ La grilla dejó de estirarse y la foto pasó a tener alto propio.
 
 `npx astro check`: 0 errores, 0 warnings, 0 hints. `npm run build`: 11 páginas, OK.
 
+## Cita de cliente (2026-10-07)
+
+Pedido del autor: una cita justo antes del CTA. Se implementó `ClientQuote.astro`
+entre "Cómo trabajamos" y el `CtaBanner`, con el copy en `clientQuote` (cita textual
+de Paola Zorila, AZ Servicios de Limpieza, Rosario, 425 caracteres reproducidos
+carácter por carácter) y el link al caso de limpieza reusando
+`portfolio.detailsLabel`. Medido a 1280x800: sección de 663px, figura de 470px,
+8 líneas a 30px en una columna de 768px.
+
+**Decisión abierta**: el caso de estudio de limpieza está anonimizado
+(`client: "Empresa de limpieza · Rosario"` en `portfolio.items`) y la cita ya nombra
+a AZ Servicios de Limpieza. O el caso se desanonimiza para que las dos piezas
+concuerden, o la cita queda como la única mención con nombre. Lo decide el autor.
+
 ## Segunda ola (pedido del autor, 2026-10-07)
 
 1. Centrar mejor el contenido de la primera pantalla (hoy la columna queda pegada

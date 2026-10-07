@@ -438,6 +438,20 @@ export const nosotrosCta: {
   href: "/contacto#contacto",
 };
 
+export const clientQuote: {
+  eyebrow: string;
+  text: string;
+  author: string;
+  source: string;
+  caseHref: string;
+} = {
+  eyebrow: "Testimonio",
+  text: "Antes perdíamos horas cruzando planillas para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza todos los meses. Con el sistema de misure eso desapareció: ahora todo se carga solo, y lo que antes le ocupaba el día entero a una persona, hoy lo resuelve el sistema. Si estás dudando si vale la pena, para mí fue de las mejores decisiones que tomé en la empresa.",
+  author: "Paola Zorila",
+  source: "AZ Servicios de Limpieza, Rosario",
+  caseHref: "/proyectos/empresa-limpieza-rosario",
+};
+
 
 export const portfolio: {
   eyebrow: string;
