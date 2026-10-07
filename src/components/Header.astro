@@ -22,11 +22,23 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
   class="sticky top-0 z-50 border-b border-green bg-cream"
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
-    <a href="/" class="inline-flex items-center">
+    <a
+      href="/"
+      class="relative inline-flex h-8 w-[8.3125rem] items-center"
+      data-header-logo-link
+    >
+      {/* La imagen mide 620px de layout, el tamaño máximo que alcanza en el
+          diccionario, y el navbar la muestra escalada hacia abajo: el navegador
+          nunca agranda el mapa de bits, así que el logo se ve nítido en todo el
+          recorrido de la animación. La caja del enlace conserva el tamaño real
+          del logo en el header (133x32) y el transform por defecto deja la
+          imagen ya escalada, para que sin JS o con movimiento reducido el header
+          se vea igual. */}
       <img
         src="/misure-logo.svg"
         alt={site.name}
-        class="h-8 w-auto"
+        class="pointer-events-none absolute left-0 top-0 h-auto w-[38.75rem] max-w-none origin-top-left [transform:scale(0.2145)]"
+        data-header-logo
       />
     </a>
     <div class="flex items-center gap-5 md:gap-8">
