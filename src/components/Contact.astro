@@ -31,14 +31,14 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
   class="scroll-mt-[calc(var(--contact-nav-h)_-_2px)] border-t border-green [--contact-nav-h:4.1875rem] md:[--contact-nav-h:4.8125rem]"
 >
   <div
-    class="mx-auto flex min-h-[calc(100dvh-var(--contact-nav-h))] max-w-6xl flex-col px-4 py-16 md:px-6 md:py-24"
+    class="mx-auto flex min-h-[calc(100dvh-var(--contact-nav-h))] max-w-6xl flex-col px-4 py-[var(--contact-air-section,4rem)] md:px-6"
   >
     <div
       class="grid w-full flex-1 overflow-hidden rounded-lg border border-green md:grid-cols-2"
       data-reveal
       data-scroll-card
     >
-      <div class="flex flex-col justify-center gap-8 bg-green p-6 text-cream md:p-12">
+      <div class="flex flex-col justify-center gap-8 bg-green p-[var(--contact-air-card,1.5rem)] text-cream">
         <div class="flex flex-col gap-4">
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cream">
             {contact.eyebrow}
@@ -106,9 +106,59 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
           ))}
         </ul>
       </div>
-      <div class="bg-cream p-6 md:p-12">
+      <div class="bg-cream p-[var(--contact-air-card,1.5rem)]">
         <ContactForm simple={simple} />
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* Aire vertical de la seccion de contacto, en un solo lugar. Lo consumen el
+     contenedor y las dos celdas de Contact.astro y, mas adentro, el formulario
+     de ContactForm.astro: si no se declaran (por ejemplo si alguien reusa el
+     formulario afuera de esta seccion), cada clase cae en su valor de hoy. */
+  #contacto {
+    --contact-air-section: 4rem; /* py-16 */
+    --contact-air-card: 1.5rem; /* p-6 */
+    --contact-air-form: 2rem; /* gap-8 */
+    --contact-air-grid: 1.5rem; /* gap-6 */
+    --contact-air-submit: 1rem; /* gap-4 */
+  }
+
+  @media (min-width: 48rem) {
+    #contacto {
+      --contact-air-section: 6rem; /* md:py-24 */
+      --contact-air-card: 3rem; /* md:p-12 */
+    }
+  }
+
+  /* Ventana baja: notebook con Windows a 125% o 150% de escala, una notebook de
+     1366x768, o el navegador sin maximizar. Lo que manda no es la resolucion de
+     la pantalla sino el alto del viewport en px CSS (a 150% de escala, una
+     pantalla de 1080p da 720px CSS, y con el chrome del navegador quedan ~647).
+     Medido en este estado: el formulario de /contacto necesita 959px de ventana
+     para entrar entero y en el inicio 785px, asi que desde ahi abajo la seccion
+     dejaba de entrar en una pantalla y la tarjeta se cortaba (692px de tarjeta
+     en una banda de 570).
+
+     El nivel compacto recorta SOLO aire: 264px entre el padding de la seccion,
+     el de las celdas, la separacion del formulario, la de la grilla de campos y
+     la del bloque del boton. La tipografia, el alto de los inputs (46px), las 5
+     filas del textarea y el boton (52px) no se tocan. Con eso la seccion de
+     /contacto pasa de 885 a 621px y vuelve a entrar en una pantalla.
+
+     El tope de 55rem (880px) esta elegido para no tocar la PC del autor, que a
+     1080p y 100% de escala tiene ~970px utiles: por encima de 880px no cambia un
+     pixel. Solo aplica desde md, que es donde la tarjeta es una banda de dos
+     columnas: en mobile la seccion ya scrollea y apretarla no haria que entre. */
+  @media (min-width: 48rem) and (max-height: 55rem) {
+    #contacto {
+      --contact-air-section: 1.5rem;
+      --contact-air-card: 1.5rem;
+      --contact-air-form: 1rem;
+      --contact-air-grid: 1rem;
+      --contact-air-submit: 0.5rem;
+    }
+  }
+</style>
