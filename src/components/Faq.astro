@@ -113,6 +113,46 @@ const faqSchema = {
     openFaqFromHash(window.location.hash);
   };
 
+  /* Una sola pregunta abierta a la vez: al abrir una se cierran las demas, tanto
+     si la abrio un click (mobile y teclado, que es el comportamiento nativo del
+     <details>) como si la abrio el hover (escritorio, mas abajo). El cierre no
+     dispara nada a proposito: el handler solo actua cuando la fila quedo abierta,
+     asi que no hay ida y vuelta. */
+  const closeOtherFaqRows = (current: HTMLDetailsElement) => {
+    document.querySelectorAll<HTMLDetailsElement>("#preguntas details[open]").forEach((details) => {
+      if (details !== current) details.open = false;
+    });
+  };
+
+  const onFaqToggle = (event: Event) => {
+    const details = event.currentTarget as HTMLDetailsElement | null;
+    if (!details || !details.open) return;
+    closeOtherFaqRows(details);
+  };
+
+  /* Escritorio: la tarjeta se despliega con solo pasar el mouse. Va con 140ms de
+     espera para que cruzarse con la lista (bajando la pagina, por ejemplo) no
+     abra una tarjeta al pasar; el temporizador se cancela al salir. No se cierra
+     al salir del hover: se lee la respuesta con el mouse donde sea y la fila
+     queda abierta hasta que se abra otra. El click y el teclado siguen andando
+     igual (son la via nativa del <details>), y en touch no pasa nada porque
+     `hover: hover` y `pointer: fine` son falsos ahi: ahi se apreta y se abre. */
+  const FAQ_HOVER = "(hover: hover) and (pointer: fine)";
+  const FAQ_HOVER_DELAY = 140;
+  let faqHoverTimer = 0;
+
+  const onFaqEnter = (event: Event) => {
+    if (!window.matchMedia(FAQ_HOVER).matches) return;
+    const details = event.currentTarget as HTMLDetailsElement | null;
+    if (!details || details.open) return;
+    window.clearTimeout(faqHoverTimer);
+    faqHoverTimer = window.setTimeout(() => {
+      details.open = true;
+    }, FAQ_HOVER_DELAY);
+  };
+
+  const onFaqLeave = () => window.clearTimeout(faqHoverTimer);
+
   /* Aire reservado al pie de la seccion, en escritorio.
 
      El pedido es que las preguntas de abajo se empujen (eso lo hace el flujo solo)
@@ -121,20 +161,21 @@ const faqSchema = {
      asi que la unica forma de que no se mueva es que la seccion tenga de antemano
      el aire que va a ocupar la respuesta: la grilla arranca con
      `alto de las preguntas cerradas + alto de la respuesta mas alta` y todo
-     crecimiento que entre en ese aire no cambia el alto de nada.
+     crecimiento que entre en ese aire no cambia el alto de nada. Como ademas solo
+     hay una fila abierta a la vez, ese aire alcanza siempre: la seccion no cambia
+     de alto por abrir (ni por pasar el mouse por encima de) ninguna pregunta.
 
      Cuanto es "la respuesta mas alta" no se puede saber desde CSS (depende del
-     ancho: 128px en 1440, 154px en 1024, 232px en mobile porque el texto corta
-     mas seguido), asi que se mide. El scrollHeight del panel da el alto real de
-     la respuesta aunque este cerrada: el contenido se layouta igual y queda
-     clipeado por el `overflow: hidden` de `.details-collapse-inner`, asi que no
-     hace falta abrir ninguna pregunta para medirla (medido: coincide exacto con
-     el crecimiento real de cada tarjeta).
+     ancho: 128px en 1440, 154px en 1024), asi que se mide. El scrollHeight del
+     panel da el alto real de la respuesta aunque este cerrada: el contenido se
+     layouta igual y queda clipeado por el `overflow: hidden` de
+     `.details-collapse-inner`, asi que no hace falta abrir ninguna pregunta para
+     medirla (medido: coincide exacto con el crecimiento real de cada tarjeta).
 
-     Solo desde `lg`, que es donde la grilla es de dos columnas: en mobile la
-     seccion sigue creciendo con el contenido, que es lo que corresponde. Si el
-     JS no corre, no hay aire reservado y todo se comporta como antes. */
-  const FAQ_RESERVE_FROM = "(min-width: 64rem)";
+     Se reserva donde hay mouse, igual que el hover, y no por ancho: en touch la
+     seccion crece con el contenido, que es lo que corresponde (una columna y el
+     aire de la respuesta mas alta quedaria como un hueco sin sentido). Si el JS
+     no corre, no hay reserva y todo se comporta como antes. */
   const reserveFaqHeight = () => {
     const section = document.getElementById("preguntas");
     const grid = section?.querySelector<HTMLElement>("[data-faq-grid]");
@@ -142,7 +183,7 @@ const faqSchema = {
     // Sin limpiar el alto antes de medir, la segunda pasada mediria el aire que
     // dejo la primera y la reserva creceria sola en cada resize.
     grid.style.minHeight = "";
-    if (!window.matchMedia(FAQ_RESERVE_FROM).matches) return;
+    if (!window.matchMedia(FAQ_HOVER).matches) return;
     // Con una pregunta abierta el alto de la grilla ya trae el crecimiento
     // adentro: si se midiera asi, la reserva quedaria inflada para siempre.
     if (section?.querySelector("details[open]")) return;
@@ -159,10 +200,22 @@ const faqSchema = {
     faqResizeTimer = window.setTimeout(reserveFaqHeight, 150);
   };
 
+  const initFaqRows = () => {
+    document.querySelectorAll<HTMLDetailsElement>("#preguntas details").forEach((details) => {
+      details.removeEventListener("toggle", onFaqToggle);
+      details.addEventListener("toggle", onFaqToggle);
+      details.removeEventListener("mouseenter", onFaqEnter);
+      details.addEventListener("mouseenter", onFaqEnter);
+      details.removeEventListener("mouseleave", onFaqLeave);
+      details.addEventListener("mouseleave", onFaqLeave);
+    });
+  };
+
   const initFaq = () => {
     // La reserva se mide antes de abrir la pregunta del hash: si no, la grilla ya
     // viene crecida por esa respuesta y el aire sale mas grande de lo necesario.
     reserveFaqHeight();
+    initFaqRows();
     initFaqHash();
     document.fonts?.ready.then(reserveFaqHeight);
   };
