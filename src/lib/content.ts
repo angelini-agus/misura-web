@@ -277,8 +277,7 @@ export const dictionaryEntry: {
   phonetic: "/mi-sú-re/",
   category: "sustantivo · del italiano",
   senses: [
-    "misura: medida, la dimensión exacta de algo hecho con propósito.",
-    "software construido a la medida real de tu negocio",
+    "la dimensión exacta de algo hecho con propósito.",
   ],
 };
 
