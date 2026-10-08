@@ -186,13 +186,9 @@ const total = images.length;
     display: flex;
     width: 100%;
     min-height: 0;
-    /* No crece: se queda con el alto de la captura y se ancla arriba, así el
-       margen de arriba es siempre el mismo (el padding de la galería) en vez de
-       crecer con la ventana. El aire que sobra queda abajo, antes de las
-       tecnologías. Puede encogerse si la ventana es baja (flex-shrink + el
-       max-height de la cadena de la captura). */
-    flex: 0 1 auto;
-    max-height: 100%;
+    /* Ocupa el alto que sobra entre el borde y las tecnologías y centra la
+       captura: el aire se reparte arriba y abajo en partes iguales. */
+    flex: 1;
     align-items: center;
     justify-content: center;
     /* Las flechas viven FUERA del marco de la captura: acá se les reserva el
