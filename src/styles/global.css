@@ -435,8 +435,18 @@ textarea:autofill {
   transition: transform 160ms ease-out;
 }
 
+/* La barrita del hover. Se dibuja sobre el elemento que la lleva y, cuando ese
+   elemento es un span adentro de un link (el patron para que la flecha no quede
+   subrayada), tambien se dispara con el hover o el foco del link entero: asi el
+   link responde completo aunque la barrita cubra solo la palabra.
+
+   Regla de la casa: en un link de texto con flecha, `link-ink` va en el span del
+   label y NUNCA en el ancla. Puesta en el ancla, la barrita se estira de borde a
+   borde y subraya tambien la flecha. El caso de referencia es ClientQuote.astro. */
 .link-ink:hover::before,
-.link-ink:focus-visible::before {
+.link-ink:focus-visible::before,
+a:hover > .link-ink::before,
+a:focus-visible > .link-ink::before {
   transform: scaleX(1);
 }
 
