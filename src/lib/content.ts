@@ -789,9 +789,24 @@ export const caseStudies: {
       eyebrow: "El desafío",
       title: "El control manual llegó a su límite.",
       body: [
-        "La empresa manejaba la asistencia de su personal en múltiples edificios con planillas de Excel compartidas por WhatsApp. Cada fin de mes, el área administrativa tardaba varios días en cruzar datos de asistencia, calcular sueldos y liquidar impuestos.",
-        "Las quejas por inasistencias llegaban a 4-6 por mes sin que hubiera forma de verificarlas en tiempo real. El personal de supervisión no tenía visibilidad de qué empleado estaba en qué edificio, y el stock de insumos por edificio se registraba a mano.",
-        "El sistema existente no era escalable: cada empleado nuevo multiplicaba el trabajo administrativo en lugar de distribuirlo.",
+        "El control de una empresa con más de 30 edificios pasaba por planillas y mensajes de WhatsApp.",
+      ],
+    },
+    contrast: {
+      labels: { before: "Antes", after: "Después" },
+      rows: [
+        {
+          before: "Asistencia en planillas de Excel compartidas por WhatsApp",
+          after: "Entrada y salida con GPS y código QR desde el teléfono",
+        },
+        {
+          before: "Cierre de mes cruzando datos a mano durante varios días",
+          after: "Sueldos e impuestos calculados automáticamente en minutos",
+        },
+        {
+          before: "Sin visibilidad de quién estaba en cada edificio",
+          after: "Mapa en vivo con las alertas de inasistencia",
+        },
       ],
     },
     solution: {
