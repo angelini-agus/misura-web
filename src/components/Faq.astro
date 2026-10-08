@@ -51,13 +51,15 @@ const faqSchema = {
         {/* El link va suelto, sin recuadro: el recuadro lo hacia leer como un
             boton flotando en la columna, cuando es una salida mas del bloque y
             tiene que alinearse con el resto. Va pegado al lead: es la continuacion
-            de la misma frase, no un bloque aparte. `link-ink` ya suma 6px de aire
-            propio por encima del subrayado. */}
+            de la misma frase, no un bloque aparte. `link-ink` va en el span del
+            label y no en el ancla, para que la barrita no subraye la flecha
+            (mismo patron que ClientQuote); `link-ink` ya suma 6px de aire propio
+            por encima del subrayado. */}
         <a
           href={faqHeading.cta.href}
-          class="link-ink mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
+          class="mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
         >
-          {faqHeading.cta.label}
+          <span class="link-ink inline-block">{faqHeading.cta.label}</span>
           <span aria-hidden="true">→</span>
         </a>
       </div>

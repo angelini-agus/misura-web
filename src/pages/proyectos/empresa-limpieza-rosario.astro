@@ -167,12 +167,15 @@ const cs = caseStudies.limpieza;
     <!-- Volver a proyectos -->
     <section class="border-t border-green">
       <div class="mx-auto max-w-6xl px-4 py-8 md:px-6">
+        {/* `link-ink` va en el span del label y no en el ancla: puesta en el
+            ancla, la barrita se estira de borde a borde y subraya tambien la
+            flecha de la izquierda. Mismo patron que ClientQuote. */}
         <a
           href="/proyectos"
-          class="link-ink inline-flex items-center gap-2 text-sm font-semibold text-green hover:text-green-dark"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-green hover:text-green-dark"
         >
           <span aria-hidden="true">←</span>
-          Ver todos los proyectos
+          <span class="link-ink inline-block">Ver todos los proyectos</span>
         </a>
       </div>
     </section>

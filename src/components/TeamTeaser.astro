@@ -1,14 +1,21 @@
 ---
-import { team } from "../lib/content";
+import { isPending, team } from "../lib/content";
 import { Image } from "astro:assets";
 import teamPlaceholder from "../assets/team-placeholder.png";
 import Button from "./ui/Button.astro";
+import LinkedinIcon from "./ui/LinkedinIcon.astro";
 
 // Versión corta para el inicio: solo las 2 fotos y el link a las tarjetas
 // completas de /nosotros. No repite el copy del equipo (ni la descripción ni las
 // bios): eso vive en la sección de /nosotros, junto al ancla #nosotros. El label
 // del link sale de `team.title` y el eyebrow de `team.eyebrow`, así que esta
 // sección no agrega copy nuevo a content.ts.
+//
+// Cada foto lleva encima el LinkedIn de su miembro, que entra deslizándose desde
+// abajo al pasar el mouse o al enfocar el link con el teclado. No se muestra el
+// nombre: el link lo lleva en el `aria-label` (`LinkedIn de <nombre>`, el mismo
+// patrón que las tarjetas de /nosotros), así que la sección sigue sin repetir el
+// copy del equipo y el visitante entra al perfil directo desde la foto.
 ---
 <section class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20">
@@ -20,15 +27,16 @@ import Button from "./ui/Button.astro";
       {team.eyebrow}
     </p>
     <div class="mt-8 grid grid-cols-2 gap-4 md:gap-6">
-      {team.members.map((_, index) => (
+      {team.members.map((member, index) => (
         <div
           class="foto-duotono overflow-hidden rounded-md border border-green"
           data-reveal
           style={{ transitionDelay: `${index * 60}ms` }}
         >
-          {/* Placeholder photo shared by every member: decorative, so alt is empty.
-              When real per-member photos replace the placeholder, describe the photo
-              instead of repeating the member name, que acá no se muestra. */}
+          {/* Foto placeholder compartida por los dos miembros: es decorativa, por
+              eso el alt va vacío. Cuando cada uno tenga su foto real hay que darle
+              la suya a este `Image` (una por miembro), y el alt sigue vacío
+              porque el nombre ya lo dice el link de abajo. */}
           <Image
             src={teamPlaceholder}
             alt=""
@@ -37,6 +45,21 @@ import Button from "./ui/Button.astro";
             class="aspect-[4/3] w-full object-cover"
             loading="lazy"
           />
+          {/* El `z-10` es para quedar por encima del duotono de `.foto-duotono`,
+              que es un `::after` con `mix-blend-mode`: el link es interfaz, no
+              foto, y no se tiñe. */}
+          {!isPending(member.socials.linkedin) && (
+            <a
+              href={member.socials.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${team.socialLabels.linkedin} de ${member.name}`}
+              class="foto-cta absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-2 border-t border-cream/40 bg-green px-3 py-2.5 text-sm font-semibold text-cream hover:bg-green-light"
+            >
+              <LinkedinIcon class="h-4 w-4 shrink-0" />
+              <span>{team.socialLabels.linkedin}</span>
+            </a>
+          )}
         </div>
       ))}
     </div>
@@ -47,3 +70,42 @@ import Button from "./ui/Button.astro";
     </div>
   </div>
 </section>
+
+<style>
+  /* El LinkedIn de cada foto entra desde abajo. Se anima sólo transform y
+     opacity (compositor, sin reflow) con el ease-out del sistema, y la banda
+     termina en su lugar: no cambia el alto de la grilla, así que no hay salto de
+     layout. El color del fondo va en la misma transición porque el hover lo
+     aclara. */
+  .foto-cta {
+    transform: translateY(100%);
+    opacity: 0;
+    transition:
+      transform 200ms var(--ease-out),
+      opacity 200ms var(--ease-out),
+      background-color 150ms var(--ease-out);
+  }
+
+  .foto-duotono:hover .foto-cta,
+  .foto-duotono:focus-within .foto-cta {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Sin hover (teléfono y tablet) la banda queda a la vista: si dependiera del
+     hover, el perfil sería inalcanzable con el dedo. */
+  @media (hover: none) {
+    .foto-cta {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  /* Con movimiento reducido la función se mantiene (aparece y desaparece), sin
+     deslizamiento. */
+  @media (prefers-reduced-motion: reduce) {
+    .foto-cta {
+      transition: none;
+    }
+  }
+</style>

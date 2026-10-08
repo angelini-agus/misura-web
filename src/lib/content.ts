@@ -28,16 +28,22 @@ import leadsBaseDeDatos from "../assets/proyectos/leadscrm/02-base-de-datos.png"
 import leadsConfiguracion from "../assets/proyectos/leadscrm/03-configuracion.png";
 import leadsLogin from "../assets/proyectos/leadscrm/04-login.png";
 import leadsMetricas from "../assets/proyectos/leadscrm/05-metricas.png";
-import azLandingDesktop from "../assets/proyectos/az-landing/desktop.png";
-import pediatricLandingHero from "../assets/proyectos/pediatric/01-landing-hero.png";
-import pediatricDoctorJourney from "../assets/proyectos/pediatric/02-landing-doctor-journey.png";
-import pediatricTurnos from "../assets/proyectos/pediatric/03-landing-turnos.png";
-import pediatricFaq from "../assets/proyectos/pediatric/04-landing-faq-contact.png";
-import pediatricLogin from "../assets/proyectos/pediatric/05-erp-login.png";
-import pediatricDashboard from "../assets/proyectos/pediatric/06-erp-dashboard.png";
-import pediatricPatients from "../assets/proyectos/pediatric/07-erp-patients.png";
-import pediatricAppointments from "../assets/proyectos/pediatric/08-erp-appointments.png";
-import pediatricSettings from "../assets/proyectos/pediatric/09-erp-settings.png";
+import azLandingHero from "../assets/proyectos/az-landing/az-hero.png";
+import azLandingServicios from "../assets/proyectos/az-landing/az-servicios.png";
+import azLandingComoTrabajamos from "../assets/proyectos/az-landing/az-como-trabajamos.png";
+import azLandingContacto from "../assets/proyectos/az-landing/az-contacto.png";
+import pediatricLandingHero from "../assets/proyectos/pediatric/landing-hero.png";
+import pediatricLandingJourney from "../assets/proyectos/pediatric/landing-journey.png";
+import pediatricLandingTestimonials from "../assets/proyectos/pediatric/landing-testimonials.png";
+import pediatricLandingContacto from "../assets/proyectos/pediatric/landing-contacto.png";
+import pediatricErpDashboard from "../assets/proyectos/pediatric/erp-dashboard.png";
+import pediatricErpPortalRequests from "../assets/proyectos/pediatric/erp-portal-requests.png";
+import pediatricErpAppointments from "../assets/proyectos/pediatric/erp-appointments.png";
+import pediatricErpAppointmentDialog from "../assets/proyectos/pediatric/erp-appointment-dialog.png";
+import pediatricErpConsultations from "../assets/proyectos/pediatric/erp-consultations.png";
+import pediatricErpPatientRecord from "../assets/proyectos/pediatric/erp-patient-record.png";
+import pediatricPortalAppointments from "../assets/proyectos/pediatric/portal-appointments.png";
+import pediatricPortalContact from "../assets/proyectos/pediatric/portal-contact.png";
 import limpiezaAdmin1 from "../assets/proyectos/limpieza/admin1.png";
 import limpiezaAdmin2 from "../assets/proyectos/limpieza/admin2.png";
 import limpiezaAdmin3 from "../assets/proyectos/limpieza/admin3.png";
@@ -466,11 +472,11 @@ export const clientQuote: {
   highlights: string[];
 } = {
   eyebrow: "Testimonio",
-  text: "Antes perdíamos horas cruzando planillas para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza todos los meses. Con el sistema de misure eso desapareció: ahora todo se carga solo, y lo que antes le ocupaba el día entero a una persona, hoy lo resuelve el sistema. Si estás dudando si vale la pena, para mí fue de las mejores decisiones que tomé en la empresa.",
+  text: "Antes perdíamos horas llenando planillas a mano para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza semana a semana. Con Misure ahora todo se carga solo, y una tarea que antes le consumía gran parte de su jornada a un empleado, hoy se resuelve de forma automática. Para mí fue de las mejores decisiones que tomé en la empresa, ya que dejé de lidiar con problemas cotidianos y puse mi foco en hacer crecer el negocio.",
   author: "Paola Zorila",
   source: "AZ Servicios de Limpieza, Rosario",
   caseHref: "/proyectos/empresa-limpieza-rosario",
-  highlights: ["hoy lo resuelve el sistema"],
+  highlights: ["resuelve de forma automática"],
 };
 
 
@@ -524,7 +530,7 @@ export const portfolio: {
       description:
         "Plataforma integral para clínica pediátrica: historia clínica conforme a la Ley 26.529, turnos, panel clínico en tiempo real y recetas en PDF.",
       href: "/proyectos/sistema-clinica-pediatrica",
-      image: pediatricDashboard,
+      image: pediatricErpDashboard,
       imageAlt: "Dashboard clínico del sistema pediátrico",
     },
     {
@@ -546,7 +552,7 @@ export const portfolio: {
       description:
         "Sitio oficial con propuesta de valor clara, captación de consultas calificada e integración con el ERP interno bajo un mismo dominio.",
       href: "/proyectos/landing-empresa-limpieza",
-      image: azLandingDesktop,
+      image: azLandingHero,
       imageAlt: "Sitio de la empresa de limpieza",
     },
     {
@@ -572,22 +578,17 @@ export const portfolio: {
 };
 
 
-/* Encabezado de la seccion de preguntas del inicio. La columna izquierda la
-   arma Faq.astro en tres partes: el eyebrow chico, esta palabra en grande (que
-   es la que lleva el h2) y el lead. Por eso `title` es la sigla y no el termino
-   largo: "Preguntas frecuentes" vive en el eyebrow, que es el unico lugar donde
-   el lector lo lee completo (y donde queda para buscadores). */
+/* Encabezado de la seccion de preguntas del inicio: la columna izquierda la arma
+   Faq.astro con la palabra en grande (que es la que lleva el h2), el lead y el
+   link a contacto. */
 export const faqHeading: {
-  eyebrow: string;
   title: string;
   lead: string;
-  cta: { question: string; label: string; href: string };
+  cta: { label: string; href: string };
 } = {
-  eyebrow: "Preguntas frecuentes",
   title: "FAQ",
   lead: "Lo que nos preguntás antes de arrancar, respondido sin vueltas.",
   cta: {
-    question: "¿No encontrás tu respuesta?",
     label: "Escribinos",
     href: "/contacto#contacto",
   },
@@ -1063,8 +1064,20 @@ export const caseStudies: {
     technologies: ["Astro", "TypeScript", "Tailwind CSS", "Lenis", "Vercel"],
     gallery: [
       {
-        src: azLandingDesktop,
-        alt: "Sitio de la empresa de limpieza en escritorio",
+        src: azLandingHero,
+        alt: "Portada del sitio con la propuesta de valor, las métricas de respaldo y el pedido de presupuesto",
+      },
+      {
+        src: azLandingServicios,
+        alt: "Las verticales de servicio, ordenadas por tipo de espacio",
+      },
+      {
+        src: azLandingComoTrabajamos,
+        alt: "El proceso, de la consulta al servicio",
+      },
+      {
+        src: azLandingContacto,
+        alt: "El formulario de contacto, con los cuatro datos y el pedido de presupuesto",
       },
     ],
     problem: {
@@ -1126,64 +1139,93 @@ export const caseStudies: {
     seo: {
       title: "Página web para clínica pediátrica | misure",
       description:
-        "Sitio público para una clínica pediátrica: trayectoria médica, etapas del cuidado pediátrico, solicitud de turnos y contacto directo, optimizado para SEO.",
+        "Sitio público de una clínica pediátrica: la trayectoria de la profesional, las etapas del cuidado, los testimonios de las familias y el turno como cierre, con el contenido renderizado en el servidor.",
     },
     eyebrow: "Caso de estudio",
     title: "Página web para clínica pediátrica",
     client: "Clínica pediátrica",
-    location: "Argentina",
+    location: "Pueblo Esther, Santa Fe",
     category: "Página Web",
-    technologies: ["Astro", "React", "Tailwind CSS"],
+    technologies: ["Astro", "React", "Tailwind CSS", "TypeScript"],
     gallery: [
-      { src: pediatricLandingHero, alt: "Portada de la landing con la autoridad médica" },
-      { src: pediatricDoctorJourney, alt: "Trayectoria médica y etapas del cuidado pediátrico" },
-      { src: pediatricTurnos, alt: "Flujo de solicitud de turnos" },
-      { src: pediatricFaq, alt: "Preguntas frecuentes y contacto" },
+      {
+        src: pediatricLandingHero,
+        alt: "Portada del sitio con la propuesta de la pediatra y los dos accesos, sacar turno y entrar al portal",
+      },
+      {
+        src: pediatricLandingJourney,
+        alt: "Las etapas del cuidado, de la preconcepción a la adolescencia",
+      },
+      {
+        src: pediatricLandingContacto,
+        alt: "El mapa del consultorio y los datos de contacto, al final del recorrido",
+      },
+      {
+        src: pediatricLandingTestimonials,
+        alt: "Testimonios de familias, con la trayectoria de la clínica arriba",
+      },
     ],
     problem: {
       eyebrow: "El desafío",
-      title: "La autoridad médica no se veía desde afuera",
+      title: "Un consultorio que abría tenía que estar online desde el primer día",
       body: [
-        "El consultorio pediátrico necesitaba una presencia pública que comunicara su trayectoria y especialidad, y que funcionara como canal de contacto para las familias.",
-        "La información clave (trayectoria del profesional, etapas del cuidado pediátrico, horarios y ubicación) no tenía un lugar único donde consultarse.",
-        "Las consultas de turnos llegaban por canales dispersos, sin un flujo ordenado que le dejara a la clínica los datos necesarios para responder.",
+        "La clínica abría sin pacientes todavía, sin sistema anterior y sin costumbres que respetar. Parece una ventaja, pero es una decisión: si el canal público no se piensa desde el principio, después se parchea durante años.",
+        "La atención se da en un domicilio particular, así que el sitio no podía publicar la dirección exacta: se muestra la ciudad y el resto se libera recién con una cuenta registrada.",
+        "Las familias tenían que poder reservar sin llamar por teléfono, y el sitio tenía que transmitir la autoridad de la profesional y su mirada de seguimiento a lo largo de las etapas.",
       ],
     },
     solution: {
       eyebrow: "La solución",
-      title: "Un sitio público claro, optimizado para SEO y orientado a turnos",
+      title: "Un sitio que presenta a la profesional y cierra en el turno",
       features: [
         {
           title: "Autoridad médica como eje",
           description:
-            "La portada presenta al profesional y su trayectoria, con las etapas del cuidado pediátrico desde la preconcepción hasta la adolescencia.",
+            "La portada presenta a la pediatra y su enfoque: la misma profesional en cada etapa, de la preconcepción a la adolescencia.",
         },
         {
-          title: "Flujo de solicitud de turnos",
+          title: "Etapas del cuidado con una pieza interactiva",
           description:
-            "Un formulario de solicitud de turnos ordena la consulta y reúne los datos que la clínica necesita antes de responder, en lugar de mensajes sueltos.",
+            "Las cinco etapas del cuidado se recorren en un abanico interactivo en escritorio y en un carrusel con ajuste en mobile: el mismo contenido con otra composición según el ancho.",
         },
         {
-          title: "FAQ y contacto directo",
+          title: "El turno cierra el recorrido",
           description:
-            "Preguntas frecuentes, horarios, ubicación y canales de contacto directo, todo en un mismo lugar y sin fricción.",
+            "Cada sección termina apuntando al portal de pacientes, donde la familia ve la disponibilidad y pide su turno. La solicitud cae en la cola de confirmación de la clínica.",
         },
         {
-          title: "Rendimiento y SEO",
+          title: "Privacidad desde el arranque",
           description:
-            "Sitio estático con generación optimizada y contenido pensado para buscadores, para que las familias encuentren la clínica y lleguen al turno.",
+            "El sitio publica la ciudad. La ubicación exacta se libera sólo adentro del portal, con la cuenta de la familia.",
+        },
+        {
+          title: "Casi sin JavaScript",
+          description:
+            "El sitio se renderiza en el servidor y sólo las piezas interactivas viajan como islas de React, así que pesa poco y carga rápido en el teléfono.",
         },
       ],
     },
     results: {
       eyebrow: "Resultados",
-      title: "Funcionalidades entregadas; métricas de negocio pendientes.",
+      title: "Publicado y en uso, con el turno como cierre de cada sección.",
       metrics: [
         {
-          value: "[PENDIENTE]",
-          unit: "métricas de resultado",
+          value: "0",
+          unit: "JS por defecto",
           label:
-            "No contamos aún con cifras de consultas o conversión. Completar con datos reales cuando los tengas.",
+            "el contenido se renderiza en el servidor y sólo lo interactivo viaja como isla de React",
+        },
+        {
+          value: "1",
+          unit: "pediatra",
+          label:
+            "la misma profesional en cada etapa, de la preconcepción a la adolescencia",
+        },
+        {
+          value: "Ciudad",
+          unit: "publicada",
+          label:
+            "la ubicación exacta se libera recién con la cuenta registrada de la familia",
         },
       ],
     },
@@ -1199,72 +1241,118 @@ export const caseStudies: {
     seo: {
       title: "Sistema de gestión clínica pediátrica | misure",
       description:
-        "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica conforme a la Ley 26.529, turnos, recetas en PDF y autenticación segura.",
+        "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica trazable conforme a la Ley 26.529, turnos que se confirman en una cola, recetas en PDF y accesos por rol.",
     },
     eyebrow: "Caso de estudio",
     title: "ERP clínico y portal de pacientes para clínica pediátrica",
     client: "Clínica pediátrica",
-    location: "Argentina",
+    location: "Pueblo Esther, Santa Fe",
     category: "Gestión (ERP)",
     technologies: [
       "Next.js",
       "NestJS",
       "PostgreSQL",
       "Prisma",
+      "Zod",
       "Tailwind CSS",
+      "TypeScript",
       "Turborepo",
     ],
     gallery: [
-      { src: pediatricDashboard, alt: "Dashboard clínico con el embudo de pacientes del día" },
-      { src: pediatricPatients, alt: "Directorio de pacientes pediátricos" },
-      { src: pediatricAppointments, alt: "Agenda de turnos del consultorio" },
-      { src: pediatricSettings, alt: "Configuración de la clínica y recetas" },
-      { src: pediatricLogin, alt: "Login seguro del ERP clínico" },
+      {
+        src: pediatricErpDashboard,
+        alt: "Panel del día: el embudo de turnos, las evoluciones pendientes y la tabla de turnos de hoy",
+      },
+      {
+        src: pediatricErpPortalRequests,
+        alt: "Solicitudes de turno hechas desde el portal de familias, esperando la confirmación de la clínica",
+      },
+      {
+        src: pediatricErpAppointments,
+        alt: "Agenda con paciente, tutor, motivo, profesional y estado",
+      },
+      {
+        src: pediatricErpAppointmentDialog,
+        alt: "Nuevo turno: los selectores de fecha y hora sólo ofrecen los horarios que están libres",
+      },
+      {
+        src: pediatricErpConsultations,
+        alt: "Consultas del día con el panel de la consulta embebido: contexto, evoluciones y receta",
+      },
+      {
+        src: pediatricErpPatientRecord,
+        alt: "Historia clínica: datos, antecedentes perinatales y cobertura junto a la línea de evoluciones",
+      },
+      {
+        src: pediatricPortalAppointments,
+        alt: "Portal de familias: próximo turno, pedido de turno nuevo y contacto",
+      },
+      {
+        src: pediatricPortalContact,
+        alt: "Contacto y ubicación: la dirección exacta aparece recién con la sesión iniciada",
+      },
     ],
     problem: {
       eyebrow: "El desafío",
-      title: "Gestionar pacientes pediátricos exige más que una agenda de turnos",
+      title: "Historia clínica, turnos y privacidad: tres decisiones que no se parchean",
       body: [
-        "Un consultorio pediátrico no maneja un solo paciente: maneja niños con tutores legales (padre, madre o responsable), obra social y datos clínicos que deben conservarse durante años.",
-        "La historia clínica está alcanzada por la Ley 26.529 de registros médicos: no se puede borrar información clínica ni dejar acciones sin trazabilidad. Un sistema genérico no contempla esa exigencia.",
-        "El consultorio necesitaba centralizar en una sola herramienta la gestión de pacientes, turnos, historia clínica, recetas y obligaciones, sin depender de planillas sueltas ni de un software que no contemplara su forma de trabajar.",
+        "La clínica abría sin pacientes y sin sistema anterior: no había nada que migrar, pero tampoco ninguna costumbre que corrigiera el diseño. Si el registro clínico o el canal de turnos nacían flojos, se iban a parchear durante años.",
+        "La Ley 26.529 pide registros trazables: quién escribió, cuándo y qué cambió. Eso no se resuelve con una política escrita, se resuelve en el modelo de datos.",
+        "Y como la atención se da en un domicilio, la ubicación exacta no puede quedar publicada: se libera sólo para las familias con cuenta.",
       ],
     },
     solution: {
       eyebrow: "La solución",
-      title: "Un ERP clínico a medida, con API propia y portal de pacientes",
+      title: "Un ERP clínico con API propia, portal de familias y sitio público",
       features: [
         {
-          title: "Panel clínico en tiempo real",
+          title: "El cumplimiento va en el modelo, no en una política",
           description:
-            "El equipo ve el embudo de pacientes del día, la sala de espera, la asistencia, las evoluciones pendientes de firma y los próximos turnos en un solo tablero.",
+            "Cada entidad clínica tiene baja lógica obligatoria y cada escritura queda en un registro de auditoría que sólo se agrega: nada se borra físicamente y todo cambio es atribuible.",
         },
         {
-          title: "Historia clínica conforme a la Ley 26.529",
+          title: "El turno se cierra sin llamar por teléfono",
           description:
-            "Cada acción clínica queda registrada en un historial de auditoría inmutable, con autor, fecha y detalle del cambio. Nada se borra: las entidades clínicas usan baja lógica y la jerarquía de tutores queda modelada.",
+            "La familia ve la disponibilidad y pide el turno desde el portal. La solicitud entra a una cola de confirmación y, al confirmarla, pasa a la agenda como turno agendado.",
         },
         {
-          title: "Recetas en PDF y configuración de la clínica",
+          title: "Una pantalla por trabajo",
           description:
-            "Un generador dinámico de recetas en PDF incorpora los datos de la clínica, el profesional y su matrícula. La configuración permite ajustar licencias, especialidad y encabezados sin tocar código.",
+            "Correr el día, documentar una consulta y pedir un turno son tareas distintas: el panel del equipo, el portal de familias y el sitio público son superficies separadas sobre la misma API y los mismos tokens de diseño.",
         },
         {
-          title: "Seguridad y control de acceso",
+          title: "Recetas como documentos",
           description:
-            "Una API propia con roles diferenciados y autenticación de servidor mediante cookies httpOnly, sin exponer tokens al navegador. Cada usuario accede solo a lo que le corresponde.",
+            "La receta se emite en PDF desde la historia clínica, con los datos de la clínica, del profesional y su matrícula.",
+        },
+        {
+          title: "Seguridad por defecto y sesiones revocables",
+          description:
+            "Un guard global de JWT y permisos por cinco roles: el alta pública sólo puede crear pacientes, las cuentas del equipo las crea un administrador, y cada pedido revalida el token contra la base, así que una cuenta dada de baja deja de funcionar al instante.",
         },
       ],
     },
     results: {
       eyebrow: "Resultados",
-      title: "Funcionalidades entregadas; métricas de negocio pendientes.",
+      title: "En producción desde antes del primer paciente.",
       metrics: [
         {
-          value: "[PENDIENTE]",
-          unit: "métricas de resultado",
+          value: "3",
+          unit: "superficies",
           label:
-            "No contamos aún con cifras de ahorro o de tiempo. Completar con datos reales cuando los tengas.",
+            "panel del equipo, portal de familias y sitio público, con la misma API y los mismos tokens",
+        },
+        {
+          value: "5",
+          unit: "roles",
+          label:
+            "el alta pública sólo crea pacientes y cada persona ve lo que le corresponde",
+        },
+        {
+          value: "26.529",
+          unit: "Ley",
+          label:
+            "trazabilidad en el modelo de datos: baja lógica y auditoría que sólo se agrega",
         },
       ],
     },
