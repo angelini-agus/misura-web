@@ -1157,12 +1157,12 @@ export const caseStudies: {
         alt: "Las etapas del cuidado, de la preconcepción a la adolescencia",
       },
       {
-        src: pediatricLandingTestimonials,
-        alt: "Testimonios de familias, con la trayectoria de la clínica arriba",
-      },
-      {
         src: pediatricLandingContacto,
         alt: "El mapa del consultorio y los datos de contacto, al final del recorrido",
+      },
+      {
+        src: pediatricLandingTestimonials,
+        alt: "Testimonios de familias, con la trayectoria de la clínica arriba",
       },
     ],
     problem: {
