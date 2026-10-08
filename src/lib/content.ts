@@ -28,7 +28,15 @@ import leadsBaseDeDatos from "../assets/proyectos/leadscrm/02-base-de-datos.png"
 import leadsConfiguracion from "../assets/proyectos/leadscrm/03-configuracion.png";
 import leadsLogin from "../assets/proyectos/leadscrm/04-login.png";
 import leadsMetricas from "../assets/proyectos/leadscrm/05-metricas.png";
-import azLandingDesktop from "../assets/proyectos/az-landing/desktop.png";
+import azLandingHero from "../assets/proyectos/az-landing/az-hero.png";
+import azLandingEquipo from "../assets/proyectos/az-landing/az-equipo.png";
+import azLandingServicios from "../assets/proyectos/az-landing/az-servicios.png";
+import azLandingDiferenciales from "../assets/proyectos/az-landing/az-diferenciales.png";
+import azLandingComoTrabajamos from "../assets/proyectos/az-landing/az-como-trabajamos.png";
+import azLandingConfianza from "../assets/proyectos/az-landing/az-confianza.png";
+import azLandingCobertura from "../assets/proyectos/az-landing/az-cobertura.png";
+import azLandingFaq from "../assets/proyectos/az-landing/az-faq.png";
+import azLandingContacto from "../assets/proyectos/az-landing/az-contacto.png";
 import pediatricLandingHero from "../assets/proyectos/pediatric/landing-hero.png";
 import pediatricLandingJourney from "../assets/proyectos/pediatric/landing-journey.png";
 import pediatricLandingTestimonials from "../assets/proyectos/pediatric/landing-testimonials.png";
@@ -549,7 +557,7 @@ export const portfolio: {
       description:
         "Sitio oficial con propuesta de valor clara, captación de consultas calificada e integración con el ERP interno bajo un mismo dominio.",
       href: "/proyectos/landing-empresa-limpieza",
-      image: azLandingDesktop,
+      image: azLandingHero,
       imageAlt: "Sitio de la empresa de limpieza",
     },
     {
@@ -1061,8 +1069,40 @@ export const caseStudies: {
     technologies: ["Astro", "TypeScript", "Tailwind CSS", "Lenis", "Vercel"],
     gallery: [
       {
-        src: azLandingDesktop,
-        alt: "Sitio de la empresa de limpieza en escritorio",
+        src: azLandingHero,
+        alt: "Portada del sitio con la propuesta de valor, las métricas de respaldo y el pedido de presupuesto",
+      },
+      {
+        src: azLandingEquipo,
+        alt: "Personal formal y capacitado, con supervisión directa",
+      },
+      {
+        src: azLandingServicios,
+        alt: "Las verticales de servicio, ordenadas por tipo de espacio",
+      },
+      {
+        src: azLandingDiferenciales,
+        alt: "Los diferenciales frente a la promesa habitual del rubro",
+      },
+      {
+        src: azLandingComoTrabajamos,
+        alt: "El proceso, de la consulta al servicio",
+      },
+      {
+        src: azLandingConfianza,
+        alt: "Por qué los clientes renuevan con la empresa",
+      },
+      {
+        src: azLandingCobertura,
+        alt: "Zonas de cobertura en Rosario y el Gran Rosario",
+      },
+      {
+        src: azLandingFaq,
+        alt: "Preguntas frecuentes, respondidas antes de empezar",
+      },
+      {
+        src: azLandingContacto,
+        alt: "El cierre del recorrido: la visita y el presupuesto",
       },
     ],
     problem: {
