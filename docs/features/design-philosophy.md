@@ -276,6 +276,108 @@ No es negociable. Lo que más suele romperla:
 - Ejecutar Lighthouse en mobile y desktop sobre `/`, `/nosotros`, `/proyectos` y
   un caso de estudio.
 
+## Validación por alto de viewport (matriz de alturas)
+
+Una superficie no está terminada por verse bien en la máquina donde se programa.
+El ancho ya se validaba; el alto es el que rompía y el que faltaba.
+
+### Por qué el alto engaña
+
+- **La resolución de la pantalla no es el alto de la ventana.** Lo que manda es
+  `innerHeight` en px CSS: la resolución física dividida por la escala de Windows
+  (100 / 125 / 150 / 175 / 200%) menos el chrome del navegador (pestañas + barra
+  de direcciones, ~90-110px, y más si hay zoom).
+- Una pantalla de 1080p al 100% deja ~970px útiles; **la misma pantalla al 150%
+  deja ~647px**. Una notebook de 1366x768 deja ~668px. No es la relación de
+  aspecto: son los px CSS de alto.
+- Con escala al 150% cada px CSS se dibuja 1.5px más grande, así que los
+  componentes se ven más altos: la tarjeta de contacto de 692px CSS ocupa 1038px
+  de una pantalla de 1080. De ahí la sensación de "no entra de lo grande que es".
+
+### Matriz mínima
+
+| Eje | Valores |
+| --- | --- |
+| Alto de ventana | 1080, 970, 900, 880, 776 (125%), 720 (150%), 668 (1366x768), 647, 600, 540 (200%) |
+| Ancho | 360, 390, 768, 1024, 1280, 1440, 1920 (los cortes reales del layout) |
+
+### Diagnóstico en 10 segundos
+
+En la máquina donde se ve el problema:
+
+```js
+[innerWidth, innerHeight, devicePixelRatio, screen.width, screen.height]
+```
+
+Si `innerHeight` es menor que lo que la superficie necesita para entrar, ese es
+el problema.
+
+### Estado medido en este proyecto
+
+| Superficie | Umbral medido | Piso |
+| --- | --- | --- |
+| Hero (`Hero.astro`) | Necesita 738px (contenido 625 + barra de anuncio y header 113). Nivel compacto en `max-height: 45rem` y otro en `37.5rem` | Entra hasta 540px |
+| Contacto (`Contact.astro`, inicio y `/contacto`) | Necesita 959px (`/contacto`) y 785px (inicio). Nivel compacto en `max-height: 55rem` sobre las variables `--contact-air-*` | `/contacto` entra hasta ~630px; el inicio, siempre |
+| Equipo (`Team.astro`) | Ya usa `dvh`: `py-[clamp(1.5rem,4dvh,3rem)]` y la foto `lg:h-[min(30rem,calc(100dvh-var(--nav-h)-27rem))]` | Entra en todos los altos probados |
+| Riel de scroll (`ScrollRail.astro`) | Se mide con `dvh` y se encoge | Decorativo |
+| Mazo (`ProjectsStack.astro`, `/proyectos`) | Se dimensiona con `dvh` (`max-height: calc(100dvh - var(--nav-h) - 4rem)`) | El recorte del texto de las carpetas mide lo mismo a 1080 que a 647: es geometría del mazo, no alto de ventana |
+
+### Reglas
+
+- **Toda superficie que deba medir 100vh** (heros, formularios de conversión,
+  stages sticky) **necesita un nivel compacto por alto**, con
+  `@media (max-height: X)` y/o medidas en `dvh`.
+- **El umbral se mide, no se elige**: se calcula el alto que necesita el contenido
+  (padding + contenido + header) y el corte se pone justo por debajo de donde
+  empieza a no entrar. Documentar el número y por qué.
+- **El compacto recorta solo aire**: paddings, gaps, márgenes y, si hace falta
+  escala, la tipografía de display. Nunca el copy, nunca el alto de los controles
+  (inputs de 46px, botón de 52px, filas del textarea).
+- **Combinar con `min-width: 48rem`** cuando el layout cambia por ancho: el nivel
+  por alto es para la versión de dos columnas; en mobile la página scrollea y
+  apretarla no hace que entre.
+- **Cero cambios por encima del umbral**: en 1080p al 100% tiene que verse pixel a
+  pixel igual, y se verifica midiendo la misma geometría antes y después.
+- **Decir el piso**: al entregar, informar hasta qué alto entra.
+
+### Patrón de implementación
+
+El aire vertical sale de variables CSS declaradas en el componente dueño de la
+sección, con el valor de hoy como fallback en la clase, y el bloque de media query
+solo sobreescribe esas variables. Así el cambio de alto no compite en
+especificidad con las utilidades de Tailwind.
+
+```css
+/* Contact.astro */
+#contacto {
+  --contact-air-section: 6rem;
+}
+
+@media (min-width: 48rem) and (max-height: 55rem) {
+  #contacto {
+    --contact-air-section: 1.5rem;
+  }
+}
+```
+
+```html
+<!-- Contact.astro y ContactForm.astro -->
+<div class="py-[var(--contact-air-section,4rem)]">
+```
+
+### Modos de falla a buscar
+
+- Contenido cortado o tapado dentro de un contenedor de alto fijo
+  (`scrollHeight > clientHeight`).
+- El CTA principal o los botones clave abajo del pliegue
+  (`rect.bottom > innerHeight`).
+- Secciones de "una pantalla" que superan la ventana y empiezan a scrollear.
+- Un bloque sticky que viaja más allá de su referencia (por ejemplo, hacia una
+  banda de aire reservada al pie).
+- Barra fija inferior (mobile) tapando contenido.
+- Contenedores con scroll interno que ya scrollean en reposo: contenido escondido
+  sin ninguna señal.
+
 ## Verificación
 
 Un cambio de diseño se considera terminado cuando:
@@ -286,3 +388,5 @@ Un cambio de diseño se considera terminado cuando:
 4. El HTML emitido conserva los atributos de comportamiento (`data-*`) que los
    scripts esperan.
 5. Los estados interactivos (hover, focus, active, error) están todos cubiertos.
+6. Se mide la superficie en la matriz de anchos y altos de arriba, y se informa el
+   piso hasta el que entra.
