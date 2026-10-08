@@ -47,7 +47,10 @@ const total = images.length;
                     <Image
                       src={image.src}
                       alt={image.alt}
-                      widths={[480, 800, 1200]}
+                      /* Hasta 1920: en pantallas retina la captura ocupa 1104
+                         puntos CSS, o sea 2208 reales, y con la variante tope
+                         de 1200 quedaba al 54%. */
+                      widths={[480, 800, 1200, 1920]}
                       sizes="(min-width: 768px) 72vw, 100vw"
                       class="case-gallery__img"
                       loading={index === 0 ? "eager" : "lazy"}
