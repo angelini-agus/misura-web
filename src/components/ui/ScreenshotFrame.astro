@@ -1,20 +1,19 @@
 ---
 interface Props {
   compact?: boolean;
-  /** Activa el modificador que muestra el color real al hacer hover. Es
-      opcional porque el resto del sitio (home portfolio, galería de casos y
-      equipo) quiere el duotono fijo: el revelado es opt-in por superficie. */
-  hover?: boolean;
   class?: string;
 }
 
 const {
   compact = false,
-  hover = false,
   class: className = "",
 } = Astro.props;
 ---
 
+{/* La captura va a color natural: el duotono de `.foto-duotono` quedo solo para
+    las fotos del equipo. Mostrar la captura tal como se ve es el punto (lo dice
+    el comentario viejo del propio duotono: sirve para probar que el software
+    funciona), y ademas el filtro dejaba a las capturas con el mismo gris. */}
 <div
   class:list={[
     "screenshot-frame",
@@ -26,8 +25,6 @@ const {
     <span></span><span></span><span></span>
   </div>
   <div class="screenshot-frame-shot">
-    <div class:list={["foto-duotono", hover && "foto-duotono--hover"]}>
-      <slot />
-    </div>
+    <slot />
   </div>
 </div>
