@@ -77,11 +77,18 @@ const faqSchema = {
               </h3>
               <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
             </summary>
-            <div class="details-collapse">
-              <div class="details-collapse-inner">
-                <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
-              </div>
-            </div>
+            {/* La respuesta va como hijo directo del <details>, sin envoltorios: la
+                tarjeta abre de golpe, sin animacion, asi que no hace falta el
+                truco de `grid-template-rows` que servia para animar el alto.
+                El `data-faq-answer` es el gancho que mide el JS.
+
+                Ojo al tocar esto: en un <details> cerrado el contenido igual se
+                layouta (medido: un hijo directo reporta su alto real), y de esa
+                medida sale el aire que se reserva al pie de la seccion para que
+                no se mueva la linea al abrir. */}
+            <p data-faq-answer class="px-6 pb-6 leading-relaxed text-cream/80">
+              {item.answer}
+            </p>
           </details>
         ))}
       </div>
@@ -113,11 +120,11 @@ const faqSchema = {
     openFaqFromHash(window.location.hash);
   };
 
-  /* Una sola pregunta abierta a la vez: al abrir una se cierran las demas, tanto
-     si la abrio un click (mobile y teclado, que es el comportamiento nativo del
-     <details>) como si la abrio el hover (escritorio, mas abajo). El cierre no
-     dispara nada a proposito: el handler solo actua cuando la fila quedo abierta,
-     asi que no hay ida y vuelta. */
+  /* Una sola pregunta abierta a la vez: al abrir una se cierran las demas. Se
+     abre apretando (click, tap o Enter/Espacio con el teclado: es el
+     comportamiento nativo del <details>) y no con el hover. El cierre no dispara
+     nada a proposito: el handler solo actua cuando la fila quedo abierta, asi que
+     no hay ida y vuelta. */
   const closeOtherFaqRows = (current: HTMLDetailsElement) => {
     document.querySelectorAll<HTMLDetailsElement>("#preguntas details[open]").forEach((details) => {
       if (details !== current) details.open = false;
@@ -130,30 +137,7 @@ const faqSchema = {
     closeOtherFaqRows(details);
   };
 
-  /* Escritorio: la tarjeta se despliega con solo pasar el mouse. Va con 140ms de
-     espera para que cruzarse con la lista (bajando la pagina, por ejemplo) no
-     abra una tarjeta al pasar; el temporizador se cancela al salir. No se cierra
-     al salir del hover: se lee la respuesta con el mouse donde sea y la fila
-     queda abierta hasta que se abra otra. El click y el teclado siguen andando
-     igual (son la via nativa del <details>), y en touch no pasa nada porque
-     `hover: hover` y `pointer: fine` son falsos ahi: ahi se apreta y se abre. */
-  const FAQ_HOVER = "(hover: hover) and (pointer: fine)";
-  const FAQ_HOVER_DELAY = 140;
-  let faqHoverTimer = 0;
-
-  const onFaqEnter = (event: Event) => {
-    if (!window.matchMedia(FAQ_HOVER).matches) return;
-    const details = event.currentTarget as HTMLDetailsElement | null;
-    if (!details || details.open) return;
-    window.clearTimeout(faqHoverTimer);
-    faqHoverTimer = window.setTimeout(() => {
-      details.open = true;
-    }, FAQ_HOVER_DELAY);
-  };
-
-  const onFaqLeave = () => window.clearTimeout(faqHoverTimer);
-
-  /* Aire reservado al pie de la seccion, en escritorio.
+  /* Aire reservado al pie de la seccion, donde hay mouse.
 
      El pedido es que las preguntas de abajo se empujen (eso lo hace el flujo solo)
      pero que la linea que cierra la seccion NO se corra al abrir una tarjeta. Lo
@@ -163,19 +147,20 @@ const faqSchema = {
      `alto de las preguntas cerradas + alto de la respuesta mas alta` y todo
      crecimiento que entre en ese aire no cambia el alto de nada. Como ademas solo
      hay una fila abierta a la vez, ese aire alcanza siempre: la seccion no cambia
-     de alto por abrir (ni por pasar el mouse por encima de) ninguna pregunta.
+     de alto por abrir ninguna pregunta.
 
      Cuanto es "la respuesta mas alta" no se puede saber desde CSS (depende del
-     ancho: 128px en 1440, 154px en 1024), asi que se mide. El scrollHeight del
-     panel da el alto real de la respuesta aunque este cerrada: el contenido se
-     layouta igual y queda clipeado por el `overflow: hidden` de
-     `.details-collapse-inner`, asi que no hace falta abrir ninguna pregunta para
-     medirla (medido: coincide exacto con el crecimiento real de cada tarjeta).
+     ancho: 128px en 1440, 154px en 1024), asi que se mide. En un <details> cerrado
+     el contenido igual se layouta (medido: el propio <p> de la respuesta reporta
+     su scrollHeight real con la tarjeta cerrada), asi que no hace falta abrir
+     ninguna pregunta para medirla, y el numero coincide exacto con el crecimiento
+     real de cada tarjeta.
 
-     Se reserva donde hay mouse, igual que el hover, y no por ancho: en touch la
-     seccion crece con el contenido, que es lo que corresponde (una columna y el
-     aire de la respuesta mas alta quedaria como un hueco sin sentido). Si el JS
-     no corre, no hay reserva y todo se comporta como antes. */
+     Se reserva donde hay mouse y no por ancho: en touch (telefono) la seccion
+     crece con el contenido, que es lo que corresponde, y el aire de la respuesta
+     mas alta quedaria como un hueco sin sentido. Si el JS no corre, no hay reserva
+     y todo se comporta como antes. */
+  const FAQ_MOUSE = "(hover: hover) and (pointer: fine)";
   const reserveFaqHeight = () => {
     const section = document.getElementById("preguntas");
     const grid = section?.querySelector<HTMLElement>("[data-faq-grid]");
@@ -183,12 +168,12 @@ const faqSchema = {
     // Sin limpiar el alto antes de medir, la segunda pasada mediria el aire que
     // dejo la primera y la reserva creceria sola en cada resize.
     grid.style.minHeight = "";
-    if (!window.matchMedia(FAQ_HOVER).matches) return;
+    if (!window.matchMedia(FAQ_MOUSE).matches) return;
     // Con una pregunta abierta el alto de la grilla ya trae el crecimiento
     // adentro: si se midiera asi, la reserva quedaria inflada para siempre.
     if (section?.querySelector("details[open]")) return;
     let tallest = 0;
-    section?.querySelectorAll<HTMLElement>(".details-collapse-inner").forEach((answer) => {
+    section?.querySelectorAll<HTMLElement>("[data-faq-answer]").forEach((answer) => {
       tallest = Math.max(tallest, answer.scrollHeight);
     });
     if (tallest > 0) grid.style.minHeight = `${grid.offsetHeight + tallest}px`;
@@ -204,10 +189,6 @@ const faqSchema = {
     document.querySelectorAll<HTMLDetailsElement>("#preguntas details").forEach((details) => {
       details.removeEventListener("toggle", onFaqToggle);
       details.addEventListener("toggle", onFaqToggle);
-      details.removeEventListener("mouseenter", onFaqEnter);
-      details.addEventListener("mouseenter", onFaqEnter);
-      details.removeEventListener("mouseleave", onFaqLeave);
-      details.addEventListener("mouseleave", onFaqLeave);
     });
   };
 
