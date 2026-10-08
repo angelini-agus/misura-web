@@ -12,6 +12,13 @@ de una a otra: el carrusel mantiene el mismo marco y el mismo alto, y los casos
 se leen parejos. No hay que recortar ni estirar nada en el layout porque la
 uniformidad la garantizan los archivos.
 
+## Cuántas capturas se muestran
+
+La galería de un caso muestra **4 a 6 capturas**: las que mejor cuentan el
+trabajo (en el mazo de `/proyectos` se muestra la primera de cada caso). Con el
+carrusel de marco fijo, las capturas quedan todas dentro del marco y cambian con
+fundido, así que el número de fotos no mueve el layout.
+
 ## Cómo se hace una captura nueva
 
 1. Se captura con el navegador a **1920x1200 de ventana**, con
