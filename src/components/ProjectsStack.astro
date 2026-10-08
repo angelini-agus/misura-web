@@ -85,16 +85,16 @@ const projectCount = projects.length;
                 </div>
                 <div class="folder__shots">
                   <div class="folder__shot">
+                    {/* La captura ocupa 42rem en la columna de 55fr del mazo, no
+                       30rem: con el sizes viejo el navegador bajaba la variante
+                       de 480px para mostrarla a 653 y se veía borrosa (a DPR 2
+                       llegaba con el 37% de lo que necesita). Las variantes
+                       llegan hasta 1440 para que en pantallas retina tenga de
+                       sobra. */}
                     <ScreenshotFrame compact>
                       <Image
                         src={gallery[0].src}
                         alt={gallery[0].alt}
-                        /* La captura ocupa 42rem en la columna de 55fr del mazo,
-                           no 30rem: con el sizes viejo el navegador bajaba la
-                           variante de 480px para mostrarla a 653 y se veía
-                           borrosa (a DPR 2 llegaba con el 37% de lo que
-                           necesita). Las variantes llegan hasta 1440 para que
-                           en pantallas retina tenga de sobra. */
                         widths={[480, 768, 1088, 1440]}
                         sizes="(min-width: 80rem) 42rem, (min-width: 48rem) 50vw, 88vw"
                         class="folder__image"

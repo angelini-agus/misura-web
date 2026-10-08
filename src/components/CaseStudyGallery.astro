@@ -1,12 +1,13 @@
 ---
-// Galería de un caso: una captura por vista, en un carrusel que se corre de
-// costado (scroll nativo con snap: anda con el dedo, con el trackpad, con las
-// flechas y arrastrando con el mouse). Al tocar la captura se abre el visor a
-// pantalla completa sobre el fondo difuminado, donde se ven todas una por una.
+// Galería de un caso: el marco queda fijo y adentro corre una cinta con todas
+// las capturas, que se desliza de a una (la animación de antes sin mover el
+// marco). Se pasa de una a otra con las flechas, con el swipe en el celular o
+// arrastrando con el mouse. Al tocar la captura se abre el visor a pantalla
+// completa sobre el fondo difuminado, donde se ven todas una por una.
 //
-// Por qué scroll nativo y no un carrusel de clases: mover las fotos no depende
-// de ningún handler de click. El navegador se encarga del desplazamiento, del
-// swipe y del snap, y el JS solo sincroniza las flechas, el contador y el visor.
+// Las variantes llegan hasta 1920 porque en pantallas retina la captura ocupa
+// unos 1000 puntos CSS, o sea 2000 reales, y con el tope viejo de 1200 quedaba
+// al 60%.
 import { Image } from "astro:assets";
 import type { CaseStudyCover } from "../lib/types";
 import ScreenshotFrame from "./ui/ScreenshotFrame.astro";
@@ -34,57 +35,55 @@ const total = images.length;
     >
       <div class="case-gallery__inner">
         <div class="case-gallery__viewport">
-          <div class="case-gallery__track" data-gallery-track>
-            {images.map((image, index) => (
-              <div class="case-gallery__slide" data-gallery-slide>
-                <button
-                  type="button"
-                  data-gallery-open={index}
-                  aria-label={`Ampliar: ${image.alt}`}
-                  class="group case-gallery__btn"
-                >
-                  <ScreenshotFrame
-                    class="case-gallery__frame"
-                    style={`--shot-aspect: ${image.src.width} / ${image.src.height};`}
-                  >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      /* Hasta 1920: en pantallas retina la captura ocupa 1104
-                         puntos CSS, o sea 2208 reales, y con la variante tope
-                         de 1200 quedaba al 54%. */
-                      widths={[480, 800, 1200, 1920]}
-                      sizes="(min-width: 768px) 72vw, 100vw"
-                      class="case-gallery__img"
-                      loading={index === 0 ? "eager" : "lazy"}
-                      draggable="false"
-                    />
-                  </ScreenshotFrame>
-                  <span class="gallery-cta" aria-hidden="true">Ampliar</span>
-                </button>
-              </div>
-            ))}
-          </div>
+          {total > 1 && (
+            <button
+              type="button"
+              data-gallery-prev
+              aria-label="Foto anterior"
+              class="case-gallery__nav case-gallery__nav--prev"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+          )}
+
+          <ScreenshotFrame
+            class="case-gallery__frame"
+            style={`--shot-aspect: ${images[0].src.width} / ${images[0].src.height};`}
+          >
+            <button
+              type="button"
+              class="group case-gallery__open"
+              data-gallery-open
+              aria-label={`Ampliar: ${images[0].alt}`}
+            >
+              <span class="case-gallery__cinta" data-gallery-cinta>
+                {images.map((image, index) => (
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    widths={[480, 800, 1200, 1920]}
+                    sizes="(min-width: 80rem) 63rem, (min-width: 48rem) 85vw, 100vw"
+                    class="case-gallery__img"
+                    data-gallery-foto
+                    data-activo={index === 0 ? "" : undefined}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    draggable="false"
+                  />
+                ))}
+              </span>
+              <span class="gallery-cta" aria-hidden="true">Ampliar</span>
+            </button>
+          </ScreenshotFrame>
 
           {total > 1 && (
-            <>
-              <button
-                type="button"
-                data-gallery-prev
-                aria-label="Foto anterior"
-                class="case-gallery__nav case-gallery__nav--prev"
-              >
-                <span aria-hidden="true">←</span>
-              </button>
-              <button
-                type="button"
-                data-gallery-next
-                aria-label="Foto siguiente"
-                class="case-gallery__nav case-gallery__nav--next"
-              >
-                <span aria-hidden="true">→</span>
-              </button>
-            </>
+            <button
+              type="button"
+              data-gallery-next
+              aria-label="Foto siguiente"
+              class="case-gallery__nav case-gallery__nav--next"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
           )}
         </div>
 
@@ -197,56 +196,35 @@ const total = images.length;
     padding-inline: var(--gallery-arrow-space, 0rem);
   }
 
-  /* Carrusel: scroll nativo horizontal con snap, una captura por vista. La
-     barra de scroll se oculta porque la posición la dice el contador. */
-  .case-gallery__track {
-    display: flex;
+  /* El marco es uno solo y queda fijo (borde y barra quietos): adentro corre una
+     cinta con todas las capturas y se desliza de a una, que es la animación de
+     antes sin mover el marco. */
+  .case-gallery__open {
+    position: relative;
+    display: block;
     width: 100%;
     height: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    /* Sin esto el arrastre con el mouse arranca el drag nativo de la imagen
-       (el fantasma) en vez de correr el carrusel. */
-    user-select: none;
-  }
-
-  .case-gallery__track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .case-gallery__slide {
-    display: flex;
-    flex: 0 0 100%;
-    min-height: 0;
-    align-items: stretch;
-    justify-content: center;
-    scroll-snap-align: center;
-  }
-
-  /* La captura se centra y puede encogerse: el botón mide lo que mide la vista
-     del carrusel y el marco se queda con ese alto menos su barra. */
-  .case-gallery__btn {
-    display: flex;
-    min-height: 0;
-    max-width: 100%;
-    max-height: 100%;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     cursor: zoom-in;
   }
 
-  /* El marco de la captura tiene que poder encogerse: la barra de arriba mide
-     fijo y la captura se queda con el alto que sobra. */
+  .case-gallery__cinta {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transform: translateX(calc(var(--indice, 0) * -100%));
+    transition: transform 320ms var(--ease-out);
+  }
+
+  /* El marco define la caja: ancho del contenedor y alto según el aspecto de la
+     captura, con tope en el alto disponible. La captura la llena, así no queda
+     ninguna franja entre las dos. */
   :global(.case-gallery__frame) {
     display: flex;
-    max-height: 100%;
+    width: 100%;
     max-width: 100%;
-    width: auto;
+    max-height: 100%;
+    aspect-ratio: var(--shot-aspect, 16 / 10);
     flex-direction: column;
     min-height: 0;
     border: none;
@@ -262,22 +240,30 @@ const total = images.length;
   :global(.case-gallery__frame .screenshot-frame-shot) {
     position: relative;
     display: flex;
+    flex: 1;
     min-height: 0;
-    max-height: 100%;
-    max-width: 100%;
-    aspect-ratio: var(--shot-aspect, 16 / 10);
     align-items: center;
     justify-content: center;
     background-color: transparent;
     overflow: hidden;
   }
 
+  /* Cada captura ocupa el ancho del marco: la cinta corre y la que queda a la
+     vista es la activa. */
   :global(.case-gallery__img) {
     display: block;
+    flex: 0 0 100%;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: top;
     -webkit-user-drag: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-gallery__cinta {
+      transition: none;
+    }
   }
 
   /* Aviso de "Ampliar": aparece al pasar el mouse o al enfocar, y en pantallas
@@ -299,10 +285,6 @@ const total = images.length;
     transition:
       opacity 200ms var(--ease-out),
       transform 200ms var(--ease-out);
-  }
-
-  .case-gallery__btn {
-    position: relative;
   }
 
   .group:hover .gallery-cta,
@@ -502,45 +484,57 @@ const total = images.length;
 </style>
 
 <script>
-  // Todos los listeners van en el documento y las búsquedas se hacen dentro del
-  // handler: así el carrusel y el visor siguen andando aunque el router de Astro
+  // Los listeners van en el documento y las búsquedas se hacen dentro del
+  // handler: así la galería y el visor siguen andando aunque el router de Astro
   // reemplace el DOM al navegar entre páginas.
+  //
+  // El carrusel no se corre: el marco queda fijo y adentro cambia la captura
+  // (fundido). Se pasa de una a otra con las flechas, con el swipe en el celular
+  // o arrastrando con el mouse.
   let bound = false;
   let indiceVisor = 0;
-  let touchX: number | null = null;
-  let arrastre: { x: number; scroll: number; movido: boolean } | null = null;
-  // Momento en que termina un arrastre: sirve para distinguir el click que
-  // cierra ese gesto (que no debe abrir el visor) de un click nuevo.
+  let swipeX: number | null = null;
+  let arrastreX: number | null = null;
+  // Momento en que termina un arrastre: sirve para distinguir el click que cierra
+  // ese gesto (que no debe abrir el visor) de un click nuevo.
   let finDeArrastre = 0;
 
+  const UMBRAL = 40;
   const pad = (value: number) => String(value).padStart(2, "0");
 
-  const pistaDe = (nodo: Element | null) =>
-    nodo?.closest("[data-gallery]")?.querySelector<HTMLElement>("[data-gallery-track]") ?? null;
+  const galeria = () => document.querySelector<HTMLElement>("[data-gallery]");
+  const fotosDe = (gal: HTMLElement) => [
+    ...gal.querySelectorAll<HTMLImageElement>("[data-gallery-foto]"),
+  ];
   const visor = () => document.querySelector<HTMLDialogElement>("[data-lightbox]");
   const slidesDe = (dialog: HTMLDialogElement) => [
     ...dialog.querySelectorAll<HTMLElement>("[data-lightbox-slide]"),
   ];
 
-  const indiceDePista = (track: HTMLElement) =>
-    Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
-
-  const pintarContador = (track: HTMLElement) => {
-    const contador = track
-      .closest("[data-gallery]")
-      ?.querySelector<HTMLElement>("[data-gallery-counter]");
-    if (!contador) return;
-    const total = track.querySelectorAll("[data-gallery-slide]").length;
-    contador.textContent = `${pad(indiceDePista(track) + 1)} / ${pad(total)}`;
+  // El índice se lee del DOM y no de una variable: así no queda desfasado cuando
+  // el router cambia de página y la galería es otra.
+  const indiceActual = (gal: HTMLElement) => {
+    const i = fotosDe(gal).findIndex((foto) => foto.hasAttribute("data-activo"));
+    return i < 0 ? 0 : i;
   };
 
-  const irAPista = (track: HTMLElement, indice: number, suave = true) => {
-    const total = track.querySelectorAll("[data-gallery-slide]").length;
-    const destino = Math.max(0, Math.min(total - 1, indice));
-    track.scrollTo({
-      left: destino * track.clientWidth,
-      behavior: suave ? "smooth" : "auto",
-    });
+  const pintar = (gal: HTMLElement, destino: number) => {
+    const fotos = fotosDe(gal);
+    if (!fotos.length) return;
+    const indice = (destino + fotos.length) % fotos.length;
+    fotos.forEach((foto, i) => foto.toggleAttribute("data-activo", i === indice));
+    const cinta = gal.querySelector<HTMLElement>("[data-gallery-cinta]");
+    if (cinta) cinta.style.setProperty("--indice", String(indice));
+    const contador = gal.querySelector<HTMLElement>("[data-gallery-counter]");
+    if (contador) contador.textContent = `${pad(indice + 1)} / ${pad(fotos.length)}`;
+    const abrir = gal.querySelector<HTMLElement>("[data-gallery-open]");
+    const alt = fotos[indice].getAttribute("alt");
+    if (abrir && alt) abrir.setAttribute("aria-label", `Ampliar: ${alt}`);
+  };
+
+  const mover = (direccion: number) => {
+    const gal = galeria();
+    if (gal) pintar(gal, indiceActual(gal) + direccion);
   };
 
   const renderVisor = (dialog: HTMLDialogElement) => {
@@ -579,26 +573,20 @@ const total = images.length;
     const target = event.target as HTMLElement | null;
     if (!target) return;
 
-    // El click que cierra un arrastre no es un click: no abre el visor. Se
-    // compara por tiempo y no con una bandera, porque una bandera se comería
-    // también el click siguiente del usuario.
+    // El click que cierra un arrastre no es un click: no cambia de foto ni abre
+    // el visor. Se compara por tiempo y no con una bandera, porque una bandera
+    // se comería también el click siguiente del usuario.
     if (performance.now() - finDeArrastre < 350) return;
 
-    const flechaPista = target.closest<HTMLElement>("[data-gallery-next], [data-gallery-prev]");
-    if (flechaPista) {
-      const track = pistaDe(flechaPista);
-      if (!track) return;
-      const paso = flechaPista.hasAttribute("data-gallery-next") ? 1 : -1;
-      irAPista(track, indiceDePista(track) + paso);
-      return;
-    }
+    if (target.closest("[data-gallery-next]")) return mover(1);
+    if (target.closest("[data-gallery-prev]")) return mover(-1);
 
     const dialog = visor();
     if (!dialog) return;
 
-    const disparador = target.closest<HTMLElement>("[data-gallery-open]");
-    if (disparador) {
-      abrirVisor(dialog, Number(disparador.dataset.galleryOpen) || 0);
+    const gal = galeria();
+    if (target.closest("[data-gallery-open]")) {
+      abrirVisor(dialog, gal ? indiceActual(gal) : 0);
       return;
     }
 
@@ -622,66 +610,48 @@ const total = images.length;
     }
   };
 
-  const onScroll = (event: Event) => {
-    const track = event.target;
-    if (track instanceof HTMLElement && track.hasAttribute("data-gallery-track")) {
-      pintarContador(track);
-    }
-  };
-
-  // Arrastre con el mouse: en táctil el scroll ya es nativo y no hace falta.
-  const onPointerDown = (event: PointerEvent) => {
-    if (event.pointerType === "touch") return;
-    const track = event.target instanceof Element ? pistaDe(event.target) : null;
-    if (!track) return;
-    arrastre = { x: event.clientX, scroll: track.scrollLeft, movido: false };
-    track.style.scrollSnapType = "none";
-  };
-
-  const onPointerMove = (event: PointerEvent) => {
-    if (!arrastre) return;
-    const track = pistaDe(event.target instanceof Element ? event.target : null);
-    if (!track) return;
-    const delta = event.clientX - arrastre.x;
-    if (Math.abs(delta) > 6) arrastre.movido = true;
-    if (arrastre.movido) {
-      track.scrollLeft = arrastre.scroll - delta;
-      event.preventDefault();
-    }
-  };
-
-  const onPointerUp = () => {
-    if (!arrastre) return;
-    const movido = arrastre.movido;
-    arrastre = null;
-    const track = document.querySelector<HTMLElement>("[data-gallery-track]");
-    if (!track) return;
-    track.style.scrollSnapType = "";
-    if (movido) {
-      finDeArrastre = performance.now();
-      irAPista(track, indiceDePista(track));
-      pintarContador(track);
-    }
-  };
-
+  // Swipe: en el visor cambia de foto ampliada; en la galería cambia la captura.
   const onTouchStart = (event: TouchEvent) => {
-    if (!visor()?.open) return;
-    touchX = event.changedTouches[0]?.clientX ?? null;
+    if (visor()?.open) {
+      swipeX = event.changedTouches[0]?.clientX ?? null;
+      return;
+    }
+    const gal = galeria();
+    if (gal && event.target instanceof Element && gal.contains(event.target)) {
+      swipeX = event.changedTouches[0]?.clientX ?? null;
+    }
   };
 
   const onTouchEnd = (event: TouchEvent) => {
+    if (swipeX === null) return;
+    const delta = (event.changedTouches[0]?.clientX ?? swipeX) - swipeX;
+    swipeX = null;
+    if (Math.abs(delta) < UMBRAL) return;
     const dialog = visor();
-    if (!dialog?.open || touchX === null) return;
-    const delta = (event.changedTouches[0]?.clientX ?? touchX) - touchX;
-    touchX = null;
-    if (Math.abs(delta) < 40) return;
-    moverVisor(dialog, delta < 0 ? 1 : -1);
+    if (dialog?.open) {
+      moverVisor(dialog, delta < 0 ? 1 : -1);
+      return;
+    }
+    mover(delta < 0 ? 1 : -1);
   };
 
-  const onResize = () => {
-    const track = document.querySelector<HTMLElement>("[data-gallery-track]");
-    if (!track) return;
-    irAPista(track, indiceDePista(track), false);
+  // Arrastre con el mouse sobre el marco: cambia de foto al soltar. No corre nada,
+  // así que el marco queda siempre en el mismo lugar.
+  const onPointerDown = (event: PointerEvent) => {
+    if (event.pointerType === "touch" || visor()?.open) return;
+    const gal = galeria();
+    if (!gal || !(event.target instanceof Element) || !gal.contains(event.target))
+      return;
+    arrastreX = event.clientX;
+  };
+
+  const onPointerUp = (event: PointerEvent) => {
+    if (arrastreX === null) return;
+    const delta = event.clientX - arrastreX;
+    arrastreX = null;
+    if (Math.abs(delta) < UMBRAL) return;
+    finDeArrastre = performance.now();
+    mover(delta < 0 ? 1 : -1);
   };
 
   const init = () => {
@@ -689,14 +659,11 @@ const total = images.length;
     bound = true;
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeydown);
-    document.addEventListener("scroll", onScroll, true);
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("pointermove", onPointerMove, { passive: false });
-    document.addEventListener("pointerup", onPointerUp);
-    document.addEventListener("pointercancel", onPointerUp);
     document.addEventListener("touchstart", onTouchStart, { passive: true });
     document.addEventListener("touchend", onTouchEnd, { passive: true });
-    window.addEventListener("resize", onResize);
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointercancel", onPointerUp);
   };
 
   init();
