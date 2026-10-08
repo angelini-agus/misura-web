@@ -572,12 +572,25 @@ export const portfolio: {
 };
 
 
+/* Encabezado de la seccion de preguntas del inicio. La columna izquierda la
+   arma Faq.astro en tres partes: el eyebrow chico, esta palabra en grande (que
+   es la que lleva el h2) y el lead. Por eso `title` es la sigla y no el termino
+   largo: "Preguntas frecuentes" vive en el eyebrow, que es el unico lugar donde
+   el lector lo lee completo (y donde queda para buscadores). */
 export const faqHeading: {
   eyebrow: string;
   title: string;
+  lead: string;
+  cta: { question: string; label: string; href: string };
 } = {
-  eyebrow: "FAQ",
-  title: "Preguntas frecuentes",
+  eyebrow: "Preguntas frecuentes",
+  title: "FAQ",
+  lead: "Lo que nos preguntás antes de arrancar, respondido sin vueltas.",
+  cta: {
+    question: "¿No encontrás tu respuesta?",
+    label: "Escribinos",
+    href: "/contacto#contacto",
+  },
 };
 
 export const faq: FaqItem[] = [

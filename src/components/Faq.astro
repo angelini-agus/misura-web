@@ -21,37 +21,69 @@ const faqSchema = {
 
 <section id="preguntas" class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
-    <div class="max-w-xl" data-reveal>
-      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-        {faqHeading.eyebrow}
-      </p>
-      <h2
-        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+    {/* Dos columnas desde lg: el bloque del titulo a la izquierda, las preguntas
+        a la derecha. La grilla existe en mobile tambien (una sola columna) para
+        que el `gap-y-12` separe el titulo del stack sin margenes sueltos.
+
+        El `top` del sticky sale del token --nav-h (el alto del header sticky,
+        definido en global.css) mas 2.5rem de aire: si cambia el header, cambia
+        solo. `self-start` es obligatorio: sin el, el item de grilla se estira al
+        alto de la fila, queda tan alto como la lista y el sticky no tiene
+        recorrido para moverse. */}
+    <div
+      class="grid grid-cols-1 gap-y-12 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
+    >
+      <div
+        class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
+        data-reveal
       >
-        {faqHeading.title}
-      </h2>
-    </div>
-    <div class="mt-12 flex flex-col gap-6">
-      {faq.map((item) => (
-        <details
-          id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
-          class="group rounded-md border border-green bg-green text-cream"
+        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
+          {faqHeading.eyebrow}
+        </p>
+        {/* La palabra que ancla la seccion. El tamano se mide en vw y no en un
+            valor fijo porque la columna ya tiene su tope: desde lg mide 22rem,
+            asi que en 1024 la palabra entra holgada y en pantallas grandes
+            crece hasta los 10rem sin desbordar el ancho de la columna. El
+            `leading` por debajo de 1 es lo que la hace ocupar poco alto. */}
+        <h2
+          class="font-display mt-4 text-[clamp(4.5rem,11vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]"
         >
-          <summary
-            class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+          {faqHeading.title}
+        </h2>
+        <p class="mt-6 leading-relaxed text-green/80">{faqHeading.lead}</p>
+        <div class="mt-8 rounded-md border border-green px-5 py-4">
+          <p class="text-sm text-green/80">{faqHeading.cta.question}</p>
+          <a
+            href={faqHeading.cta.href}
+            class="link-ink mt-2 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
           >
-            <h3 class="font-display text-lg font-medium">
-              <MisureWord text={item.question} />
-            </h3>
-            <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
-          </summary>
-          <div class="details-collapse">
-            <div class="details-collapse-inner">
-              <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
+            {faqHeading.cta.label}
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-col gap-6">
+        {faq.map((item) => (
+          <details
+            id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
+            class="group rounded-md border border-green bg-green text-cream"
+          >
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+            >
+              <h3 class="font-display text-lg font-medium">
+                <MisureWord text={item.question} />
+              </h3>
+              <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
+            </summary>
+            <div class="details-collapse">
+              <div class="details-collapse-inner">
+                <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
+              </div>
             </div>
-          </div>
-        </details>
-      ))}
+          </details>
+        ))}
+      </div>
     </div>
   </div>
 </section>
