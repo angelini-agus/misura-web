@@ -9,16 +9,13 @@ import type { CaseContrast } from "../lib/types";
 
 interface Props {
   contrast: CaseContrast;
-  lead?: string;
 }
 
-const { contrast, lead } = Astro.props;
+const { contrast } = Astro.props;
 const lastRow = contrast.rows.length - 1;
 ---
 
 <div class="flex flex-col gap-6" data-reveal style="transition-delay:60ms">
-  {lead && <p class="leading-relaxed text-green/80">{lead}</p>}
-
   <table class="w-full border-collapse border border-green">
     <thead>
       <tr>
