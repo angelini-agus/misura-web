@@ -159,16 +159,25 @@ body {
    revés, bloque crema con letras verdes.
 
    `[class~="bg-green"]` matchea el token de clase entero, no `hover:bg-green`:
-   un control crema que se pone verde solo en hover no cambia su selección. Si
-   aparece una superficie con otro token de fondo (`bg-green-dark`,
-   `bg-green-light`), hay que sumar su selector acá. */
+   un control crema que se pone verde solo en hover no cambia su selección.
+
+   Las superficies verdes que NO llevan el token se suman a mano, porque su fondo
+   sale de una regla CSS del componente: el mazo de /proyectos pinta
+   `.folder__body` y `.folder__tab` con `--color-green`, así que ahí la selección
+   caía en la regla general y el bloque verde-light quedaba camuflado sobre el
+   verde de la carpeta (los dos tonos son casi iguales). Si aparece otra
+   superficie con el fondo verde por CSS, se suma su selector acá. */
 ::selection {
   background-color: var(--color-green-light);
   color: var(--color-cream);
 }
 
 [class~="bg-green"]::selection,
-[class~="bg-green"] ::selection {
+[class~="bg-green"] ::selection,
+.folder__body::selection,
+.folder__body ::selection,
+.folder__tab::selection,
+.folder__tab ::selection {
   background-color: var(--color-cream);
   color: var(--color-green);
 }
