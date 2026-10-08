@@ -41,7 +41,8 @@ pnpm --filter @pediatric-erp/db db:migrate:deploy
 pnpm --filter @pediatric-erp/db db:seed
 pnpm --filter @pediatric-erp/api dev            # 3001
 pnpm --filter @pediatric-erp/web exec next dev -p 3100
-pnpm --filter @pediatric-erp/landing dev -- --port 4322
+pnpm --filter @pediatric-erp/landing build
+pnpm --filter @pediatric-erp/landing preview -- --port 4322
 ```
 
 Después, un pase de captura con Playwright: el repo trae el suyo en
@@ -49,6 +50,12 @@ Después, un pase de captura con Playwright: el repo trae el suyo en
 (login con `ricardo.silva@pediatric-erp.com` / `admin123`, las rutas de cada
 pantalla y los `data-testid` que hay que esperar). Los datos son los del seed
 demo: nunca datos reales de pacientes.
+
+**Servir la landing con `build` + `preview`, no con `dev`**: el servidor de
+desarrollo inyecta la barra flotante de Astro abajo de todo y se cuela en las
+capturas (había que recortarla después). El `preview` sirve el build y no la
+inyecta. Lo mismo vale para cualquier app: si tiene indicador de desarrollo
+(Next, Vite, Astro), se captura desde el build o se esconde antes de la foto.
 
 Dos puertos que chocan en esta máquina: la base del repo necesita el 5432 (lo
 ocupa el postgres del notes-app) y la landing asume el 4321 (lo ocupa el dev
