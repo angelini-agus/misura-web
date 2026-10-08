@@ -38,30 +38,27 @@ const faqSchema = {
         class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
         data-reveal
       >
-        <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-          {faqHeading.eyebrow}
-        </p>
         {/* La palabra que ancla la seccion. El tamano se mide en vw y no en un
             valor fijo porque la columna ya tiene su tope: desde lg mide 22rem,
             asi que en 1024 la palabra entra holgada y en pantallas grandes
             crece hasta los 10rem sin desbordar el ancho de la columna. El
             `leading` por debajo de 1 es lo que la hace ocupar poco alto. */}
         <h2
-          class="font-display mt-4 text-[clamp(4.5rem,11vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]"
+          class="font-display text-[clamp(4.5rem,11vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]"
         >
           {faqHeading.title}
         </h2>
         <p class="mt-6 leading-relaxed text-green/80">{faqHeading.lead}</p>
-        <div class="mt-8 rounded-md border border-green px-5 py-4">
-          <p class="text-sm text-green/80">{faqHeading.cta.question}</p>
-          <a
-            href={faqHeading.cta.href}
-            class="link-ink mt-2 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
-          >
-            {faqHeading.cta.label}
-            <span aria-hidden="true">→</span>
-          </a>
-        </div>
+        {/* El link va suelto, sin recuadro: el recuadro lo hacia leer como un
+            boton flotando en la columna, cuando es una salida mas del bloque y
+            tiene que alinearse con el resto. */}
+        <a
+          href={faqHeading.cta.href}
+          class="link-ink mt-8 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
+        >
+          {faqHeading.cta.label}
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
       <div class="flex flex-col gap-6">
         {faq.map((item) => (
