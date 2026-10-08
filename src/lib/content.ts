@@ -466,11 +466,11 @@ export const clientQuote: {
   highlights: string[];
 } = {
   eyebrow: "Testimonio",
-  text: "Antes perdíamos horas cruzando planillas para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza todos los meses. Con el sistema de misure eso desapareció: ahora todo se carga solo, y lo que antes le ocupaba el día entero a una persona, hoy lo resuelve el sistema. Si estás dudando si vale la pena, para mí fue de las mejores decisiones que tomé en la empresa.",
+  text: "Antes perdíamos horas llenando planillas a mano para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza semana a semana. Con Misure ahora todo se carga solo, y una tarea que antes le consumía gran parte de su jornada a un empleado, hoy se resuelve de forma automática. Para mí fue de las mejores decisiones que tomé en la empresa, ya que dejé de lidiar con problemas cotidianos y puse mi foco en hacer crecer el negocio.",
   author: "Paola Zorila",
   source: "AZ Servicios de Limpieza, Rosario",
   caseHref: "/proyectos/empresa-limpieza-rosario",
-  highlights: ["hoy lo resuelve el sistema"],
+  highlights: ["resuelve de forma automática"],
 };
 
 
@@ -572,22 +572,17 @@ export const portfolio: {
 };
 
 
-/* Encabezado de la seccion de preguntas del inicio. La columna izquierda la
-   arma Faq.astro en tres partes: el eyebrow chico, esta palabra en grande (que
-   es la que lleva el h2) y el lead. Por eso `title` es la sigla y no el termino
-   largo: "Preguntas frecuentes" vive en el eyebrow, que es el unico lugar donde
-   el lector lo lee completo (y donde queda para buscadores). */
+/* Encabezado de la seccion de preguntas del inicio: la columna izquierda la arma
+   Faq.astro con la palabra en grande (que es la que lleva el h2), el lead y el
+   link a contacto. */
 export const faqHeading: {
-  eyebrow: string;
   title: string;
   lead: string;
-  cta: { question: string; label: string; href: string };
+  cta: { label: string; href: string };
 } = {
-  eyebrow: "Preguntas frecuentes",
   title: "FAQ",
   lead: "Lo que nos preguntás antes de arrancar, respondido sin vueltas.",
   cta: {
-    question: "¿No encontrás tu respuesta?",
     label: "Escribinos",
     href: "/contacto#contacto",
   },
