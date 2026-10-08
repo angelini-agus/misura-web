@@ -20,13 +20,18 @@ import StickyCta from "../components/StickyCta.astro";
   <main id="contenido" class="flex-1" tabindex="-1">
     <Hero />
     <Clients />
+    <!-- El equipo va aca, pegado a la prueba social, y no al final ni debajo del
+         hero: cierra el par promesa+resultados con "esto lo hace este equipo", y
+         entre las metricas y el problem statement funciona como respiro visual.
+         Debajo del hero serian dos fotos sin contexto (el teaser no muestra
+         nombres ni roles): decoracion antes de que se entienda la oferta. -->
+    <TeamTeaser />
     <Problem />
     <Services />
     <ForWho />
     <Differentiators />
     <Faq />
     <Explore />
-    <TeamTeaser />
     <Contact simple />
   </main>
   <Footer />
