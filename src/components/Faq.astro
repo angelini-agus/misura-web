@@ -32,7 +32,6 @@ const faqSchema = {
         recorrido para moverse. */}
     <div
       class="grid grid-cols-1 gap-y-12 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
-      data-faq-grid
     >
       <div
         class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
@@ -51,10 +50,12 @@ const faqSchema = {
         <p class="mt-6 leading-relaxed text-green/80">{faqHeading.lead}</p>
         {/* El link va suelto, sin recuadro: el recuadro lo hacia leer como un
             boton flotando en la columna, cuando es una salida mas del bloque y
-            tiene que alinearse con el resto. */}
+            tiene que alinearse con el resto. Va pegado al lead: es la continuacion
+            de la misma frase, no un bloque aparte. `link-ink` ya suma 6px de aire
+            propio por encima del subrayado. */}
         <a
           href={faqHeading.cta.href}
-          class="link-ink mt-8 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
+          class="link-ink mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
         >
           {faqHeading.cta.label}
           <span aria-hidden="true">→</span>
@@ -140,11 +141,19 @@ const faqSchema = {
      pero que la linea que cierra la seccion NO se corra al abrir una tarjeta. Lo
      que mueve la linea es el alto de la seccion, y el alto lo fija el contenido,
      asi que la unica forma de que no se mueva es que la seccion tenga de antemano
-     el aire que va a ocupar la respuesta: la grilla arranca con
+     el aire que va a ocupar la respuesta: la seccion arranca con
      `alto de las preguntas cerradas + alto de la respuesta mas alta` y todo
      crecimiento que entre en ese aire no cambia el alto de nada. Como ademas solo
-     hay una fila abierta a la vez, ese aire alcanza siempre: la seccion no cambia
-     de alto por abrir ninguna pregunta.
+     hay una fila abierta a la vez, ese aire alcanza siempre.
+
+     El aire va en la SECCION y no en la grilla a proposito: la grilla es el bloque
+     contenedor del bloque de titulo sticky, asi que su alto marca hasta donde el
+     titulo puede viajar. Con el aire adentro de la grilla, el titulo seguia bajando
+     por esa banda vacia despues de la ultima tarjeta; con el aire en la seccion, la
+     grilla mide exactamente lo que mide la columna de preguntas y el recorrido del
+     titulo termina justo al pie de la ultima tarjeta, que es la referencia pedida:
+     con la ultima fila desplegada (la columna es mas alta) el titulo baja un poco
+     mas, y con todo cerrado se detiene antes.
 
      Cuanto es "la respuesta mas alta" no se puede saber desde CSS (depende del
      ancho: 128px en 1440, 154px en 1024), asi que se mide. En un <details> cerrado
@@ -160,20 +169,19 @@ const faqSchema = {
   const FAQ_MOUSE = "(hover: hover) and (pointer: fine)";
   const reserveFaqHeight = () => {
     const section = document.getElementById("preguntas");
-    const grid = section?.querySelector<HTMLElement>("[data-faq-grid]");
-    if (!grid) return;
+    if (!section) return;
     // Sin limpiar el alto antes de medir, la segunda pasada mediria el aire que
     // dejo la primera y la reserva creceria sola en cada resize.
-    grid.style.minHeight = "";
+    section.style.minHeight = "";
     if (!window.matchMedia(FAQ_MOUSE).matches) return;
-    // Con una pregunta abierta el alto de la grilla ya trae el crecimiento
-    // adentro: si se midiera asi, la reserva quedaria inflada para siempre.
-    if (section?.querySelector("details[open]")) return;
+    // Con una pregunta abierta el alto ya trae el crecimiento adentro: si se midiera
+    // asi, la reserva quedaria inflada para siempre.
+    if (section.querySelector("details[open]")) return;
     let tallest = 0;
-    section?.querySelectorAll<HTMLElement>("[data-faq-answer]").forEach((answer) => {
+    section.querySelectorAll<HTMLElement>("[data-faq-answer]").forEach((answer) => {
       tallest = Math.max(tallest, answer.scrollHeight);
     });
-    if (tallest > 0) grid.style.minHeight = `${grid.offsetHeight + tallest}px`;
+    if (tallest > 0) section.style.minHeight = `${section.offsetHeight + tallest}px`;
   };
 
   let faqResizeTimer = 0;
