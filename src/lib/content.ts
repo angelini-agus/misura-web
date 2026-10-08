@@ -47,6 +47,7 @@ import pediatricPortalContact from "../assets/proyectos/pediatric/portal-contact
 import limpiezaAdmin1 from "../assets/proyectos/limpieza/admin1.png";
 import limpiezaAdmin2 from "../assets/proyectos/limpieza/admin2.png";
 import limpiezaAdmin3 from "../assets/proyectos/limpieza/admin3.png";
+import limpiezaLogin from "../assets/proyectos/limpieza/login.png";
 
 export const isPending = (value: string) => value.includes("[PENDIENTE");
 
@@ -779,9 +780,10 @@ export const caseStudies: {
       "QR",
     ],
     gallery: [
+      { src: limpiezaAdmin3, alt: "Gestión de insumos organizada por edificio" },
       { src: limpiezaAdmin1, alt: "Panel de administración con la grilla semanal de turnos" },
       { src: limpiezaAdmin2, alt: "Liquidación automática de sueldos por horas verificadas" },
-      { src: limpiezaAdmin3, alt: "Gestión de insumos organizada por edificio" },
+      { src: limpiezaLogin, alt: "Pantalla de inicio de sesión con usuario y contraseña" },
     ],
     problem: {
       eyebrow: "El desafío",

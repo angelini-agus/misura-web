@@ -64,10 +64,14 @@ detenida y la landing en 4322.
 
 ## De dónde salen las capturas del ERP de AZ
 
-Las tres del caso `empresa-limpieza-rosario` (`admin1`, `admin2`, `admin3`) salen
-del repo `angelini-agus/az-sistema-prod`, carpeta `screenshots/`, donde viven en
-3840x2400 (1920x1200 a 2x) y en tema oscuro. Son del sistema en vivo, no de datos
-demo: se leen los nombres de los empleados y las direcciones de los edificios.
+Las cuatro del caso `empresa-limpieza-rosario` (`admin1`, `admin2`, `admin3` y
+`login`) salen del repo `angelini-agus/az-sistema-prod`, carpeta `screenshots/`,
+donde viven en 3840x2400 (1920x1200 a 2x) y en tema oscuro. Son del sistema en
+vivo, no de datos demo: se leen los nombres de los empleados y las direcciones de
+los edificios.
+
+El orden de la galería es insumos, grilla de turnos, liquidación y login, para
+que el caso arranque por la pantalla que mejor lo cuenta.
 
 Se capturan sobre producción con el harness de CDP que quedó en
 `%TEMP%\az-shots` (copia selectiva del perfil de Brave, segunda instancia con
@@ -79,7 +83,9 @@ dibujó la barra de scroll nativa y se rellenan con el píxel de la columna 3809
 de la misma fila. El fondo de la app es un degradado vertical puro, sin
 componente horizontal (medido: 0.000 de delta cada 10 px), así que la
 continuación no deja costura. Es la misma idea que la normalización de capturas
-viejas: se completa lo que falta con el color del borde de la propia imagen.
+viejas: se completa lo que falta con el color del borde de la propia imagen. La
+captura de `login` no pasa por este paso: se tomó en un contexto aislado y salió
+sin barra.
 2. Se baja a 1920x1200 con `sharp` (`resize` y `png` con `compressionLevel: 9`,
 `effort: 10`, `palette: false`).
 
