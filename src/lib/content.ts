@@ -40,7 +40,7 @@ import azLandingContacto from "../assets/proyectos/az-landing/az-contacto.png";
 import pediatricLandingHero from "../assets/proyectos/pediatric/landing-hero.png";
 import pediatricLandingJourney from "../assets/proyectos/pediatric/landing-journey.png";
 import pediatricLandingTestimonials from "../assets/proyectos/pediatric/landing-testimonials.png";
-import pediatricLandingBooking from "../assets/proyectos/pediatric/landing-booking.png";
+import pediatricLandingContacto from "../assets/proyectos/pediatric/landing-contacto.png";
 import pediatricErpDashboard from "../assets/proyectos/pediatric/erp-dashboard.png";
 import pediatricErpPortalRequests from "../assets/proyectos/pediatric/erp-portal-requests.png";
 import pediatricErpAppointments from "../assets/proyectos/pediatric/erp-appointments.png";
@@ -1186,8 +1186,8 @@ export const caseStudies: {
         alt: "Testimonios de familias, con la trayectoria de la clínica arriba",
       },
       {
-        src: pediatricLandingBooking,
-        alt: "El cierre del recorrido: la invitación a sacar turno apunta al portal de pacientes",
+        src: pediatricLandingContacto,
+        alt: "El mapa del consultorio y los datos de contacto, al final del recorrido",
       },
     ],
     problem: {
