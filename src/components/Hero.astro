@@ -141,6 +141,59 @@ import CodePanel from "./ui/CodePanel.astro";
     }
   }
 
+  /* Ventanas de escritorio bajas: hasta 720px de alto el bloque de texto del hero
+     no entra en la primera pantalla y los dos CTAs quedaban abajo del pliegue
+     (medido a 1440x647: el fondo de los botones en 690px, o sea 43px fuera de la
+     pantalla; el hero mide 625px de contenido + los 113px de barra de anuncio y
+     header = necesita 738px para entrar). Se achica escala otra vez, igual que en
+     los tres escalones mobile de arriba: padding, titulo, margenes y panel, nunca
+     el copy. El corte de 45rem esta por debajo de los 738px donde empieza a no
+     entrar, asi que por encima de 720px de ventana no cambia nada. */
+  @media (min-width: 48rem) and (max-height: 45rem) {
+    .hero-grid {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      line-height: 1.08;
+    }
+
+    .hero-subtitle {
+      margin-top: 0.5rem;
+    }
+
+    .hero-lead {
+      margin-top: 0.75rem;
+    }
+
+    .hero-actions {
+      margin-top: 1rem;
+    }
+
+    .hero-visual {
+      max-width: min(30rem, 32dvh);
+    }
+  }
+
+  /* Escritorios muy bajos (una notebook de 1080p al 200% de escala ronda los
+     540px utiles): un escalon mas, sin tocar el copy ni la estructura. */
+  @media (min-width: 48rem) and (max-height: 37.5rem) {
+    .hero-grid {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-size: 2.25rem;
+    }
+
+    .hero-visual {
+      max-width: min(26rem, 26dvh);
+    }
+  }
+
   /* Pantallas muy bajas (un iPhone SE con las barras del navegador a la vista
      ronda los 550px utiles): un escalon mas. Los dos CTAs pasan a dos
      columnas y el panel achica otra vez, asi los botones entran sin tocar la

@@ -21,37 +21,75 @@ const faqSchema = {
 
 <section id="preguntas" class="scroll-mt-24 border-t border-green">
   <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
-    <div class="max-w-xl" data-reveal>
-      <p class="text-xs font-semibold uppercase tracking-[0.2em]">
-        {faqHeading.eyebrow}
-      </p>
-      <h2
-        class="font-display mt-3 text-3xl font-medium leading-tight tracking-tight sm:text-4xl"
+    {/* Dos columnas desde lg: el bloque del titulo a la izquierda, las preguntas
+        a la derecha. La grilla existe en mobile tambien (una sola columna) para
+        que el `gap-y-12` separe el titulo del stack sin margenes sueltos.
+
+        El `top` del sticky sale del token --nav-h (el alto del header sticky,
+        definido en global.css) mas 2.5rem de aire: si cambia el header, cambia
+        solo. `self-start` es obligatorio: sin el, el item de grilla se estira al
+        alto de la fila, queda tan alto como la lista y el sticky no tiene
+        recorrido para moverse. */}
+    <div
+      class="grid grid-cols-1 gap-y-12 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
+    >
+      <div
+        class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
+        data-reveal
       >
-        {faqHeading.title}
-      </h2>
-    </div>
-    <div class="mt-12 flex flex-col gap-6">
-      {faq.map((item) => (
-        <details
-          id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
-          class="group rounded-md border border-green bg-green text-cream"
+        {/* La palabra que ancla la seccion. El tamano se mide en vw y no en un
+            valor fijo porque la columna ya tiene su tope: desde lg mide 22rem,
+            asi que en 1024 la palabra entra holgada y en pantallas grandes
+            crece hasta los 10rem sin desbordar el ancho de la columna. El
+            `leading` por debajo de 1 es lo que la hace ocupar poco alto. */}
+        <h2
+          class="font-display text-[clamp(4.5rem,11vw,10rem)] font-medium leading-[0.9] tracking-[-0.04em]"
         >
-          <summary
-            class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+          {faqHeading.title}
+        </h2>
+        <p class="mt-6 leading-relaxed text-green/80">{faqHeading.lead}</p>
+        {/* El link va suelto, sin recuadro: el recuadro lo hacia leer como un
+            boton flotando en la columna, cuando es una salida mas del bloque y
+            tiene que alinearse con el resto. Va pegado al lead: es la continuacion
+            de la misma frase, no un bloque aparte. `link-ink` ya suma 6px de aire
+            propio por encima del subrayado. */}
+        <a
+          href={faqHeading.cta.href}
+          class="link-ink mt-4 inline-flex items-center gap-2 text-sm font-semibold hover:text-green-dark"
+        >
+          {faqHeading.cta.label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="flex flex-col gap-6">
+        {faq.map((item) => (
+          <details
+            id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
+            class="group rounded-md border border-green bg-green text-cream"
           >
-            <h3 class="font-display text-lg font-medium">
-              <MisureWord text={item.question} />
-            </h3>
-            <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
-          </summary>
-          <div class="details-collapse">
-            <div class="details-collapse-inner">
-              <p class="px-6 pb-6 leading-relaxed text-cream/80">{item.answer}</p>
-            </div>
-          </div>
-        </details>
-      ))}
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+            >
+              <h3 class="font-display text-lg font-medium">
+                <MisureWord text={item.question} />
+              </h3>
+              <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
+            </summary>
+            {/* La respuesta va como hijo directo del <details>, sin envoltorios: la
+                tarjeta abre de golpe, sin animacion, asi que no hace falta el
+                truco de `grid-template-rows` que servia para animar el alto.
+                El `data-faq-answer` es el gancho que mide el JS.
+
+                Ojo al tocar esto: en un <details> cerrado el contenido igual se
+                layouta (medido: un hijo directo reporta su alto real), y de esa
+                medida sale el aire que se reserva al pie de la seccion para que
+                no se mueva la linea al abrir. */}
+            <p data-faq-answer class="px-6 pb-6 leading-relaxed text-cream/80">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -79,8 +117,98 @@ const faqSchema = {
     });
     openFaqFromHash(window.location.hash);
   };
-  document.addEventListener("astro:page-load", initFaqHash);
-  initFaqHash();
+
+  /* Una sola pregunta abierta a la vez: al abrir una se cierran las demas. Se
+     abre apretando (click, tap o Enter/Espacio con el teclado: es el
+     comportamiento nativo del <details>) y no con el hover. El cierre no dispara
+     nada a proposito: el handler solo actua cuando la fila quedo abierta, asi que
+     no hay ida y vuelta. */
+  const closeOtherFaqRows = (current: HTMLDetailsElement) => {
+    document.querySelectorAll<HTMLDetailsElement>("#preguntas details[open]").forEach((details) => {
+      if (details !== current) details.open = false;
+    });
+  };
+
+  const onFaqToggle = (event: Event) => {
+    const details = event.currentTarget as HTMLDetailsElement | null;
+    if (!details || !details.open) return;
+    closeOtherFaqRows(details);
+  };
+
+  /* Aire reservado al pie de la seccion, donde hay mouse.
+
+     El pedido es que las preguntas de abajo se empujen (eso lo hace el flujo solo)
+     pero que la linea que cierra la seccion NO se corra al abrir una tarjeta. Lo
+     que mueve la linea es el alto de la seccion, y el alto lo fija el contenido,
+     asi que la unica forma de que no se mueva es que la seccion tenga de antemano
+     el aire que va a ocupar la respuesta: la seccion arranca con
+     `alto de las preguntas cerradas + alto de la respuesta mas alta` y todo
+     crecimiento que entre en ese aire no cambia el alto de nada. Como ademas solo
+     hay una fila abierta a la vez, ese aire alcanza siempre.
+
+     El aire va en la SECCION y no en la grilla a proposito: la grilla es el bloque
+     contenedor del bloque de titulo sticky, asi que su alto marca hasta donde el
+     titulo puede viajar. Con el aire adentro de la grilla, el titulo seguia bajando
+     por esa banda vacia despues de la ultima tarjeta; con el aire en la seccion, la
+     grilla mide exactamente lo que mide la columna de preguntas y el recorrido del
+     titulo termina justo al pie de la ultima tarjeta, que es la referencia pedida:
+     con la ultima fila desplegada (la columna es mas alta) el titulo baja un poco
+     mas, y con todo cerrado se detiene antes.
+
+     Cuanto es "la respuesta mas alta" no se puede saber desde CSS (depende del
+     ancho: 128px en 1440, 154px en 1024), asi que se mide. En un <details> cerrado
+     el contenido igual se layouta (medido: el propio <p> de la respuesta reporta
+     su scrollHeight real con la tarjeta cerrada), asi que no hace falta abrir
+     ninguna pregunta para medirla, y el numero coincide exacto con el crecimiento
+     real de cada tarjeta.
+
+     Se reserva donde hay mouse y no por ancho: en touch (telefono) la seccion
+     crece con el contenido, que es lo que corresponde, y el aire de la respuesta
+     mas alta quedaria como un hueco sin sentido. Si el JS no corre, no hay reserva
+     y todo se comporta como antes. */
+  const FAQ_MOUSE = "(hover: hover) and (pointer: fine)";
+  const reserveFaqHeight = () => {
+    const section = document.getElementById("preguntas");
+    if (!section) return;
+    // Sin limpiar el alto antes de medir, la segunda pasada mediria el aire que
+    // dejo la primera y la reserva creceria sola en cada resize.
+    section.style.minHeight = "";
+    if (!window.matchMedia(FAQ_MOUSE).matches) return;
+    // Con una pregunta abierta el alto ya trae el crecimiento adentro: si se midiera
+    // asi, la reserva quedaria inflada para siempre.
+    if (section.querySelector("details[open]")) return;
+    let tallest = 0;
+    section.querySelectorAll<HTMLElement>("[data-faq-answer]").forEach((answer) => {
+      tallest = Math.max(tallest, answer.scrollHeight);
+    });
+    if (tallest > 0) section.style.minHeight = `${section.offsetHeight + tallest}px`;
+  };
+
+  let faqResizeTimer = 0;
+  const onFaqResize = () => {
+    window.clearTimeout(faqResizeTimer);
+    faqResizeTimer = window.setTimeout(reserveFaqHeight, 150);
+  };
+
+  const initFaqRows = () => {
+    document.querySelectorAll<HTMLDetailsElement>("#preguntas details").forEach((details) => {
+      details.removeEventListener("toggle", onFaqToggle);
+      details.addEventListener("toggle", onFaqToggle);
+    });
+  };
+
+  const initFaq = () => {
+    // La reserva se mide antes de abrir la pregunta del hash: si no, la grilla ya
+    // viene crecida por esa respuesta y el aire sale mas grande de lo necesario.
+    reserveFaqHeight();
+    initFaqRows();
+    initFaqHash();
+    document.fonts?.ready.then(reserveFaqHeight);
+  };
+
+  window.addEventListener("resize", onFaqResize);
+  document.addEventListener("astro:page-load", initFaq);
+  initFaq();
 </script>
 
 <script

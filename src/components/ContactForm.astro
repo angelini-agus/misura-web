@@ -43,7 +43,7 @@ const { web3forms } = contactForm;
     data-service-form
     tabindex="-1"
     data-form-error-message={contactForm.formError}
-    class="flex h-full flex-col gap-8"
+    class="flex h-full flex-col gap-[var(--contact-air-form,2rem)]"
     novalidate
   >
     <input
@@ -77,7 +77,12 @@ const { web3forms } = contactForm;
     </div>
 
     <div class="flex flex-1 flex-col justify-center">
-      <div class="grid gap-6 md:grid-cols-2">
+      {/* El aire de esta grilla, y el de las dos lineas de arriba, sale de las
+          variables que declara la seccion de contacto (Contact.astro): en
+          ventanas bajas se comprimen para que el formulario vuelva a entrar en
+          una pantalla. Si el formulario se usa afuera de esa seccion, cada clase
+          cae en su valor de siempre. */}
+      <div class="grid gap-[var(--contact-air-grid,1.5rem)] md:grid-cols-2">
         <div class="flex flex-col gap-2">
           <label
             for="cf-name"
@@ -178,7 +183,7 @@ const { web3forms } = contactForm;
       </div>
     </div>
 
-    <div class="flex flex-col items-center gap-4">
+    <div class="flex flex-col items-center gap-[var(--contact-air-submit,1rem)]">
       <button
         id="contact-submit"
         type="submit"
