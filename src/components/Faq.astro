@@ -32,6 +32,7 @@ const faqSchema = {
         recorrido para moverse. */}
     <div
       class="grid grid-cols-1 gap-y-12 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
+      data-faq-grid
     >
       <div
         class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
@@ -111,8 +112,64 @@ const faqSchema = {
     });
     openFaqFromHash(window.location.hash);
   };
-  document.addEventListener("astro:page-load", initFaqHash);
-  initFaqHash();
+
+  /* Aire reservado al pie de la seccion, en escritorio.
+
+     El pedido es que las preguntas de abajo se empujen (eso lo hace el flujo solo)
+     pero que la linea que cierra la seccion NO se corra al abrir una tarjeta. Lo
+     que mueve la linea es el alto de la seccion, y el alto lo fija el contenido,
+     asi que la unica forma de que no se mueva es que la seccion tenga de antemano
+     el aire que va a ocupar la respuesta: la grilla arranca con
+     `alto de las preguntas cerradas + alto de la respuesta mas alta` y todo
+     crecimiento que entre en ese aire no cambia el alto de nada.
+
+     Cuanto es "la respuesta mas alta" no se puede saber desde CSS (depende del
+     ancho: 128px en 1440, 154px en 1024, 232px en mobile porque el texto corta
+     mas seguido), asi que se mide. El scrollHeight del panel da el alto real de
+     la respuesta aunque este cerrada: el contenido se layouta igual y queda
+     clipeado por el `overflow: hidden` de `.details-collapse-inner`, asi que no
+     hace falta abrir ninguna pregunta para medirla (medido: coincide exacto con
+     el crecimiento real de cada tarjeta).
+
+     Solo desde `lg`, que es donde la grilla es de dos columnas: en mobile la
+     seccion sigue creciendo con el contenido, que es lo que corresponde. Si el
+     JS no corre, no hay aire reservado y todo se comporta como antes. */
+  const FAQ_RESERVE_FROM = "(min-width: 64rem)";
+  const reserveFaqHeight = () => {
+    const section = document.getElementById("preguntas");
+    const grid = section?.querySelector<HTMLElement>("[data-faq-grid]");
+    if (!grid) return;
+    // Sin limpiar el alto antes de medir, la segunda pasada mediria el aire que
+    // dejo la primera y la reserva creceria sola en cada resize.
+    grid.style.minHeight = "";
+    if (!window.matchMedia(FAQ_RESERVE_FROM).matches) return;
+    // Con una pregunta abierta el alto de la grilla ya trae el crecimiento
+    // adentro: si se midiera asi, la reserva quedaria inflada para siempre.
+    if (section?.querySelector("details[open]")) return;
+    let tallest = 0;
+    section?.querySelectorAll<HTMLElement>(".details-collapse-inner").forEach((answer) => {
+      tallest = Math.max(tallest, answer.scrollHeight);
+    });
+    if (tallest > 0) grid.style.minHeight = `${grid.offsetHeight + tallest}px`;
+  };
+
+  let faqResizeTimer = 0;
+  const onFaqResize = () => {
+    window.clearTimeout(faqResizeTimer);
+    faqResizeTimer = window.setTimeout(reserveFaqHeight, 150);
+  };
+
+  const initFaq = () => {
+    // La reserva se mide antes de abrir la pregunta del hash: si no, la grilla ya
+    // viene crecida por esa respuesta y el aire sale mas grande de lo necesario.
+    reserveFaqHeight();
+    initFaqHash();
+    document.fonts?.ready.then(reserveFaqHeight);
+  };
+
+  window.addEventListener("resize", onFaqResize);
+  document.addEventListener("astro:page-load", initFaq);
+  initFaq();
 </script>
 
 <script
