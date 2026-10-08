@@ -19,24 +19,35 @@ const faqSchema = {
 };
 ---
 
-<section id="preguntas" class="scroll-mt-24 border-t border-green">
-  <div class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
-    {/* Dos columnas desde lg: el bloque del titulo a la izquierda, las preguntas
-        a la derecha. La grilla existe en mobile tambien (una sola columna) para
-        que el `gap-y-12` separe el titulo del stack sin margenes sueltos.
+<section
+  id="preguntas"
+  class="scroll-mt-24 border-t border-green lg:h-[calc(100dvh-var(--nav-h))] lg:min-h-[40rem] lg:overflow-hidden"
+>
+  <div
+    class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24 lg:flex lg:h-full lg:flex-col lg:py-10"
+  >
+    {/* En escritorio la seccion mide exactamente una pantalla (100dvh menos el
+        header, que es sticky) y la lista de preguntas scrollea ADENTRO de su
+        columna. Eso es lo que hace que abrir una tarjeta no agrande la seccion:
+        la respuesta crece dentro del panel y apareceria el scroll interno, pero
+        el alto de la seccion, el riel de scroll y el resto de la pagina no se
+        mueven ni un pixel. El `lg:h-full` + `flex-1` + `min-h-0` es la cadena
+        obligatoria para que la columna pueda ser mas baja que su contenido: sin
+        `min-h-0` el item de grilla crece con la lista y el scroll interno nunca
+        aparece. `min-h-[40rem]` cubre las ventanas bajas (una notebook de 600px
+        de alto): ahi la seccion scrollea con la pagina y el panel conserva alto
+        suficiente para el bloque del titulo.
 
-        El `top` del sticky sale del token --nav-h (el alto del header sticky,
-        definido en global.css) mas 2.5rem de aire: si cambia el header, cambia
-        solo. `self-start` es obligatorio: sin el, el item de grilla se estira al
-        alto de la fila, queda tan alto como la lista y el sticky no tiene
-        recorrido para moverse. */}
+        En mobile no hay alto fijo ni scroll interno: la seccion crece con el
+        contenido, que es lo que corresponde cuando la grilla es de una columna
+        (un scroller adentro de otro scroller es una trampa). */}
     <div
-      class="grid grid-cols-1 gap-y-12 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
+      class="grid grid-cols-1 gap-y-12 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(17rem,22rem)_1fr] lg:gap-x-16 xl:gap-x-20"
     >
-      <div
-        class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)] lg:self-start"
-        data-reveal
-      >
+      {/* El bloque del titulo se centra vertical en la pantalla y se queda quieto
+          mientras las preguntas pasan al lado: ya no necesita sticky, porque el
+          que no se mueve es la seccion entera. */}
+      <div class="lg:flex lg:flex-col lg:justify-center" data-reveal>
         <p class="text-xs font-semibold uppercase tracking-[0.2em]">
           {faqHeading.eyebrow}
         </p>
@@ -62,14 +73,17 @@ const faqSchema = {
           </a>
         </div>
       </div>
-      <div class="flex flex-col gap-6">
+      <div
+        class="flex flex-col gap-7 lg:min-h-0 lg:overflow-y-auto lg:pr-1 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+        data-faq-list
+      >
         {faq.map((item) => (
           <details
             id={item.question === "¿Cuánto cuesta un proyecto como el mío?" ? "pregunta-costo-mio" : undefined}
             class="group rounded-md border border-green bg-green text-cream"
           >
             <summary
-              class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+              class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-6 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
             >
               <h3 class="font-display text-lg font-medium">
                 <MisureWord text={item.question} />
@@ -111,8 +125,46 @@ const faqSchema = {
     });
     openFaqFromHash(window.location.hash);
   };
+
+  /* En escritorio la lista de preguntas tiene alto fijo y scrollea adentro, asi
+     que abrir una fila no agranda la seccion. El <details> crece hacia abajo y el
+     contenedor no lo acompaña, entonces una respuesta abierta puede quedar
+     cortada por el borde inferior del panel: despues de la transicion del
+     despliegue (220ms, `.details-collapse` en global.css) empujamos el scroll
+     interno lo justo para que la fila entre entera. Solo toca el scroll de la
+     lista, nunca el de la pagina, y en mobile no hace nada porque ahi la lista no
+     tiene overflow. */
+  const onFaqToggle = (event: Event) => {
+    const details = event.currentTarget as HTMLDetailsElement | null;
+    if (!details || !details.open) return;
+    const list = details.closest<HTMLElement>("[data-faq-list]");
+    if (!list || list.scrollHeight <= list.clientHeight + 1) return;
+    window.setTimeout(() => {
+      const listBox = list.getBoundingClientRect();
+      const row = details.getBoundingClientRect();
+      // Respuesta mas alta que el panel: se alinea arriba, porque leer empieza
+      // por la pregunta y no por el final.
+      const needed =
+        row.height > list.clientHeight
+          ? row.top - listBox.top - 8
+          : row.bottom - listBox.bottom + 8;
+      if (needed > 0) list.scrollTop += needed;
+    }, 260);
+  };
+
+  const initFaqRows = () => {
+    document
+      .querySelectorAll<HTMLDetailsElement>("#preguntas details")
+      .forEach((details) => {
+        details.removeEventListener("toggle", onFaqToggle);
+        details.addEventListener("toggle", onFaqToggle);
+      });
+  };
+
   document.addEventListener("astro:page-load", initFaqHash);
+  document.addEventListener("astro:page-load", initFaqRows);
   initFaqHash();
+  initFaqRows();
 </script>
 
 <script
