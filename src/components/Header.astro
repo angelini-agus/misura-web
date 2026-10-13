@@ -22,8 +22,16 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
   class="sticky top-0 z-50 border-b border-green bg-cream"
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+    {/* `draggable="false"` en el enlace y `select-text` en el wordmark, los dos
+        juntos: el <a> es arrastrable por defecto, asi que al arrastrar sobre el
+        logo el navegador iniciaba el arrastre del enlace en vez de la seleccion
+        (medido: el evento `dragstart` disparaba con el <a> de target y no se
+        seleccionaba nada). Con solo `draggable="false"` seguia sin seleccionar:
+        el wordmark necesita ademas el `user-select: text` explicito porque esta
+        adentro de un enlace. */}
     <a
       href="/"
+      draggable="false"
       class="relative inline-flex h-8 w-[7.1875rem] items-center"
       data-header-logo-link
     >
@@ -39,8 +47,14 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
           que es lo que lo hacia ver desproporcionado y desalineado hacia abajo.
           El transform por defecto deja el wordmark ya escalado, para que sin JS
           o con movimiento reducido el header se vea igual. */}
+      {/* Sin `pointer-events-none`: el wordmark tiene que poder seleccionarse con
+          el mouse tambien cuando esta en el navbar. Su caja interactiva es la
+          transformada (115x32), no los 628px de layout, asi que no le tapa nada
+          al nav ni al CTA. En la home, mientras manda el wordmark de la apertura,
+          el script le pone `pointer-events: none` para que el arrastre llegue al
+          grande. */}
       <span
-        class="wordmark wordmark-nav pointer-events-none absolute left-0 top-0 origin-top-left [transform:scale(0.1815)]"
+        class="wordmark wordmark-nav select-text absolute left-0 top-0 origin-top-left [transform:scale(0.1815)]"
         data-header-logo
       >{site.name}</span>
     </a>
@@ -139,6 +153,69 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
     });
   };
 
+  // Al entrar a una pagina sin apertura de marca (todas menos la home), el logo
+  // del navbar hace el mismo viaje que hace al scrollear en la home, pero
+  // acelerado: arranca del tamano y la posicion que tiene el wordmark grande en
+  // la apertura y se acomoda en su lugar. Sin esto el logo aparece ya puesto y no
+  // se entiende de donde salio.
+  const animarLlegadaDelLogo = () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // En la home el logo lo maneja el script de la apertura, que lo hace viajar
+    // con el scroll: ahi esta funcion no corre.
+    if (document.querySelector("[data-brand-wordmark]")) return;
+
+    const logo = document.querySelector<HTMLElement>("[data-header-logo]");
+    const link = document.querySelector<HTMLElement>("[data-header-logo-link]");
+    const header = document.querySelector("header");
+    if (!logo || !link || !header) return;
+
+    const linkRect = link.getBoundingClientRect();
+    const layoutWidth = logo.offsetWidth;
+    if (!layoutWidth || !linkRect.width) return;
+
+    const escalaFinal = linkRect.width / layoutWidth;
+
+    // Estado de partida: el wordmark a tamano completo, centrado en la ventana y
+    // a la altura donde arranca la apertura de la home, que es el borde inferior
+    // del header mas su padding (py-16 en celular, py-20 desde sm y py-28 desde
+    // md).
+    const ancho = document.documentElement.clientWidth;
+    const padding = ancho >= 768 ? 112 : ancho >= 640 ? 80 : 64;
+    const inicioX = (ancho - layoutWidth) / 2;
+    const inicioY = header.getBoundingClientRect().bottom + padding;
+
+    logo.style.transformOrigin = "0 0";
+    logo.style.transition = "none";
+    logo.style.transform = `translate(${(inicioX - linkRect.left).toFixed(2)}px, ${(inicioY - linkRect.top).toFixed(2)}px) scale(1)`;
+
+    // Fuerza el reflow para que la transicion arranque desde el estado de arriba
+    // y no desde el que deja la hoja
+    void logo.offsetWidth;
+
+    logo.style.transition = "transform 450ms var(--ease-out)";
+    logo.style.transform = `translate(0px, 0px) scale(${escalaFinal.toFixed(4)})`;
+
+    // Al terminar se sueltan los estilos: el transform por defecto de la hoja ya
+    // deja el logo en su lugar
+    logo.addEventListener(
+      "transitionend",
+      () => {
+        logo.style.transition = "";
+        logo.style.transform = "";
+        logo.style.transformOrigin = "";
+      },
+      { once: true },
+    );
+  };
+
   document.addEventListener("astro:page-load", initMobileMenu);
+  // `astro:after-swap` y no `astro:page-load`: el swap del ClientRouter deja el
+  // DOM nuevo en su lugar antes de pintarlo, y ahi todavia se puede dejar el
+  // logo en su estado de partida sin que se vea. Medido con `page-load`: el logo
+  // se pintaba ya en su lugar, saltaba al tamano grande y recien despues viajaba.
+  // La llamada inmediata cubre la carga directa de la pagina, que no pasa por
+  // ningun swap.
+  document.addEventListener("astro:after-swap", animarLlegadaDelLogo);
   initMobileMenu();
+  animarLlegadaDelLogo();
 </script>

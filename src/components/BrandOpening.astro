@@ -90,12 +90,19 @@ import BrandSenses from "./BrandSenses.astro";
     let mandaElNavbar = true;
 
     // Los dos ocupam la misma posicion con el scroll en cero, asi que el cambio
-    // de mando no se ve. El flag evita escribir en el DOM en cada frame.
+    // de mando no se ve. El que manda es tambien el que recibe el mouse: el de la
+    // apertura al principio (para poder seleccionar el wordmark grande, con el
+    // resaltado a la vista) y el del navbar desde el primer pixel de scroll. El
+    // otro queda con `pointer-events: none`, porque su caja de layout mide 628px
+    // y taparia el contenido de alrededor. El flag evita escribir en el DOM en
+    // cada frame.
     const setRelevo = (alNavbar: boolean) => {
       if (mandaElNavbar === alNavbar) return;
       mandaElNavbar = alNavbar;
       brandWordmark.style.opacity = alNavbar ? "0" : "";
       headerLogo.style.opacity = alNavbar ? "" : "0";
+      brandWordmark.style.pointerEvents = alNavbar ? "none" : "";
+      headerLogo.style.pointerEvents = alNavbar ? "" : "none";
     };
 
     // Posicion de LAYOUT de un elemento, no la pintada: `getBoundingClientRect`
@@ -279,8 +286,10 @@ import BrandSenses from "./BrandSenses.astro";
       headerLogo.style.transformOrigin = "";
       headerLogo.style.willChange = "";
       headerLogo.style.opacity = "";
+      headerLogo.style.pointerEvents = "";
       brandWordmark.style.transform = "";
       brandWordmark.style.opacity = "";
+      brandWordmark.style.pointerEvents = "";
     };
   };
 
