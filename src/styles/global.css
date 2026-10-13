@@ -10,9 +10,56 @@
   --color-cream-light: #fbf7f0;
   --font-sans: "Plus Jakarta Sans Variable", system-ui, Arial, sans-serif;
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  /* Lora es la tipografia del wordmark de la marca, y de nada mas. El logo
+     dejo de ser un SVG dibujado y pasó a ser texto en Lora Medium (500). El
+     resto del sitio sigue en Plus Jakarta Sans. */
+  --font-wordmark: "Lora Variable", Georgia, "Times New Roman", serif;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* El wordmark de la marca: texto, no imagen. Lo comparten los tres lugares
+   donde vive el logo (el hero de /nosotros, el navbar y el footer), y el del
+   hero y el del navbar son el MISMO elemento logico: el que viaja en la
+   animacion es el del navbar, y su caja se mide en runtime contra la del hero.
+
+   `line-height: 1` a proposito: Lora tiene descendentes profundos (la "g" de
+   bottega) y con el interlineado normal la caja crece de mas, lo que descoloca
+   la interpolacion del viaje. */
+.wordmark {
+  display: inline-block;
+  font-family: var(--font-wordmark);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* El wordmark a gran escala, el de la apertura de la home. El tamaño sale de
+   una variable para que la seccion que lo hospeda pueda compactarlo por alto de
+   ventana sin tocar el copy: el valor de aca es el de una ventana holgada. */
+.wordmark-hero {
+  font-size: var(--wordmark-hero-size, clamp(6rem, 20vw, 11rem));
+}
+
+/* El del navbar. Su caja mide a proposito lo mismo que la del hero (los 11rem
+   del tope de `.wordmark-hero`, unos 628px de layout): el navegador siempre lo
+   achica con el transform y nunca agranda nada, y asi la interpolacion del
+   viaje se mide contra una caja del mismo tamano en los dos extremos. */
+.wordmark-nav {
+  font-size: 11rem;
+}
+
+/* El del footer: el equivalente al `h-10` (40px) que media el logo de imagen. */
+.wordmark-footer {
+  font-size: 2.5rem;
+}
+
+/* El bloque de tipografia de maquina de escribir del diccionario: lo usan la
+   apertura de la home y el bloque de /nosotros, asi que vive aca y no en el
+   `<style>` de uno de los dos. */
+.font-typewriter {
+  font-family: "Courier New", Courier, ui-monospace, monospace;
 }
 
 /* Anclaje del CTA al formulario: la tarjeta va CENTRADA en la franja que queda

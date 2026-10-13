@@ -14,11 +14,7 @@ const year = new Date().getFullYear();
     <div class="flex flex-col gap-10 md:flex-row md:justify-between">
       <div class="max-w-xs">
         <a href="/" class="inline-flex items-center">
-          <img
-            src="/misure-logo.svg"
-            alt={site.name}
-            class="h-10 w-auto"
-          />
+          <span class="wordmark wordmark-footer">{site.name}</span>
         </a>
         <p class="mt-2 text-sm leading-relaxed text-green/70">
           <BrandWord text={site.tagline} />

@@ -1,5 +1,5 @@
 ---
-import { hero } from "../lib/content";
+import { dictionaryEntry, hero } from "../lib/content";
 import HighlightWords from "./ui/HighlightWords.astro";
 import Button from "./ui/Button.astro";
 import BrandWord from "./ui/BrandWord.astro";
@@ -31,6 +31,25 @@ import CodePanel from "./ui/CodePanel.astro";
   <div
     class="hero-grid mx-auto grid min-h-[calc(100dvh-var(--hero-top-h))] max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-16"
   >
+    <!-- Apertura de marca: el wordmark a gran escala con su fonetica, el mismo
+         tratamiento que tenia la apertura de /nosotros. Ocupa la fila de arriba
+         a todo el ancho y el contenido del hero queda debajo. Sin `order` el
+         bloque va primero tambien en mobile, donde el panel y el texto llevan
+         order-1 y order-2. -->
+    <div
+      class="hero-brand flex w-full flex-col items-center text-center md:col-span-2"
+      data-reveal="blur"
+    >
+      <span class="wordmark wordmark-hero select-none" data-hero-wordmark
+        >{dictionaryEntry.word}</span
+      >
+      <p
+        class="font-typewriter mt-3 text-base text-green/90 tracking-wide sm:text-lg md:text-xl"
+      >
+        {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
+      </p>
+    </div>
+
     <div class="order-2 md:order-1">
       <h1
         data-reveal
@@ -72,6 +91,27 @@ import CodePanel from "./ui/CodePanel.astro";
 </section>
 
 <style>
+  /* El alto del wordmark de la apertura sale del alto de VENTANA, no del ancho:
+     es el bloque que sobra o falta para que los dos CTAs entren en la primera
+     pantalla. La cuenta es `alto de ventana - lo que ocupan la barra de anuncio
+     y el header - el resto del hero`, con el tope y el piso del resto del
+     diseno. Por encima del punto donde la cuenta da el tope (unas 1080px de
+     ventana en escritorio) el wordmark se queda en su tamano maximo y no cambia
+     nada; por debajo se achica de forma continua, sin escalones discretos.
+
+     El resto del hero mide 842px en escritorio (medido: 905 de hero con 176 de
+     wordmark, menos 40 de wordmark+fonetica+su margen, mas los 113 de barra y
+     header) y 859px en mobile. El piso de 2.5rem evita que desaparezca. */
+  .hero-grid {
+    --wordmark-hero-size: clamp(2.5rem, calc(100dvh - 53.6875rem), 6rem);
+  }
+
+  @media (min-width: 48rem) {
+    .hero-grid {
+      --wordmark-hero-size: clamp(2.5rem, calc(100dvh - 52.625rem), 11rem);
+    }
+  }
+
   /* En celulares bajos el hero se compacta un escalon mas: es la unica forma
      de que los dos botones entren dentro de los primeros 100dvh a 375x667 y
      360x740, que es lo que la version mobile no cumplia. La condicion pide
@@ -113,9 +153,10 @@ import CodePanel from "./ui/CodePanel.astro";
      puesto, el bloque de texto no entraba en los 100dvh (faltaban ~28px a
      360x640 y ~13px a 320x568) y los dos CTAs quedaban abajo del pliegue. Se
      achica escala otra vez (panel, padding, gaps y margenes), nunca el copy.
-     El corte es 660px de alto a proposito: 375x667 tiene 82,8px libres y no
-     necesita este escalon, asi que conserva el panel y el aire del anterior. */
-  @media (max-width: 30rem) and (max-height: 660px) {
+     El corte subio de 660px a 42rem (672px): con la apertura de marca el hero
+     crece y a 668 todavia falta entrar, asi que el escalon tiene que empezar
+     antes. Arriba de 820px de ventana sigue sin aplicarse nada. */
+  @media (max-width: 30rem) and (max-height: 42rem) {
     .hero-grid {
       gap: 0.5rem;
       padding-top: 1rem;
@@ -141,16 +182,30 @@ import CodePanel from "./ui/CodePanel.astro";
     }
   }
 
-  /* Ventanas de escritorio bajas: hasta 720px de alto el bloque de texto del hero
-     no entra en la primera pantalla y los dos CTAs quedaban abajo del pliegue
-     (medido a 1440x647: el fondo de los botones en 690px, o sea 43px fuera de la
-     pantalla; el hero mide 625px de contenido + los 113px de barra de anuncio y
-     header = necesita 738px para entrar). Se achica escala otra vez, igual que en
-     los tres escalones mobile de arriba: padding, titulo, margenes y panel, nunca
-     el copy. El corte de 45rem esta por debajo de los 738px donde empieza a no
-     entrar, asi que por encima de 720px de ventana no cambia nada. */
-  @media (min-width: 48rem) and (max-height: 45rem) {
+  /* El ultimo escalon antes de que el hero scrollee. A 656px de ventana el
+     panel es lo unico que todavia tiene aire: el wordmark ya esta en su piso
+     (2.5rem) y el copy no se toca. */
+  @media (max-width: 30rem) and (max-height: 41rem) {
+    .hero-title {
+      font-size: 1.375rem;
+      line-height: 1.12;
+    }
+
+    .hero-visual {
+      max-width: min(8rem, 16dvh);
+    }
+  }
+
+  /* Ventanas de escritorio bajas: el corte era 45rem con el hero sin wordmark;
+     con la apertura de marca el contenido crece y el escalon tiene que empezar
+     antes. A 49rem (784px de ventana) todavia falta entrar, y por encima de
+     64rem no hace falta nada, asi que el escalon cubre ese hueco. Se achica
+     escala otra vez, igual que en los escalones mobile: padding, `row-gap`,
+     titulo, margenes y panel, nunca el copy. El `row-gap` separa la apertura de
+     marca del contenido y es el aire mas caro y mas prescindible del bloque. */
+  @media (min-width: 48rem) and (max-height: 49rem) {
     .hero-grid {
+      row-gap: 1.5rem;
       padding-top: 1.5rem;
       padding-bottom: 1.5rem;
     }
@@ -181,6 +236,7 @@ import CodePanel from "./ui/CodePanel.astro";
      540px utiles): un escalon mas, sin tocar el copy ni la estructura. */
   @media (min-width: 48rem) and (max-height: 37.5rem) {
     .hero-grid {
+      row-gap: 1rem;
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
@@ -190,7 +246,7 @@ import CodePanel from "./ui/CodePanel.astro";
     }
 
     .hero-visual {
-      max-width: min(26rem, 26dvh);
+      max-width: min(20rem, 20dvh);
     }
   }
 
@@ -226,3 +282,203 @@ import CodePanel from "./ui/CodePanel.astro";
     }
   }
 </style>
+
+<script>
+  let cleanupMorph: (() => void) | undefined;
+
+  // El wordmark de la apertura viaja hasta el navbar mientras se scrollea: un
+  // solo logo visible en todo momento, sin que aparezca duplicado al llegar
+  // arriba. Vive aca y no en el diccionario de /nosotros porque la apertura de
+  // marca se mudo a la home.
+  const initLogoMorph = () => {
+    cleanupMorph?.();
+    cleanupMorph = undefined;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const heroWordmark = document.querySelector<HTMLElement>(
+      "[data-hero-wordmark]",
+    );
+    const headerLogo = document.querySelector<HTMLElement>(
+      "[data-header-logo]",
+    );
+    const headerLogoLink = document.querySelector<HTMLAnchorElement>(
+      "[data-header-logo-link]",
+    );
+
+    // En cualquier pagina que no sea la home no hay wordmark de apertura, asi
+    // que el script no tiene nada que animar y sale sin tocar el header.
+    if (!heroWordmark || !headerLogo || !headerLogoLink) return;
+
+    let heroDocLeft = 0;
+    let heroDocTop = 0;
+    let heroWidth = 0;
+    let targetWidth = 0;
+    let layoutWidth = 0;
+    let scaleInicio = 1;
+    let scaleFin = 1;
+    let announcementH = 0;
+    let headerStickyTopOffset = 0;
+    let headerRestX = 0;
+    let travelDistance = 1;
+    let currentProgress = 0;
+    let isAtRest = false;
+
+    // Posicion de LAYOUT de un elemento, no la pintada: `getBoundingClientRect`
+    // incluye los transforms de las animaciones de reveal (`data-reveal` mueve
+    // el contenido con translateY durante ~600ms despues de cargar la pagina), y
+    // medir ahi dejaba el viaje 16px abajo en /nosotros: al arrancar, la caja del
+    // wordmark ya estaba en su lugar pero su rect devolvia 16px mas. Sumando
+    // `offsetTop` y `offsetLeft` por la cadena de `offsetParent` se obtiene la
+    // posicion real del flujo, que es la misma desde el primer pintado y no
+    // depende de en que momento del reveal se mida.
+    const offsetDoc = (el: HTMLElement) => {
+      let x = 0;
+      let y = 0;
+      let node: HTMLElement | null = el;
+      while (node) {
+        x += node.offsetLeft;
+        y += node.offsetTop;
+        node = node.offsetParent as HTMLElement | null;
+      }
+      return { x, y };
+    };
+
+    const measure = () => {
+      const scrollY = window.scrollY;
+      const linkRect = headerLogoLink.getBoundingClientRect();
+      const heroRect = heroWordmark.getBoundingClientRect();
+      const heroDoc = offsetDoc(heroWordmark);
+
+      heroDocLeft = heroDoc.x;
+      heroDocTop = heroDoc.y;
+      heroWidth = heroWordmark.offsetWidth || heroRect.width;
+
+      // El logo que viaja mide lo mismo en el hero y en el navbar, y el navbar
+      // lo muestra achicado con el transform: el navegador nunca agranda nada.
+      layoutWidth = headerLogo.offsetWidth || 628;
+      targetWidth = headerLogoLink.offsetWidth || linkRect.width;
+      if (targetWidth <= 0 || heroWidth <= 0 || layoutWidth <= 0) return;
+
+      scaleInicio = heroWidth / layoutWidth;
+      scaleFin = targetWidth / layoutWidth;
+
+      const announcementBar = document.querySelector<HTMLElement>(".announcement-bar");
+      announcementH = announcementBar ? announcementBar.offsetHeight : 0;
+
+      headerStickyTopOffset = linkRect.top - Math.max(0, announcementH - scrollY);
+      headerRestX = linkRect.left;
+
+      // La distancia de scroll hasta que el wordmark cruza el nivel del header
+      travelDistance = Math.max(1, heroDocTop - (headerStickyTopOffset + announcementH));
+
+      update();
+    };
+
+    const update = () => {
+      const scrollY = window.scrollY;
+      const currentAnnouncement = Math.max(0, announcementH - scrollY);
+      const currentHeaderRestY = currentAnnouncement + headerStickyTopOffset;
+      const currentHeroY = heroDocTop - scrollY;
+
+      // Progreso de 0 (arriba de todo) a 1 (apoyado en el navbar)
+      const rawProgress = scrollY / travelDistance;
+      const progress = Math.min(1, Math.max(0, rawProgress));
+      currentProgress = progress;
+
+      if (progress >= 1) {
+        if (!isAtRest) {
+          headerLogo.style.transform = `translate(0px, 0px) scale(${scaleFin.toFixed(4)})`;
+          headerLogo.style.willChange = "auto";
+          isAtRest = true;
+        }
+        return;
+      }
+
+      isAtRest = false;
+
+      // Interpolacion directa y fluida (60/120 FPS sin reflow)
+      const scale = scaleInicio + (scaleFin - scaleInicio) * progress;
+      const targetX = heroDocLeft * (1 - progress) + headerRestX * progress;
+      const targetY = currentHeroY * (1 - progress) + currentHeaderRestY * progress;
+
+      const dx = targetX - headerRestX;
+      const dy = targetY - currentHeaderRestY;
+
+      headerLogo.style.transformOrigin = "0 0";
+      // Transform 2D y sin `will-change`: con translate3d el navegador promueve
+      // el logo a su propia capa, la rasteriza una vez y despues escala ese mapa
+      // de bits, que es lo que lo hacia ver borroso mientras viajaba (medido: la
+      // energia de bordes a mitad del viaje caia un 33%, de 7.97 a 5.36). En 2D y
+      // sin promocion, el navegador repinta el texto en cada frame a la escala
+      // real.
+      headerLogo.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) scale(${scale.toFixed(4)})`;
+    };
+
+    // Ocultar el wordmark de la apertura para que solo exista un logo visible
+    heroWordmark.style.opacity = "0";
+
+    // Si hacen clic en el logo mientras aun esta en el hero, no navegar a home
+    const onLinkClick = (event: MouseEvent) => {
+      if (currentProgress < 0.85) {
+        event.preventDefault();
+      }
+    };
+    headerLogoLink.addEventListener("click", onLinkClick);
+
+    let scrollRaf = 0;
+    const onScroll = () => {
+      if (!scrollRaf) {
+        scrollRaf = window.requestAnimationFrame(() => {
+          scrollRaf = 0;
+          update();
+        });
+      }
+    };
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(measure, 50);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    // Red de seguridad: el evento `load` de la ventana vuelve a medir cuando ya
+    // terminaron de asentarse las imagenes y el primer layout. El ancho del
+    // wordmark puede cambiar entre el primer pintado y `load`, asi que no
+    // alcanza con medir una sola vez al arrancar.
+    window.addEventListener("load", measure);
+
+    // Medir de inmediato y otra vez cuando la tipografia del wordmark termina de
+    // cargar: Lora cambia el ancho de la caja y el viaje se mide contra ese
+    // ancho.
+    measure();
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    cleanupMorph = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", measure);
+      headerLogoLink.removeEventListener("click", onLinkClick);
+      if (scrollRaf) window.cancelAnimationFrame(scrollRaf);
+      window.clearTimeout(resizeTimer);
+
+      // Se vuelve al transform por defecto de la hoja (la escala del navbar), no
+      // a "none": el wordmark mide 628px de layout y sin escala se veria
+      // gigante.
+      headerLogo.style.transform = `scale(${scaleFin.toFixed(4)})`;
+      headerLogo.style.transformOrigin = "";
+      headerLogo.style.willChange = "";
+      heroWordmark.style.opacity = "";
+    };
+  };
+
+  document.addEventListener("astro:page-load", initLogoMorph);
+  document.addEventListener("astro:before-swap", () => {
+    cleanupMorph?.();
+  });
+  initLogoMorph();
+</script>

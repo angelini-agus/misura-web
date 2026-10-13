@@ -24,22 +24,25 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
     <a
       href="/"
-      class="relative inline-flex h-8 w-[8.3125rem] items-center"
+      class="relative inline-flex h-8 w-[7.1875rem] items-center"
       data-header-logo-link
     >
-      {/* La imagen mide 620px de layout, el tamaño máximo que alcanza en el
-          diccionario, y el navbar la muestra escalada hacia abajo: el navegador
-          nunca agranda el mapa de bits, así que el logo se ve nítido en todo el
-          recorrido de la animación. La caja del enlace conserva el tamaño real
-          del logo en el header (133x32) y el transform por defecto deja la
-          imagen ya escalada, para que sin JS o con movimiento reducido el header
-          se vea igual. */}
-      <img
-        src="/misure-logo.svg"
-        alt={site.name}
-        class="pointer-events-none absolute left-0 top-0 h-auto w-[38.75rem] max-w-none origin-top-left [transform:scale(0.2145)]"
+      {/* El wordmark mide 620px de layout (los 11rem de `.wordmark-nav`, el
+          mismo tope que alcanza en el hero de la home) y el navbar lo muestra
+          achicado con el transform: el navegador nunca agranda nada, y la
+          interpolacion del viaje se mide contra la caja del hero.
+
+          La caja del enlace mide 115x32 y no los 133x32 de antes: con "bottega"
+          en Lora la caja del texto tiene proporcion 628/176 = 3.57, asi que
+          llenando los 32px de alto el ancho da 115. Con el ancho viejo el texto
+          escalaba al ancho y su tinta medía 38px sobre una caja de 32 (medido),
+          que es lo que lo hacia ver desproporcionado y desalineado hacia abajo.
+          El transform por defecto deja el wordmark ya escalado, para que sin JS
+          o con movimiento reducido el header se vea igual. */}
+      <span
+        class="wordmark wordmark-nav pointer-events-none absolute left-0 top-0 origin-top-left [transform:scale(0.1815)]"
         data-header-logo
-      />
+      >{site.name}</span>
     </a>
     <div class="flex items-center gap-5 md:gap-8">
       <nav class="hidden items-center gap-7 md:flex" aria-label="Navegación principal">

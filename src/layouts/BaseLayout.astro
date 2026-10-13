@@ -1,6 +1,7 @@
 ---
 import ScrollRail from "../components/ScrollRail.astro";
 import "@fontsource-variable/plus-jakarta-sans";
+import "@fontsource-variable/lora";
 import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import { contact, site } from "../lib/content";
@@ -69,7 +70,7 @@ gtag('config', '${gaId}');`
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icono.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {canonical && <link rel="canonical" href={canonical} />}
 
