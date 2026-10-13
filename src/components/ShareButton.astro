@@ -6,8 +6,8 @@ const shareScript = `
   // Document-level delegation: the footer is replaced on every client-side
   // navigation, so a listener bound to the button would die with the old node.
   // Guard on window: ClientRouter swaps away <html> root attributes on nav.
-  if (window.__misureShareDelegated) return;
-  window.__misureShareDelegated = true;
+  if (window.__brandShareDelegated) return;
+  window.__brandShareDelegated = true;
 
   const originalLabel = ${JSON.stringify(share.label)};
   const copiedLabel = ${JSON.stringify(share.copiedLabel)};

@@ -4,7 +4,7 @@ import ShareButton from "./ShareButton.astro";
 import InstagramIcon from "./ui/InstagramIcon.astro";
 import LinkedinIcon from "./ui/LinkedinIcon.astro";
 import MailIcon from "./ui/MailIcon.astro";
-import MisureWord from "./ui/MisureWord.astro";
+import BrandWord from "./ui/BrandWord.astro";
 
 const year = new Date().getFullYear();
 ---
@@ -21,7 +21,7 @@ const year = new Date().getFullYear();
           />
         </a>
         <p class="mt-2 text-sm leading-relaxed text-green/70">
-          <MisureWord text={site.tagline} />
+          <BrandWord text={site.tagline} />
         </p>
         <a
           href={headerCta.href}
@@ -93,7 +93,7 @@ const year = new Date().getFullYear();
       class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-green pt-4 text-xs text-green/75 sm:flex-row"
     >
       <p>
-        © {year} <MisureWord text={site.name} />. {footer.legal}.
+        © {year} <BrandWord text={site.legalName} />. {footer.legal}.
       </p>
       <ShareButton />
       {/* Mismo hover que el botón Compartir de al lado: el color pasa a opaco y

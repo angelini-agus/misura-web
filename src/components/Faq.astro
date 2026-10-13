@@ -1,7 +1,7 @@
 ---
 import { cleanAnswer, faq, faqHeading, hasRealAnswer } from "../lib/content";
 import PlusIcon from "./ui/PlusIcon.astro";
-import MisureWord from "./ui/MisureWord.astro";
+import BrandWord from "./ui/BrandWord.astro";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -73,7 +73,7 @@ const faqSchema = {
               class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 transition hover:text-cream-dark [&::-webkit-details-marker]:hidden active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
             >
               <h3 class="font-display text-lg font-medium">
-                <MisureWord text={item.question} />
+                <BrandWord text={item.question} />
               </h3>
               <PlusIcon class="h-5 w-5 shrink-0 transition-transform duration-200 ease-in-out group-open:rotate-45" />
             </summary>

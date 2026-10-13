@@ -1,5 +1,5 @@
 ---
-import MisureWord from "./MisureWord.astro";
+import BrandWord from "./BrandWord.astro";
 
 interface Props {
   text: string;
@@ -29,7 +29,7 @@ const partes = encontradas.length
     encontradas.includes(parte) ? (
       <span class="resaltado">{parte}</span>
     ) : brand ? (
-      <MisureWord text={parte} />
+      <BrandWord text={parte} />
     ) : (
       <span>{parte}</span>
     ),

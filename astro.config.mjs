@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
-const site = 'https://misure.dev';
+const site = 'https://bottegadev.com';
 
 // https://astro.build/config
 export default defineConfig({

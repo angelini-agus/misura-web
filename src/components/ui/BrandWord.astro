@@ -1,0 +1,26 @@
+---
+import { site } from "../../lib/content";
+
+interface Props {
+  text: string;
+  word?: string;
+}
+
+// La palabra resaltada es la marca, y sale de `site.name` en vez de un literal:
+// asi el componente no guarda su propio nombre de marca y el proximo cambio de
+// nombre no lo toca.
+const { text, word = site.name } = Astro.props;
+---
+
+{
+  text.split(new RegExp(`(${word})`, "gi")).map((part) =>
+    part.toLowerCase() === word.toLowerCase() ? (
+      // `part` y no `word`: el texto original puede venir capitalizado (el
+      // copyright dice "Bottega Dev") y hay que devolver esa grafia, no la del
+      // literal buscado.
+      <strong class="normal-case font-bold">{part}</strong>
+    ) : (
+      <span>{part}</span>
+    )
+  )
+}

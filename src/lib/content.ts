@@ -51,14 +51,15 @@ export const cleanAnswer = (value: string) =>
   value.replace(/\[PENDIENTE:[^\]]*\]/g, "").trim();
 
 export const site = {
-  name: "misure",
-  url: "https://misure.dev",
+  name: "bottega",
+  legalName: "Bottega Dev",
+  url: "https://bottegadev.com",
   announcement:
     "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
-  metaTitle: "misure | Software a medida para pymes de Rosario y alrededores",
+  metaTitle: "Bottega Dev | Software a medida para pymes de Rosario y alrededores",
   metaDescription:
-    "misure desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
+    "Bottega Dev desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para pequeñas y medianas empresas de Argentina.",
 };
 
@@ -84,19 +85,19 @@ export const headerCta: Cta = {
 export const pages = {
   home: { title: site.metaTitle, description: site.metaDescription },
   nosotros: {
-    title: "Nosotros | misure",
+    title: "Nosotros | Bottega Dev",
     description:
-      "Conocé al equipo detrás de misure: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario y alrededores.",
+      "Conocé al equipo detrás de Bottega Dev: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario y alrededores.",
     h1: "Nosotros",
   },
   proyectos: {
-    title: "Proyectos | misure",
+    title: "Proyectos | Bottega Dev",
     description:
-      "Casos de éxito de misure: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario. Resultados reales, no promesas.",
+      "Casos de éxito de Bottega Dev: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario. Resultados reales, no promesas.",
     h1: "Proyectos",
   },
   contacto: {
-    title: "Contacto | misure",
+    title: "Contacto | Bottega Dev",
     description:
       "Contanos en qué etapa está tu negocio y te mostramos cómo un sistema a medida puede resolver tu problema. Prototipo gratis, sin compromiso.",
     h1: "Hablemos",
@@ -106,9 +107,9 @@ export const pages = {
 };
 
 export const privacy = {
-  title: "Privacidad | misure",
+  title: "Privacidad | Bottega Dev",
   description:
-    "Cómo trata misure los datos que dejás en el formulario de contacto: para qué se usan, quién los procesa y cómo pedir su eliminación.",
+    "Cómo trata Bottega Dev los datos que dejás en el formulario de contacto: para qué se usan, quién los procesa y cómo pedir su eliminación.",
   eyebrow: "Legal",
   h1: "Privacidad",
   intro: "Qué hacemos con los datos que nos dejás y qué no hacemos nunca.",
@@ -222,7 +223,7 @@ export const explore = {
   eyebrow: "Explorá",
   title: "¿Por dónde seguís?",
   description:
-    "Tres cosas concretas que podés hacer ahora para entender si misure es lo que tu empresa necesita.",
+    "Tres cosas concretas que podés hacer ahora para entender si bottega es lo que tu empresa necesita.",
   items: [
     {
       title: "Prototipo gratis antes de firmar",
@@ -256,7 +257,7 @@ export const about: {
   eyebrow: "Nuestra historia",
   body: [
     "Nos conocimos cursando en la facultad, armamos varios proyectos juntos durante la carrera, y un año antes de recibirnos decidimos dejar de hacerlo como practica y empezar a hacerlo como trabajo.",
-    "La idea de misure nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
+    "La idea de bottega nació de algo que veíamos todo el tiempo en pymes de la zona: un sistema genérico resuelve un problema puntual, pero deja sueltos todos los demás. Armamos este emprendimiento para ofrecer lo contrario: un solo sistema, construido a tu medida, que cubre el negocio completo.",
   ],
   highlights: ["un solo sistema, construido a tu medida"],
 };
@@ -267,8 +268,8 @@ export const dictionaryEntry: {
   category: string;
   senses: string[];
 } = {
-  word: "misure",
-  phonetic: "/mi-sú-re/",
+  word: "bottega",
+  phonetic: "/bot-té-ga/",
   category: "sustantivo · del italiano",
   senses: [
     "la dimensión exacta de algo hecho con propósito.",
@@ -465,7 +466,7 @@ export const clientQuote: {
   highlights: string[];
 } = {
   eyebrow: "Testimonio",
-  text: "Antes perdíamos horas llenando planillas a mano para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza semana a semana. Con Misure ahora todo se carga solo, y una tarea que antes le consumía gran parte de su jornada a un empleado, hoy se resuelve de forma automática. Para mí fue de las mejores decisiones que tomé en la empresa, ya que dejé de lidiar con problemas cotidianos y puse mi foco en hacer crecer el negocio.",
+  text: "Antes perdíamos horas llenando planillas a mano para saber quién había trabajado qué día en cada edificio, y encima las quejas por inasistencias eran un dolor de cabeza semana a semana. Con Bottega ahora todo se carga solo, y una tarea que antes le consumía gran parte de su jornada a un empleado, hoy se resuelve de forma automática. Para mí fue de las mejores decisiones que tomé en la empresa, ya que dejé de lidiar con problemas cotidianos y puse mi foco en hacer crecer el negocio.",
   author: "Paola Zorila",
   source: "AZ Servicios de Limpieza, Rosario",
   caseHref: "/proyectos/empresa-limpieza-rosario",
@@ -589,7 +590,7 @@ export const faqHeading: {
 
 export const faq: FaqItem[] = [
   {
-    question: "¿Qué servicios ofrece misure?",
+    question: "¿Qué servicios ofrece bottega?",
     answer:
       "Desarrollamos sistemas de gestión (ERP), herramientas de ventas (CRM) y páginas web a medida. Tres líneas que se combinan para cubrir la operación interna de tu empresa y cómo te mostrás al mundo.",
   },
@@ -756,7 +757,7 @@ export const caseStudies: {
     slug: "empresa-limpieza-rosario",
     seo: {
       title:
-        "Sistema de gestión para empresa de limpieza en Rosario | misure",
+        "Sistema de gestión para empresa de limpieza en Rosario | Bottega Dev",
       description:
         "Eliminamos un puesto administrativo completo y bajamos las quejas por inasistencias a 0, con un sistema de geolocalización y sueldos automáticos.",
     },
@@ -864,7 +865,7 @@ export const caseStudies: {
   leadscrm: {
     slug: "crm-concesionaria-rosario",
     seo: {
-      title: "CRM de leads para concesionaria en Rosario | misure",
+      title: "CRM de leads para concesionaria en Rosario | Bottega Dev",
       description:
         "CRM a medida para una concesionaria de autos de Rosario: centraliza los leads de WhatsApp, Instagram, Facebook y Mercado Libre, con filtros por marca/modelo, cliente y teléfono y asignación a asesores. Reemplaza la planilla de Excel manual.",
     },
@@ -994,7 +995,7 @@ export const caseStudies: {
   legal: {
     slug: "gestion-legal-estudio",
     seo: {
-      title: "Sistema de gestión jurídica integral | misure",
+      title: "Sistema de gestión jurídica integral | Bottega Dev",
       description:
         "Plataforma integral para administrar un estudio jurídico con jurisdicción en Argentina y Paraguay: clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y biblioteca jurídica con verificación de fuentes oficiales asistida por IA.",
     },
@@ -1110,7 +1111,7 @@ export const caseStudies: {
     slug: "landing-empresa-limpieza",
     seo: {
       title:
-        "Landing page para empresa de limpieza en Rosario | misure",
+        "Landing page para empresa de limpieza en Rosario | Bottega Dev",
       description:
         "Diseñamos y desarrollamos el sitio oficial de una empresa de limpieza de Rosario: propuesta de valor clara, captación de consultas calificada e integración con su ERP interno.",
     },
@@ -1228,7 +1229,7 @@ export const caseStudies: {
   pediatricLanding: {
     slug: "landing-clinica-pediatrica",
     seo: {
-      title: "Página web para clínica pediátrica | misure",
+      title: "Página web para clínica pediátrica | Bottega Dev",
       description:
         "Sitio público de una clínica pediátrica: la trayectoria de la profesional, las etapas del cuidado, los testimonios de las familias y el turno como cierre, con el contenido renderizado en el servidor.",
     },
@@ -1346,7 +1347,7 @@ export const caseStudies: {
   pediatricErp: {
     slug: "sistema-clinica-pediatrica",
     seo: {
-      title: "Sistema de gestión clínica pediátrica | misure",
+      title: "Sistema de gestión clínica pediátrica | Bottega Dev",
       description:
         "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica trazable conforme a la Ley 26.529, turnos que se confirman en una cola, recetas en PDF y accesos por rol.",
     },

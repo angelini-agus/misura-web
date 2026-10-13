@@ -1,7 +1,7 @@
 ---
 import { about, pages } from "../lib/content";
 import HighlightWords from "./ui/HighlightWords.astro";
-import MisureWord from "./ui/MisureWord.astro";
+import BrandWord from "./ui/BrandWord.astro";
 
 // Reveal por oración: esta es la única sección animada de /nosotros, así que el
 // contador arranca después de la apertura (eyebrow + h1) para que el texto se
@@ -30,7 +30,7 @@ about.body.forEach((paragraph) => {
     class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24"
   >
     <p class="mx-auto w-full max-w-3xl text-xs font-semibold uppercase tracking-[0.2em]" data-reveal>
-      <MisureWord text={about.eyebrow} />
+      <BrandWord text={about.eyebrow} />
     </p>
     <h1
       data-reveal

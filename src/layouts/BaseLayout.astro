@@ -19,14 +19,14 @@ const {
   description = site.metaDescription,
   ogType = "website",
   ogUrl: ogUrlProp,
-  ogImage = "/og-misure-software.png",
+  ogImage = "/og-bottega-software.png",
   canonical: canonicalProp,
 } = Astro.props;
 
 // Canonical and og:url derive from Astro.site (set in astro.config.mjs) plus the
 // current path; site.url is the fallback origin.
 const siteOrigin = Astro.site ?? new URL(site.url);
-// The generated sitemap uses trailing-slash URLs (e.g. https://misure.dev/privacidad/),
+// The generated sitemap uses trailing-slash URLs (e.g. https://bottegadev.com/privacidad/),
 // so the canonical follows that convention.
 const pathname = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
@@ -38,14 +38,14 @@ const ogUrl = ogUrlProp ?? pageUrl;
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: site.name,
+  name: site.legalName,
   url: site.url,
   description: site.metaDescription,
   email: contact.email,
   address: {
     "@type": "PostalAddress",
     // The site states Rosario, Santa Fe. telephone and streetAddress can be
-    // added once misure has real values for them.
+    // added once Bottega Dev has real values for them.
     addressLocality: "Rosario",
     addressRegion: "Santa Fe",
   },

@@ -1,5 +1,5 @@
 ---
-import MisureWord from "./ui/MisureWord.astro";
+import BrandWord from "./ui/BrandWord.astro";
 
 interface Props {
   eyebrow?: string;
@@ -25,7 +25,7 @@ const { eyebrow, title, intro } = Astro.props;
       </h1>
       {intro && (
         <p class="mt-4 text-lg leading-relaxed text-green/80">
-          <MisureWord text={intro} />
+          <BrandWord text={intro} />
         </p>
       )}
     </div>
