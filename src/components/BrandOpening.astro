@@ -17,7 +17,12 @@ import { dictionaryEntry } from "../lib/content";
       class="mx-auto flex w-full flex-col items-center text-center"
       data-reveal="blur"
     >
-      <span class="wordmark wordmark-hero select-none" data-brand-wordmark
+      {/* Sin `select-none`: el wordmark es texto y se tiene que poder seleccionar.
+          Aunque este elemento esta en `opacity: 0` (el que se ve es el gemelo del
+          navbar, que viaja sobre este), es el que recibe el mouse: el del header
+          lleva `pointer-events: none` justamente para no interceptar nada con su
+          caja, asi que el arrastre aterriza aca y la seleccion funciona. */}
+      <span class="wordmark wordmark-hero" data-brand-wordmark
         >{dictionaryEntry.word}</span
       >
       {/* `mt-10` y no un margen corto: con line-height 1 la caja del wordmark corta
@@ -75,6 +80,24 @@ import { dictionaryEntry } from "../lib/content";
     let travelDistance = 1;
     let currentProgress = 0;
     let isAtRest = false;
+
+    // Quien manda con el scroll en cero: mientras el viaje no arranco se ve el
+    // wordmark de la apertura, que es el que recibe el mouse y por lo tanto el
+    // que se puede seleccionar con su resaltado a la vista; desde el primer
+    // pixel de scroll manda el gemelo del navbar, que es el que viaja. Arranca
+    // en `true` a proposito, para que el primer `setRelevo(false)` del init
+    // siempre escriba el estado (sin JS los dos quedan visibles, cada uno en su
+    // lugar, que es como se veia el logo de imagen antes).
+    let mandaElNavbar = true;
+
+    // Los dos ocupam la misma posicion con el scroll en cero, asi que el cambio
+    // de mando no se ve. El flag evita escribir en el DOM en cada frame.
+    const setRelevo = (alNavbar: boolean) => {
+      if (mandaElNavbar === alNavbar) return;
+      mandaElNavbar = alNavbar;
+      brandWordmark.style.opacity = alNavbar ? "0" : "";
+      headerLogo.style.opacity = alNavbar ? "" : "0";
+    };
 
     // Posicion de LAYOUT de un elemento, no la pintada: `getBoundingClientRect`
     // incluye los transforms de las animaciones de reveal (`data-reveal` mueve
@@ -139,6 +162,10 @@ import { dictionaryEntry } from "../lib/content";
       const progress = Math.min(1, Math.max(0, rawProgress));
       currentProgress = progress;
 
+      // Con el scroll en cero el logo vuelve a la apertura, donde se puede
+      // seleccionar
+      setRelevo(progress > 0);
+
       if (progress >= 1) {
         if (!isAtRest) {
           headerLogo.style.transform = `translate(0px, 0px) scale(${scaleFin.toFixed(4)})`;
@@ -168,8 +195,9 @@ import { dictionaryEntry } from "../lib/content";
       headerLogo.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) scale(${scale.toFixed(4)})`;
     };
 
-    // Ocultar el wordmark de la apertura para que solo exista un logo visible
-    brandWordmark.style.opacity = "0";
+    // Con el scroll en cero manda el wordmark de la apertura, que es el que
+    // recibe el mouse: asi se puede seleccionar y el resaltado se ve.
+    setRelevo(false);
 
     // Si hacen clic en el logo mientras aun esta en la apertura, no navegar
     const onLinkClick = (event: MouseEvent) => {
@@ -223,6 +251,7 @@ import { dictionaryEntry } from "../lib/content";
       headerLogo.style.transform = `scale(${scaleFin.toFixed(4)})`;
       headerLogo.style.transformOrigin = "";
       headerLogo.style.willChange = "";
+      headerLogo.style.opacity = "";
       brandWordmark.style.opacity = "";
     };
   };
