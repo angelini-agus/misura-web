@@ -35,11 +35,12 @@
   white-space: nowrap;
 }
 
-/* El wordmark a gran escala, el de la apertura de la home. El tamaño sale de
-   una variable para que la seccion que lo hospeda pueda compactarlo por alto de
-   ventana sin tocar el copy: el valor de aca es el de una ventana holgada. */
+/* El wordmark a gran escala, el de la apertura de la home. Un solo tamano: el
+   tope, que es el mismo que tenia el logo de misure en /nosotros (unos 620px de
+   ancho). La apertura es una seccion en si misma y no comparte el alto de la
+   ventana con el hero, asi que no hace falta compactarlo. */
 .wordmark-hero {
-  font-size: var(--wordmark-hero-size, clamp(6rem, 20vw, 11rem));
+  font-size: clamp(6rem, 20vw, 11rem);
 }
 
 /* El del navbar. Su caja mide a proposito lo mismo que la del hero (los 11rem

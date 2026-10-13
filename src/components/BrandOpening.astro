@@ -1,0 +1,230 @@
+---
+import { dictionaryEntry } from "../lib/content";
+
+// La apertura de marca: el wordmark a gran escala y centrado con su fonetica y
+// su categoria debajo, en tipografia de maquina de escribir. Es una seccion en
+// si misma, arriba del hero, y no un bloque adentro: el hero mide una pantalla
+// con su propio piso por alto de ventana y la apertura tiene el suyo.
+//
+// El wordmark se queda en su tamano maximo (los 11rem del tope, unos 620px de
+// ancho, el mismo que tenia el logo de misure en /nosotros) sin importar el
+// alto de la ventana.
+---
+
+<section class="brand-opening scroll-mt-24">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:py-20 md:px-6 md:py-28">
+    <div
+      class="mx-auto flex w-full flex-col items-center text-center"
+      data-reveal="blur"
+    >
+      <span class="wordmark wordmark-hero select-none" data-brand-wordmark
+        >{dictionaryEntry.word}</span
+      >
+      <p
+        class="font-typewriter mt-3 text-base text-green/90 tracking-wide sm:text-lg md:text-xl"
+      >
+        {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  let cleanupMorph: (() => void) | undefined;
+
+  // El wordmark de la apertura viaja hasta el navbar mientras se scrollea: un
+  // solo logo visible en todo momento, sin que aparezca duplicado al llegar
+  // arriba.
+  const initLogoMorph = () => {
+    cleanupMorph?.();
+    cleanupMorph = undefined;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const brandWordmark = document.querySelector<HTMLElement>(
+      "[data-brand-wordmark]",
+    );
+    const headerLogo = document.querySelector<HTMLElement>(
+      "[data-header-logo]",
+    );
+    const headerLogoLink = document.querySelector<HTMLAnchorElement>(
+      "[data-header-logo-link]",
+    );
+
+    // En cualquier pagina que no sea la home no hay wordmark de apertura, asi
+    // que el script no tiene nada que animar y sale sin tocar el header.
+    if (!brandWordmark || !headerLogo || !headerLogoLink) return;
+
+    let heroDocLeft = 0;
+    let heroDocTop = 0;
+    let heroWidth = 0;
+    let targetWidth = 0;
+    let layoutWidth = 0;
+    let scaleInicio = 1;
+    let scaleFin = 1;
+    let announcementH = 0;
+    let headerStickyTopOffset = 0;
+    let headerRestX = 0;
+    let travelDistance = 1;
+    let currentProgress = 0;
+    let isAtRest = false;
+
+    // Posicion de LAYOUT de un elemento, no la pintada: `getBoundingClientRect`
+    // incluye los transforms de las animaciones de reveal (`data-reveal` mueve
+    // el contenido con translateY durante ~600ms despues de cargar la pagina), y
+    // medir ahi dejaba el viaje 16px abajo: al arrancar, la caja del wordmark ya
+    // estaba en su lugar pero su rect devolvia 16px mas. Sumando `offsetTop` y
+    // `offsetLeft` por la cadena de `offsetParent` se obtiene la posicion real
+    // del flujo, que es la misma desde el primer pintado y no depende de en que
+    // momento del reveal se mida.
+    const offsetDoc = (el: HTMLElement) => {
+      let x = 0;
+      let y = 0;
+      let node: HTMLElement | null = el;
+      while (node) {
+        x += node.offsetLeft;
+        y += node.offsetTop;
+        node = node.offsetParent as HTMLElement | null;
+      }
+      return { x, y };
+    };
+
+    const measure = () => {
+      const scrollY = window.scrollY;
+      const linkRect = headerLogoLink.getBoundingClientRect();
+      const brandRect = brandWordmark.getBoundingClientRect();
+      const brandDoc = offsetDoc(brandWordmark);
+
+      heroDocLeft = brandDoc.x;
+      heroDocTop = brandDoc.y;
+      heroWidth = brandWordmark.offsetWidth || brandRect.width;
+
+      // El logo que viaja mide lo mismo en la apertura y en el navbar, y el
+      // navbar lo muestra achicado con el transform: el navegador nunca agranda
+      // nada.
+      layoutWidth = headerLogo.offsetWidth || 628;
+      targetWidth = headerLogoLink.offsetWidth || linkRect.width;
+      if (targetWidth <= 0 || heroWidth <= 0 || layoutWidth <= 0) return;
+
+      scaleInicio = heroWidth / layoutWidth;
+      scaleFin = targetWidth / layoutWidth;
+
+      const announcementBar = document.querySelector<HTMLElement>(".announcement-bar");
+      announcementH = announcementBar ? announcementBar.offsetHeight : 0;
+
+      headerStickyTopOffset = linkRect.top - Math.max(0, announcementH - scrollY);
+      headerRestX = linkRect.left;
+
+      // La distancia de scroll hasta que el wordmark cruza el nivel del header
+      travelDistance = Math.max(1, heroDocTop - (headerStickyTopOffset + announcementH));
+
+      update();
+    };
+
+    const update = () => {
+      const scrollY = window.scrollY;
+      const currentAnnouncement = Math.max(0, announcementH - scrollY);
+      const currentHeaderRestY = currentAnnouncement + headerStickyTopOffset;
+      const currentHeroY = heroDocTop - scrollY;
+
+      // Progreso de 0 (arriba de todo) a 1 (apoyado en el navbar)
+      const rawProgress = scrollY / travelDistance;
+      const progress = Math.min(1, Math.max(0, rawProgress));
+      currentProgress = progress;
+
+      if (progress >= 1) {
+        if (!isAtRest) {
+          headerLogo.style.transform = `translate(0px, 0px) scale(${scaleFin.toFixed(4)})`;
+          headerLogo.style.willChange = "auto";
+          isAtRest = true;
+        }
+        return;
+      }
+
+      isAtRest = false;
+
+      // Interpolacion directa y fluida (60/120 FPS sin reflow)
+      const scale = scaleInicio + (scaleFin - scaleInicio) * progress;
+      const targetX = heroDocLeft * (1 - progress) + headerRestX * progress;
+      const targetY = currentHeroY * (1 - progress) + currentHeaderRestY * progress;
+
+      const dx = targetX - headerRestX;
+      const dy = targetY - currentHeaderRestY;
+
+      headerLogo.style.transformOrigin = "0 0";
+      // Transform 2D y sin `will-change`: con translate3d el navegador promueve
+      // el logo a su propia capa, la rasteriza una vez y despues escala ese mapa
+      // de bits, que es lo que lo hacia ver borroso mientras viajaba (medido: la
+      // energia de bordes a mitad del viaje caia un 33%, de 7.97 a 5.36). En 2D y
+      // sin promocion, el navegador repinta el texto en cada frame a la escala
+      // real.
+      headerLogo.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) scale(${scale.toFixed(4)})`;
+    };
+
+    // Ocultar el wordmark de la apertura para que solo exista un logo visible
+    brandWordmark.style.opacity = "0";
+
+    // Si hacen clic en el logo mientras aun esta en la apertura, no navegar
+    const onLinkClick = (event: MouseEvent) => {
+      if (currentProgress < 0.85) {
+        event.preventDefault();
+      }
+    };
+    headerLogoLink.addEventListener("click", onLinkClick);
+
+    let scrollRaf = 0;
+    const onScroll = () => {
+      if (!scrollRaf) {
+        scrollRaf = window.requestAnimationFrame(() => {
+          scrollRaf = 0;
+          update();
+        });
+      }
+    };
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(measure, 50);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    // Red de seguridad: el evento `load` de la ventana vuelve a medir cuando ya
+    // terminaron de asentarse las imagenes y el primer layout. El ancho del
+    // wordmark puede cambiar entre el primer pintado y `load`, asi que no
+    // alcanza con medir una sola vez al arrancar.
+    window.addEventListener("load", measure);
+
+    // Medir de inmediato y otra vez cuando la tipografia del wordmark termina de
+    // cargar: Lora cambia el ancho de la caja y el viaje se mide contra ese
+    // ancho.
+    measure();
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    cleanupMorph = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", measure);
+      headerLogoLink.removeEventListener("click", onLinkClick);
+      if (scrollRaf) window.cancelAnimationFrame(scrollRaf);
+      window.clearTimeout(resizeTimer);
+
+      // Se vuelve al transform por defecto de la hoja (la escala del navbar), no
+      // a "none": el wordmark mide 628px de layout y sin escala se veria
+      // gigante.
+      headerLogo.style.transform = `scale(${scaleFin.toFixed(4)})`;
+      headerLogo.style.transformOrigin = "";
+      headerLogo.style.willChange = "";
+      brandWordmark.style.opacity = "";
+    };
+  };
+
+  document.addEventListener("astro:page-load", initLogoMorph);
+  document.addEventListener("astro:before-swap", () => {
+    cleanupMorph?.();
+  });
+  initLogoMorph();
+</script>

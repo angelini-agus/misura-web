@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
+import BrandOpening from "../components/BrandOpening.astro";
 import Hero from "../components/Hero.astro";
 import Clients from "../components/Clients.astro";
 import Problem from "../components/Problem.astro";
@@ -18,6 +19,10 @@ import StickyCta from "../components/StickyCta.astro";
 <BaseLayout>
   <Header />
   <main id="contenido" class="flex-1" tabindex="-1">
+    <!-- La apertura de marca es una seccion en si misma, arriba del hero: el
+         hero mide una pantalla con su propio piso por alto de ventana y la
+         apertura tiene el suyo, sin competir por el mismo espacio. -->
+    <BrandOpening />
     <Hero />
     <Clients />
     <!-- El equipo va aca, pegado a la prueba social, y no al final ni debajo del
