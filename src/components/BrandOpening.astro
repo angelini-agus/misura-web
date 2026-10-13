@@ -103,10 +103,6 @@ import BrandSenses from "./BrandSenses.astro";
       headerLogo.style.opacity = alNavbar ? "" : "0";
       brandWordmark.style.pointerEvents = alNavbar ? "none" : "";
       headerLogo.style.pointerEvents = alNavbar ? "" : "none";
-      // Queda anotado si el wordmark grande esta a la vista. Lo lee el script del
-      // header para saber si, al navegar a otra pagina, el logo tiene que llegar
-      // viajando desde aca o ya esta en el navbar y no hay nada que animar.
-      (window as Window & { __bottegaEnApertura?: boolean }).__bottegaEnApertura = !alNavbar;
     };
 
     // Posicion de LAYOUT de un elemento, no la pintada: `getBoundingClientRect`
@@ -199,6 +195,16 @@ import BrandSenses from "./BrandSenses.astro";
       const rawProgress = scrollY / travelDistance;
       const progress = Math.min(1, Math.max(0, rawProgress));
       currentProgress = progress;
+
+      // Queda anotado si el wordmark grande todavia domina la pantalla. Lo lee el
+      // script del header para saber si, al navegar a otra pagina, el logo tiene
+      // que llegar viajando desde aca. El umbral es tolerante a proposito: con el
+      // trackpad es casi imposible dejar el scroll en cero exacto (medido: con 5px
+      // de residuo el logo ya no viajaba), y unos pocos pixeles no cambian nada de
+      // lo que se ve. Con un cuarto del recorrido hecho el wordmark sigue mas
+      // cerca de su lugar que del navbar.
+      (window as Window & { __bottegaEnApertura?: boolean }).__bottegaEnApertura =
+        progress < 0.25;
 
       // Con el scroll en cero el logo vuelve a la apertura, donde se puede
       // seleccionar

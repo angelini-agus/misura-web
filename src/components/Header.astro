@@ -157,6 +157,24 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
   // home, que es el unico caso donde el wordmark grande esta a la vista y el logo
   // tiene que nacer de ahi. Si viene de otra pagina el bottega ya estaba en el
   // navbar, asi que animarlo seria inventar un viaje que nadie vio.
+  // El estado del logo se lee ANTES del swap. El header se persiste entre
+  // navegaciones, pero pierde el transform inline que le dejo el script del viaje,
+  // asi que en `after-swap` el logo ya aparece en su lugar (medido: 114px) y no
+  // queda nada de donde arrancar. Lo que se guarda es su posicion y su escala
+  // relativas al enlace, que es lo que se vuelve a aplicar del otro lado.
+  let partida: { dx: number; dy: number; escala: number } | null = null;
+  document.addEventListener("astro:before-swap", () => {
+    const logo = document.querySelector<HTMLElement>("[data-header-logo]");
+    const link = document.querySelector<HTMLElement>("[data-header-logo-link]");
+    if (!logo || !link || !logo.offsetWidth) {
+      partida = null;
+      return;
+    }
+    const r = logo.getBoundingClientRect();
+    const lr = link.getBoundingClientRect();
+    partida = { dx: r.x - lr.x, dy: r.y - lr.y, escala: r.width / logo.offsetWidth };
+  });
+
   const animarLlegadaDelLogo = () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     // En la home el logo lo maneja el script de la apertura, que lo hace viajar
@@ -170,8 +188,11 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 
     const logo = document.querySelector<HTMLElement>("[data-header-logo]");
     const link = document.querySelector<HTMLElement>("[data-header-logo-link]");
-    const header = document.querySelector("header");
-    if (!logo || !link || !header) return;
+    if (!logo || !link) return;
+
+    if (!partida) return;
+    const inicio = partida;
+    partida = null;
 
     const linkRect = link.getBoundingClientRect();
     const layoutWidth = logo.offsetWidth;
@@ -179,18 +200,9 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 
     const escalaFinal = linkRect.width / layoutWidth;
 
-    // Estado de partida: el wordmark a tamano completo, centrado en la ventana y
-    // a la altura donde arranca la apertura de la home, que es el borde inferior
-    // del header mas su padding (py-16 en celular, py-20 desde sm y py-28 desde
-    // md).
-    const ancho = document.documentElement.clientWidth;
-    const padding = ancho >= 768 ? 112 : ancho >= 640 ? 80 : 64;
-    const inicioX = (ancho - layoutWidth) / 2;
-    const inicioY = header.getBoundingClientRect().bottom + padding;
-
     logo.style.transformOrigin = "0 0";
     logo.style.transition = "none";
-    logo.style.transform = `translate(${(inicioX - linkRect.left).toFixed(2)}px, ${(inicioY - linkRect.top).toFixed(2)}px) scale(1)`;
+    logo.style.transform = `translate(${inicio.dx.toFixed(2)}px, ${inicio.dy.toFixed(2)}px) scale(${inicio.escala.toFixed(4)})`;
 
     // Fuerza el reflow para que la transicion arranque desde el estado de arriba
     // y no desde el que deja la hoja
