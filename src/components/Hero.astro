@@ -1,228 +1,499 @@
 ---
-import { hero } from "../lib/content";
-import HighlightWords from "./ui/HighlightWords.astro";
+import { hero, heroProblems } from "../lib/content";
 import Button from "./ui/Button.astro";
-import BrandWord from "./ui/BrandWord.astro";
-import CodePanel from "./ui/CodePanel.astro";
+import { trazoDeTachado } from "../lib/pencil";
+
+// ---------------------------------------------------------------------------
+// El SVG del build: sin JavaScript los tachones tienen que existir igual. Se
+// generan con un ancho y un alto tipicos y el `preserveAspectRatio="none"` los
+// estira al tamano real; el script del cliente los regenera con la medida exacta.
+// La linea de tiempo vive solo en el script: el frontmatter no la necesita.
+// ---------------------------------------------------------------------------
+const ANCHO_BASE = 220;
+const ALTO_BASE = 26;
+const tachados = heroProblems.map((_, i) =>
+  trazoDeTachado(1000 + i * 97, ANCHO_BASE, ALTO_BASE),
+);
 ---
 
 <!--
-  --hero-top-h: lo que ocupa la barra de anuncio más el header sticky, que es lo
-  que tapa el hero al llegar. Acá SÍ cuenta la barra de anuncio, a diferencia de
-  la sección de contacto: el hero está arriba de todo, así que la barra todavía
-  está visible.
+  --hero-top: lo que ocupan la barra de anuncio mas el header sticky. El
+  escenario se pega debajo de eso, y el progreso se mide contra ese valor.
 
-  Tres valores porque la barra de anuncio cambia de alto según el ancho: su copy
-  entra en una línea arriba de ~640px y envuelve a dos abajo, y el header mide 67
-  en mobile y 77 desde md. Medido con el navegador: <368px = 68 + 67 = 135px (tres
-  líneas de anuncio); 368-639px = 52 + 67 = 119px; 640-767px = 36 + 67 = 103px;
-  md+ = 36 + 77 = 113px. Si cambia el copy del anuncio, el padding del header o su
-  contenido más alto, hay que remedir: el alto del anuncio depende de cuántas
-  líneas ocupe, no de un breakpoint fijo.
-
-  El min-height de abajo trabaja junto con las media queries del final del
-  archivo, que compactan el contenido en celulares bajos: ellas hacen que el
-  contenido entre, esto hace que el hero ocupe la pantalla.
+  Tres valores porque la barra de anuncio cambia de alto segun el ancho: su copy
+  entra en una linea arriba de ~640px y envuelve a dos abajo, y el header mide 67
+  en mobile y 77 desde md. Medido con el navegador: <368px = 68 + 67 = 135px;
+  368-639px = 52 + 67 = 119px; 640-767px = 36 + 67 = 103px; md+ = 36 + 77 = 113px.
 -->
 <section
   id="inicio"
-  class="scroll-mt-24 [--hero-top-h:6.4375rem] min-[23rem]:max-sm:[--hero-top-h:7.4375rem] max-[23rem]:[--hero-top-h:8.4375rem] md:[--hero-top-h:7.0625rem]"
+  class="hero-scroll [--hero-top:6.4375rem] min-[23rem]:max-sm:[--hero-top:7.4375rem] max-[23rem]:[--hero-top:8.4375rem] md:[--hero-top:7.0625rem]"
+  data-hero
 >
-  <div
-    class="hero-grid mx-auto grid min-h-[calc(100dvh-var(--hero-top-h))] max-w-6xl grid-cols-1 items-center gap-5 px-4 py-6 md:grid-cols-[55%_45%] md:gap-16 md:px-6 md:py-16"
-  >
-    <div class="order-2 md:order-1">
-      <h1
-        data-reveal
-        class="hero-title font-display max-w-xl text-3xl font-medium leading-[1.1] tracking-tight sm:text-4xl md:text-[3.4rem]"
-      >
-        {hero.title}
-      </h1>
-      <p
-        data-reveal
-        style={{ transitionDelay: "50ms" }}
-        class="hero-subtitle font-display mt-3 max-w-xl text-lg font-medium leading-snug tracking-tight sm:text-xl md:text-2xl"
-      >
-        <HighlightWords text={hero.subtitle} phrases={hero.highlights} />
-      </p>
-      <p
-        data-reveal
-        style={{ transitionDelay: "100ms" }}
-        class="hero-lead mt-4 max-w-xl text-base leading-relaxed text-green/80 sm:text-lg"
-      >
-        <BrandWord text={hero.lead} />
-      </p>
-      <div
-        data-reveal
-        style={{ transitionDelay: "150ms" }}
-        class="hero-actions mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
-      >
-        <Button href={hero.ctaPrimary.href} class="w-full sm:w-auto">
-          {hero.ctaPrimary.label}
-        </Button>
-        <Button href={hero.ctaSecondary.href} variant="outline" class="w-full sm:w-auto">
-          {hero.ctaSecondary.label}
-        </Button>
+  // El filtro del lapiz: se define una sola vez y se aplica al grupo de cada
+  // item, no a cada trazo. El desplazamiento es chico a proposito, solo para
+  // que el borde no salga perfecto.
+  <svg class="hero-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="lapiz" x="-20%" y="-150%" width="140%" height="400%">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.9"
+          numOctaves="2"
+          seed="7"
+          result="grano"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="grano"
+          scale="0.5"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="hero-stage" data-stage>
+    <h1 class="hero-title" data-reveal>{hero.title}</h1>
+
+    <!-- La libretita: un objeto con su propio marco, y adentro van saliendo los
+         items. La lista y el estado final comparten la misma celda para que el
+         final reemplace a la lista sin mover nada. -->
+    <div class="hero-pad" data-pad>
+      <div class="hero-swap">
+        <ul class="hero-list" data-list>
+          {
+            heroProblems.map((problema, i) => (
+              <li class="hero-item" data-item={i}>
+                <span class="hero-item-text" data-item-text>
+                  {problema}
+                  <svg
+                    class="hero-item-pencil"
+                    viewBox={`0 0 ${ANCHO_BASE} ${ALTO_BASE}`}
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    focusable="false"
+                    data-pencil
+                  >
+                    <g filter="url(#lapiz)">
+                      <path d={tachados[i].d} fill-opacity={tachados[i].opacidad} />
+                    </g>
+                  </svg>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="hero-final" data-final>
+          <span class="hero-final-brand">bottega</span>
+          <p class="hero-final-sub">{hero.subtitle}</p>
+          <div class="hero-final-actions">
+            <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
+            <Button href={hero.ctaSecondary.href} variant="outline">
+              Ver el caso de éxito
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="hero-visual order-1 mx-auto w-full max-w-[min(15rem,30dvh)] sm:max-w-[min(36rem,40dvh)] md:order-2" data-reveal style={{ transitionDelay: "120ms" }}>
-      <CodePanel />
     </div>
   </div>
 </section>
 
 <style>
-  /* En celulares bajos el hero se compacta un escalon mas: es la unica forma
-     de que los dos botones entren dentro de los primeros 100dvh a 375x667 y
-     360x740, que es lo que la version mobile no cumplia. La condicion pide
-     ancho de celular (hasta 30rem) Y alto bajo (hasta 820px), asi que la
-     version desktop y los celulares altos no se tocan. */
-  @media (max-width: 30rem) and (max-height: 820px) {
-    .hero-grid {
-      gap: 0.75rem;
-      padding-top: 1.25rem;
-      padding-bottom: 1.25rem;
-    }
+  /* ---------------------------------------------------------------------------
+     Base: sin JavaScript y con movimiento reducido. Layout corto y estatico: el
+     H1, la lista con los tachones ya dibujados y debajo el estado final. Nada de
+     sticky ni de altura larga, y todo visible.
+     --------------------------------------------------------------------------- */
+  .hero-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
 
-    .hero-title {
-      font-size: 1.5rem;
-      line-height: 1.15;
-    }
+  .hero-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(1rem, 2.5svh, 2rem);
+    margin-inline: auto;
+    max-width: 60rem;
+    padding: clamp(2rem, 6svh, 4rem) 1rem;
+    text-align: center;
+  }
 
-    .hero-subtitle {
-      margin-top: 0.5rem;
-      font-size: 0.9375rem;
-      line-height: 1.35;
-    }
+  .hero-title {
+    margin-inline: auto;
+    max-width: 22ch;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.35rem, 3.4svh, 2.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
 
-    .hero-lead {
-      margin-top: 0.75rem;
-      font-size: 0.9375rem;
-    }
+  .hero-pad {
+    position: relative;
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+    padding: clamp(1rem, 3svh, 2.25rem) clamp(1.25rem, 5vw, 2.25rem) clamp(1rem, 3svh, 2.25rem)
+      clamp(1.75rem, 7vw, 3.25rem);
+    /* Papel apenas mas claro que el fondo, y el borde + la sombra corrida la
+       despegan como objeto */
+    background: var(--color-cream-light);
+    border: 1.5px solid var(--color-green);
+    border-radius: 0.375rem;
+    box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09);
+    text-align: left;
+  }
 
-    .hero-actions {
-      margin-top: 1rem;
-    }
+  /* La linea del margen, como en un cuaderno */
+  .hero-pad::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: clamp(0.9rem, 4vw, 1.6rem);
+    width: 1px;
+    background: color-mix(in srgb, var(--color-green) 20%, transparent);
+  }
 
-    .hero-visual {
-      max-width: min(11rem, 24dvh);
+  .hero-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hero-item {
+    /* El li no recorta: el tachon sobresale a los costados del texto */
+    padding-block: clamp(0.15rem, 0.7svh, 0.45rem);
+    /* El renglon de la libretita */
+    border-bottom: 1px solid color-mix(in srgb, var(--color-green) 15%, transparent);
+    line-height: 1;
+  }
+
+  .hero-item:last-child {
+    border-bottom: 0;
+  }
+
+  .hero-item-text {
+    position: relative;
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.1rem, 3svh, 1.9rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-item-pencil {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    /* Multiply para que el grafito oscurezca el texto en vez de taparlo */
+    mix-blend-mode: multiply;
+  }
+
+  .hero-item-pencil path {
+    /* Es el contorno relleno, no una linea: asi el grosor puede variar a lo
+       largo del trazo, como cuando un lapiz apoya y levanta. */
+    fill: var(--color-green);
+    /* Sin JS los tachones ya estan dibujados */
+    clip-path: none;
+  }
+
+  .hero-final {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.75rem, 2svh, 1.5rem);
+    margin-top: clamp(1.5rem, 4svh, 2.5rem);
+    text-align: center;
+  }
+
+  .hero-final-brand {
+    font-family: var(--font-wordmark);
+    font-weight: 500;
+    font-size: clamp(2.2rem, 7svh, 4.5rem);
+    line-height: 1;
+  }
+
+  .hero-final-sub {
+    max-width: 34ch;
+    font-family: var(--font-display);
+    font-size: clamp(0.95rem, 2.2svh, 1.35rem);
+    line-height: 1.35;
+  }
+
+  .hero-final-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  @media (min-width: 30rem) {
+    .hero-final-actions {
+      flex-direction: row;
+      justify-content: center;
+      width: auto;
     }
   }
 
-  /* Celulares bajos de verdad: 360x640 en adelante. Medido con el subtitulo
-     puesto, el bloque de texto no entraba en los 100dvh (faltaban ~28px a
-     360x640 y ~13px a 320x568) y los dos CTAs quedaban abajo del pliegue. Se
-     achica escala otra vez (panel, padding, gaps y margenes), nunca el copy.
-     El corte es 660px de alto a proposito: 375x667 tiene 82,8px libres y no
-     necesita este escalon, asi que conserva el panel y el aire del anterior. */
-  @media (max-width: 30rem) and (max-height: 660px) {
-    .hero-grid {
-      gap: 0.5rem;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-
-    .hero-subtitle {
-      margin-top: 0.375rem;
-      font-size: 0.875rem;
-      line-height: 1.3;
-    }
-
-    .hero-lead {
-      margin-top: 0.5rem;
-    }
-
-    .hero-visual {
-      max-width: min(10rem, 20dvh);
-    }
-
-    .hero-actions {
-      margin-top: 0.75rem;
-    }
+  /* ---------------------------------------------------------------------------
+     Con JavaScript: el escenario se pega y la seccion se estira para dar
+     recorrido. `is-live` la agrega el script solo si no hay movimiento reducido.
+     --------------------------------------------------------------------------- */
+  .hero-scroll.is-live {
+    /* El recorrido del scroll mas el alto del escenario: asi el sticky se
+       despega justo cuando el progreso llega a 1 */
+    height: calc(var(--scroll-length, 5200px) + 100svh - var(--hero-top));
   }
 
-  /* Ventanas de escritorio bajas: hasta 720px de alto el bloque de texto del hero
-     no entra en la primera pantalla y los dos CTAs quedaban abajo del pliegue
-     (medido a 1440x647: el fondo de los botones en 690px, o sea 43px fuera de la
-     pantalla; el hero mide 625px de contenido + los 113px de barra de anuncio y
-     header = necesita 738px para entrar). Se achica escala otra vez, igual que en
-     los tres escalones mobile de arriba: padding, titulo, margenes y panel, nunca
-     el copy. El corte de 45rem esta por debajo de los 738px donde empieza a no
-     entrar, asi que por encima de 720px de ventana no cambia nada. */
-  @media (min-width: 48rem) and (max-height: 45rem) {
-    .hero-grid {
-      padding-top: 1.5rem;
-      padding-bottom: 1.5rem;
-    }
-
-    .hero-title {
-      font-size: 2.75rem;
-      line-height: 1.08;
-    }
-
-    .hero-subtitle {
-      margin-top: 0.5rem;
-    }
-
-    .hero-lead {
-      margin-top: 0.75rem;
-    }
-
-    .hero-actions {
-      margin-top: 1rem;
-    }
-
-    .hero-visual {
-      max-width: min(30rem, 32dvh);
-    }
+  .hero-scroll.is-live .hero-stage {
+    position: sticky;
+    top: var(--hero-top);
+    height: calc(100svh - var(--hero-top));
+    padding-block: clamp(0.75rem, 2svh, 2rem);
+    overflow: hidden;
   }
 
-  /* Escritorios muy bajos (una notebook de 1080p al 200% de escala ronda los
-     540px utiles): un escalon mas, sin tocar el copy ni la estructura. */
-  @media (min-width: 48rem) and (max-height: 37.5rem) {
-    .hero-grid {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-
-    .hero-title {
-      font-size: 2.25rem;
-    }
-
-    .hero-visual {
-      max-width: min(26rem, 26dvh);
-    }
+  /* La lista y el final en la misma celda: el final reemplaza a la lista en el
+     mismo lugar, y el contenedor mide el mas alto de los dos */
+  .hero-scroll.is-live .hero-swap {
+    display: grid;
+    align-content: center;
+    min-height: 0;
   }
 
-  /* Pantallas muy bajas (un iPhone SE con las barras del navegador a la vista
-     ronda los 550px utiles): un escalon mas. Los dos CTAs pasan a dos
-     columnas y el panel achica otra vez, asi los botones entran sin tocar la
-     tipografia ni el copy. El 18dvh del panel es por el subtitulo: a 320x568,
-     con 20dvh quedaban solo 5,3px libres dentro del hero (medido con el
-     build), y eso deja el pliegue a merced de como mida la fuente de
-     reemplazo mientras carga la variable. */
-  @media (max-width: 30rem) and (max-height: 620px) {
-    .hero-grid {
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-    }
+  .hero-scroll.is-live .hero-list,
+  .hero-scroll.is-live .hero-final {
+    grid-area: 1 / 1;
+  }
 
-    .hero-visual {
-      max-width: min(9rem, 18dvh);
-    }
+  /* El final se centra en la celda, que mide lo que mide la lista */
+  .hero-scroll.is-live .hero-final {
+    margin-top: 0;
+    justify-content: center;
+  }
 
-    .hero-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
+  /* Con JS el revelado lo maneja el script en cada frame */
+  .hero-scroll.is-live .hero-item-pencil path {
+    clip-path: inset(0 100% 0 0);
+  }
 
-    /* :global hace falta: los botones son el root de otro componente, y Astro
-       no le propaga el scope del padre, asi que un selector de hijo directo no
-       matcheaba nada. Con px-3 las etiquetas de los dos CTAs envuelven menos. */
-    .hero-actions :global(a) {
-      padding-left: 0.75rem;
-      padding-right: 0.75rem;
-    }
+  .hero-scroll.is-live .hero-item-text {
+    will-change: opacity, transform;
   }
 </style>
+
+<script>
+  import { trazoDeTachado } from "../lib/pencil";
+
+  // La linea de tiempo. El progreso va de 0 (el escenario se acaba de pegar) a 1
+  // (se despega). Cada item tiene su tramo de aparicion y su tramo de tachado, y
+  // los tramos se solapan a proposito: mientras el item i se tacha, el i+1 ya
+  // esta entrando.
+  const PASO = 0.0875;
+  const APARICION = 0.06;
+  const DESFASE_TACHADO = 0.03;
+  const TACHADO = 0.075;
+  const BORRADO_INICIO = 0.78;
+  const BORRADO_FIN = 0.87;
+  const BOTTEGA_INICIO = 0.87;
+  const SUBTITULO_INICIO = 0.92;
+  const BOTONES_INICIO = 0.96;
+
+  const SCROLL_DESKTOP = 5200;
+  const SCROLL_MOBILE = 3600;
+
+  let cleanup: (() => void) | undefined;
+
+  const iniciar = () => {
+    cleanup?.();
+    cleanup = undefined;
+
+    // Con movimiento reducido no hay sticky ni animacion: queda el layout corto
+    // del CSS base, con los tachones ya dibujados y el final visible.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const seccion = document.querySelector<HTMLElement>("[data-hero]");
+    const escenario = seccion?.querySelector<HTMLElement>("[data-stage]");
+    const lista = seccion?.querySelector<HTMLElement>("[data-list]");
+    const final = seccion?.querySelector<HTMLElement>("[data-final]");
+    const items = [...(seccion?.querySelectorAll<HTMLElement>("[data-item]") ?? [])];
+    if (!seccion || !escenario || !lista || !final || !items.length) return;
+
+    const marca = final.querySelector<HTMLElement>(".hero-final-brand");
+    const subtitulo = final.querySelector<HTMLElement>(".hero-final-sub");
+    const botones = final.querySelector<HTMLElement>(".hero-final-actions");
+
+    seccion.classList.add("is-live");
+
+    let scrollLength = 0;
+    let topSticky = 0;
+    let ultimo = -1;
+
+    // El path de cada item, y su ancho y alto reales, para regenerar el trazo
+    // cuando cambia el tamano.
+    const trazosPorItem: Array<{ path: SVGPathElement; ancho: number; alto: number }> = [];
+
+    const medir = () => {
+      scrollLength = document.documentElement.clientWidth >= 768 ? SCROLL_DESKTOP : SCROLL_MOBILE;
+      seccion.style.setProperty("--scroll-length", `${scrollLength}px`);
+      topSticky = parseFloat(getComputedStyle(escenario).top) || 0;
+      ultimo = -1;
+      regenerarTrazos();
+      actualizar();
+    };
+
+    // El trazo se genera con el ancho y el alto REALES del texto. En el build se
+    // genero con una medida tipica, asi que sin JS el tachon se estira con
+    // `preserveAspectRatio` y se ve bien; con JS queda con la medida exacta.
+    const regenerarTrazos = () => {
+      items.forEach((item, i) => {
+        const span = item.querySelector<HTMLElement>("[data-item-text]");
+        const svg = item.querySelector<SVGSVGElement>("[data-pencil]");
+        if (!span || !svg) return;
+        const caja = span.getBoundingClientRect();
+        const ancho = Math.round(caja.width);
+        const alto = Math.round(caja.height);
+        if (!ancho || !alto) return;
+
+        const guardado = trazosPorItem[i];
+        if (guardado && guardado.ancho === ancho && guardado.alto === alto) return;
+
+        const trazo = trazoDeTachado(1000 + i * 97, ancho, alto);
+        svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
+        const path = svg.querySelector<SVGPathElement>("path");
+        if (!path) return;
+        path.setAttribute("d", trazo.d);
+        path.setAttribute("fill-opacity", String(trazo.opacidad));
+        trazosPorItem[i] = { path, ancho, alto };
+      });
+    };
+
+    const tramo = (p: number, desde: number, hasta: number) =>
+      Math.min(1, Math.max(0, (p - desde) / (hasta - desde)));
+
+    const actualizar = () => {
+      // El progreso sale de la seccion contra SCROLL_LENGTH, nunca de la altura
+      // de la ventana: asi el mismo scroll da el mismo progreso en cualquier alto.
+      const top = seccion.getBoundingClientRect().top;
+      const progreso = Math.min(1, Math.max(0, (topSticky - top) / scrollLength));
+      if (progreso === ultimo) return;
+      ultimo = progreso;
+
+      // --- los items: aparecen y se tachan uno a uno ---
+      items.forEach((item, i) => {
+        const inicio = i * PASO;
+        const aparece = tramo(progreso, inicio, inicio + APARICION);
+        const tacha = tramo(
+          progreso,
+          inicio + DESFASE_TACHADO,
+          inicio + DESFASE_TACHADO + TACHADO,
+        );
+
+        // Entra con un desplazamiento chico. La opacidad va en el TEXTO, no en el
+        // li: asi el renglon de la libretita se ve siempre, aunque el item
+        // todavia no haya aparecido. Y una vez tachado se queda como esta: el
+        // item ya cerrado no se apaga.
+        const span = item.querySelector<HTMLElement>("[data-item-text]");
+        if (span) {
+          span.style.opacity = aparece.toFixed(3);
+          span.style.transform = `translateY(${((1 - aparece) * 8).toFixed(2)}px)`;
+        }
+
+        const guardado = trazosPorItem[i];
+        if (!guardado) return;
+        // Un solo trazo de ida y vuelta: se revela de izquierda a derecha
+        guardado.path.style.clipPath = `inset(0 ${((1 - tacha) * 100).toFixed(2)}% 0 0)`;
+      });
+
+      // --- el borrado: barrido de goma de izquierda a derecha ---
+      const borrado = tramo(progreso, BORRADO_INICIO, BORRADO_FIN);
+      const finalAparece = tramo(progreso, BOTTEGA_INICIO, 0.93);
+
+      if (borrado > 0) {
+        const avance = borrado * 120 - 10;
+        const mascara = `linear-gradient(to right, transparent ${avance.toFixed(1)}%, black ${(avance + 12).toFixed(1)}%, black 100%)`;
+        lista.style.maskImage = mascara;
+        lista.style.filter = `blur(${(borrado * 6).toFixed(2)}px)`;
+      } else {
+        lista.style.maskImage = "";
+        lista.style.filter = "";
+      }
+
+      // Del 100% al 6% durante el borrado, y despues el resto de grafito se va
+      // del todo cuando aparece el wordmark final.
+      const opacidadLista =
+        borrado < 1 ? 1 - borrado * 0.94 : 0.06 * (1 - finalAparece);
+      lista.style.opacity = opacidadLista.toFixed(3);
+
+      // --- el estado final: entra entintandose, encadenado ---
+      const entintar = (el: HTMLElement | null, p: number) => {
+        if (!el) return;
+        el.style.opacity = p.toFixed(3);
+        el.style.filter = p < 1 ? `blur(${((1 - p) * 6).toFixed(2)}px)` : "";
+        el.style.transform = `translateY(${((1 - p) * 10).toFixed(2)}px)`;
+      };
+      entintar(marca, finalAparece);
+      entintar(subtitulo, tramo(progreso, SUBTITULO_INICIO, 0.97));
+      entintar(botones, tramo(progreso, BOTONES_INICIO, 1));
+    };
+
+    // --- un solo listener, con coalescing por rAF ---
+    let frame = 0;
+    const alScrollear = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        actualizar();
+      });
+    };
+
+    let resizeTimer = 0;
+    const alRedimensionar = () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(medir, 80);
+    };
+
+    // Los trazos se regeneran con el ancho real cuando cambia el tamano del
+    // texto. El progreso no se pierde: viene del scroll, no del SVG.
+    const observador = new ResizeObserver(() => regenerarTrazos());
+    items.forEach((item) => observador.observe(item));
+
+    window.addEventListener("scroll", alScrollear, { passive: true });
+    window.addEventListener("resize", alRedimensionar, { passive: true });
+    document.fonts?.ready.then(medir).catch(() => {});
+    medir();
+
+    cleanup = () => {
+      window.removeEventListener("scroll", alScrollear);
+      window.removeEventListener("resize", alRedimensionar);
+      if (frame) window.cancelAnimationFrame(frame);
+      window.clearTimeout(resizeTimer);
+      observador.disconnect();
+      seccion.classList.remove("is-live");
+    };
+  };
+
+  document.addEventListener("astro:page-load", iniciar);
+  document.addEventListener("astro:before-swap", () => {
+    cleanup?.();
+  });
+  iniciar();
+</script>

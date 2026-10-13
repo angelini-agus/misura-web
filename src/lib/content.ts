@@ -36,7 +36,6 @@ import pediatricErpAppointments from "../assets/proyectos/pediatric/erp-appointm
 import pediatricErpAppointmentDialog from "../assets/proyectos/pediatric/erp-appointment-dialog.png";
 import pediatricErpConsultations from "../assets/proyectos/pediatric/erp-consultations.png";
 import pediatricErpPatientRecord from "../assets/proyectos/pediatric/erp-patient-record.png";
-import pediatricPortalAppointments from "../assets/proyectos/pediatric/portal-appointments.png";
 import limpiezaAdmin1 from "../assets/proyectos/limpieza/admin1.png";
 import limpiezaAdmin2 from "../assets/proyectos/limpieza/admin2.png";
 import limpiezaAdmin3 from "../assets/proyectos/limpieza/admin3.png";
@@ -275,6 +274,19 @@ export const dictionaryEntry: {
     "Taller y tienda del artesano, donde se expone, se vende y se enseña el oficio.",
   ],
 };
+
+// Los problemas que se tachan uno a uno en el hero de scroll. El orden es el que
+// se ve: se tachan de arriba abajo.
+export const heroProblems: string[] = [
+  "Planillas de Excel",
+  "Carga de datos a mano",
+  "Grupos de WhatsApp",
+  "Datos sin comprobar",
+  "Horas sin control",
+  "Papeles sueltos",
+  "Sueldos calculados a mano",
+  "Stock anotado en un cuaderno",
+];
 
 export const hero = {
   title: "¿Todavía corrés tu negocio entre Excel, WhatsApp y papeles sueltos?",
