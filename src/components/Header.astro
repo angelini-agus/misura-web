@@ -153,16 +153,20 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
     });
   };
 
-  // Al entrar a una pagina sin apertura de marca (todas menos la home), el logo
-  // del navbar hace el mismo viaje que hace al scrollear en la home, pero
-  // acelerado: arranca del tamano y la posicion que tiene el wordmark grande en
-  // la apertura y se acomoda en su lugar. Sin esto el logo aparece ya puesto y no
-  // se entiende de donde salio.
+  // El logo llega viajando SOLO cuando el visitante viene de la apertura de la
+  // home, que es el unico caso donde el wordmark grande esta a la vista y el logo
+  // tiene que nacer de ahi. Si viene de otra pagina el bottega ya estaba en el
+  // navbar, asi que animarlo seria inventar un viaje que nadie vio.
   const animarLlegadaDelLogo = () => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     // En la home el logo lo maneja el script de la apertura, que lo hace viajar
     // con el scroll: ahi esta funcion no corre.
     if (document.querySelector("[data-brand-wordmark]")) return;
+
+    const estado = window as Window & { __bottegaEnApertura?: boolean };
+    const veniaDeLaApertura = estado.__bottegaEnApertura === true;
+    estado.__bottegaEnApertura = false;
+    if (!veniaDeLaApertura) return;
 
     const logo = document.querySelector<HTMLElement>("[data-header-logo]");
     const link = document.querySelector<HTMLElement>("[data-header-logo-link]");
@@ -213,9 +217,6 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
   // DOM nuevo en su lugar antes de pintarlo, y ahi todavia se puede dejar el
   // logo en su estado de partida sin que se vea. Medido con `page-load`: el logo
   // se pintaba ya en su lugar, saltaba al tamano grande y recien despues viajaba.
-  // La llamada inmediata cubre la carga directa de la pagina, que no pasa por
-  // ningun swap.
   document.addEventListener("astro:after-swap", animarLlegadaDelLogo);
   initMobileMenu();
-  animarLlegadaDelLogo();
 </script>
