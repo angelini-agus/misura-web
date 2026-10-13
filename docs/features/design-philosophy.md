@@ -1,10 +1,10 @@
-# Filosofía de diseño de Misure
+# Filosofía de diseño de Bottega
 
 > Documento normativo. No describe una feature de esta web: describe el criterio
-> con el que Misure construye **todo** producto que entrega. Aplica a esta página,
+> con el que Bottega construye **todo** producto que entrega. Aplica a esta página,
 > a los productos a medida de los clientes y a los productos propios futuros.
 
-## Qué es Misure
+## Qué es Bottega
 
 - Vendemos **software a medida**, entregado junto con el proyecto del cliente.
 - Etapa actual: los **primeros clientes**, foco en productos a medida.
@@ -14,7 +14,7 @@
 
 ## El principio rector
 
-La filosofía de Misure no es un eslogan: es **construir el producto de la mayor
+La filosofía de Bottega no es un eslogan: es **construir el producto de la mayor
 calidad posible**. Cuando hay que elegir entre entregar rápido y entregar bien,
 se elige entregar bien.
 
@@ -190,7 +190,7 @@ reabre la revisión.
 
 ## Anti-patrones
 
-Ninguno de estos pertenece a la identidad de Misure:
+Ninguno de estos pertenece a la identidad de Bottega:
 
 - Parallax, scroll-jacking, blobs, gradientes decorativos, glassmorphism.
 - Sombras grandes o bordes difusos: rompen el flat.

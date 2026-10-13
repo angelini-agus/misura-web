@@ -1,7 +1,7 @@
 # Caso de estudio: CRM de leads para concesionaria
 
 ## Objetivo
-Sumar al portfolio el quinto caso real de misure: un CRM a medida para una
+Sumar al portfolio el quinto caso real de bottega: un CRM a medida para una
 concesionaria de autos de Rosario (`leads-crm`), que reemplaza la planilla de
 Excel manual con la que se cargaban y asignaban las consultas de campañas de
 Facebook e Instagram.

@@ -1,7 +1,7 @@
 # Landing structure review — Home
 
 ## Objetivo
-Alinear la home de misure con la estructura clásica de una landing page de
+Alinear la home de bottega con la estructura clásica de una landing page de
 alta conversión, sin inventar datos ni features: el visitante entiende primero
 el dolor, después la solución, después cómo se implementa, luego se resuelven
 las objeciones (FAQ) y recién ahí aparece el CTA final. Se reutiliza todo el

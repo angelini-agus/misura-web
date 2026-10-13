@@ -1,6 +1,6 @@
-# misure — Web
+# Bottega Dev — Web
 
-Sitio institucional multipágina (MPA) para **misure**, desarrollado con
+Sitio institucional multipágina (MPA) para **bottega**, desarrollado con
 **Astro + TypeScript + Tailwind CSS v4**.
 
 Sitio estático con JS mínimo en cliente (reveal de animaciones, filtro de

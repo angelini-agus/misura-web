@@ -2,7 +2,7 @@
 
 ## Objetivo
 Publicar una página real de privacidad en `/privacidad` que explique qué hace
-misure con los datos del formulario de contacto, y linkearla desde el
+bottega con los datos del formulario de contacto, y linkearla desde el
 formulario y desde la fila legal del footer.
 
 ## Qué se hizo
@@ -21,7 +21,7 @@ formulario y desde la fila legal del footer.
    `link-ink`. Además, el bloque de envío pasó de `items-start` a
    `items-center`, el disclaimer quedó con `max-w-md text-center`.
 4. **Link en el footer** (`Footer.astro`): en la fila legal, el `<p>` que
-   renderizaba `footer.tagline` ("Desarrollado por misure") se reemplazó por un
+   renderizaba `footer.tagline` ("Desarrollado por bottega") se reemplazó por un
    anchor a `/privacidad` con `footer.privacyLabel`. `footer.tagline` se
    eliminó de `content.ts` al no quedar ningún otro uso; `site.tagline` (el
    texto bajo el logo) no se tocó.
@@ -51,4 +51,4 @@ formulario y desde la fila legal del footer.
   `<h1>` de la página y las siete secciones; `/privacidad` aparece en
   `dist/sitemap-0.xml`; `dist/contacto/index.html` muestra el bloque de envío
   centrado con el link; `dist/index.html` muestra el link en la fila legal del
-  footer en lugar de "Desarrollado por misure".
+  footer en lugar de "Desarrollado por bottega".

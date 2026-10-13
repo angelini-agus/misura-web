@@ -203,7 +203,7 @@ rompe, el motivo por el que se mantiene y el costo asumido.
 ### U4
 
 - Commit: `468bef5`.
-- JSON-LD: `site.url` pasa a `https://misure.dev` (el dominio que ya declaran
+- JSON-LD: `site.url` pasa a `https://bottegadev.com` (el dominio que ya declaran
   `astro.config.mjs` y `robots.txt`), y se quitan `telephone` y `streetAddress`
   placeholder. Cero bloques JSON-LD con `PENDIENTE` en las 11 páginas.
 - Canonical y `og:url` derivados del origin más el path, con la misma convención

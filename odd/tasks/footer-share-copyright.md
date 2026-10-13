@@ -29,7 +29,7 @@ Cronología: el botón nace en `d41bb0d` (14-ago-2026); View Transitions entra e
 
 ## Decisiones del usuario
 
-1. **Copyright:** `© 2026 misure. Todos los derechos reservados.` — sin rango de año
+1. **Copyright:** `© 2026 Bottega Dev. Todos los derechos reservados.` — sin rango de año
    de fundación. El año sigue siendo dinámico (`new Date().getFullYear()`).
 2. **Share en desktop:** copiar link al portapapeles con feedback visible. La hoja
    nativa del sistema (`navigator.share`) queda reservada a dispositivos táctiles.
@@ -59,10 +59,10 @@ primera carga:
 - Texto de share contextual por página (`data-share-text`): requiere decidir copy por
   caso de estudio. Queda como follow-up.
 - Renderizar el botón solo en casos de estudio: decisión de producto pendiente.
-- La redundancia de "misure" en la fila legal (`© ... misure` + `Desarrollado por
-  misure`): pendiente de decisión del usuario, no se toca.
+- La redundancia de "bottega" en la fila legal (`© ... Bottega Dev` + `Desarrollado por
+  bottega`): pendiente de decisión del usuario, no se toca.
 - `site.url` en `content.ts:55` sigue en `[PENDIENTE: dominio de producción]`
-  mientras `astro.config.mjs` define `https://misure.dev`.
+  mientras `astro.config.mjs` define `https://bottegadev.com`.
 
 ## Criterios de aceptación
 
@@ -86,7 +86,7 @@ primera carga:
 - `npx astro check`: `Result (56 files): 0 errors, 0 warnings, 0 hints`.
 - `npm run build`: `10 page(s) built in 956ms`, `Complete!`.
 - HTML emitido (`dist/index.html`):
-  `<p>© 2026 <span></span><strong class="normal-case font-bold">misure</strong><span></span>. Todos los derechos reservados.</p>`
+  `<p>© 2026 <span></span><strong class="normal-case font-bold">Bottega Dev</strong><span></span>. Todos los derechos reservados.</p>`
   y `<button data-share type="button" aria-label="Compartir esta página" ...>Compartir</button><span class="sr-only" role="status" aria-live="polite" data-share-status></span>`.
 - Las 10 páginas del build contienen `data-share` y el script inline es
   byte-idéntico en todas (un solo hash): confirma que el runtime lo saltea tras
@@ -105,7 +105,7 @@ primera carga:
 
 - Texto de share contextual por página.
 - Renderizar el botón solo en casos de estudio.
-- La fila legal sigue mostrando "misure" dos veces (`© … misure` y
-  "Desarrollado por misure"): pendiente de decisión del usuario.
+- La fila legal sigue mostrando "bottega" dos veces (`© … Bottega Dev` y
+  "Desarrollado por bottega"): pendiente de decisión del usuario.
 - `src/styles/global.css` quedó modificado por un proceso externo (fix de
   autofill) y se dejó intacto, fuera de este commit.

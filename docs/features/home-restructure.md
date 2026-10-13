@@ -1,7 +1,7 @@
 # Home Restructure
 
 ## Objetivo
-Reestructurar la home de misure debajo del Hero existente para mejorar la
+Reestructurar la home de bottega debajo del Hero existente para mejorar la
 conversión: primero prueba social concreta, luego propuesta de valor,
 calificación del cliente, diferenciales hechos, FAQ, navegación secundaria,
 equipo y formulario final.

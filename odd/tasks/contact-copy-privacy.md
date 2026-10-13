@@ -7,7 +7,7 @@ Tres ajustes pedidos por el usuario sobre el formulario de contacto y el footer:
 1. El campo de texto libre deja de llamarse "Mensaje" y pasa a llamarse "Detalles".
 2. Su placeholder pasa a preguntar por el problema concreto del negocio.
 3. La línea legal del formulario linkea a una página real de privacidad, con el
-   tratamiento de datos que hace misure.
+   tratamiento de datos que hace bottega.
 4. El botón de enviar y el texto de la línea legal quedan centrados en el eje X.
 
 ## Decisiones del usuario
@@ -16,7 +16,7 @@ Tres ajustes pedidos por el usuario sobre el formulario de contacto y el footer:
    no se venden ni ceden, y **menciona a Web3Forms** como procesador del envío.
    Omitirlo habría sido una promesa falsa: el formulario sí pasa por un tercero.
 2. **Se linkea en los dos lados:** en el disclaimer del formulario y en la fila
-   legal del footer, donde el link reemplaza a "Desarrollado por misure", que
+   legal del footer, donde el link reemplaza a "Desarrollado por bottega", que
    repetía la marca dos veces en la misma fila.
 3. **Etiqueta del servicio arriba de la caja**, consistente con los otros cuatro
    campos. Se corrigió en la rama anterior, antes de su commit.
@@ -58,7 +58,7 @@ Tres ajustes pedidos por el usuario sobre el formulario de contacto y el footer:
 2. `/privacidad` existe, es navegable desde el formulario y desde el footer, y
    renderiza las 7 secciones del texto.
 3. El botón de enviar, el disclaimer y el link están centrados en el eje X.
-4. El footer ya no muestra "Desarrollado por misure" y sí el link a privacidad.
+4. El footer ya no muestra "Desarrollado por bottega" y sí el link a privacidad.
 5. El POST a Web3Forms sigue enviando los mismos campos.
 6. `npx astro check` y `npm run build` pasan; el HTML emitido contiene la página
    nueva y los links.
@@ -81,7 +81,7 @@ Tres ajustes pedidos por el usuario sobre el formulario de contacto y el footer:
   presentes y en orden, con 2/2/2/2/2/1/1 párrafos de cuerpo efectivamente renderizados
   (no solo los títulos); bloque de envío con `items-center` + `max-w-md text-center` +
   anchor a `/privacidad`; fila legal del footer con el anchor y sin "Desarrollado por
-  misure" en `src/` ni en `dist/`; `site.tagline` intacta; y el flujo de dos pasos del
+  bottega" en `src/` ni en `dist/`; `site.tagline` intacta; y el flujo de dos pasos del
   formulario sin regresiones (`data-service-flow`, las cuatro reglas `.js` de la cascada,
   `chooseService`/`changeService` y payload `access_key, name, company, email, phone,
   service, message`).
