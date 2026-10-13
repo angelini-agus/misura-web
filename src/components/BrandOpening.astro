@@ -1,5 +1,6 @@
 ---
 import { dictionaryEntry } from "../lib/content";
+import BrandSenses from "./BrandSenses.astro";
 
 // La apertura de marca: el wordmark a gran escala y centrado con su fonetica y
 // su categoria debajo, en tipografia de maquina de escribir. Es una seccion en
@@ -27,14 +28,12 @@ import { dictionaryEntry } from "../lib/content";
       >
       {/* `mt-10` y no un margen corto: con line-height 1 la caja del wordmark corta
           la tinta, asi que el descendente de la "g" baja 2,5px por debajo de la
-          caja y el hueco real entre la letra y la fonetica es siempre menor que
+          caja y el hueco real entre la letra y la entrada es siempre menor que
           el margen. Medido: con 12px quedaba en 9,5px (se veian pegadas), con
           24px en 21,5px, y con 40px queda en 37,5px. */}
-      <p
-        class="font-typewriter mt-10 text-base text-green/90 tracking-wide sm:text-lg md:text-xl"
-      >
-        {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
-      </p>
+      <div class="mt-10 w-full">
+        <BrandSenses />
+      </div>
     </div>
   </div>
 </section>
@@ -119,6 +118,33 @@ import { dictionaryEntry } from "../lib/content";
       return { x, y };
     };
 
+    // El texto del navegador se rasteriza donde cae, y con `line-height: 1` el
+    // baseline queda a medio pixel: medido en la apertura, el half-leading da
+    // -24,5px y el baseline cae en 152,5px dentro de la caja. Encima, el texto
+    // mide 628,1px (no entero), asi que al centrarlo la x queda en 405,95. Con
+    // las dos coordenadas a mitad de camino, cada borde vertical del asta se
+    // reparte entre dos columnas de pixeles y el wordmark se ve con halo (medido
+    // con la captura ampliada: alineado, el borde izquierdo de la b queda duro).
+    // El ajuste se calcula en vez de fijarse a mano porque depende del ancho del
+    // texto y del tamano de fuente, que cambian con el viewport.
+    const alinearALaGrilla = () => {
+      brandWordmark.style.transform = "";
+      const rect = brandWordmark.getBoundingClientRect();
+      const cs = getComputedStyle(brandWordmark);
+      const ctx = document.createElement("canvas").getContext("2d");
+      if (!ctx) return;
+      ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const t = ctx.measureText(brandWordmark.textContent || "");
+      const lh = parseFloat(cs.lineHeight);
+      const baselineLocal =
+        (lh - (t.fontBoundingBoxAscent + t.fontBoundingBoxDescent)) / 2 +
+        t.fontBoundingBoxAscent;
+      const baseline = rect.top + baselineLocal;
+      const dx = Math.round(rect.x) - rect.x;
+      const dy = Math.round(baseline) - baseline;
+      brandWordmark.style.transform = `translate(${dx.toFixed(5)}px, ${dy.toFixed(5)}px)`;
+    };
+
     const measure = () => {
       const scrollY = window.scrollY;
       const linkRect = headerLogoLink.getBoundingClientRect();
@@ -148,6 +174,7 @@ import { dictionaryEntry } from "../lib/content";
       // La distancia de scroll hasta que el wordmark cruza el nivel del header
       travelDistance = Math.max(1, heroDocTop - (headerStickyTopOffset + announcementH));
 
+      alinearALaGrilla();
       update();
     };
 
@@ -252,6 +279,7 @@ import { dictionaryEntry } from "../lib/content";
       headerLogo.style.transformOrigin = "";
       headerLogo.style.willChange = "";
       headerLogo.style.opacity = "";
+      brandWordmark.style.transform = "";
       brandWordmark.style.opacity = "";
     };
   };

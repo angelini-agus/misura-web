@@ -1,0 +1,147 @@
+---
+import { dictionaryEntry } from "../lib/content";
+
+// La entrada del diccionario: la fonetica con su categoria y la definicion
+// (las acepciones de `dictionaryEntry`), que alternan solas con un desenfoque
+// y se pausan al pasar el cursor. Lo usan la apertura de la home y el
+// diccionario de /nosotros, asi que vive aca y no duplicado en los dos.
+---
+
+<div data-senses-card>
+  <!-- Bloque de texto animado con desenfoque / blur estilo The Mentalist.
+       Sin aria-live a propósito: el bloque cambia solo cada 2 segundos y un
+       aria-live haría que el lector de pantalla anuncie todo el texto cada
+       vez; el slide inactivo ya está aria-hidden, así que el lector lee el
+       actual cuando llega a él. -->
+  <div
+    class="grid w-full grid-cols-1 grid-rows-1 items-stretch justify-items-center text-center"
+  >
+    <!-- Slide 1: Pronuncia -->
+    <div
+      class="dict-slide is-active col-start-1 row-start-1 flex w-full flex-col items-center justify-start text-center"
+      data-slide="0"
+      aria-hidden="false"
+    >
+      <p class="font-typewriter mt-1 text-base text-green/90 tracking-wide sm:text-lg md:text-xl">
+        {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
+      </p>
+    </div>
+
+    <!-- Slide 2: Traducción -->
+    <div
+      class="dict-slide col-start-1 row-start-1 flex w-full flex-col items-center justify-start text-center"
+      data-slide="1"
+      aria-hidden="true"
+    >
+      <p class="font-typewriter max-w-lg text-base text-green/90 leading-relaxed tracking-wide sm:text-lg md:text-xl">
+        {dictionaryEntry.senses[0]}
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dict-slide {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(4px);
+    pointer-events: none;
+    transition:
+      opacity 420ms ease-out,
+      filter 480ms ease-out,
+      transform 480ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .dict-slide.is-active {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dict-slide {
+      transition: none;
+      transform: none;
+      filter: none;
+    }
+  }
+</style>
+
+<script>
+  let cleanupSlides: (() => void) | undefined;
+
+  // Alternancia automatica con desenfoque / blur y pausa en hover
+  const initSensesSlides = () => {
+    cleanupSlides?.();
+    cleanupSlides = undefined;
+
+    const card = document.querySelector<HTMLElement>("[data-senses-card]");
+    if (!card) return;
+
+    const slides = card.querySelectorAll<HTMLElement>("[data-slide]");
+    if (slides.length < 2) return;
+
+    let activeIndex = 0;
+    const intervalMs = 2500; // El autor pidió entre 2 y 2,5 segundos entre slides
+    let hovering = false;
+    let deadline = 0;
+    let timer = 0;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const showSlide = (index: number) => {
+      activeIndex = index;
+      slides.forEach((slide, i) => {
+        const isActive = i === activeIndex;
+        slide.classList.toggle("is-active", isActive);
+        slide.setAttribute("aria-hidden", (!isActive).toString());
+      });
+    };
+
+    // El reloj sigue corriendo con el mouse encima: el cambio solo espera. Si el
+    // tiempo se cumple mientras el visitante lee, no se interrumpe; cuando saca
+    // el mouse, si el tiempo ya pasó, cambia de una.
+    const schedule = () => {
+      window.clearTimeout(timer);
+      deadline = performance.now() + intervalMs;
+      timer = window.setTimeout(() => {
+        if (hovering) return;
+        advance();
+      }, intervalMs);
+    };
+
+    const advance = () => {
+      showSlide((activeIndex + 1) % slides.length);
+      schedule();
+    };
+
+    const onEnter = () => {
+      hovering = true;
+    };
+
+    const onLeave = () => {
+      hovering = false;
+      if (!prefersReducedMotion && performance.now() >= deadline) advance();
+    };
+
+    card.addEventListener("mouseenter", onEnter);
+    card.addEventListener("mouseleave", onLeave);
+
+    cleanupSlides = () => {
+      window.clearTimeout(timer);
+      timer = 0;
+      card.removeEventListener("mouseenter", onEnter);
+      card.removeEventListener("mouseleave", onLeave);
+    };
+
+    if (!prefersReducedMotion) schedule();
+  };
+
+  document.addEventListener("astro:page-load", initSensesSlides);
+  document.addEventListener("astro:before-swap", () => {
+    cleanupSlides?.();
+  });
+  initSensesSlides();
+</script>

@@ -272,7 +272,7 @@ export const dictionaryEntry: {
   phonetic: "/bot-té-ga/",
   category: "sustantivo · del italiano",
   senses: [
-    "la dimensión exacta de algo hecho con propósito.",
+    "Taller y tienda del artesano, donde se expone, se vende y se enseña el oficio.",
   ],
 };
 
