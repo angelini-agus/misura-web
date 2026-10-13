@@ -20,8 +20,12 @@ import { dictionaryEntry } from "../lib/content";
       <span class="wordmark wordmark-hero select-none" data-brand-wordmark
         >{dictionaryEntry.word}</span
       >
+      {/* `mt-6` y no `mt-3`: con line-height 1 la caja del wordmark corta la tinta,
+          asi que el descendente de la "g" baja 2,5px por debajo de la caja. Con
+          12px de margen el hueco real entre la tinta y la fonetica quedaba en
+          9,5px y se veian pegadas (medido); con 24px queda en 21,5px. */}
       <p
-        class="font-typewriter mt-3 text-base text-green/90 tracking-wide sm:text-lg md:text-xl"
+        class="font-typewriter mt-6 text-base text-green/90 tracking-wide sm:text-lg md:text-xl"
       >
         {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
       </p>
