@@ -29,10 +29,12 @@ wordmark vectorial y pasa a ser texto, la apertura de marca se muda de
    `b` (referencia que dejó el autor en la raíz del repo) es la solapa de la
    pestaña: `icono.svg`, `favicon.ico`, `apple-touch-icon.png` y la OG image. El
    navbar sigue con el wordmark de texto.
-6. **La apertura de marca se muda a la home.** El wordmark a gran escala con su
-   fonética, que era lo primero de `/nosotros`, pasa a ser lo primero de la home
-   con el hero actual debajo, y **conserva la animación**: al scrollear viaja y
-   se acomoda en el navbar.
+6. **La apertura de marca se muda a la home, como sección propia.** El wordmark
+   a gran escala con su fonética, que era lo primero de `/nosotros`, pasa a ser
+   lo primero de la home en su propia sección (no dentro del hero), y
+   **conserva la animación**: al scrollear viaja y se acomoda en el navbar. El
+   wordmark se queda en su tamaño máximo, los ~620px de ancho que tenía el logo
+   de misure en `/nosotros`, sin compactarse por alto de ventana.
 7. **`/nosotros` arranca directo en la fonética y la definición**, sin el
    wordmark (que ahora se ve al entrar al sitio).
 8. **El email de contacto NO cambia**: sigue `contacto@misure.dev`, que hoy
@@ -92,9 +94,10 @@ JSON-LD de Organization, el favicon apuntando a `/icono.svg`).
 
 `MisureWord.astro` → `BrandWord.astro` y sus 11 puntos de uso;
 `window.__misureShareDelegated` → `__brandShareDelegated`; `Header` con el
-wordmark de texto y la caja del link en 115x32; `Hero` con la apertura de marca
-y el script del viaje; `Dictionary` sin el wordmark y sin el script;
-`Footer` con el copyright en `site.legalName`.
+wordmark de texto y la caja del link en 115x32; **`BrandOpening.astro`** (nuevo)
+con la sección de la apertura y el script del viaje; `Hero` sin la apertura, con
+sus cinco umbrales de compactación originales; `Dictionary` sin el wordmark y
+sin el script; `Footer` con el copyright en `site.legalName`.
 
 ### Tipografía
 
@@ -129,20 +132,21 @@ conserva.
   del hero (delta medido 0.0 en x e y, a 1440x970 y a 390x844); en reposo
   coincide con la caja del link (delta 0.0 de ancho, 0.2 de alto, 0.1 de
   centrado).
-- **Medición por alto de ventana** (regla del usuario), con el CTA principal
-  dentro del pliegue:
+- **Medición por alto de ventana** (regla del usuario):
 
   | ventana | 1080 | 970 | 900 | 880 | 776 | 720 | 668 | 647 | 600 | 540 |
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-  | 1440 de ancho | OK | OK | OK | OK | OK | OK | OK | OK | OK | scrollea |
-  | 390 de ancho | OK | OK | OK | OK | OK | OK | OK | OK | OK | scrollea |
+  | Apertura entra en la primera pantalla (1440) | sí | sí | sí | sí | sí | sí | sí | sí | sí | no, +13px |
+  | Hero entra en la suya (1440) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
+  | Apertura entra (390) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
+  | Hero entra en la suya (390) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
 
-  **El piso es 600px de ventana.** Por debajo (540px, que es un 1080p al 200% de
-  escala) el hero scrollea. El hero original, sin la apertura de marca, tenía su
-  piso en 738px: con el wordmark dimensionado por alto de ventana el hero entra
-  más abajo que antes. El wordmark se achica de forma continua entre 600px y
-  unos 1080px de ventana, y por encima de ese punto se queda en su tamaño
-  máximo.
+  El wordmark mide **628x176px en escritorio y 343x96px en mobile en todas las
+  alturas**, fijo en su tamaño máximo. Antes de separar la apertura se achicaba
+  hasta 40px de tipo en ventanas bajas, y al no achicarse más el hero recuperó
+  su piso propio: **entra en su pantalla en todas las alturas medidas**, con el
+  CTA dentro de la sección y entre 87 y 177px de sobra. La apertura entra en la
+  primera pantalla desde 600px; a 540px (un 1080p al 200%) sobra por 13px.
 
 ## Pendientes que esta feature deja abiertos
 
