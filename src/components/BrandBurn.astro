@@ -152,10 +152,6 @@
               ry="4"
             />
           </g>
-          <!-- El bisel: la luz del borde de arriba y la sombra del de abajo. Es lo
-               que hace que la tabla se lea como un volumen. -->
-          <path class="taco-bisel" d="M 24 8 L 976 8" />
-          <path class="taco-bisel-oscuro" d="M 24 330 L 976 330" />
         </g>
       </svg>
     </div>
@@ -421,22 +417,7 @@
     stroke-width: 1.4;
   }
 
-  /* El bisel: la luz del borde de arriba y la sombra del de abajo. Es lo que
-     hace que la tabla se lea como un volumen y no como una pegatina. */
-  .taco-bisel {
-    fill: none;
-    stroke: color-mix(in srgb, var(--lino) 70%, var(--color-green-dark));
-    stroke-width: 1.2;
-    stroke-linecap: round;
-    opacity: 0.55;
-  }
-  .taco-bisel-oscuro {
-    fill: none;
-    stroke: var(--color-green-dark);
-    stroke-width: 1.2;
-    stroke-linecap: round;
-    opacity: 0.5;
-  }
+
 
   /* Los tramos, con su curva cada uno:
      0 → 0.85s   abajo, a escala 1, esperando debajo del plato de tinta

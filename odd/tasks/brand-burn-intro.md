@@ -102,8 +102,7 @@ verde oscuro de la casa. Las sombras también son de la tinta (`color-mix` sobre
     longitudinal son diez trazos que corren paralelos al largo, los arcos de
     catedral cierran arriba y abajo de los nudos, dos nudos (uno chico a la
     izquierda, uno grande a la derecha con su anillo y su corazón) y tres vetas
-    oscuras. Un bisel sutil en el borde de arriba y el de abajo la hace leer como un
-    volumen. Sin corteza, sin mango, sin anillos, sin filtros.
+    oscuras. Sin corteza, sin mango, sin anillos, sin filtros.
 12. **El plato copia el contorno.** El script lee el `d` del `clipPath` y arma con él
     dos `clip-path: path()`: el que tapa la ventana (el contorno escalado sobre su
     propio centro hasta pasar los cuatro bordes) y el que cae sobre la madera. Entre
