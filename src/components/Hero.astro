@@ -1,5 +1,5 @@
 ---
-import { hero, heroProblems } from "../lib/content";
+import { hero, heroProblems, site } from "../lib/content";
 import Button from "./ui/Button.astro";
 import { garabatoDeTachado } from "../lib/pencil";
 
@@ -130,7 +130,7 @@ const tachados = heroProblems.map((_, i) =>
       </div>
 
       <div class="hero-final" data-final>
-        <span class="hero-final-brand">bottega</span>
+        <span class="hero-final-brand">{site.legalName}</span>
         <p class="hero-final-sub">{hero.subtitle}</p>
         <div class="hero-final-actions">
           <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
@@ -187,18 +187,25 @@ const tachados = heroProblems.map((_, i) =>
   .hero-pad {
     --pad-aire: clamp(1rem, 3svh, 2.25rem) clamp(1.25rem, 5vw, 2.25rem)
       clamp(1rem, 3svh, 2.25rem) clamp(1.75rem, 7vw, 3.25rem);
-    --cara-reverso: color-mix(in srgb, var(--color-cream-light) 84%, var(--color-cream-dark));
+    /* El papel de la carpeta. Un paso apenas mas claro que el fondo de la pagina
+       (`--color-cream`) y no el blanco crema del resto del sitio
+       (`--color-cream-light`): con el borde y la sombra corrida alcanza para que
+       se lea objeto, y asi la carpeta se lee papel y no una hoja blanca pegada
+       arriba. Medido en luminancia relativa: el fondo esta en 0.91 y el papel en
+       0.94, la mitad del salto que tenia el blanco crema (0.97). */
+    --papel: #f6f0e3;
+    --cara-reverso: color-mix(in srgb, var(--papel) 84%, var(--color-cream-dark));
     position: relative;
     width: 100%;
     max-width: 34rem;
     margin-inline: auto;
     padding: var(--pad-aire);
-    /* Papel apenas mas claro que el fondo, y el borde + la sombra corrida lo
-       despegan como objeto */
-    background: var(--color-cream-light);
+    /* Papel apenas mas claro que el fondo, y el borde lo despega como objeto. Sin
+       sombra a proposito: el sitio es plano y la unica pieza con sombra es el
+       anillado, que la lleva dibujada en el alambre. */
+    background: var(--papel);
     border: 1.5px solid var(--color-green);
     border-radius: 0.375rem;
-    box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09);
     text-align: left;
   }
 
@@ -257,7 +264,7 @@ const tachados = heroProblems.map((_, i) =>
 
   /* La esquina que ya no esta: se tapa con el papel del cuaderno de abajo */
   .hero-doblez-corte {
-    background: var(--color-cream-light);
+    background: var(--papel);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     border-top-right-radius: 0.375rem;
     z-index: 1;
@@ -279,9 +286,10 @@ const tachados = heroProblems.map((_, i) =>
   /* El rollo del pliegue: el papel curvado en la lomita que une la hoja plana con
      el reverso doblado. Es una banda de 24px centrada en la linea del doblez; el
      degradado es el sombreado del tubo (oscuro donde toca el papel, claro en la
-     cresta) y la sombra corrida hacia arriba cae sobre la hoja de abajo. Todo se
-     mueve con transform: el largo lo estira scaleX y la posicion la pone el
-     scroll. */
+     cresta) y todo se mueve con transform: el largo lo estira scaleX y la posicion
+     la pone el scroll. Sin `box-shadow`: la sombra corrida que tenia repintaba una
+     copia suave de la banda (se veia por duplicado, y como un fantasma
+     transparente sobre el papel). */
   .hero-curl {
     position: absolute;
     top: -1.5px;
@@ -293,11 +301,10 @@ const tachados = heroProblems.map((_, i) =>
       to bottom,
       rgba(14, 59, 51, 0.16) 0%,
       var(--cara-reverso) 16%,
-      #fdfaf1 42%,
+      color-mix(in srgb, var(--papel) 80%, white) 42%,
       var(--cara-reverso) 78%,
       rgba(14, 59, 51, 0.22) 100%
     );
-    box-shadow: 0 -7px 7px rgba(14, 59, 51, 0.24);
     opacity: 0;
     will-change: transform;
     pointer-events: none;
@@ -378,6 +385,9 @@ const tachados = heroProblems.map((_, i) =>
   }
 
   .hero-final {
+    /* El aire entre los CTA y el titulo con el subtitulo: se suma al `gap` de
+       arriba, asi que es lo unico que separa el bloque de texto de los botones. */
+    --aire-acciones: clamp(0.75rem, 2.5svh, 2rem);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -394,7 +404,11 @@ const tachados = heroProblems.map((_, i) =>
   .hero-final-brand {
     font-family: var(--font-wordmark);
     font-weight: 500;
-    font-size: clamp(2.2rem, 7svh, 4.5rem);
+    /* El alto manda en escritorio, pero en celular la que manda es el ancho: la
+       marca mide 5,9 veces su tamano de fuente, asi que sin el tope del `12.5vw`
+       a 390px de ancho se salia de la carpeta (medido: 373px de marca sobre 358px
+       utiles con el `7.5svh` solo). */
+    font-size: clamp(2.4rem, min(7.5svh, 12.5vw), 5rem);
     line-height: 1;
   }
 
@@ -410,6 +424,7 @@ const tachados = heroProblems.map((_, i) =>
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
+    margin-top: var(--aire-acciones);
   }
 
   @media (min-width: 30rem) {
@@ -468,17 +483,16 @@ const tachados = heroProblems.map((_, i) =>
     position: relative;
     z-index: 1;
     padding: var(--pad-aire);
-    background: var(--color-cream-light);
+    background: var(--papel);
     border: 1.5px solid var(--color-green);
     border-radius: 0.375rem;
-    box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09);
     /* El lomo es el borde izquierdo: de ahi cuelga la hoja cuando da vuelta la
        pagina, y ahi queda cuando pasa el canto. */
     transform-origin: left center;
     /* El papel no tiene reverso dibujado: cuando la hoja pasa el canto deja de
        verse, que es exactamente lo que hace una hoja de verdad. */
     backface-visibility: hidden;
-    will-change: transform, box-shadow;
+    will-change: transform;
   }
 
   /* La pagina de abajo: ya esta impresa y espera tapada. El fondo es opaco y del
@@ -489,7 +503,7 @@ const tachados = heroProblems.map((_, i) =>
     inset: 0;
     margin: 0;
     padding: var(--pad-aire);
-    background: var(--color-cream-light);
+    background: var(--papel);
   }
 
   /* El reverso de la hoja que gira. Va abajo de todo: cuando la hoja pasa el
@@ -516,7 +530,6 @@ const tachados = heroProblems.map((_, i) =>
     background:
       linear-gradient(196deg, rgba(14, 59, 51, 0.14) 0%, rgba(14, 59, 51, 0) 44%),
       var(--cara-reverso);
-    box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09);
   }
 
   /* Con JS el trazo se dibuja con el progreso del scroll: `pathLength="1"` deja

@@ -290,7 +290,7 @@ export const heroProblems: string[] = [
 
 export const hero = {
   title: "¿Todavía corrés tu negocio entre Excel, WhatsApp y papeles sueltos?",
-  subtitle: "El sistema que le devuelve a tu equipo lo que hoy se les va en planillas.",
+  subtitle: "Hacemos el sistema que le devuelve a tu equipo lo que hoy se les va en planillas.",
   highlights: ["le devuelve"],
   lead:
     "Diseñamos y desarrollamos sistemas de gestión, ventas y páginas web 100% a medida. Entendemos el problema completo de tu negocio antes de proponerte una solución.",
