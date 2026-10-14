@@ -275,6 +275,18 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     background-position: 0 0;
   }
 
+  /* En modo vivo la banda muere EN EL BORDE de abajo del papel, sobre la linea del
+     marco, y el aire de arriba lo pone el script cuantizado a la grilla de la
+     vuelta (26px) mas media vuelta: asi la primera vuelta queda entera, la ultima
+     se corta por la mitad justo contra el borde de la hoja y el alambre se lee
+     entrando atras del papel. Antes moria 8px antes del borde, en el medio del
+     papel, y con algunos altos de ventana la ultima vuelta salia entera. */
+  .hero-scroll.is-live .hero-anillado,
+  .hero-scroll.is-live .hero-anillado-costado {
+    top: var(--anillado-arriba, 8px);
+    bottom: 1.5px;
+  }
+
   .hero-scroll.is-live .hero-anillado-costado {
     z-index: -2;
   }
@@ -683,6 +695,16 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
   // ancho. Es del papel, no del tamano del doblez: no se escala con la esquina.
   const ROLLO_PX = 24;
 
+  // El paso de la vuelta del anillado y media vuelta: son el `background-size`
+  // de la imagen del alambre (una vuelta cada 26px) y lo que se ve de la ultima
+  // vuelta cuando el papel la corta. La banda tiene que medir un numero entero de
+  // vueltas MAS media, asi la primera queda entera y la ultima cortada justo
+  // contra el borde de abajo de la hoja.
+  const ANILLADO_PASO_PX = 26;
+  const ANILLADO_CORTE_PX = 13;
+  // La linea del marco: la banda muere sobre ella, no antes.
+  const ANILLADO_BORDE_PX = 1.5;
+
   let cleanup: (() => void) | undefined;
 
   const iniciar = () => {
@@ -695,6 +717,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
 
     const seccion = document.querySelector<HTMLElement>("[data-hero]");
     const escenario = seccion?.querySelector<HTMLElement>("[data-stage]");
+    const pad = seccion?.querySelector<HTMLElement>("[data-pad]");
     const hoja = seccion?.querySelector<HTMLElement>("[data-hoja]");
     const lista = seccion?.querySelector<HTMLElement>("[data-list]");
     const final = seccion?.querySelector<HTMLElement>("[data-final]");
@@ -706,6 +729,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     if (
       !seccion ||
       !escenario ||
+      !pad ||
       !hoja ||
       !lista ||
       !final ||
@@ -764,6 +788,23 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
       plan = armarPlan();
       // El ancho de la hoja sin transformar: es la medida del doblez
       anchoHoja = hoja.offsetWidth;
+      // El anillado: la banda muere en el borde de abajo del papel y el alto se
+      // cuantiza a la grilla de la vuelta mas media vuelta. Lo que sobra se va al
+      // aire de arriba, asi que la banda arranca mas arriba o mas abajo segun el
+      // alto de la ventana, pero la ultima vuelta siempre queda cortada por la
+      // mitad contra el borde de la hoja.
+      const altoPad = pad.getBoundingClientRect().height;
+      const vueltas = Math.max(
+        1,
+        Math.floor(
+          (altoPad - ANILLADO_BORDE_PX - ANILLADO_CORTE_PX) / ANILLADO_PASO_PX,
+        ),
+      );
+      const altoBanda = vueltas * ANILLADO_PASO_PX + ANILLADO_CORTE_PX;
+      seccion.style.setProperty(
+        "--anillado-arriba",
+        `${(altoPad - ANILLADO_BORDE_PX - altoBanda).toFixed(2)}px`,
+      );
       seccion.style.setProperty("--scroll-length", `${plan.scrollLength}px`);
       seccion.style.setProperty("--remate", `${plan.rematePx}px`);
       topSticky = parseFloat(getComputedStyle(escenario).top) || 0;

@@ -317,6 +317,19 @@ ahí la hoja no gira y no hay nada que la tape, y con un z-index negativo se ir�
 debajo del fondo de la sección, porque sin sticky el escenario no arma contexto de
 apilado.
 
+**Los dos extremos de la banda.** El paso de la vuelta son 26px (el
+`background-size` de la imagen) y en modo vivo la banda **muere sobre la línea
+del marco**, con el alto cuantizado a esa grilla más media vuelta
+(`26 * n + 13`). Así la **primera vuelta queda entera** y la **última queda
+cortada por la mitad justo contra el borde de abajo del papel**, que es lo que
+hace que el alambre se lea entrando atrás de la hoja. El aire que sobra se va
+arriba, así que la banda arranca más arriba o más abajo según el alto de la
+ventana (19,66px del borde de arriba a 1424x805, 24,75px a 390x844, con el corte
+—`alto mod 26`— en 13px en los dos). Antes la banda moría 8px antes del borde
+—en el medio del papel, no sobre él— y con algunos altos de ventana la última
+vuelta salía entera en vez de cortada. En el fallback la banda sigue de 8px a 8px
+del cuaderno: ahí la hoja no tiene un borde visible contra el que cortar.
+
 El marco del cuaderno lo dibuja `.hero-pad::after` (z-index 3), **por encima de
 todo**: así la hoja gira por debajo y el borde no se corta nunca, ni siquiera
 cuando el doblez se come la esquina de la hoja.
@@ -390,13 +403,19 @@ completos a los dos lados del canto).
 ## Verificación
 
 - **El resorte se guarda detrás de la hoja.** Contando el brillo del metal del
-alambre (R 55..115 con G-R ≥ 40, que es el tono claro del tubo) a la izquierda
-del canto en las capturas a 1440x900: **448px en reposo y en el tramo de
-adelante** (idénticos antes y después de partir la caja en dos), **0px pasado el
-canto** (-103°, -117°, -142° y -168°) contra 474/461/460/460 de la caja única, y
-**448px otra vez con la vuelta terminada**. Es decir: la mitad de afuera del
-anillado existe cuando la hoja no está encima y no existe desde el frente
-mientras la hoja está volcada del otro lado del lomo.
+  alambre (R 55..115 con G-R ≥ 40, que es el tono claro del tubo) a la izquierda
+  del canto en las capturas a 1440x900: **0px pasado el canto** (-103°, -117°,
+  -142° y -168°) contra 474/461/460/460 de la caja única, y **434px en reposo y
+  434px con la vuelta terminada** (con la banda vieja, 8px más larga, eran 448 y
+  448: la partición en dos cajas no mueve un píxel). Es decir: la mitad de afuera
+  del anillado existe cuando la hoja no está encima y no existe desde el frente
+  mientras la hoja está volcada del otro lado del lomo.
+- **El anillado corta en el borde de la hoja.** Medido del DOM en modo vivo: la
+  banda mide **351px** a 1424x805 (arranca a 19,66px del borde de arriba del papel
+  y muere a **1,5px** del de abajo, sobre la línea del marco) y **455px** a
+  390x844 (arranca a 24,75px), con el corte —`alto mod 26`— en **13px** en los
+  dos: media vuelta. En las capturas del lomo a escala 3 se ve la última vuelta
+  cortada por la mitad sobre la línea del marco y la primera entera.
 - **La partición del anillado no cambia el reposo.** Capturas del lomo a escala 3
   (330x420) contra la caja única de antes: **1 píxel distinto en 138.600** (delta
   1/255). En el cuadro completo (1020x600): **9 píxeles en 612.000**, todos en la
