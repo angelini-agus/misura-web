@@ -381,10 +381,12 @@ const tachados = heroProblems.map((_, i) =>
      recorrido. `is-live` la agrega el script solo si no hay movimiento reducido.
      --------------------------------------------------------------------------- */
   .hero-scroll.is-live {
-    /* El recorrido del scroll mas el alto del escenario: asi el sticky se
-       despega justo cuando el progreso llega a 1. Los 6440 son el plan de
-       escritorio con 8 items, que con JS se reemplaza por la medida real. */
-    height: calc(var(--scroll-length, 6440px) + 100svh - var(--hero-top));
+    /* El remate mas el recorrido del scroll mas el alto del escenario: asi el
+       sticky se despega justo cuando el progreso llega a 1 (y el remate son esos
+       ultimos pixeles con todo quieto y bottega a la vista). Los 6440 y los 480
+       son el plan de escritorio con 8 items, que con JS se reemplaza por la
+       medida real. */
+    height: calc(var(--remate, 480px) + var(--scroll-length, 6440px) + 100svh - var(--hero-top));
   }
 
   .hero-scroll.is-live .hero-stage {
@@ -392,6 +394,9 @@ const tachados = heroProblems.map((_, i) =>
     top: var(--hero-top);
     height: calc(100svh - var(--hero-top));
     padding-block: clamp(0.75rem, 2svh, 2rem);
+    /* El contenido arranca arriba y todo el aire del escenario queda abajo del
+       cuaderno: asi el cuaderno queda alto y el cuaderno tiene aire debajo. */
+    justify-content: flex-start;
     overflow: hidden;
   }
 
@@ -479,6 +484,10 @@ const tachados = heroProblems.map((_, i) =>
   const HOJA_PX = 640; // el paso de hoja: la hoja gira y da vuelta la pagina
   const BOTONES_DESDE_PX = 448; // el CTA llega encadenado al final del giro
   const BOTONES_PX = 220;
+  // El remate: cuando la animacion ya termino, la pagina se queda un rato mas con
+  // el cuaderno clavado arriba y bottega a la vista, antes de seguir bajando. No
+  // es un tramo de la animacion: el avance se queda en el tope y no pasa nada.
+  const REMATE_PX = 480;
   const ESCALA_MOBILE = 0.69;
 
   // El paso de hoja. El lomo es el borde izquierdo de la hoja y el giro es entero:
@@ -552,6 +561,7 @@ const tachados = heroProblems.map((_, i) =>
         botonesDesdePx: hojaInicioPx + px(BOTONES_DESDE_PX),
         botonesPx: px(BOTONES_PX),
         scrollLength: hojaInicioPx + px(BOTONES_DESDE_PX) + px(BOTONES_PX),
+        rematePx: px(REMATE_PX),
       };
     };
     let plan = armarPlan();
@@ -571,6 +581,7 @@ const tachados = heroProblems.map((_, i) =>
       // El ancho de la hoja sin transformar: es la medida del doblez
       anchoHoja = hoja.offsetWidth;
       seccion.style.setProperty("--scroll-length", `${plan.scrollLength}px`);
+      seccion.style.setProperty("--remate", `${plan.rematePx}px`);
       topSticky = parseFloat(getComputedStyle(escenario).top) || 0;
       ultimo = -1;
       regenerarTrazos();

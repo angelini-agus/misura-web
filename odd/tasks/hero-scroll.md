@@ -69,7 +69,16 @@ rueda.
 | pausa antes del paso de hoja | `PAUSA_FINAL_PX` | 104 | 72 |
 | paso de hoja | `HOJA_PX` | 640 | 442 |
 | botones | desde 448, dura `BOTONES_PX` | 220 | 152 |
-| **largo total** | la suma de los tramos | **6440** | **4441** |
+| **largo de la animación** | la suma de los tramos | **6440** | **4441** |
+| remate (queda clavado) | `REMATE_PX` | 480 | 331 |
+| **recorrido total de la sección** | animación + remate | **6920** | **4772** |
+
+El **remate** es el pedido "que scrollee un poco más después de que termina": la
+animación se queda en el tope (el avance se recorta contra el largo del plan, así
+que no pasa nada) y el cuaderno se queda clavado arriba con bottega y el CTA a la
+vista durante esos 480px antes de que la página siga bajando. No cuesta trabajo:
+el avance no cambia, así que `actualizar()` sale por la comparación de siempre y
+no toca el DOM.
 
 El paso de hoja no es un tramo más de la lista: es el **giro entero** de la
 página (`GIRO_GRADOS 180`) con `PERSPECTIVA_PX 1600` y el doblez de la punta de
@@ -102,6 +111,7 @@ por debajo del dedo.
 | pausa | 5668 – 5772 | 3908 – 3980 | todo quieto, la lista completa y tachada |
 | paso de hoja | 5772 – 6412 | 3980 – 4422 | la hoja se levanta del lomo, se dobla en la punta de arriba a la derecha, pasa el canto y se va del otro lado. Del otro lado ya está bottega impreso, así que se revela solo |
 | botones | 6220 – 6440 | 4289 – 4441 | el CTA llega encadenado al final del giro (opacity, blur y 10px de asentamiento) |
+| remate | 6440 – 6920 | 4441 – 4772 | todo quieto: el cuaderno clavado arriba con bottega y el CTA, antes de que la página siga |
 
 **El giro va de 0 a 180 grados y la hoja no se funde.** Hasta los 90 grados se ve
 la cara de la hoja (la lista tachada) creciendo hacia el lector por la
@@ -114,10 +124,12 @@ el relevo es geométrico.
 (escritorio) y 3600px (mobile) con los trazos pisados: cada garabato tenía 416px
 y ocho garabatos entraban en 1612px. Ahora cada uno sigue teniendo sus 416px,
 pero al no pisarse ocupan 3328px. El paso de hoja reemplazó al barrido de goma y
-a la entrada de la marca (468 + 312 = 780px) por 640px, así que el recorrido
-quedó en **6440px (escritorio) y 4441px (mobile)**: un 23% más largo que el hero
-original, y 476px más corto que la versión con goma. Ningún tramo se acortó: lo
-que creció es el largo del hero, y ese fue el pedido ("si el de abajo tiene que
+a la entrada de la marca (468 + 312 = 780px) por 640px, así que la animación
+quedó en **6440px (escritorio) y 4441px (mobile)**; con el remate de 480px, el
+recorrido de la sección es **6920px (escritorio) y 4772px (mobile)**: un tercio
+más largo que el hero original (que tenía 5200) y casi igual al de la versión con
+goma. Ningún tramo se acortó: lo que creció es el largo del hero, y ese fue el
+pedido ("si el de abajo tiene que
 esperar al de arriba tarda más sí o sí").
 
 ## Los trazos
@@ -205,6 +217,15 @@ En el fallback (sin JS) no hay capas: la hoja es un bloque más, la página de
 abajo cae debajo con el aire de la mesa en el medio, y el cuaderno mide lo que
 miden los dos juntos (687px a 1440x900 contra 423px en modo vivo).
 
+**El cuaderno va arriba del escenario, no centrado.** En modo vivo el escenario
+lleva `justify-content: flex-start`: el H1 pegado al header (a 131px con el
+header en 113) y el cuaderno justo abajo, con **todo el aire del escenario
+abajo** (218px a 1440x900, 316px a 1080), que es como lo pidió el autor ("que el
+cuaderno quede más alto durante la animación"). Antes quedaba centrado: el
+cuaderno arrancaba a 359px y el aire se repartía entre arriba y abajo. Esa
+diferencia es también la que hace que el cuaderno entre entero en ventanas bajas:
+el recorte, si lo hay, es solo del lado de abajo.
+
 ### El doblez
 
 El cuadrado de la esquina se parte en dos mitades con la misma diagonal de 45
@@ -263,6 +284,20 @@ opacidad 1, que no los toca ningún JS) y el anillado presente igual
   5700px los ocho están cerrados y la lista sigue a opacidad plena. Idéntico en
   mobile. Capturas en `%TEMP%/hero-shot/` (tira por posición en
   `tira-1440x900.png`, muestras en `shots/`).
+- **El remate.** Con el recorrido total en el tope (6440px), los últimos 480px de
+  scroll de la sección no mueven nada: medido a 1440x900 en +0, +200, +400 y
+  +480px después del tope, el escenario sigue clavado en 113..900, el cuaderno en
+  los mismos 259..682 y el CTA en opacidad 1. A +500px el escenario ya arranca a
+  despegarse (93..880), así que el remate son exactamente los 480 declarados.
+- **El cuaderno queda arriba.** A 1440x900 el cuaderno mide 259..682 (antes
+  359..782) con 218px de aire abajo, y el H1 131..237 pegado al header. El mismo
+  reparto en todo el recorrido (medido en 0, 2000 y 6440px).
+- **Piso de ventana** (ancho 1440, cuaderno al tope del recorrido): entra entero
+  desde 1080 hasta **500px de alto**, con el aire de abajo bajando de 316px a
+  19px. A 460px ya no entra: el cuaderno se corta 17px abajo (el escenario tiene
+  `overflow: hidden`), y no se arregla recortando aire porque a esa altura el
+  cuaderno ya está en el mínimo de su contenido. Por debajo de 500px de ventana
+  el hero muestra el cuaderno cortado abajo.
 - **El paso de hoja.** Medido a 1440x900 y 390x844, con el giro y el doblez
   leídos del DOM: `rotateY` va de 0 a -180 grados con la curva suave (en
   escritorio -9,8° a 5828px, -44,2° a 5957, -87,9° a 6086, -132° a 6215, -180° a
