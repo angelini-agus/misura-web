@@ -213,8 +213,15 @@ const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     border-bottom: 1px solid var(--color-cream);
     pointer-events: auto;
     cursor: pointer;
-    /* Solo transform: el script escribe la posición del scroll en cada frame. */
+    /* Solo transform: el script escribe la posición del scroll en cada frame.
+       El estirón baja desde la boca de la pieza (que es la que lee la cinta),
+       así que el origen va en el borde de arriba: el borde de la cinta sigue
+       clavado ahí mientras la caja se estira. La caja ya queda promovida por el
+       propio `translate3d`; el `will-change` lo declara para que el navegador no
+       tenga que decidirlo en el primer cuadro. */
     transform: translate3d(0, 7px, 0);
+    transform-origin: top;
+    will-change: transform;
   }
 
   #scroll-tape-mouth {
@@ -343,20 +350,116 @@ const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     let markTravel = 0;
     let frame = 0;
 
-    // Pinta la caja (desktop) o la marca (mobile). SOLO transform y clip-path:
-    // nada de alto ni top, y sin leer layout adentro del frame (las métricas ya
-    // están cacheadas).
-    const pintar = () => {
+    /* --- inercia de la pieza (solo desktop, solo scroll) ---
+
+       El scroll de la página NO se toca: sigue siendo el nativo, instantáneo, sin
+       `scroll-behavior: smooth` ni nada que lo amortigüe. Lo único que persigue es
+       la pieza: el objetivo es dónde tendría que estar por el scroll, y la
+       posición pintada lo persigue cuadro a cuadro con un lerp. La cinta se
+       recorta contra esa posición pintada y no contra el scroll: la boca de la
+       caja y el borde de la cinta son la misma pieza y no se pueden despegar (con
+       el clip 1:1 la tira asomaría por debajo de la caja durante todo el
+       recorrido).
+
+       `AMORTIGUACION` es el factor por cuadro a 60fps (el pedido: 0,12 a 0,18) y
+       más abajo se convierte a factor por tiempo, así que a 120Hz se siente
+       igual. */
+    const AMORTIGUACION = 0.15;
+    /* Atraso máximo de la pieza respecto del scroll, en px. El lerp solo no
+       alcanza: en estado estacionario la pieza se queda atrás `velocidad *
+       (1-f)/f`, o sea ~90px a 16px por cuadro, y el nonio es un instrumento de
+       medición: no puede leer 12% corrido mientras se scrollea rápido. Con el
+       tope la pieza entra y sale suave, que es la sensación pedida, pero después
+       viaja pegada con un atraso fijo y chico. */
+    const TOPE_DE_ATRASO = 40;
+    /* Estirón: 5% de escala vertical como máximo, y se alcanza a los 14px de
+       recorrido por cuadro (~830px/s). Es la velocidad de la PIEZA y no la del
+       scroll: cuando el scroll frena de golpe la pieza sigue viajando y tiene que
+       seguir estirada hasta asentarse. `transform-origin: top` en el CSS deja la
+       boca quieta: el estirón baja, y el borde de la cinta sigue clavado ahí. */
+    const ESTIRON_MAX = 0.05;
+    const ESTIRON_VEL = 14;
+    /* Diferencia por debajo de la cual la pieza ya está en su lugar. El loop se
+       apaga ahí: en reposo no queda ningún requestAnimationFrame vivo. */
+    const EPSILON = 0.1;
+
+    let yActual = 0;
+    let yPrevio = 0;
+    let bucle = 0;
+    let ultimoCuadro = 0;
+
+    // Dónde pide el scroll que esté la pieza, sin amortiguar.
+    const posicionObjetivo = () => {
+      if (maxY === 0) return 0;
+      const p = Math.min(1, Math.max(0, window.scrollY / maxY));
+      return p * travel;
+    };
+
+    // La caja y la cinta, juntas: la caja viaja (su boca es la lectura) y la
+    // cinta se descubre hasta esa boca. SOLO transform y clip-path: nada de alto
+    // ni top, y sin leer layout adentro del cuadro.
+    const pintarPieza = (y: number, estiron: number) => {
+      const traslado = `translate3d(0, ${(tipH + y).toFixed(2)}px, 0)`;
+      box.style.transform =
+        estiron === 1 ? traslado : `${traslado} scaleY(${estiron.toFixed(4)})`;
+      tape.style.clipPath = `inset(0 0 ${(travel - y).toFixed(2)}px 0)`;
+    };
+
+    // La marca de mobile sigue 1:1: en touch el scroll ya trae la inercia del
+    // sistema, y una pieza de 2x12px persiguiendo al dedo se lee floja, no suave.
+    const pintarMarca = () => {
+      if (!mark) return;
       const p = maxY === 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / maxY));
-      if (medio.matches) {
-        const y = p * travel;
-        // La caja viaja: su boca (el borde de arriba) es la lectura.
-        box.style.transform = `translate3d(0, ${(tipH + y).toFixed(2)}px, 0)`;
-        // Y la cinta se descubre hasta esa boca: la tira no se mueve.
-        tape.style.clipPath = `inset(0 0 ${(travel - y).toFixed(2)}px 0)`;
-      } else if (mark) {
-        mark.style.transform = `translate3d(0, ${(p * markTravel).toFixed(2)}px, 0)`;
+      mark.style.transform = `translate3d(0, ${(p * markTravel).toFixed(2)}px, 0)`;
+    };
+
+    // Un cuadro del amortiguado.
+    const pasoDeInercia = () => {
+      bucle = 0;
+      const ahora = performance.now();
+      // Factor por tiempo y no por cuadro: con 0.15 fijo por cuadro, a 120Hz la
+      // pieza llegaría al doble de velocidad y la sensación cambiaría con el
+      // monitor. 16.7ms es el cuadro de 60fps y es la referencia del pedido.
+      const dt = ultimoCuadro ? Math.min(64, ahora - ultimoCuadro) : 16.7;
+      ultimoCuadro = ahora;
+      const k = 1 - Math.pow(1 - AMORTIGUACION, dt / (1000 / 60));
+
+      let dif = posicionObjetivo() - yActual;
+      if (Math.abs(dif) > TOPE_DE_ATRASO) {
+        yActual += dif - Math.sign(dif) * TOPE_DE_ATRASO;
+        dif = Math.sign(dif) * TOPE_DE_ATRASO;
       }
+
+      if (Math.abs(dif) < EPSILON) {
+        // Llegó: se planta exacto, vuelve a su alto normal y el loop se apaga.
+        yActual = posicionObjetivo();
+        yPrevio = yActual;
+        pintarPieza(yActual, 1);
+        return;
+      }
+
+      yActual += dif * k;
+      const velocidad = Math.abs(yActual - yPrevio);
+      yPrevio = yActual;
+      pintarPieza(yActual, 1 + Math.min(1, velocidad / ESTIRON_VEL) * ESTIRON_MAX);
+      // El remache gira mientras la pieza se mueve, no solo mientras llegan
+      // eventos de scroll: el asentamiento también cuenta.
+      avisarGiro();
+      bucle = window.requestAnimationFrame(pasoDeInercia);
+    };
+
+    // Camino sin inercia: mobile, movimiento reducido y arrastre con el puntero.
+    // Pinta la posición exacta del scroll, agrupado en un cuadro.
+    const pintarYa = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        yActual = posicionObjetivo();
+        yPrevio = yActual;
+        if (medio.matches) pintarPieza(yActual, 1);
+        else pintarMarca();
+        avisarGiro();
+      });
     };
 
     // Mide el contenido. Se llama en carga, resize, cambio de media query, cambio
@@ -385,7 +488,19 @@ const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
       });
 
       markTravel = Math.max(0, viewH - MARK_H);
-      pintar();
+
+      // Al medir, la pieza se planta donde pide el scroll: un cambio de alto del
+      // documento no puede dejar la pieza animando desde donde estaba, y el
+      // recorrido nuevo ya no es el viejo.
+      if (bucle) {
+        window.cancelAnimationFrame(bucle);
+        bucle = 0;
+      }
+      ultimoCuadro = 0;
+      yActual = posicionObjetivo();
+      yPrevio = yActual;
+      if (medio.matches) pintarPieza(yActual, 1);
+      else pintarMarca();
     };
 
     // El remache gira también con la rueda, no solo con el arrastre: la clase
@@ -406,12 +521,22 @@ const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     };
 
     const alScrollear = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        pintar();
-        avisarGiro();
-      });
+      // Sin inercia: en mobile (donde la pieza es la marca de 2x12px y el scroll ya
+      // trae la inercia del sistema), con movimiento reducido y con el puntero
+      // apretado, que es el contrato del riel: la caja sigue al dedo 1:1, sin
+      // atraso ni estirón.
+      if (!medio.matches || reducir() || arrastrando) {
+        if (bucle) {
+          window.cancelAnimationFrame(bucle);
+          bucle = 0;
+        }
+        pintarYa();
+        return;
+      }
+      if (!bucle) {
+        ultimoCuadro = 0;
+        bucle = window.requestAnimationFrame(pasoDeInercia);
+      }
     };
 
     const alRedimensionar = () => {
@@ -548,7 +673,9 @@ const PASOS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
       box.classList.remove("is-settling");
       observador.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
+      if (bucle) window.cancelAnimationFrame(bucle);
       frame = 0;
+      bucle = 0;
     };
 
     marcarSuperficie();
