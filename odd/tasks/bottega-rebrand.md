@@ -39,8 +39,14 @@ wordmark vectorial y pasa a ser texto, la apertura de marca se muda de
    wordmark (que ahora se ve al entrar al sitio).
 8. **El email de contacto NO cambia**: sigue `contacto@misure.dev`, que hoy
    funciona. `bottegadev.com` todavía no está comprado.
+   *Actualizado después (13-10):* la casilla nueva existe, así que el email pasa
+   a `contacto@bottegadevs.com` y el dominio del sitio a `bottegadevs.com`. El
+   detalle está en `odd/tasks/marca-bottegadevs.md`; esta decisión queda como
+   estaba el día del rebrand.
 9. **Los links sociales NO cambian**: el footer sigue apuntando a
    `linkedin.com/company/misure` e `instagram.com/misure.dev`.
+   *Actualizado después (13-10):* los dos pasan a `bottegadevs`
+   (`odd/tasks/marca-bottegadevs.md`).
 10. **El repositorio y la carpeta local NO cambian**: sigue `misura-web` en
     GitHub y `C:/Programacion/misura-web` en disco. `upstream` es el fork de
     Franco (`francocus/misure-web`).

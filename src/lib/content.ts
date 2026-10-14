@@ -51,14 +51,14 @@ export const cleanAnswer = (value: string) =>
 
 export const site = {
   name: "bottega",
-  legalName: "Bottega Dev",
-  url: "https://bottegadev.com",
+  legalName: "BottegaDevs",
+  url: "https://bottegadevs.com",
   announcement:
     "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
-  metaTitle: "Bottega Dev | Software a medida para pymes de Rosario y alrededores",
+  metaTitle: "BottegaDevs | Software a medida para pymes de Rosario y alrededores",
   metaDescription:
-    "Bottega Dev desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
+    "BottegaDevs desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para pequeñas y medianas empresas de Argentina.",
 };
 
@@ -84,19 +84,19 @@ export const headerCta: Cta = {
 export const pages = {
   home: { title: site.metaTitle, description: site.metaDescription },
   nosotros: {
-    title: "Nosotros | Bottega Dev",
+    title: "Nosotros | BottegaDevs",
     description:
-      "Conocé al equipo detrás de Bottega Dev: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario y alrededores.",
+      "Conocé al equipo detrás de BottegaDevs: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario y alrededores.",
     h1: "Nosotros",
   },
   proyectos: {
-    title: "Proyectos | Bottega Dev",
+    title: "Proyectos | BottegaDevs",
     description:
-      "Casos de éxito de Bottega Dev: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario. Resultados reales, no promesas.",
+      "Casos de éxito de BottegaDevs: sistemas de gestión, ventas y páginas web a medida para pymes de Rosario. Resultados reales, no promesas.",
     h1: "Proyectos",
   },
   contacto: {
-    title: "Contacto | Bottega Dev",
+    title: "Contacto | BottegaDevs",
     description:
       "Contanos en qué etapa está tu negocio y te mostramos cómo un sistema a medida puede resolver tu problema. Prototipo gratis, sin compromiso.",
     h1: "Hablemos",
@@ -106,9 +106,9 @@ export const pages = {
 };
 
 export const privacy = {
-  title: "Privacidad | Bottega Dev",
+  title: "Privacidad | BottegaDevs",
   description:
-    "Cómo trata Bottega Dev los datos que dejás en el formulario de contacto: para qué se usan, quién los procesa y cómo pedir su eliminación.",
+    "Cómo trata BottegaDevs los datos que dejás en el formulario de contacto: para qué se usan, quién los procesa y cómo pedir su eliminación.",
   eyebrow: "Legal",
   h1: "Privacidad",
   intro: "Qué hacemos con los datos que nos dejás y qué no hacemos nunca.",
@@ -132,7 +132,7 @@ export const privacy = {
       title: "Con quién se comparten",
       body: [
         "No vendemos, alquilamos ni cedemos tus datos a terceros.",
-        "El formulario se envía a través de Web3Forms, el proveedor que recibe el mensaje y lo reenvía a nuestro correo (contacto@misure.dev). Es el único tercero que interviene, y lo hace solo como intermediario técnico para que el mensaje llegue. Su infraestructura puede estar fuera de Argentina.",
+        "El formulario se envía a través de Web3Forms, el proveedor que recibe el mensaje y lo reenvía a nuestro correo (contacto@bottegadevs.com). Es el único tercero que interviene, y lo hace solo como intermediario técnico para que el mensaje llegue. Su infraestructura puede estar fuera de Argentina.",
       ],
     },
     {
@@ -145,7 +145,7 @@ export const privacy = {
     {
       title: "Qué podés pedirnos",
       body: [
-        "Podés pedirnos acceso, corrección o eliminación de tus datos escribiendo a contacto@misure.dev. Te respondemos en menos de 24 horas hábiles.",
+        "Podés pedirnos acceso, corrección o eliminación de tus datos escribiendo a contacto@bottegadevs.com. Te respondemos en menos de 24 horas hábiles.",
         "En Argentina el tratamiento de datos personales está regulado por la Ley 25.326, y la autoridad de aplicación es la Agencia de Acceso a la Información Pública (AAIP).",
       ],
     },
@@ -667,7 +667,7 @@ export const contact: ContactInfo = {
   title: "Contanos tu caso.",
   description:
     "Dejanos tus datos y coordinamos una charla de 20 minutos para entender tu negocio.",
-  email: "contacto@misure.dev",
+  email: "contacto@bottegadevs.com",
   locationItems: [
     { label: "UBICACIÓN", value: "Rosario, Santa Fe" },
     {
@@ -679,13 +679,13 @@ export const contact: ContactInfo = {
   socials: [
     {
       label: "LinkedIn",
-      url: "https://www.linkedin.com/company/misure",
-      displayLabel: "misure",
+      url: "https://www.linkedin.com/company/bottegadevs",
+      displayLabel: "bottegadevs",
     },
     {
       label: "Instagram",
-      url: "https://www.instagram.com/misure.dev",
-      displayLabel: "misure.dev",
+      url: "https://www.instagram.com/bottegadevs",
+      displayLabel: "bottegadevs",
     },
   ],
 };
@@ -769,7 +769,7 @@ export const caseStudies: {
     slug: "empresa-limpieza-rosario",
     seo: {
       title:
-        "Sistema de gestión para empresa de limpieza en Rosario | Bottega Dev",
+        "Sistema de gestión para empresa de limpieza en Rosario | BottegaDevs",
       description:
         "Eliminamos un puesto administrativo completo y bajamos las quejas por inasistencias a 0, con un sistema de geolocalización y sueldos automáticos.",
     },
@@ -877,7 +877,7 @@ export const caseStudies: {
   leadscrm: {
     slug: "crm-concesionaria-rosario",
     seo: {
-      title: "CRM de leads para concesionaria en Rosario | Bottega Dev",
+      title: "CRM de leads para concesionaria en Rosario | BottegaDevs",
       description:
         "CRM a medida para una concesionaria de autos de Rosario: centraliza los leads de WhatsApp, Instagram, Facebook y Mercado Libre, con filtros por marca/modelo, cliente y teléfono y asignación a asesores. Reemplaza la planilla de Excel manual.",
     },
@@ -1007,7 +1007,7 @@ export const caseStudies: {
   legal: {
     slug: "gestion-legal-estudio",
     seo: {
-      title: "Sistema de gestión jurídica integral | Bottega Dev",
+      title: "Sistema de gestión jurídica integral | BottegaDevs",
       description:
         "Plataforma integral para administrar un estudio jurídico con jurisdicción en Argentina y Paraguay: clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y biblioteca jurídica con verificación de fuentes oficiales asistida por IA.",
     },
@@ -1123,7 +1123,7 @@ export const caseStudies: {
     slug: "landing-empresa-limpieza",
     seo: {
       title:
-        "Landing page para empresa de limpieza en Rosario | Bottega Dev",
+        "Landing page para empresa de limpieza en Rosario | BottegaDevs",
       description:
         "Diseñamos y desarrollamos el sitio oficial de una empresa de limpieza de Rosario: propuesta de valor clara, captación de consultas calificada e integración con su ERP interno.",
     },
@@ -1241,7 +1241,7 @@ export const caseStudies: {
   pediatricLanding: {
     slug: "landing-clinica-pediatrica",
     seo: {
-      title: "Página web para clínica pediátrica | Bottega Dev",
+      title: "Página web para clínica pediátrica | BottegaDevs",
       description:
         "Sitio público de una clínica pediátrica: la trayectoria de la profesional, las etapas del cuidado, los testimonios de las familias y el turno como cierre, con el contenido renderizado en el servidor.",
     },
@@ -1359,7 +1359,7 @@ export const caseStudies: {
   pediatricErp: {
     slug: "sistema-clinica-pediatrica",
     seo: {
-      title: "Sistema de gestión clínica pediátrica | Bottega Dev",
+      title: "Sistema de gestión clínica pediátrica | BottegaDevs",
       description:
         "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica trazable conforme a la Ley 26.529, turnos que se confirman en una cola, recetas en PDF y accesos por rol.",
     },

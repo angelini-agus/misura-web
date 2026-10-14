@@ -27,7 +27,7 @@ const {
 // Canonical and og:url derive from Astro.site (set in astro.config.mjs) plus the
 // current path; site.url is the fallback origin.
 const siteOrigin = Astro.site ?? new URL(site.url);
-// The generated sitemap uses trailing-slash URLs (e.g. https://bottegadev.com/privacidad/),
+// The generated sitemap uses trailing-slash URLs (e.g. https://bottegadevs.com/privacidad/),
 // so the canonical follows that convention.
 const pathname = Astro.url.pathname.endsWith("/")
   ? Astro.url.pathname
@@ -46,7 +46,7 @@ const organizationSchema = {
   address: {
     "@type": "PostalAddress",
     // The site states Rosario, Santa Fe. telephone and streetAddress can be
-    // added once Bottega Dev has real values for them.
+    // added once BottegaDevs has real values for them.
     addressLocality: "Rosario",
     addressRegion: "Santa Fe",
   },

@@ -1,4 +1,4 @@
-# Bottega Dev — Web
+# BottegaDevs: web institucional
 
 Sitio institucional multipágina (MPA) para **bottega**, desarrollado con
 **Astro + TypeScript + Tailwind CSS v4**.

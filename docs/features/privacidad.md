@@ -29,7 +29,7 @@ formulario y desde la fila legal del footer.
    `https://api.web3forms.com/submit`, así que Web3Forms es el único tercero
    que interviene en el envío. Omitirlo en la política habría sido una promesa
    falsa: los datos sí pasan por un intermediario técnico antes de llegar a
-   contacto@misure.dev.
+   contacto@bottegadevs.com.
 
 ## Huecos conocidos
 - **Logs del hosting**: la política no cubre los registros de acceso del

@@ -2,7 +2,7 @@
 
 ## Objetivo
 Que el submit del formulario de contacto (`ContactForm.astro`) envíe un mail
-real a contacto@misure.dev. El envío se hace desde el cliente con `fetch` y
+real a contacto@bottegadevs.com. El envío se hace desde el cliente con `fetch` y
 `new FormData(form)` (multipart) al endpoint de Web3Forms.
 
 ## Contexto / restricciones
@@ -69,13 +69,13 @@ backend propio.
 
 ## Paso manual pendiente
 Ninguno. La cuenta de **web3forms.com** ya existe con destino de mail
-**contacto@misure.dev** y el Access Key está cargado en
+**contacto@bottegadevs.com** y el Access Key está cargado en
 `contactForm.web3forms.accessKey` en `src/lib/content.ts`.
 
 ## Verificación
 - `npm run build` sin errores.
 - Probar el form en `/contacto` y en el bloque de contacto de la home:
-  completar y enviar → debe llegar el mail a contacto@misure.dev. Si el envío
+  completar y enviar → debe llegar el mail a contacto@bottegadevs.com. Si el envío
   falla, se mostrará `formError` sin resetear el form.
 - Verificado en un build de Chromium servido con `astro preview`: tras un
   `pageshow` simulado de bfcache el formulario vuelve al paso 1 conservando lo

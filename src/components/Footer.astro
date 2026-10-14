@@ -89,7 +89,7 @@ const year = new Date().getFullYear();
       class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-green pt-4 text-xs text-green/75 sm:flex-row"
     >
       <p>
-        © {year} <BrandWord text={site.legalName} />. {footer.legal}.
+        © {year} <strong class="font-bold">{site.legalName}</strong>. {footer.legal}.
       </p>
       <ShareButton />
       {/* Mismo hover que el botón Compartir de al lado: el color pasa a opaco y

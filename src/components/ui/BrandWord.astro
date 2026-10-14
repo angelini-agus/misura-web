@@ -16,7 +16,7 @@ const { text, word = site.name } = Astro.props;
   text.split(new RegExp(`(${word})`, "gi")).map((part) =>
     part.toLowerCase() === word.toLowerCase() ? (
       // `part` y no `word`: el texto original puede venir capitalizado (el
-      // copyright dice "Bottega Dev") y hay que devolver esa grafia, no la del
+      // copyright dice "BottegaDevs") y hay que devolver esa grafia, no la del
       // literal buscado.
       <strong class="normal-case font-bold">{part}</strong>
     ) : (

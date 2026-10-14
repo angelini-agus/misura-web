@@ -1,10 +1,10 @@
-# Bottega Dev
+# BottegaDevs
 
 Software para PYMEs y empresas.
 
-## Qué hace Bottega Dev
+## Qué hace BottegaDevs
 
-Bottega Dev diseña y desarrolla software para PYMEs y empresas: ERP, CRM y landing pages. El objetivo es ordenar la operación interna de cada empresa y hacer crecer el negocio con datos reales.
+BottegaDevs diseña y desarrolla software para PYMEs y empresas: ERP, CRM y landing pages. El objetivo es ordenar la operación interna de cada empresa y hacer crecer el negocio con datos reales.
 
 ## Servicios
 
@@ -21,13 +21,13 @@ PYMEs y empresas. Hoy el foco está en PYMEs de comercio y servicios. [PENDIENTE
 ## Estructura del sitio
 
 - `/` (Inicio) — Hero, servicios (ERP, CRM, landing), menciones de clientes, diferenciales, preguntas frecuentes y CTAs.
-- `/nosotros` — Personas detrás de Bottega Dev. [PENDIENTE: integrantes reales]
+- `/nosotros` — Personas detrás de BottegaDevs. [PENDIENTE: integrantes reales]
 - `/proyectos` — Casos de éxito en una grilla, cada uno con cliente, proyecto, descripción y las tecnologías usadas. [PENDIENTE: casos reales]
 - `/contacto` — Formulario de contacto asíncrono y datos de la empresa.
 - `/privacidad` — Política de privacidad: qué datos se piden en el formulario, para qué se usan, quién los procesa y cómo pedir la baja.
 
 ## Contacto
 
-- Email: contacto@misure.dev
+- Email: contacto@bottegadevs.com
 - WhatsApp: [PENDIENTE: número de WhatsApp]
-- Web: https://bottegadev.com
+- Web: https://bottegadevs.com
