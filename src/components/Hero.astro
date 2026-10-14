@@ -481,12 +481,15 @@ const tachados = heroProblems.map((_, i) =>
     will-change: transform, box-shadow;
   }
 
-  /* La pagina de abajo: ya esta impresa y espera tapada */
+  /* La pagina de abajo: ya esta impresa y espera tapada. El fondo es opaco y del
+     mismo tono que el papel del cuaderno (el que ya se veia), y es lo que tapa la
+     hoja cuando termina de dar la vuelta y se guarda detras. */
   .hero-scroll.is-live .hero-final {
     position: absolute;
     inset: 0;
     margin: 0;
     padding: var(--pad-aire);
+    background: var(--color-cream-light);
   }
 
   /* El reverso de la hoja que gira. Va abajo de todo: cuando la hoja pasa el
@@ -546,10 +549,10 @@ const tachados = heroProblems.map((_, i) =>
   // atras del otro, y recien con la lista completa el lapiz empieza a cruzar. Cada
   // garabato TERMINA antes de que arranque el siguiente, y por eso el paso del
   // tachado es igual a su duracion: de a uno por vez.
-  const ENTRADA_PX = 364; // lo que tarda en entrar cada item
-  const ENTRADA_PASO_PX = 260; // y cuando arranca el siguiente
+  const ENTRADA_PX = 300; // lo que tarda en entrar cada item
+  const ENTRADA_PASO_PX = 210; // y cuando arranca el siguiente
   const PAUSA_PX = 156; // la lista entera y limpia, quieta, antes del lapiz
-  const TACHADO_PX = 416; // lo que tarda el garabato de cada item
+  const TACHADO_PX = 300; // lo que tarda el garabato de cada item
   const TACHADO_PASO_PX = TACHADO_PX; // y cuando arranca el siguiente
   const PAUSA_FINAL_PX = 104; // todo tachado, quieto, antes del paso de hoja
   const HOJA_PX = 640; // el paso de hoja: la hoja gira y da vuelta la pagina
@@ -567,6 +570,13 @@ const tachados = heroProblems.map((_, i) =>
   // transicion de hoja del sitio.
   const PERSPECTIVA_PX = 1600;
   const GIRO_GRADOS = 180;
+  // El tramo final de la vuelta. El giro de 180 deja la hoja espejada sobre el
+  // lomo, o sea tirada a la izquierda del cuaderno; para que termine DETRAS de la
+  // pagina impresa, en este tramo se corre su propio ancho en el espacio ya
+  // girado y aterriza justo encima de la pagina que ya esta. Como la hoja va con
+  // z-index -1 y el papel de abajo es opaco, se mete abajo y desaparece detras de
+  // ella: no se funde nada, la hoja se guarda.
+  const GUARDAR_DESDE = 0.68;
   // El doblez de la punta de arriba a la derecha: cuanto mide el cuadrado de la
   // esquina (fraccion del ancho de la hoja), donde llega a su punto mas alto, y el
   // lado de base con el que se escala (tiene que ser el mismo de la CSS).
@@ -764,16 +774,27 @@ const tachados = heroProblems.map((_, i) =>
 
       if (paso > 0) {
         const giro = suave(paso);
+        // El tramo de guardarse, de 0 a 1 al final de la vuelta. El eje X local ya
+        // apunta al reves despues del giro, asi que correr la hoja -ancho local la
+        // mueve +ancho en pantalla: deja de estar espejada a la izquierda y cae
+        // sobre la pagina de abajo.
+        const guardar = suave(tramo(giro, GUARDAR_DESDE, 1));
         const vuelta =
-          `perspective(${PERSPECTIVA_PX}px) rotateY(${(-GIRO_GRADOS * giro).toFixed(2)}deg)`;
+          `perspective(${PERSPECTIVA_PX}px) rotateY(${(-GIRO_GRADOS * giro).toFixed(2)}deg)` +
+          (guardar > 0
+            ? ` translateX(${(-anchoHoja * guardar).toFixed(2)}px)`
+            : "");
         hoja.style.transform = vuelta;
         reverso.style.transform = vuelta;
 
-        // La hoja va adelante hasta el canto y atras despues: ahi se mete abajo
-        // del cuaderno y la cara de atras es la que queda a la vista.
+        // La hoja va adelante hasta el canto y atras despues, ahi se mete abajo
+        // del cuaderno. La cara de atras se ve recien pasando el canto, asi que va
+        // adelante de la pagina impresa; cuando arranca el tramo de guardarse se
+        // va atras, y como el papel de abajo es opaco, la hoja va desapareciendo
+        // detras de el a medida que se corre.
         const adelante = giro < 0.5;
         hoja.style.zIndex = adelante ? "1" : "-1";
-        reverso.style.zIndex = adelante ? "-1" : "0";
+        reverso.style.zIndex = adelante || guardar > 0 ? "-1" : "1";
 
         // El doblez crece al agarrar la punta y se afloja antes del canto, asi la
         // hoja llega plana (y la cara de atras aparece) sin ningun salto.
@@ -783,8 +804,13 @@ const tachados = heroProblems.map((_, i) =>
         const tamano = `scale(${escala.toFixed(4)})`;
         doblezCorte.style.transform = tamano;
         doblezPapel.style.transform = tamano;
-        doblezCorte.style.opacity = "1";
-        doblezPapel.style.opacity = "1";
+        // El doblez vive solo mientras la hoja se levanta: pasado el pico se
+        // aplana (su escala llega a 0) y ahi se apaga del todo. No es cosmetico:
+        // el rollo aplastado a ancho 0 igual pintaba su sombra difusa, y esa
+        // mancha quedaba afuera del cuaderno cuando la hoja ya estaba guardada.
+        const vivoDoblez = paso < 2 * DOBLEZ_PICO ? "1" : "0";
+        doblezCorte.style.opacity = vivoDoblez;
+        doblezPapel.style.opacity = vivoDoblez;
 
         // El rollo: la banda centrada en la linea del doblez, del largo del
         // doblez y siempre de 24px de grosor (es el radio del papel).
@@ -792,7 +818,7 @@ const tachados = heroProblems.map((_, i) =>
         curl.style.transform =
           `translate(${(-ladoPx).toFixed(1)}px, 0) rotate(45deg) ` +
           `translateY(${-mitad}px) scaleX(${escala.toFixed(4)})`;
-        curl.style.opacity = "1";
+        curl.style.opacity = vivoDoblez;
       } else if (hoja.style.transform) {
         hoja.style.transform = "";
         hoja.style.zIndex = "";

@@ -61,17 +61,17 @@ rueda.
 
 | tramo | constante | px escritorio | px mobile |
 | --- | --- | --- | --- |
-| entrada de cada ítem | `ENTRADA_PX` | 364 | 251 |
-| paso de la entrada | `ENTRADA_PASO_PX` | 260 | 179 |
+| entrada de cada ítem | `ENTRADA_PX` | 300 | 207 |
+| paso de la entrada | `ENTRADA_PASO_PX` | 210 | 145 |
 | pausa antes del lápiz | `PAUSA_PX` | 156 | 108 |
-| garabato de cada ítem | `TACHADO_PX` | 416 | 287 |
-| paso del tachado | `TACHADO_PASO_PX` = `TACHADO_PX` | 416 | 287 |
+| garabato de cada ítem | `TACHADO_PX` | 300 | 207 |
+| paso del tachado | `TACHADO_PASO_PX` = `TACHADO_PX` | 300 | 207 |
 | pausa antes del paso de hoja | `PAUSA_FINAL_PX` | 104 | 72 |
 | paso de hoja | `HOJA_PX` | 640 | 442 |
 | botones | desde 448, dura `BOTONES_PX` | 220 | 152 |
-| **largo de la animación** | la suma de los tramos | **6440** | **4441** |
+| **largo de la animación** | la suma de los tramos | **5098** | **3519** |
 | remate (queda clavado) | `REMATE_PX` | 480 | 331 |
-| **recorrido total de la sección** | animación + remate | **6920** | **4772** |
+| **recorrido total de la sección** | animación + remate | **5578** | **3850** |
 
 El **remate** es el pedido "que scrollee un poco más después de que termina": la
 animación se queda en el tope (el avance se recorta contra el largo del plan, así
@@ -83,35 +83,37 @@ no toca el DOM.
 El paso de hoja no es un tramo más de la lista: es el **giro entero** de la
 página (`GIRO_GRADOS 180`) con `PERSPECTIVA_PX 1600` y el doblez de la punta de
 arriba a la derecha (`DOBLEZ_FRACCION 0.26` del ancho de la hoja, en su punto más
-alto a `DOBLEZ_PICO 0.28` del paso).
+alto a `DOBLEZ_PICO 0.22` del paso). El último tramo del giro es el de guardarse:
+desde `GUARDAR_DESDE 0.68` la hoja se corre su propio ancho (ver "El paso de
+hoja", más abajo).
 
 El paso del tachado es igual a su duración **a propósito**: es la definición de
 "de a uno por vez". No hay que corregirlo a un solape "lindo" entre vecinos.
 
 | # | problema | entra | se tacha |
 | --- | --- | --- | --- |
-| 1 | Planillas de Excel | 0 – 364 | 2340 – 2756 |
-| 2 | Carga de datos a mano | 260 – 624 | 2756 – 3172 |
-| 3 | Grupos de WhatsApp | 520 – 884 | 3172 – 3588 |
-| 4 | Datos sin comprobar | 780 – 1144 | 3588 – 4004 |
-| 5 | Horas sin control | 1040 – 1404 | 4004 – 4420 |
-| 6 | Papeles sueltos | 1300 – 1664 | 4420 – 4836 |
-| 7 | Sueldos calculados a mano | 1560 – 1924 | 4836 – 5252 |
-| 8 | Stock anotado en un cuaderno | 1820 – 2184 | 5252 – 5668 |
+| 1 | Planillas de Excel | 0 – 300 | 1926 – 2226 |
+| 2 | Carga de datos a mano | 210 – 510 | 2226 – 2526 |
+| 3 | Grupos de WhatsApp | 420 – 720 | 2526 – 2826 |
+| 4 | Datos sin comprobar | 630 – 930 | 2826 – 3126 |
+| 5 | Horas sin control | 840 – 1140 | 3126 – 3426 |
+| 6 | Papeles sueltos | 1050 – 1350 | 3426 – 3726 |
+| 7 | Sueldos calculados a mano | 1260 – 1560 | 3726 – 4026 |
+| 8 | Stock anotado en un cuaderno | 1470 – 1770 | 4026 – 4326 |
 
-En mobile los mismos números por 0,69 (ítem i entra en `179i` y se tacha en
-`1612 + 287i`), así que los dos entran y los dos se tachan con el mismo recorrido
+En mobile los mismos números por 0,69 (ítem i entra en `145i` y se tacha en
+`1330 + 207i`), así que los dos entran y los dos se tachan con el mismo recorrido
 por debajo del dedo.
 
 | fase | escritorio | mobile | qué hace |
 | --- | --- | --- | --- |
-| entrada | 0 – 2184 | 0 – 1504 | los 8 ítems entran uno atrás del otro, con 8px de desplazamiento y opacidad 0 a 1. Nada tachado, y los vecinos se pisan (dos entrando a la vez) |
-| pausa | 2184 – 2340 | 1504 – 1612 | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
-| tachado | 2340 – 5668 | 1612 – 3908 | 8 garabatos de 416px, **uno por vez**; cada ítem baja a 0,45 al cerrarse |
-| pausa | 5668 – 5772 | 3908 – 3980 | todo quieto, la lista completa y tachada |
-| paso de hoja | 5772 – 6412 | 3980 – 4422 | la hoja se levanta del lomo, se dobla en la punta de arriba a la derecha, pasa el canto y se va del otro lado. Del otro lado ya está bottega impreso, así que se revela solo |
-| botones | 6220 – 6440 | 4289 – 4441 | el CTA llega encadenado al final del giro (opacity, blur y 10px de asentamiento) |
-| remate | 6440 – 6920 | 4441 – 4772 | todo quieto: el cuaderno clavado arriba con bottega y el CTA, antes de que la página siga |
+| entrada | 0 – 1770 | 0 – 1222 | los 8 ítems entran uno atrás del otro, con 8px de desplazamiento y opacidad 0 a 1. Nada tachado, y los vecinos se pisan (dos entrando a la vez) |
+| pausa | 1770 – 1926 | 1222 – 1330 | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
+| tachado | 1926 – 4326 | 1330 – 2986 | 8 garabatos de 300px, **uno por vez**; cada ítem baja a 0,45 al cerrarse |
+| pausa | 4326 – 4430 | 2986 – 3058 | todo quieto, la lista completa y tachada |
+| paso de hoja | 4430 – 5070 | 3058 – 3500 | la hoja se levanta del lomo, se dobla en la punta de arriba a la derecha, pasa el canto y termina **guardándose detrás de la página impresa**. Del otro lado ya está bottega impreso, así que se revela solo |
+| botones | 4878 – 5098 | 3367 – 3519 | el CTA llega encadenado al final del giro (opacity, blur y 10px de asentamiento) |
+| remate | 5098 – 5578 | 3519 – 3850 | todo quieto: el cuaderno clavado arriba con bottega y el CTA, antes de que la página siga |
 
 **El giro va de 0 a 180 grados y la hoja no se funde.** Hasta los 90 grados se ve
 la cara de la hoja (la lista tachada) creciendo hacia el lector por la
@@ -120,17 +122,37 @@ perspectiva; en el canto queda una astilla de unos 30px y a partir de ahí
 verdad cuando ya está del otro lado. Por eso no hay ningún `opacity` en la hoja:
 el relevo es geométrico.
 
-**El hero se alargó con el tachado de a uno.** Antes el recorrido era 5200px
-(escritorio) y 3600px (mobile) con los trazos pisados: cada garabato tenía 416px
-y ocho garabatos entraban en 1612px. Ahora cada uno sigue teniendo sus 416px,
-pero al no pisarse ocupan 3328px. El paso de hoja reemplazó al barrido de goma y
-a la entrada de la marca (468 + 312 = 780px) por 640px, así que la animación
-quedó en **6440px (escritorio) y 4441px (mobile)**; con el remate de 480px, el
-recorrido de la sección es **6920px (escritorio) y 4772px (mobile)**: un tercio
-más largo que el hero original (que tenía 5200) y casi igual al de la versión con
-goma. Ningún tramo se acortó: lo que creció es el largo del hero, y ese fue el
-pedido ("si el de abajo tiene que
-esperar al de arriba tarda más sí o sí").
+**Y termina detrás de la página, no tirada a la izquierda.** El giro de 180 deja
+la hoja espejada sobre el lomo, o sea del lado izquierdo del cuaderno, que es
+donde quedaba antes y es lo que el usuario reportó el 14-10. Desde
+`GUARDAR_DESDE 0.68` del paso de hoja la hoja se corre **su propio ancho** en el
+espacio ya girado (el eje X local apunta al revés, así que `translateX(-ancho)` la
+mueve +ancho en pantalla): aterriza justo encima de la página impresa, que es
+opaca, y como la hoja va con `z-index: -1` va desapareciendo detrás de ella a
+medida que se corre. Medido al final del recorrido: giro -180°, corrimiento
+-544px (el ancho de la hoja), `z-index` -1 en la hoja y en la cara de atrás, y
+solamente el anillo, una cara y el CTA a la vista. La hoja se guarda, no se funde.
+
+La cara de atrás se ve apenas pasa el canto, así que va adelante de la página
+impresa (`z-index: 1`) hasta que arranca el tramo de guardarse; ahí se va atrás y
+la página la tapa. Y el doblez se apaga (`opacity: 0`) pasado su pico: aplastado a
+ancho 0 igual pintaba su sombra difusa, y esa mancha quedaba afuera del cuaderno
+con la hoja ya guardada.
+
+**El hero se acortó el 14-10, y esto revierte un pedido anterior.** El usuario
+pidió acelerar el tachado ("tarda mucho, es muy larga y hay que scrollear mucho")
+y la entrada de los ítems, así que `TACHADO_PX` bajó de 416 a **300** y
+`ENTRADA_PX` / `ENTRADA_PASO_PX` de 364/260 a **300/210**. Nada más se tocó: la
+pausa, el paso del tachado (que sigue siendo igual a su duración: de a uno por
+vez), el paso de hoja (640) y el remate (480) quedaron como estaban. La animación
+pasó de 6440px a **5098px** en escritorio y de 4441px a **3519px** en mobile:
+**21% menos de scroll**, 1342px en escritorio. Los números de arriba ya son los
+nuevos.
+
+Queda anotado que esto **contradice** el pedido del 13-10 ("no le bajes el tiempo
+de animación de borrado, y si el de abajo tiene que esperar al de arriba tarda
+más sí o sí"), que es lo que había llevado cada garabato a 416px. Manda el pedido
+nuevo: el tachado de a uno se mantiene, la duración no.
 
 ## Los trazos
 
