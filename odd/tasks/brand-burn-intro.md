@@ -27,15 +27,15 @@ del golpe y la textura de la tinta.
 | Pieza | Color |
 | --- | --- |
 | Lino | `#F2ECE1` (a tres puntos del crema del sitio: invisible en el relevo) |
-| Plato (la tinta) e impresión | `var(--color-green)` = **`#0E3B33`**, el verde de la marca |
-| Tabla (la cara del taco) | `color-mix` del verde de la marca con el lino al 80/20: un verde cálido y plano, sin veta ni nudos |
+| Plato, impresión y taco | `var(--color-green)` = **`#0E3B33`**, el verde de la marca: una sola tinta, la pieza no se aclara después del masazo |
 
-**Una sola tinta.** El plato que cubre la pantalla al arranque y la palabra impresa
-son el mismo verde. Es la decisión que ordena la escena: el plato aterriza sobre el
-contorno de la tabla sin que se vea una costura, el masazo no tiene que cambiar ningún
-color de tinta y el relevo conserva el verde del hero. La tabla es un escalón más
-clara (un verde cálido y plano), sin nudos ni vetas. Las sombras también son de la
-tinta (`color-mix` sobre `--tinta`): nunca grises.
+**Una sola tinta.** El plato que cubre la pantalla al arranque, la pieza y la
+palabra impresa son el mismo verde. Es la decisión que ordena la escena: el
+plato aterriza sobre el contorno de la pieza sin que se vea una costura, el
+masazo no tiene que cambiar ningún color de tinta y el relevo conserva el verde
+del hero. La pieza no se aclara después del masazo: antes y después es siempre
+el mismo verde plano. Las sombras también son de la tinta (`color-mix` sobre
+`--tinta`): nunca grises.
 
 ## Decisiones
 
@@ -89,17 +89,19 @@ tinta (`color-mix` sobre `--tinta`): nunca grises.
     recargando; `?burn=lento` la corre a 0,3x con `updatePlaybackRate`, que es la
     única forma de medir con precisión una línea de tiempos con un golpe de 120ms.
     El corte por movimiento reducido **no** aplica cuando viene forzada.
-11. **La pieza es una tabla plana, no un tronco** (pedido del autor con una foto de
-    un listón de madera como referencia: "hacélo más facha el tronco... sacale la
-    crosta todo, pero que quede algo más realista, madera curada"; y después
-    "después de pegar el masazo el taco se transforma en madera, no quiero, que
-    quede siempre liso"). El taco es un SVG con el contorno en un `clipPath` de ocho
-    vértices: un rectángulo con los cuatro extremos chaflanados en 45° (los "bordes
-    redondeados"). La cara de la tabla es plana: un solo `rect` del verde de la
-    marca calentado con un poco de lino, sin veta, sin nudos, sin catedral, sin
-    vetas oscuras. Sin corteza, sin mango, sin anillos, sin filtros. Así el taco
-    no "se transforma en madera" después del masazo: antes y después es el mismo
-    rectángulo plano.
+11. **La pieza es una tabla plana del mismo verde que la tinta, no un tronco**
+    (pedido del autor con una foto de un listón de madera como referencia: "hacélo
+    más facha el tronco... sacale la crosta todo, pero que quede algo más realista,
+    madera curada"; después "después de pegar el masazo el taco se transforma en
+    madera, no quiero, que quede siempre liso"; y "no aclares el color del taco
+    después del martillazo tampoco"). El taco es un SVG con el contorno en un
+    `clipPath` de ocho vértices: un rectángulo con los cuatro extremos chaflanados
+    en 45° (los "bordes redondeados"). La cara es plana: un solo `rect` del mismo
+    verde de la marca que el plato y la impresión, sin veta, sin nudos, sin
+    catedral, sin vetas oscuras, sin corteza, sin mango, sin anillos, sin
+    filtros, sin texturas. Así el taco no se transforma en madera después del
+    masazo y no se aclara: antes y después es siempre el mismo rectángulo plano
+    del verde de la marca.
 12. **El plato copia el contorno.** El script lee el `d` del `clipPath` y arma con él
     dos `clip-path: path()`: el que tapa la ventana (el contorno escalado sobre su
     propio centro hasta pasar los cuatro bordes) y el que cae sobre la madera. Entre
