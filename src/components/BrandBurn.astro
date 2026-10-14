@@ -1,17 +1,19 @@
 ---
-// BrandBurn — el preload de la home: xilografía. Un taco de madera entintado que
-// baja desde arriba de cuadro, golpea seco sobre el lino, se queda presionando
-// mientras la tinta pasa a la fibra, y se despega inclinándose como lo haría un
-// artesano. Abajo queda impreso BOTTEGA, con el filete irregular del taco tallado.
+// BrandBurn — el preload de la home: el estampado. Un taco de madera entintado que
+// baja, golpea seco sobre el lino, se queda presionando mientras la tinta pasa a
+// la fibra, y se despega inclinándose como lo haría un artesano. Abajo queda
+// impreso el wordmark de la marca.
 //
 // La vista es cenital (primera persona): el taco es un rectángulo visto desde
 // arriba y su altura se cuenta con dos cosas y nada más: la escala (1,35 arriba,
 // 1 abajo) y la sombra, que pasa de ancha y difusa a pegada y dura.
 //
-// Paleta propia de la escena: lino #F2ECE1 (a tres puntos del crema del sitio),
-// taco #071A10, tinta #0A2F1D. Todo SVG y CSS: los filtros de xilografía los hace
-// feTurbulence + feDisplacementMap, los poros de la fibra una máscara con ruido, y
-// el hundido un filete claro de 1px abajo.
+// La impresión ES el wordmark del hero: mismas clases de la marca, mismo glifo,
+// mismo tamaño, sin marco y sin filtros. El script solo la corre hasta la caja del
+// wordmark, así que al destaparse la marca no se mueve un píxel.
+//
+// La escena tiene una sola paleta propia: lino #F2ECE1 (a tres puntos del crema
+// del sitio) y taco #071A10. La fibra del lino es un feTurbulence quieto.
 //
 // Secuencia, medidas y verificación: odd/tasks/brand-burn-intro.md
 
@@ -47,132 +49,13 @@
   <div class="golpe">
     <!-- La impresión, abajo del taco. El script la planta en la caja del wordmark
          del hero para que el destape caiga donde después va la marca. -->
-    <svg
-      class="tinta"
-      data-tinta
-      viewBox="0 0 760 250"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <defs>
-        <!-- Xilografía: la madera tallada deja el borde ondulado, y la tinta
-             sangra un pelo en la fibra del lino. -->
-        <filter id="xilo" x="-6%" y="-10%" width="112%" height="120%" color-interpolation-filters="sRGB">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.028 0.045"
-            numOctaves="3"
-            seed="4"
-            result="veta"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="veta"
-            scale="2.6"
-            xChannelSelector="R"
-            yChannelSelector="G"
-            result="borde"
-          />
-          <feGaussianBlur in="borde" stdDeviation="0.55" result="suave" />
-          <!-- El sangrado: el mismo dibujo, un pelo más gordo y flojo -->
-          <feMorphology in="suave" operator="dilate" radius="1.1" result="gordo" />
-          <feColorMatrix
-            in="gordo"
-            type="matrix"
-            values="0 0 0 0 0.04
-                    0 0 0 0 0.12
-                    0 0 0 0 0.06
-                    0 0 0 0.24 0"
-            result="sangrado"
-          />
-          <feMerge>
-            <feMergeNode in="sangrado" />
-            <feMergeNode in="suave" />
-          </feMerge>
-        </filter>
-
-        <!-- Los poros: donde la veta de la madera o la hebra del lino no tomaron
-             la tinta. Ruido de alta frecuencia pasado por un umbral de alfa. -->
-        <filter id="xilo-poros" x="0" y="0" width="100%" height="100%">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.45"
-            numOctaves="2"
-            seed="11"
-            result="grano"
-          />
-          <feColorMatrix
-            in="grano"
-            type="matrix"
-            values="0 0 0 0 0
-                    0 0 0 0 0
-                    0 0 0 0 0
-                    1 0 0 0 -0.64"
-          />
-        </filter>
-        <mask id="xilo-micro-puntos">
-          <rect width="100%" height="100%" fill="#000" />
-          <rect
-            width="100%"
-            height="100%"
-            fill="#fff"
-            filter="url(#xilo-poros)"
-          />
-        </mask>
-      </defs>
-
-      <g filter="url(#xilo)">
-        <!-- El hundido: la impresión está metida en el papel, así que abajo de la
-             tinta asoma un filete claro de 1px -->
-        <g fill="#F2ECE1" transform="translate(0 1.2)">
-          <text
-            class="tinta-texto"
-            x="380"
-            y="152"
-            text-anchor="middle"
-            font-family="'Lora Variable', Georgia, 'Times New Roman', serif"
-            font-weight="500"
-            font-size="128"
-            letter-spacing="7"
-          >
-            BOTTEGA
-          </text>
-          <rect x="22" y="26" width="716" height="198" fill="none" stroke="#F2ECE1" stroke-width="1.2" />
-        </g>
-
-        <!-- La tinta impresa -->
-        <g fill="#0A2F1D">
-          <text
-            class="tinta-texto"
-            x="380"
-            y="152"
-            text-anchor="middle"
-            font-family="'Lora Variable', Georgia, 'Times New Roman', serif"
-            font-weight="500"
-            font-size="128"
-            letter-spacing="7"
-          >
-            BOTTEGA
-          </text>
-          <!-- El filete del taco tallado: no cierra perfecto porque la madera
-               tampoco cierra perfecto -->
-          <rect
-            x="22"
-            y="26"
-            width="716"
-            height="198"
-            fill="none"
-            stroke="#0A2F1D"
-            stroke-width="2.2"
-          />
-        </g>
-      </g>
-
-      <!-- Los micro-puntos de lino dentro de la tinta -->
-      <g mask="url(#xilo-micro-puntos)">
-        <rect width="760" height="250" fill="#F2ECE1" opacity="0.85" />
-      </g>
-    </svg>
+    <!-- La impresión: el wordmark de siempre, con las clases de la marca (mismo
+         glifo, mismo peso, mismo clamp de tamaño que el hero) y sin un solo efecto.
+         El script solo la planta en la caja del wordmark del hero, así que el
+         destape cae exactamente donde después vive la marca. -->
+    <div class="tinta" data-tinta>
+      <span class="wordmark wordmark-hero">bottega</span>
+    </div>
 
     <!-- El taco: un bloque sólido visto desde arriba. Su altura es la escala y la
          sombra; no hay ni una pieza de dibujo adentro. -->
@@ -186,7 +69,6 @@
   :root {
     --lino: #f2ece1;
     --taco: #071a10;
-    --tinta: #0a2f1d;
   }
 
   /* La ceremonia entera vive en este bloque. El overlay no existe hasta que el
@@ -246,27 +128,12 @@
 
   /* ── La tinta impresa ────────────────────────────────────────────────────── */
 
+  /* La impresión no tiene animación propia: la descubre el taco al despegarse */
   .tinta {
     position: absolute;
     left: 0;
     top: 0;
-    width: 640px;
-    height: auto;
-    overflow: visible;
-    /* La tinta se asienta en la fibra mientras el taco se destapa */
-    animation: tinta-asienta 1150ms cubic-bezier(0.3, 0.9, 0.3, 1) both;
-    animation-delay: 1000ms;
-  }
-
-  @keyframes tinta-asienta {
-    from {
-      opacity: 0.9;
-      filter: blur(0.4px);
-    }
-    to {
-      opacity: 1;
-      filter: none;
-    }
+    white-space: nowrap;
   }
 
   /* ── El taco de madera ───────────────────────────────────────────────────── */
@@ -413,7 +280,7 @@
     if (!forzado && window.scrollY > 2) {
       raiz.classList.remove("has-burn");
     } else {
-      const tinta = overlay.querySelector<SVGSVGElement>("[data-tinta]");
+      const tinta = overlay.querySelector<HTMLElement>("[data-tinta]");
       const taco = overlay.querySelector<HTMLElement>("[data-taco]");
       const marca = document.querySelector<HTMLElement>("[data-brand-wordmark]");
 
@@ -434,20 +301,18 @@
           return { x, y, ancho: nodo.offsetWidth, alto: nodo.offsetHeight };
         };
 
-        // La impresión cae donde después va el wordmark del hero: un poco más
-        // angosta que su caja, así se lee impresa dentro del lugar de la marca, y
-        // el taco la cubre con 30px de margen por lado (que el golpe tape el logo
-        // es parte del pedido).
+        // La impresión ES el wordmark del hero: mismas clases, mismo glifo, mismo
+        // tamaño. El script solo la corre hasta su caja, así que el destape cae
+        // exactamente donde después vive la marca. El taco la cubre con 30px de
+        // margen por lado (que el golpe tape el logo es parte del pedido).
         const plantar = () => {
           const caja = cajaDe(marca);
-          const anchoTinta = Math.max(240, caja.ancho * 0.92);
-          tinta.style.width = `${anchoTinta}px`;
-          const altoTinta = tinta.getBoundingClientRect().height;
+          const anchoTinta = caja.ancho;
+          const altoTinta = caja.alto;
           const centroX = caja.x + caja.ancho / 2;
           const centroY = caja.y + caja.alto / 2;
 
-          tinta.style.left = `${centroX - anchoTinta / 2}px`;
-          tinta.style.top = `${centroY - altoTinta / 2}px`;
+          tinta.style.transform = `translate(${centroX - anchoTinta / 2}px, ${centroY - altoTinta / 2}px)`;
 
           const anchoTaco = anchoTinta + 60;
           const altoTaco = altoTinta + 60;

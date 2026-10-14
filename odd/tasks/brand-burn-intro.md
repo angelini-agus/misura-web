@@ -38,19 +38,19 @@ física del golpe y la textura de la tinta.
 3. **El despegue pivotea en la esquina de abajo a la izquierda** (`transform-origin:
    18% 88%`) y se va con `rotateX(8deg) rotateY(-5deg) scale(1.25)`, `blur(6px)` y
    opacidad: es un bloque que se levanta desde un borde.
-4. **La xilografía la hace un filtro SVG obligatorio**: `feTurbulence` (0,028 ×
-   0,045) + `feDisplacementMap` (2,6) para el borde ondulado de la madera tallada,
-   más un `feMorphology` + `feColorMatrix` que deja el sangrado mínimo de la tinta
-   en la fibra.
-5. **Los poros son una máscara, no un dibujo**: un ruido de alta frecuencia pasado
-   por un umbral de alfa (`feColorMatrix` con -0,64) enmascara un rectángulo de
-   lino del mismo color del fondo. Como el lino y el fondo son iguales, los
-   micro-puntos solo se ven **dentro** de la tinta y no hace falta recortar nada.
-6. **El hundido es un filete claro de 1px abajo** (`translate(0 1.2)`): la impresión
-   está metida en el papel, no apoyada encima.
-7. **El filete del taco no cierra perfecto** porque la madera tampoco: el mismo
-   filtro le come el borde.
-8. **El taco tapa el logo**: el bloque mide 30px más por lado que la impresión y la
+4. **La impresión es el wordmark del hero, calcado** (corrección del autor: "debería
+   ser exactamente la misma que queda después en el hero, esas letras, sin efectos
+   y sin marco sin nada"). Usa las clases reales de la marca —`wordmark
+   wordmark-hero`— así que el glifo, el peso, el interletrado, el `clamp` del
+   tamaño y hasta el color son los del sitio por construcción. **Sin** filtro de
+   xilografía, **sin** poros, **sin** hundido, **sin** filete y **sin** animación de
+   asentado. Consecuencia: la caja de la impresión y la del wordmark coinciden
+   exactas (377,289 · 685×192 las dos), así que al destaparse la marca no se mueve
+   un píxel.
+5. **El carácter de impresión lo dan el taco y el lino**, no la tinta: las sombras
+   de altura, la física del golpe, el despegue y la fibra del papel. Es donde el
+   autor dijo que está la magia.
+6. **El taco tapa el logo**: el bloque mide 30px más por lado que la impresión y la
    impresión cae exactamente en la caja del wordmark del hero (medida por offset
    acumulado, inmune a `data-reveal`), así que el destape ocurre donde después vive
    la marca.
@@ -81,7 +81,7 @@ física del golpe y la textura de la tinta.
 | --- | --- |
 | `npx astro check` | 0 errores, 0 warnings, 0 hints |
 | `npm run build` | 11 páginas, limpio |
-| La impresión cae en la caja del wordmark | Impresión 630×207 centrada en (719, 384) contra la caja del hero 685×192 centrada en (719,5, 385): mismo centro |
+| La impresión contra el wordmark del hero | **Idénticas**: 377,289 · 685×192 las dos (la caja del hero medida por offset acumulado; su `getBoundingClientRect` da 305 porque todavía tiene los 16px de `data-reveal`) |
 | Línea de tiempos medida con `?burn=lento` | A 0,3x, leído del DOM: el taco en opacidad **1 y `blur(0px)`** durante toda la bajada y la presión (80, 380, 560ms), y recién en el despegue 0,55 a los 1000ms, 0,16 a los 1180 y 0 a los 1400; la tinta 0,9 → 1 de 1000 a 2150ms |
 | Los cuatro casos de skip | Segunda visita, hash, movimiento reducido y recarga con scroll restaurado (probado con una recarga real a 2142px) |
 | `?burn=1` | Dos pasadas seguidas en la misma pestaña arrancan las dos y la marca de sesión queda vacía |
@@ -100,11 +100,6 @@ también al principio, en cada cuadro hasta el cambio.**
 
 ## Abiertos
 
-- **La caja y el caso de la palabra**: la impresión dice `BOTTEGA` en mayúsculas
-  (como pidió el autor) y el wordmark del hero es `bottega` en minúsculas. Los
-  centros coinciden, pero al destaparse hay un cambio de caja y de caso. Si molesta,
-  se resuelve con la impresión en minúsculas o aceptando que la marca se "endereza"
-  al llegar a la página.
 - **El costo**: 2,8s de ceremonia por sesión, sin salteo. La primera pintura la
   define la impresión (~0,6s), no el hero.
 - **El harness no puede capturar el cuadro 0 exacto** (los `waitForFunction` de
