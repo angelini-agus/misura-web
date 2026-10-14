@@ -39,34 +39,57 @@ diccionario), el header, la barra de anuncio y el logo viajero.
    (papel más claro que el fondo, borde verde, renglones, línea de margen y
    sombra corrida) en vez de una lista suelta sobre el fondo. Los ítems aparecen
    ahí adentro.
-9. **Un ítem ya tachado no se apaga.** Se queda con la opacidad normal, como
-   cualquier otro: la lectura es una lista que se va cerrando, no un foco que
-   persigue al último tachado.
+9. **Un ítem ya tachado baja a 0,45.** El texto se apaga cuando el garabato lo
+   termina de cruzar y el trazo se queda: la lista se va cerrando de a uno, sin
+   un foco que persigue al último tachado. La opacidad va en el label, no en el
+   `<li>`, así el renglón de la libretita vive siempre y el trazo no se apaga con
+   el texto. (Esta decisión decía lo contrario, «no se apaga»: quedó vieja con el
+   garabato de crayón, que es el que trajo el 0,45.)
 
 ## Línea de tiempo
 
-Constantes editables al inicio de `Hero.astro`. Con N = 8:
+Dos fases **seguidas**, nunca superpuestas: primero entran todos los ítems y
+recién con la lista completa el lápiz empieza a cruzar, de nuevo del primero al
+último. Constantes editables al inicio del script de `Hero.astro`. Con N = 8:
 
-`PASO 0.0875`, `APARICION 0.06`, `DESFASE_TACHADO 0.03`, `TACHADO 0.075`.
+`APARICION_FIN 0.42`, `APARICION_DUR 0.07`, `TACHADO_INICIO 0.45`,
+`TACHADO_FIN 0.76`, `TACHADO_DUR 0.08`, `BORRADO_INICIO 0.78`.
 
-| # | problema | aparece | se tacha |
+Los dos pasos no son constantes: salen de la cantidad de ítems, así que la lista
+puede crecer o acortarse sin tocar los números de arriba.
+
+| # | problema | entra | se tacha |
 | --- | --- | --- | --- |
-| 1 | Planillas de Excel | 0.000 – 0.060 | 0.030 – 0.105 |
-| 2 | Carga de datos a mano | 0.088 – 0.148 | 0.118 – 0.193 |
-| 3 | Grupos de WhatsApp | 0.175 – 0.235 | 0.205 – 0.280 |
-| 4 | Datos sin comprobar | 0.263 – 0.323 | 0.293 – 0.368 |
-| 5 | Horas sin control | 0.350 – 0.410 | 0.380 – 0.455 |
-| 6 | Papeles sueltos | 0.438 – 0.498 | 0.468 – 0.543 |
-| 7 | Sueldos calculados a mano | 0.525 – 0.585 | 0.555 – 0.630 |
-| 8 | Stock anotado en un cuaderno | 0.613 – 0.673 | 0.643 – 0.718 |
+| 1 | Planillas de Excel | 0.0000 – 0.0700 | 0.4500 – 0.5300 |
+| 2 | Carga de datos a mano | 0.0500 – 0.1200 | 0.4829 – 0.5629 |
+| 3 | Grupos de WhatsApp | 0.1000 – 0.1700 | 0.5157 – 0.5957 |
+| 4 | Datos sin comprobar | 0.1500 – 0.2200 | 0.5486 – 0.6286 |
+| 5 | Horas sin control | 0.2000 – 0.2700 | 0.5814 – 0.6614 |
+| 6 | Papeles sueltos | 0.2500 – 0.3200 | 0.6143 – 0.6943 |
+| 7 | Sueldos calculados a mano | 0.3000 – 0.3700 | 0.6471 – 0.7271 |
+| 8 | Stock anotado en un cuaderno | 0.3500 – 0.4200 | 0.6800 – 0.7600 |
 
-| fase | rango | qué hace |
-| --- | --- | --- |
-| pausa | 0.718 – 0.780 | todo quieto, la lista completa y tachada |
-| borrado | 0.780 – 0.870 | barrido de máscara de izquierda a derecha, opacity a 0 y blur creciente. Queda un resto de grafito al 6% que se desvanece |
-| bottega | 0.870 – 0.930 | entra entintándose: opacity, blur de 6px a 0 y un asentamiento leve |
-| subtítulo | 0.920 – 0.970 | el mismo tratamiento, encadenado |
-| botones | 0.960 – 1.000 | los últimos |
+Los tachados se pisan entre vecinos (el paso es 0,0329 y cada garabato tarda
+0,08): en cualquier momento hay dos o tres trazos en vuelo, pero el arranque de
+cada uno siempre es posterior al del anterior. La entrada, en cambio, no se pisa
+con el tachado de nadie: la lista está completa antes de la primera raya.
+
+| fase | rango | scroll (escritorio / mobile) | qué hace |
+| --- | --- | --- | --- |
+| entrada | 0.000 – 0.420 | 2184px / 1512px | los 8 ítems entran uno atrás del otro, con 8px de desplazamiento y opacidad 0 a 1. Nada tachado |
+| pausa | 0.420 – 0.450 | 156px / 108px | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
+| tachado | 0.450 – 0.760 | 1612px / 1116px | los garabatos se dibujan de primero a último; cada ítem baja a 0,45 al cerrarse |
+| pausa | 0.760 – 0.780 | 104px / 72px | todo quieto, la lista completa y tachada |
+| borrado | 0.780 – 0.870 | 468px / 324px | barrido de máscara de izquierda a derecha, opacity a 0 y blur creciente. Queda un resto de grafito al 6% que se desvanece |
+| bottega | 0.870 – 0.930 | 312px / 216px | entra entintándose: opacity, blur de 6px a 0 y un asentamiento leve |
+| subtítulo | 0.920 – 0.970 | 260px / 180px | el mismo tratamiento, encadenado |
+| botones | 0.960 – 1.000 | 208px / 144px | los últimos |
+
+El largo del scroll no cambió con las dos fases (`SCROLL_DESKTOP` 5200,
+`SCROLL_MOBILE` 3600). Antes los tramos se pisaban y el último ítem cerraba en
+0,718; ahora la escalera termina en 0,76, así que cada ítem tiene más scroll
+encima que antes (entrada 364px contra 312; tachado 416 contra 390) y el pedido
+no cuesta recorrido.
 
 ## Los trazos
 
@@ -147,10 +170,20 @@ SVG en `display: none` y el estado final visible.
 
 ## Verificación
 
-- Capturas a 1440x900 y 390x844 en progreso 0, 50% y 100% del trazo del ítem 0
-  (0,03 / 0,0675 / 0,105), más la lista completa tachada (0,72), el barrido de
-  borrado (0,83) y el estado final (1). El progreso real coincide con el pedido y
-  el `dashoffset` medido es 1 / 0,5 / 0 en los tres cortes.
+- **Las dos fases son dos fases.** Medido por CDP con puppeteer-core a 1440x900
+  (largo 5200) y 390x844 (largo 3600), en 9 progresos con el `dashoffset` y la
+  opacidad del label de los 8 ítems leídos del DOM. En 0,42 y en 0,45 los ocho
+  labels están en opacidad 1,00 y los ocho `dashoffset` en 1,0 (lista completa,
+  ninguna raya). Recién en 0,55 hay trazos y son los primeros: `0.0 0.1 0.6` con
+  el resto en 1,0. En 0,65 van cinco y en 0,76 los ocho están cerrados
+  (`dashoffset` 0,0) con la lista todavía a opacidad plena. Idéntico en mobile.
+  Capturas en `%TEMP%/hero-shot/shots/` (montaje en `montaje.png` y
+  `montaje-mobile.png`).
+- Capturas a 1440x900 y 390x844 en progreso 0%, 50% y 100% del trazo del ítem 0
+  (0,45 / 0,49 / 0,53), más la lista completa tachada (0,76), el barrido de
+  borrado (0,85) y el estado final (1). El progreso real coincide con el pedido y
+  el `dashoffset` medido del primer ítem es 1 hasta 0,45, 0,5 en 0,49 y 0 en
+  0,53.
 - **Frame rate scrolleando de verdad sobre el tramo de tachado: 60,1 fps con el
   filtro y 60,8 sin él** (1440x900), 63 fps en 390x844. El filtro no cuesta
   frame rate, así que no hizo falta el plan B de la máscara con textura horneada.

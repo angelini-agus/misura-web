@@ -349,13 +349,14 @@ const tachados = heroProblems.map((_, i) =>
   import { garabatoDeTachado } from "../lib/pencil";
 
   // La linea de tiempo. El progreso va de 0 (el escenario se acaba de pegar) a 1
-  // (se despega). Cada item tiene su tramo de aparicion y su tramo de tachado, y
-  // los tramos se solapan a proposito: mientras el item i se tacha, el i+1 ya
-  // esta entrando.
-  const PASO = 0.0875;
-  const APARICION = 0.06;
-  const DESFASE_TACHADO = 0.03;
-  const TACHADO = 0.075;
+  // (se despega). Son dos fases SEGUIDAS, no superpuestas: primero entran todos
+  // los items, uno atras del otro, y recien con la lista completa el lapiz
+  // empieza a cruzar, otra vez del primero al ultimo.
+  const APARICION_FIN = 0.42; // el ultimo item termina de entrar aca
+  const APARICION_DUR = 0.07; // lo que tarda en entrar cada item
+  const TACHADO_INICIO = 0.45; // el lapiz arranca con la lista ya completa
+  const TACHADO_FIN = 0.76; // el ultimo item termina de tacharse aca
+  const TACHADO_DUR = 0.08; // lo que tarda el garabato de cada item
   const BORRADO_INICIO = 0.78;
   const BORRADO_FIN = 0.87;
   const BOTTEGA_INICIO = 0.87;
@@ -385,6 +386,12 @@ const tachados = heroProblems.map((_, i) =>
     const marca = final.querySelector<HTMLElement>(".hero-final-brand");
     const subtitulo = final.querySelector<HTMLElement>(".hero-final-sub");
     const botones = final.querySelector<HTMLElement>(".hero-final-actions");
+
+    // Los pasos salen de la cantidad de items: si la lista crece o se acorta,
+    // las dos fases se reparten solas sin tocar los numeros de arriba.
+    const ultimoIndice = Math.max(1, items.length - 1);
+    const pasoAparicion = (APARICION_FIN - APARICION_DUR) / ultimoIndice;
+    const pasoTachado = (TACHADO_FIN - TACHADO_INICIO - TACHADO_DUR) / ultimoIndice;
 
     seccion.classList.add("is-live");
 
@@ -468,15 +475,12 @@ const tachados = heroProblems.map((_, i) =>
       if (progreso === ultimo) return;
       ultimo = progreso;
 
-      // --- los items: aparecen y se tachan uno a uno ---
+      // --- los items: primero entran todos, despues se tachan en orden ---
       items.forEach((item, i) => {
-        const inicio = i * PASO;
-        const aparece = tramo(progreso, inicio, inicio + APARICION);
-        const tacha = tramo(
-          progreso,
-          inicio + DESFASE_TACHADO,
-          inicio + DESFASE_TACHADO + TACHADO,
-        );
+        const entrada = i * pasoAparicion;
+        const aparece = tramo(progreso, entrada, entrada + APARICION_DUR);
+        const desdeTachado = TACHADO_INICIO + i * pasoTachado;
+        const tacha = tramo(progreso, desdeTachado, desdeTachado + TACHADO_DUR);
 
         // El label entra con un desplazamiento chico y, cuando el garabato lo
         // termina de tachar, baja a 0.45: el item ya cerrado se apaga, el trazo
