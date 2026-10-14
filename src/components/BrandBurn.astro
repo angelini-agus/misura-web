@@ -1,25 +1,32 @@
 ---
-// BrandBurn — el preload de la home: el estampado. Un taco de madera entintado que
-// baja, golpea seco sobre el lino, se queda presionando mientras la tinta pasa a
-// la fibra, y se despega inclinándose como lo haría un artesano. Abajo queda
-// impreso el wordmark de la marca.
+// BrandBurn — el preload de la home: el estampado. La pantalla arranca cubierta
+// por la tinta (verde bottega liso), ese plato baja hasta la cara del taco, el
+// taco se levanta, golpea seco sobre el lino y se queda presionando mientras la
+// tinta pasa a la fibra. Y se despega inclinándose como lo haría un artesano.
+// Abajo queda impreso el wordmark de la marca.
+//
+// La tinta del plato es la MISMA de la impresión (`--color-green`, el verde del
+// sitio): por eso el plato puede aterrizar sobre el taco sin que se vea una
+// costura y por eso, al destaparse, la marca no cambia ni de color ni de lugar.
 //
 // La vista es cenital (primera persona): el taco es un rectángulo visto desde
-// arriba y su altura se cuenta con dos cosas y nada más: la escala (1,35 arriba,
-// 1 abajo) y la sombra, que pasa de ancha y difusa a pegada y dura.
+// arriba y su altura se cuenta con dos cosas y nada más: la escala (1 abajo,
+// 1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura.
 //
 // La impresión ES el wordmark del hero: mismas clases de la marca, mismo glifo,
 // mismo tamaño, sin marco y sin filtros. El script solo la corre hasta la caja del
 // wordmark, así que al destaparse la marca no se mueve un píxel.
 //
 // La escena tiene una sola paleta propia: lino #F2ECE1 (a tres puntos del crema
-// del sitio) y taco #071A10. La fibra del lino es un feTurbulence quieto.
+// del sitio) y la tinta, que es el verde de la marca. El plato que cubre la
+// pantalla al arranque, el taco y la impresión son el mismo color.
 //
 // Secuencia, medidas y verificación: odd/tasks/brand-burn-intro.md
 
-// El golpe cae a los 0.56s: es el momento que sincroniza el resto (el shake del
-// lino, la tinta que se asienta y el destape del taco). Todos esos tiempos viven
-// en los animation-delay de la hoja de abajo, no en el script.
+// El golpe cae a los 0.98s: es el momento que sincroniza el resto (el shake del
+// lino, la salida del plato, la tinta que se asienta y el destape del taco).
+// Todos esos tiempos viven en los animation-delay de la hoja de abajo, no en el
+// script.
 ---
 
 <div id="brand-burn" aria-hidden="true">
@@ -62,13 +69,31 @@
     <div class="taco" data-taco>
       <div class="taco-cara"></div>
     </div>
+
+    <!-- La masa de tinta: arranca cubriendo la ventana entera y baja hasta la cara
+         del taco. Es lo primero que se ve de la home. -->
+    <div class="masa" data-masa></div>
   </div>
 </div>
 
 <style>
   :root {
     --lino: #f2ece1;
-    --taco: #071a10;
+    /* La tinta no tiene tono propio a propósito: es el verde de la marca, el
+       mismo que hereda el wordmark de la impresión y el mismo que después vive
+       en el hero. El plato que cubre la pantalla al arranque, el taco y la
+       impresión son entonces el MISMO color: por eso el plato puede aterrizar
+       sobre la cara del taco sin que se vea una costura y por eso el masazo no
+       tiene que cambiar ningún color. */
+    --tinta: var(--color-green);
+    /* Las sombras son de la tinta, nunca grises: lo único que cambia es el
+       alpha. */
+    --tinta-0: color-mix(in srgb, var(--tinta) 0%, transparent);
+    --tinta-10: color-mix(in srgb, var(--tinta) 10%, transparent);
+    --tinta-22: color-mix(in srgb, var(--tinta) 22%, transparent);
+    --tinta-34: color-mix(in srgb, var(--tinta) 34%, transparent);
+    --tinta-38: color-mix(in srgb, var(--tinta) 38%, transparent);
+    --tinta-50: color-mix(in srgb, var(--tinta) 50%, transparent);
   }
 
   /* La ceremonia entera vive en este bloque. El overlay no existe hasta que el
@@ -104,7 +129,7 @@
     position: absolute;
     inset: 0;
     animation: golpe-lino 190ms cubic-bezier(0.3, 0, 0.4, 1) both;
-    animation-delay: 560ms;
+    animation-delay: 980ms;
   }
 
   /* El golpe del mazo sobre el taco: un sacudón seco de 1.5px y se asienta */
@@ -136,97 +161,218 @@
     white-space: nowrap;
   }
 
+  /* ── El plato de tinta ───────────────────────────────────────────────────── */
+
+  /* La tinta, al arranque, cubre la ventana entera: el primer pintado de la home
+     es verde bottega liso y ahí no se ve nada más. Después el plato baja hasta
+     las cuatro medidas de la caja del taco, que el script escribe como custom
+     properties, y se queda pegado a su cara.
+
+     El taco está abajo, a escala 1, esperando debajo del plato: por eso la
+     contracción puede ser un `clip-path` sobre la caja exacta del taco y no hay
+     ni un píxel que ajustar cuando la tinta aterriza. */
+  .masa {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: var(--tinta);
+    border-radius: 3px;
+    /* El pivote lo escribe el script: es el mismo punto físico que el
+       `transform-origin` del taco (18% 88% de su caja), medido en el espacio de
+       la ventana. Así la carga y el masazo escalan las dos piezas como si fueran
+       una sola. */
+    will-change: clip-path, opacity, transform;
+    animation: masa-plato 2750ms both;
+  }
+
+  /* 0 → 450ms      verde pleno: la ventana entera es tinta y no pasa nada
+     450 → 850ms    la contracción: el plato baja a la cara del taco
+     850 → 980ms    la carga, en sincronía con el taco que se levanta
+     980 → 1100ms   el masazo: la tinta deja la cara del taco y pasa a la fibra
+                    (el mismo cuadro en el que el taco toca el lino)
+
+     La opacidad se declara en cada cuadro a propósito: es la trampa del cuadro
+     implícito que ya nos comió tres veces en esta escena. */
+  @keyframes masa-plato {
+    0% {
+      clip-path: inset(0px 0px 0px 0px);
+      opacity: 1;
+      transform: scale(1);
+    }
+    16.4% {
+      clip-path: inset(0px 0px 0px 0px);
+      opacity: 1;
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.35, 0, 0.2, 1);
+    }
+    30.9% {
+      clip-path: inset(
+        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
+          var(--masa-izquierda)
+      );
+      opacity: 1;
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.6);
+    }
+    35.6% {
+      clip-path: inset(
+        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
+          var(--masa-izquierda)
+      );
+      opacity: 1;
+      transform: scale(1.42);
+      animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.7);
+    }
+    40% {
+      clip-path: inset(
+        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
+          var(--masa-izquierda)
+      );
+      opacity: 0;
+      transform: scale(1);
+    }
+    100% {
+      clip-path: inset(
+        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
+          var(--masa-izquierda)
+      );
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
   /* ── El taco de madera ───────────────────────────────────────────────────── */
 
   .taco {
     position: absolute;
     left: 0;
     top: 0;
+    z-index: 2;
     display: grid;
     place-items: center;
-    background: var(--taco);
+    background: var(--tinta);
     border-radius: 3px;
     /* La sombra es la altura: ancha y difusa arriba, pegada y dura abajo. El
        keyframe la interpola entera. */
     box-shadow:
-      0 40px 60px rgba(7, 26, 16, 0.34),
-      0 8px 18px rgba(7, 26, 16, 0.22);
+      0 40px 60px var(--tinta-34),
+      0 8px 18px var(--tinta-22);
     will-change: transform, box-shadow, opacity, filter;
-    animation: taco-golpe 2800ms both;
+    animation: taco-golpe 2750ms both;
   }
 
   /* El borde del bloque, para que la cara no sea un rectángulo plano sin nada */
   .taco-cara {
     position: absolute;
     inset: 5px;
-    border: 1px solid rgba(242, 236, 225, 0.15);
+    border: 1px solid rgba(242, 236, 225, 0.22);
     border-radius: 2px;
   }
 
   /* Los tramos, con su curva cada uno:
-     0 → 0.44s   sube y se envía (1,35 → 1,42)
-     0.44 → 0.56 golpea (1,42 → 1) en 120ms, con curva de impacto seco
-     0.56 → 1.0  presiona contra el lino (1 → 0,995), sin rebotar
-     1.0 → 1.7   se despega inclinándose y se va
-     1.7 → 2.8   ya no está; el lino queda con la impresión
+     0 → 0.85s   abajo, a escala 1, esperando debajo del plato de tinta
+     0.85 → 0.98 se levanta (1 → 1,42): la carga, con la sombra que se abre
+     0.98 → 1.1  el masazo (1,42 → 1) en 120ms, con curva de impacto seco
+     1.1 → 1.55  presiona contra el lino (1 → 0,995), sin rebotar
+     1.55 → 1.87 se despega inclinándose, todavía SÓLIDO
+     1.87 → 2.25 se disuelve y se va; el lino queda con la impresión
+     2.25 → 2.75 ya no está
 
-     La opacidad Y el filtro se declaran en CADA cuadro hasta el despegue a
-     propósito: si solo aparecen al principio y al final, Chrome interpola entre
-     esos dos y el taco se desvanece y se desenfoca en rampa desde el arranque (se
-     veía la impresión a través del bloque). Es la trampa del cuadro implícito, que
-     en esta escena ya nos comió dos veces. */
+     El despegue se sostiene opaco hasta los 2,03s a propósito: con el taco del
+     MISMO verde que la impresión, un desvanecido temprano se lee como un velo
+     lechoso sobre la marca (un gris verdoso translúcido, que además no es de la
+     paleta) en vez de un bloque que se levanta. Sólido casi hasta el final y
+     disuelto en los últimos 215ms, que es el cuadro que el ojo lee como "el
+     bloque se fue": lo que queda es la marca.
+
+     La sombra arranca en cero porque durante el primer segundo el taco vive
+     debajo del plato y no se ve. Y la opacidad Y el filtro se declaran en CADA
+     cuadro hasta el despegue a propósito: si solo aparecen al principio y al
+     final, Chrome interpola entre esos dos y el taco se desvanece y se desenfoca
+     en rampa desde el arranque (se veía la impresión a través del bloque). Es la
+     trampa del cuadro implícito, que en esta escena ya nos comió tres veces.
+
+     La lista de transformaciones es la misma en todos los cuadros (perspectiva,
+     los dos ejes, escala y traslación) aunque al principio valga la identidad: si
+     una lista no coincide con la de al lado, Chrome interpola matrices y la
+     perspectiva entra en la cuenta. */
   @keyframes taco-golpe {
     0% {
       opacity: 1;
       filter: blur(0px);
-      transform: scale(1.35);
+      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
+        translate(0px, 0px);
       box-shadow:
-        0 46px 70px rgba(7, 26, 16, 0.36),
-        0 10px 22px rgba(7, 26, 16, 0.22);
+        0 0 0 var(--tinta-0),
+        0 0 0 var(--tinta-0);
+    }
+    30.9% {
+      opacity: 1;
+      filter: blur(0px);
+      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
+        translate(0px, 0px);
+      box-shadow:
+        0 0 0 var(--tinta-0),
+        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.6);
     }
-    15.7% {
+    35.6% {
       opacity: 1;
       filter: blur(0px);
-      transform: scale(1.42);
+      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.42)
+        translate(0px, 0px);
       box-shadow:
-        0 52px 80px rgba(7, 26, 16, 0.38),
-        0 12px 26px rgba(7, 26, 16, 0.22);
+        0 52px 80px var(--tinta-38),
+        0 12px 26px var(--tinta-22);
       animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.7);
     }
-    20% {
+    40% {
       opacity: 1;
       filter: blur(0px);
-      transform: scale(1);
+      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
+        translate(0px, 0px);
       box-shadow:
-        0 2px 3px rgba(7, 26, 16, 0.5),
-        0 0 0 rgba(7, 26, 16, 0);
+        0 2px 3px var(--tinta-50),
+        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
     }
-    35.7% {
+    56.4% {
       opacity: 1;
       filter: blur(0px);
-      transform: scale(0.995);
+      transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(0.995)
+        translate(0px, 0px);
       box-shadow:
-        0 2px 3px rgba(7, 26, 16, 0.5),
-        0 0 0 rgba(7, 26, 16, 0);
+        0 2px 3px var(--tinta-50),
+        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
     }
-    60.7% {
-      opacity: 0;
-      transform: perspective(900px) rotateX(8deg) rotateY(-5deg) scale(1.25);
-      filter: blur(6px);
+    74% {
+      opacity: 1;
+      filter: blur(1px);
+      transform: perspective(900px) rotateX(5deg) rotateY(-7.5deg) scale(1.18)
+        translate(-9%, -3.5%);
       box-shadow:
-        0 18px 30px rgba(7, 26, 16, 0.1),
-        0 0 0 rgba(7, 26, 16, 0);
+        0 26px 44px var(--tinta-22),
+        0 4px 10px var(--tinta-10);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.7, 1);
+    }
+    81.8% {
+      opacity: 0;
+      filter: blur(6px);
+      transform: perspective(900px) rotateX(9deg) rotateY(-6deg) scale(1.24)
+        translate(-30%, -15%);
+      box-shadow:
+        0 18px 30px var(--tinta-10),
+        0 0 0 var(--tinta-0);
     }
     100% {
       opacity: 0;
-      transform: perspective(900px) rotateX(8deg) rotateY(-5deg) scale(1.25);
       filter: blur(6px);
+      transform: perspective(900px) rotateX(9deg) rotateY(-6deg) scale(1.24)
+        translate(-30%, -15%);
       box-shadow:
-        0 18px 30px rgba(7, 26, 16, 0.1),
-        0 0 0 rgba(7, 26, 16, 0);
+        0 18px 30px var(--tinta-10),
+        0 0 0 var(--tinta-0);
     }
   }
 
@@ -234,7 +380,7 @@
      marca ya en su lugar. `clip-path` y no `opacity`: el lino se descubre. */
   :root.has-burn #brand-burn.is-running {
     animation: retirar 420ms cubic-bezier(0.62, 0, 0.34, 1) both;
-    animation-delay: 2380ms;
+    animation-delay: 2300ms;
   }
 
   @keyframes retirar {
@@ -253,6 +399,7 @@
     :root.has-burn:not([data-burn-forzado]) #brand-burn.is-running,
     :root:not([data-burn-forzado]) .golpe,
     :root:not([data-burn-forzado]) .taco,
+    :root:not([data-burn-forzado]) .masa,
     :root:not([data-burn-forzado]) .tinta {
       animation: none !important;
     }
@@ -282,9 +429,10 @@
     } else {
       const tinta = overlay.querySelector<HTMLElement>("[data-tinta]");
       const taco = overlay.querySelector<HTMLElement>("[data-taco]");
+      const masa = overlay.querySelector<HTMLElement>("[data-masa]");
       const marca = document.querySelector<HTMLElement>("[data-brand-wordmark]");
 
-      if (!tinta || !taco || !marca) {
+      if (!tinta || !taco || !masa || !marca) {
         raiz.classList.remove("has-burn");
       } else {
         // Posición en el documento por suma de offsetTop/offsetLeft: es inmune a
@@ -318,11 +466,36 @@
           const altoTaco = altoTinta + 60;
           taco.style.width = `${anchoTaco}px`;
           taco.style.height = `${altoTaco}px`;
-          taco.style.left = `${centroX - anchoTaco / 2}px`;
-          taco.style.top = `${centroY - altoTaco / 2}px`;
+          const izquierdaTaco = centroX - anchoTaco / 2;
+          const arribaTaco = centroY - altoTaco / 2;
+          taco.style.left = `${izquierdaTaco}px`;
+          taco.style.top = `${arribaTaco}px`;
           // El despegue pivotea en la esquina de abajo a la izquierda: el taco se
           // levanta desde un borde, como se despega un bloque de madera.
           taco.style.transformOrigin = "18% 88%";
+
+          // El plato de tinta aterriza sobre la caja del taco: las cuatro medidas
+          // del `clip-path` van en el espacio del plato, que es la ventana entera
+          // (el overlay es `fixed; inset: 0`) y contra el ancho y alto de layout
+          // (`clientWidth`/`clientHeight`), que son los que no cuentan la barra de
+          // scroll nativa.
+          const anchoVentana = document.documentElement.clientWidth;
+          const altoVentana = document.documentElement.clientHeight;
+          masa.style.setProperty("--masa-arriba", `${arribaTaco}px`);
+          masa.style.setProperty(
+            "--masa-derecha",
+            `${anchoVentana - (izquierdaTaco + anchoTaco)}px`,
+          );
+          masa.style.setProperty(
+            "--masa-abajo",
+            `${altoVentana - (arribaTaco + altoTaco)}px`,
+          );
+          masa.style.setProperty("--masa-izquierda", `${izquierdaTaco}px`);
+          // El mismo pivote físico que el `18% 88%` del taco, medido en la
+          // ventana: así la carga y el masazo escalan las dos piezas juntas.
+          masa.style.transformOrigin = `${
+            izquierdaTaco + anchoTaco * 0.18
+          }px ${arribaTaco + altoTaco * 0.88}px`;
         };
 
         const terminar = () => {
