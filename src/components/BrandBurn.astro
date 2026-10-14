@@ -67,7 +67,7 @@
         <defs>
           <clipPath id="taco-corte">
             <path
-              d="M 30 0 L 970 0 L 1000 30 L 1000 308 L 970 338 L 30 338 L 0 308 L 0 30 Z"
+              d="M 40 0 L 960 0 A 40 40 0 0 1 1000 40 L 1000 298 A 40 40 0 0 1 960 338 L 40 338 A 40 40 0 0 1 0 298 L 0 40 A 40 40 0 0 1 40 0 Z"
             />
           </clipPath>
         </defs>
@@ -507,10 +507,36 @@
 
           // El plato de tinta tiene que aterrizar sobre el CONTORNO del taco y no
           // sobre su caja, así que su recorte se arma con el mismo `d` que dibuja
-          // la madera. El camino tiene un solo subcamino de líneas rectas (M, L, Z),
-          // así que se lee como pares de números en el espacio del viewBox.
-          const numeros = corte?.getAttribute("d")?.match(/-?\d+(?:\.\d+)?/g);
-          const forma = numeros ? numeros.map(Number) : [];
+          // la madera. El camino puede tener `A` (arcos) además de M/L/Z, así que
+          // hay que parsearlo comando por comando: los `A` tienen 7 argumentos
+          // (rx, ry, rotación, dos flags, x, y) y solo el (x, y) final entra en
+          // el morph, mientras que la rotación y los flags quedan fijos.
+          const segmentos = (() => {
+            const d = corte?.getAttribute("d") || "";
+            const argCounts: Record<string, number> = { M: 2, L: 2, A: 7, Z: 0 };
+            const re = /([MLAZmlaz])|(-?\d+(?:\.\d+)?)/g;
+            const tks: Array<{ cmd?: string; num?: number }> = [];
+            let m: RegExpExecArray | null;
+            while ((m = re.exec(d)) !== null) {
+              if (m[1]) tks.push({ cmd: m[1].toUpperCase() });
+              else if (m[2] !== undefined) tks.push({ num: Number(m[2]) });
+            }
+            const segs: Array<{ cmd: "M" | "L" | "A" | "Z"; args: number[] }> = [];
+            let i = 0;
+            while (i < tks.length) {
+              const t = tks[i];
+              if (!t.cmd) { i++; continue; }
+              const n = argCounts[t.cmd] ?? 0;
+              const args: number[] = [];
+              for (let k = 0; k < n; k++) {
+                i++;
+                if (i < tks.length && tks[i].num !== undefined) args.push(tks[i].num!);
+              }
+              segs.push({ cmd: t.cmd as "M" | "L" | "A" | "Z", args });
+              i++;
+            }
+            return segs;
+          })();
           const anchoVentana = document.documentElement.clientWidth;
           const altoVentana = document.documentElement.clientHeight;
 
@@ -518,19 +544,30 @@
           // entera: el overlay es `fixed; inset: 0`). Con `escala` 1 cae en la caja
           // del taco; con la de cobertura, escalado sobre su propio centro, la
           // ventana queda tapada y el primer pintado es verde liso.
+          // El mismo contorno en píxeles, en el espacio del plato. Cada
+          // comando conserva su tipo: M y L van a un (x, y) escalado; los A
+          // además escalan rx y ry (con la proporción del viewBox al bloque) y
+          // dejan la rotación y los flags como están, así el morph entre la
+          // cobertura y la pieza mantiene la misma forma.
           const aForma = (escala: number) => {
-            const puntos: string[] = [];
-            for (let i = 0; i < forma.length; i += 2) {
-              const x = izquierdaTaco + (forma[i] / 1000) * anchoTaco;
-              const y = arribaTaco + (forma[i + 1] / 338) * altoTaco;
-              puntos.push(
-                `${(centroX + (x - centroX) * escala).toFixed(1)} ${(
-                  centroY +
-                  (y - centroY) * escala
-                ).toFixed(1)}`,
-              );
+            const partes: string[] = [];
+            for (const s of segmentos) {
+              if (s.cmd === "Z") { partes.push("Z"); continue; }
+              const [xV, yV] = s.cmd === "A" ? [s.args[5], s.args[6]] : s.args;
+              const x = izquierdaTaco + (xV / 1000) * anchoTaco;
+              const y = arribaTaco + (yV / 338) * altoTaco;
+              const X = (centroX + (x - centroX) * escala).toFixed(1);
+              const Y = (centroY + (y - centroY) * escala).toFixed(1);
+              if (s.cmd === "A") {
+                const [rx, ry, rot, lf, sf] = s.args;
+                const rxS = ((rx / 1000) * anchoTaco * escala).toFixed(1);
+                const ryS = ((ry / 338) * altoTaco * escala).toFixed(1);
+                partes.push(`A ${rxS} ${ryS} ${rot} ${lf} ${sf} ${X} ${Y}`);
+              } else {
+                partes.push(`${s.cmd} ${X} ${Y}`);
+              }
             }
-            return `path("M ${puntos.join(" L ")} Z")`;
+            return `path("${partes.join(" ")}")`;
           };
           const cobertura =
             Math.max(
