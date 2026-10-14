@@ -123,6 +123,26 @@ gtag('config', '${gaId}');`
         marcarRiel();
       });
     </script>
+    <script is:inline>
+      // El preload del hierro (BrandBurn.astro, solo la home) decide aca si va, y
+      // no en el script del componente: ahi llega despues del primer pintado y la
+      // segunda visita de la sesion mostraria un frame de pantalla crema. Con el
+      // hash puesto (alguien entro a /#contacto) o con movimiento reducido la
+      // ceremonia sobra: una preload sin movimiento es solo una espera.
+      (() => {
+        try {
+          const visto = window.sessionStorage.getItem("bottega-burn");
+          const quieto = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+          ).matches;
+          if (!visto && !quieto && !window.location.hash) {
+            document.documentElement.classList.add("has-burn");
+          }
+        } catch {
+          /* sessionStorage bloqueado: se entra directo, sin ceremonia */
+        }
+      })();
+    </script>
   </head>
   <body class="flex min-h-full flex-col bg-cream antialiased">
     <slot />

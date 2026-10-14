@@ -1,0 +1,757 @@
+---
+// BrandBurn — el preload de la home: el hierro sube frío desde abajo, se calienta
+// con llamas verdes que llegan desde el costado, se carga hacia atrás y da un solo
+// masazo que estampa "bottega" en el papel. Después el hierro se desvanece y queda
+// el wordmark quemado, que es el mismo glifo que ocupa la apertura del hero: el
+// overlay se enrolla hacia arriba y lo que aparece abajo es la marca, ya limpia.
+//
+// Todo el dibujo (hierro, llamas, chispas, humo) es SVG y CSS propios: ni librerías
+// ni canvas ni imágenes. La animación es declarativa (una sola clase `is-running`
+// dispara la línea de tiempos, que vive en los `animation-delay` de esta hoja) y el
+// script solo mide, prende la clase, marca la sesión y limpia.
+//
+// Approach, narrativa, línea de tiempos y verificación: odd/tasks/brand-burn-intro.md
+
+// Una letra por nodo, con `i` = distancia al centro de la palabra. El fuego viaja
+// desde el punto del golpe (el centro) hacia las puntas, así que el retardo sale de
+// esa distancia y no del orden de lectura.
+const LETRAS = [
+  { letra: "b", i: 3 },
+  { letra: "o", i: 2 },
+  { letra: "t", i: 1 },
+  { letra: "t", i: 0 },
+  { letra: "e", i: 1 },
+  { letra: "g", i: 2 },
+  { letra: "a", i: 3 },
+];
+---
+
+<div id="brand-burn" aria-hidden="true">
+  <!-- Todo lo que tiembla con el masazo -->
+  <div class="burn-shake">
+    <!-- El hierro. Tres capas: la de afuera lleva la posición que mide el script,
+         la del medio la animación de la línea de tiempos y la de adentro el
+         centrado de la pieza sobre el punto del golpe. -->
+    <div class="burn-iron" data-cuerpo>
+      <div class="burn-iron-anim">
+        <div class="burn-iron-arte">
+          <svg
+            class="burn-iron-svg"
+            viewBox="0 0 260 340"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <!-- El quemado: el borde del glifo se rompe, se ahuma y queda el halo
+                   carbonizado alrededor. Es el mismo recurso del garabato del hero
+                   (turbulencia + desplazamiento) con otro grano. -->
+              <filter
+                id="burn-quemado"
+                x="-10%"
+                y="-16%"
+                width="120%"
+                height="140%"
+                color-interpolation-filters="sRGB"
+              >
+                <feTurbulence
+                  type="fractalNoise"
+                  baseFrequency="0.035 0.06"
+                  numOctaves="4"
+                  seed="7"
+                  result="grano"
+                />
+                <feDisplacementMap
+                  in="SourceGraphic"
+                  in2="grano"
+                  scale="2.6"
+                  xChannelSelector="R"
+                  yChannelSelector="G"
+                  result="roto"
+                />
+                <feGaussianBlur in="roto" stdDeviation="0.45" result="suave" />
+                <feMorphology
+                  in="suave"
+                  operator="dilate"
+                  radius="1.1"
+                  result="gordo"
+                />
+                <feColorMatrix
+                  in="gordo"
+                  type="matrix"
+                  values="0.1 0 0 0 0.02
+                          0 0.16 0 0 0.06
+                          0 0 0.12 0 0.04
+                          0 0 0 0.34 0"
+                  result="halo"
+                />
+                <feMerge>
+                  <feMergeNode in="halo" />
+                  <feMergeNode in="suave" />
+                </feMerge>
+              </filter>
+
+              <!-- El calor de la cara: verde caliente que se apaga hacia afuera -->
+              <radialGradient id="burn-calor" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#158a63" stop-opacity="0.9" />
+                <stop offset="45%" stop-color="#158a63" stop-opacity="0.4" />
+                <stop offset="100%" stop-color="#158a63" stop-opacity="0" />
+              </radialGradient>
+
+              <!-- La llama: del verde oscuro de la base al crema del blanco caliente -->
+              <linearGradient id="burn-llama" x1="0" y1="1" x2="0.35" y2="0">
+                <stop offset="0%" stop-color="#0A2D27" />
+                <stop offset="38%" stop-color="#0F4238" />
+                <stop offset="72%" stop-color="#158a63" />
+                <stop offset="100%" stop-color="#FBF7F0" stop-opacity="0.85" />
+              </linearGradient>
+            </defs>
+
+            <!-- El mango: pomo, varilla, virola y las vueltas del agarre -->
+            <g class="burn-hierro">
+              <rect
+                x="96"
+                y="4"
+                width="68"
+                height="30"
+                rx="13"
+                class="metal-claro"
+              />
+              <rect x="112" y="30" width="36" height="158" class="metal" />
+              <rect
+                x="118"
+                y="32"
+                width="7"
+                height="152"
+                class="metal-brillo"
+              />
+              <rect x="106" y="52" width="48" height="11" rx="3" class="virola" />
+              <rect x="106" y="84" width="48" height="11" rx="3" class="virola" />
+              <rect x="106" y="116" width="48" height="11" rx="3" class="virola" />
+              <rect x="106" y="148" width="48" height="11" rx="3" class="virola" />
+
+              <!-- El hombro que pasa de la varilla a la cabeza -->
+              <path d="M 112 186 L 148 186 L 178 212 L 82 212 Z" class="metal" />
+
+              <!-- La cabeza: cara del lado, frente, bisel de arriba y remaches -->
+              <path d="M 44 212 L 148 194 L 196 194 L 216 212 Z" class="metal" />
+              <rect x="42" y="212" width="176" height="104" rx="4" class="metal" />
+              <path d="M 42 212 L 148 194 L 196 194 L 218 212 Z" class="metal-claro" />
+              <circle cx="74" cy="252" r="5" class="remache" />
+              <circle cx="186" cy="252" r="5" class="remache" />
+
+              <!-- La matriz: el bloque que estampa, con la cara abajo -->
+              <rect x="58" y="314" width="144" height="20" rx="3" class="metal" />
+              <rect
+                x="62"
+                y="331"
+                width="136"
+                height="8"
+                rx="2"
+                class="cara"
+              />
+              <ellipse cx="130" cy="330" rx="106" ry="46" class="calor" />
+            </g>
+
+            <!-- Las llamas: llegan desde el costado derecho y lamen la cabeza. Cada
+                 lengua es el mismo trazo con su propia colocación; la animación va
+                 en el path y la posición en el grupo, para que no se peleen. -->
+            <g class="llamas">
+              <g transform="translate(254 322) scale(1.42)">
+                <path
+                  class="llama llama-1"
+                  d="M 0 0 C -16 -34 7 -54 -3 -88 C 21 -62 30 -33 15 0 Z"
+                />
+              </g>
+              <g transform="translate(232 324) scale(1.02)">
+                <path
+                  class="llama llama-2"
+                  d="M 0 0 C -16 -34 7 -54 -3 -88 C 21 -62 30 -33 15 0 Z"
+                />
+              </g>
+              <g transform="translate(210 316) scale(0.86) rotate(-20)">
+                <path
+                  class="llama llama-3"
+                  d="M 0 0 C -16 -34 7 -54 -3 -88 C 21 -62 30 -33 15 0 Z"
+                />
+              </g>
+              <g transform="translate(246 322) scale(0.62)">
+                <path
+                  class="llama llama-4 llama-nucleo"
+                  d="M 0 0 C -16 -34 7 -54 -3 -88 C 21 -62 30 -33 15 0 Z"
+                />
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- El punto del golpe: el destello, las chispas y el humo -->
+    <div class="burn-golpe" data-golpe>
+      <div class="burn-flash"></div>
+      <i class="burn-chispa" style="--k: 0"></i>
+      <i class="burn-chispa" style="--k: 1"></i>
+      <i class="burn-chispa" style="--k: 2"></i>
+      <i class="burn-humo" style="--k: 0"></i>
+      <i class="burn-humo" style="--k: 1"></i>
+      <i class="burn-humo" style="--k: 2"></i>
+    </div>
+
+    <!-- La palabra: usa las clases reales de la marca, así el glifo y el tamaño son
+         los del sitio y el relevo al hero es una coincidencia de caja. -->
+    <div class="burn-word" data-palabra>
+      <span class="wordmark wordmark-hero">
+        {
+          LETRAS.map(({ letra, i }) => (
+            <span class="burn-letra" style={`--i: ${i}`}>
+              {letra}
+            </span>
+          ))
+        }
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* La ceremonia entera vive en este bloque. El overlay no existe hasta que el
+     <head> pone `has-burn` en el <html>: así la segunda visita no muestra ni un
+     frame de pantalla crema. */
+  #brand-burn {
+    display: none;
+  }
+
+  :root.has-burn #brand-burn {
+    display: block;
+  }
+
+  #brand-burn {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--color-cream);
+    overflow: hidden;
+  }
+
+  /* El retiro: la hoja se enrolla hacia arriba y deja a la vista el hero, con el
+     wordmark ya en su lugar. `clip-path` y no `opacity`: la marca no se desvanece,
+     se descubre. */
+  :root.has-burn #brand-burn.is-running {
+    animation: retirar 250ms cubic-bezier(0.62, 0, 0.34, 1) both;
+    animation-delay: 2150ms;
+  }
+
+  @keyframes retirar {
+    from {
+      clip-path: inset(0 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  .burn-shake {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* ── El hierro ───────────────────────────────────────────────────────────── */
+
+  .burn-iron {
+    position: absolute;
+    /* La posición la escribe el script: es el punto del golpe. */
+    left: 50%;
+    top: 60%;
+  }
+
+  .burn-iron-anim {
+    animation: hierro 2400ms linear both;
+  }
+
+  .burn-iron-arte {
+    /* El centro de la cara de la matriz cae en el punto del golpe */
+    transform: translate(-50%, -100%);
+  }
+
+  .burn-iron-svg {
+    display: block;
+    /* El tope por alto de ventana (46vh) es lo que hace que el hierro entre en
+       cuadro desde abajo incluso en ventanas bajas: sin el, en 668px de alto su
+       borde de arriba ya se veia en el cuadro 0% y el silencio del arranque se
+       rompia. Achica el objeto, no recorta nada. */
+    width: min(clamp(190px, 23vw, 296px), 46vh);
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Los materiales: verdes de la casa y los brillos por mezcla, sin tonos nuevos */
+  .metal {
+    fill: var(--color-green-light);
+  }
+  .metal-claro {
+    fill: color-mix(in srgb, var(--color-green-light) 62%, var(--color-cream));
+  }
+  .metal-brillo {
+    fill: var(--color-cream);
+    opacity: 0.22;
+  }
+  .virola {
+    fill: var(--color-green-dark);
+  }
+  .remache {
+    fill: var(--color-cream);
+    opacity: 0.5;
+  }
+  .cara {
+    fill: var(--color-green-dark);
+  }
+  .calor {
+    fill: url(#burn-calor);
+    opacity: 0;
+  }
+
+  /* La línea de tiempos del hierro. Cada tramo lleva su curva: la subida llega con
+     sobrepaso y asienta, la carga hacia atrás es lenta, el masazo es de 80ms y el
+     rebote se apaga solo. Nada de `ease` genérico.
+
+     La opacidad va declarada en 0% y en 70% a propósito: si solo aparece en los
+     cuadros del final, Chrome crea el cuadro implícito de 0% con el valor de base
+     y hace la rampa desde el arranque (el hierro se desvanecía antes del masazo). */
+  @keyframes hierro {
+    0% {
+      opacity: 1;
+      transform: translateY(168vh) rotate(-6deg);
+      animation-timing-function: cubic-bezier(0.16, 0.86, 0.22, 1);
+    }
+    26% {
+      transform: translateY(-14px) rotate(-3.5deg);
+      animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    30% {
+      transform: translateY(0) rotate(-5deg);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    42% {
+      transform: translateY(-9px) rotate(-3deg);
+      animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    50% {
+      transform: translateY(-15px) rotate(-6deg);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+    }
+    59% {
+      transform: translateY(-46px) rotate(-13deg);
+      animation-timing-function: cubic-bezier(0.7, 0, 0.84, 0);
+    }
+    62.5% {
+      transform: translateY(0) rotate(0deg);
+      animation-timing-function: cubic-bezier(0.22, 1.4, 0.44, 1);
+    }
+    66% {
+      transform: translateY(-13px) rotate(-2.5deg);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.6, 1);
+    }
+    70% {
+      opacity: 1;
+      transform: translateY(-3px) rotate(-1deg);
+      animation-timing-function: cubic-bezier(0.3, 0.9, 0.4, 1);
+    }
+    83% {
+      opacity: 0;
+      transform: translateY(-150px) rotate(-11deg) scale(0.92);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-150px) rotate(-11deg) scale(0.92);
+    }
+  }
+
+  /* El calor: la cara de la matriz y el halo se encienden mientras el hierro sube
+     del frío, y quedan al rojo hasta el golpe. */
+  .cara {
+    animation: cara-caliente 620ms ease-out both;
+    animation-delay: 520ms;
+  }
+
+  @keyframes cara-caliente {
+    0% {
+      fill: var(--color-green-dark);
+    }
+    100% {
+      fill: #158a63;
+    }
+  }
+
+  .calor {
+    animation: halo-caliente 700ms ease-out both;
+    animation-delay: 520ms;
+  }
+
+@keyframes halo-caliente {
+    0% {
+      opacity: 0;
+    }
+    60% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .burn-hierro {
+    animation: hierro-caliente 900ms ease-out both;
+    animation-delay: 480ms;
+  }
+
+  @keyframes hierro-caliente {
+    0% {
+      filter: none;
+    }
+    100% {
+      filter: drop-shadow(0 0 22px rgba(21, 138, 99, 0.62));
+    }
+  }
+
+  /* ── Las llamas ──────────────────────────────────────────────────────────── */
+
+  .llamas {
+    animation: llamas-llegan 880ms cubic-bezier(0.18, 0.9, 0.24, 1) both;
+    animation-delay: 470ms;
+  }
+
+  @keyframes llamas-llegan {
+    from {
+      transform: translateX(46px) scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .llama {
+    fill: url(#burn-llama);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: lengua 0.66s ease-in-out infinite alternate;
+  }
+
+  .llama-nucleo {
+    fill: var(--color-cream-light);
+    opacity: 0.75;
+    filter: blur(1.5px);
+  }
+
+  /* Duraciones distintas y desfasadas: es lo que separa fuego de parpadeo. */
+  .llama-1 {
+    animation-duration: 0.79s;
+    animation-delay: -0.24s;
+  }
+  .llama-2 {
+    animation-duration: 0.53s;
+    animation-delay: -0.41s;
+  }
+  .llama-3 {
+    animation-duration: 0.88s;
+    animation-delay: -0.12s;
+  }
+  .llama-4 {
+    animation-duration: 0.61s;
+    animation-delay: -0.33s;
+  }
+
+  @keyframes lengua {
+    from {
+      transform: scaleY(0.82) scaleX(1.06) skewX(-4deg);
+    }
+    to {
+      transform: scaleY(1.16) scaleX(0.94) skewX(5deg);
+    }
+  }
+
+  /* ── El golpe ────────────────────────────────────────────────────────────── */
+
+  .burn-golpe {
+    position: absolute;
+    left: 50%;
+    top: 60%;
+  }
+
+  .burn-golpe > * {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .burn-flash {
+    width: min(520px, 78vw);
+    height: 150px;
+    margin: -75px 0 0 min(-260px, -39vw);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(21, 138, 99, 0.5) 0%,
+      rgba(21, 138, 99, 0.16) 45%,
+      rgba(21, 138, 99, 0) 76%
+    );
+    opacity: 0;
+    animation: flash 320ms cubic-bezier(0.16, 0.9, 0.24, 1) both;
+    animation-delay: 1490ms;
+  }
+
+  @keyframes flash {
+    0% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    18% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.22);
+    }
+  }
+
+  /* Una sola vez: el tablero tiembla con el masazo y se asienta enseguida */
+  .burn-shake {
+    animation: golpe 170ms cubic-bezier(0.3, 0, 0.4, 1) both;
+    animation-delay: 1500ms;
+  }
+
+  @keyframes golpe {
+    0% {
+      transform: translate(0, 0);
+    }
+    18% {
+      transform: translate(-3px, 4px);
+    }
+    42% {
+      transform: translate(2px, -3px);
+    }
+    68% {
+      transform: translate(-1px, 1px);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+
+  .burn-chispa {
+    width: 2px;
+    height: 14px;
+    border-radius: 1px;
+    background: linear-gradient(
+      to top,
+      rgba(21, 138, 99, 0),
+      #158a63 55%,
+      var(--color-cream-light)
+    );
+    opacity: 0;
+    animation: chispa 520ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    animation-delay: calc(1502ms + var(--k) * 26ms);
+  }
+
+  @keyframes chispa {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg) scaleY(0.4);
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc((var(--k) - 1) * 46px), -74px)
+        rotate(calc((var(--k) - 1) * 42deg)) scaleY(1);
+    }
+  }
+
+  .burn-humo {
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(251, 247, 240, 0.9) 0%,
+      rgba(251, 247, 240, 0) 70%
+    );
+    opacity: 0;
+    animation: humo 900ms ease-out both;
+    animation-delay: calc(1700ms + var(--k) * 90ms);
+  }
+
+  @keyframes humo {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.4);
+    }
+    30% {
+      opacity: 0.75;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc((var(--k) - 1) * 40px), -96px) scale(1.9);
+    }
+  }
+
+  /* ── El quemado de las letras ────────────────────────────────────────────── */
+
+  .burn-word {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /* La posición la escribe el script: la caja del wordmark del hero */
+  }
+
+  .burn-letra {
+    display: inline-block;
+    opacity: 0;
+    animation: letra-quemada 380ms cubic-bezier(0.2, 0.82, 0.24, 1) both;
+    animation-delay: calc(1500ms + var(--i) * 70ms);
+  }
+
+  /* Tres etapas de verde: entra al rojo vivo con el resplandor perimetral, pasa por
+     el verde de la marca y termina carbonizada, con el grano del filtro. El color
+     final es el mismo que el del wordmark del hero: cuando el overlay se enrolla,
+     el glifo que queda es idéntico. */
+  @keyframes letra-quemada {
+    0% {
+      opacity: 0;
+      color: #158a63;
+      filter: blur(3px) drop-shadow(0 0 20px rgba(21, 138, 99, 0.95));
+      transform: scale(1.09);
+    }
+    16% {
+      opacity: 1;
+      color: #158a63;
+    }
+    58% {
+      color: var(--color-green);
+      filter: blur(0.6px) drop-shadow(0 0 9px rgba(21, 138, 99, 0.4));
+    }
+    100% {
+      opacity: 1;
+      color: var(--color-green);
+      filter: url(#burn-quemado);
+      transform: scale(1);
+    }
+  }
+
+  /* La brasa del centro se apaga antes del relevo */
+  .burn-letra {
+    will-change: filter, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root.has-burn #brand-burn,
+    :root.has-burn #brand-burn.is-running,
+    .burn-shake,
+    .burn-iron-anim,
+    .burn-hierro,
+    .llamas,
+    .llama,
+    .cara,
+    .calor,
+    .burn-flash,
+    .burn-chispa,
+    .burn-humo,
+    .burn-letra {
+      animation: none !important;
+    }
+    /* Sin movimiento, la marca está: no hay ceremonia que ver */
+    :root.has-burn #brand-burn {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const CLAVE_SESION = "bottega-burn";
+  const DURACION = 2460;
+
+  const raiz = document.documentElement;
+  const overlay = document.getElementById("brand-burn");
+
+  // El <head> ya decidió (sesión, hash, movimiento reducido). Acá solo se resuelve
+  // el caso que el <head> no puede saber: una recarga a mitad de página, donde el
+  // navegador restaura el scroll y el preload sobra.
+  if (overlay && raiz.classList.contains("has-burn")) {
+    if (window.scrollY > 2) {
+      raiz.classList.remove("has-burn");
+    } else {
+      const palabra = overlay.querySelector<HTMLElement>("[data-palabra]");
+      const cuerpo = overlay.querySelector<HTMLElement>("[data-cuerpo]");
+      const golpe = overlay.querySelector<HTMLElement>("[data-golpe]");
+      const marca = document.querySelector<HTMLElement>("[data-brand-wordmark]");
+
+      if (!palabra || !cuerpo || !golpe || !marca) {
+        raiz.classList.remove("has-burn");
+      } else {
+        // Posición en el documento por suma de offsetTop/offsetLeft: es inmune a las
+        // transformaciones de entrada de `data-reveal`, que si no corren la caja.
+        const cajaDe = (nodo: HTMLElement) => {
+          let x = 0;
+          let y = 0;
+          let actual: HTMLElement | null = nodo;
+          while (actual) {
+            x += actual.offsetLeft;
+            y += actual.offsetTop;
+            actual = actual.offsetParent as HTMLElement | null;
+          }
+          return { x, y, ancho: nodo.offsetWidth, alto: nodo.offsetHeight };
+        };
+
+        const plantarLaPalabra = () => {
+          const caja = cajaDe(marca);
+          palabra.style.transform = `translate(${caja.x}px, ${caja.y}px)`;
+          // El golpe cae en el centro de arriba de la palabra: ahí nacen el
+          // destello, las chispas y el humo, y ahí apoya la cara de la matriz.
+          const impactoX = caja.x + caja.ancho / 2;
+          const impactoY = caja.y - 2;
+          golpe.style.left = `${impactoX}px`;
+          golpe.style.top = `${impactoY}px`;
+          cuerpo.style.left = `${impactoX}px`;
+          cuerpo.style.top = `${impactoY}px`;
+        };
+
+        const terminar = () => {
+          raiz.classList.remove("has-burn");
+          raiz.style.overflow = "";
+          try {
+            sessionStorage.setItem(CLAVE_SESION, "1");
+          } catch {
+            /* modo privado: el preload se repetirá, es lo menos malo */
+          }
+        };
+
+        const arrancar = () => {
+          plantarLaPalabra();
+          raiz.style.overflow = "hidden";
+          overlay.classList.add("is-running");
+          overlay.addEventListener("animationend", (evento) => {
+            if ((evento as AnimationEvent).animationName === "retirar") {
+              terminar();
+            }
+          });
+          // Red de seguridad: si el evento de animación no llega (pestaña de fondo,
+          // preferencia cambiada a mitad de camino), el overlay se saca igual.
+          window.setTimeout(terminar, DURACION + 400);
+        };
+
+        // La palabra tiene que estar en Lora antes de quemarse: si la fuente tarda,
+        // arranca igual a los 300ms (mejor un glifo de respaldo que una espera).
+        const fuenteALista = Promise.race([
+          document.fonts ? document.fonts.ready : Promise.resolve(),
+          new Promise((listo) => window.setTimeout(listo, 300)),
+        ]);
+        fuenteALista.then(() => {
+          window.requestAnimationFrame(() => window.requestAnimationFrame(arrancar));
+        });
+      }
+    }
+  }
+</script>
