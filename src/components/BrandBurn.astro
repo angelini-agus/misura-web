@@ -646,24 +646,27 @@ const LETRAS = [
     will-change: filter, transform;
   }
 
+  /* El corte por movimiento reducido no cuenta cuando la ceremonia viene forzada
+     por `?burn=1`: esa es la herramienta del autor para revisarla, y sin esto el
+     CSS le escondía el overlay aunque el JS la dejara correr. */
   @media (prefers-reduced-motion: reduce) {
-    :root.has-burn #brand-burn,
-    :root.has-burn #brand-burn.is-running,
-    .burn-shake,
-    .burn-iron-anim,
-    .burn-hierro,
-    .llamas,
-    .llama,
-    .cara,
-    .calor,
-    .burn-flash,
-    .burn-chispa,
-    .burn-humo,
-    .burn-letra {
+    :root.has-burn:not([data-burn-forzado]) #brand-burn,
+    :root.has-burn:not([data-burn-forzado]) #brand-burn.is-running,
+    :root:not([data-burn-forzado]) .burn-shake,
+    :root:not([data-burn-forzado]) .burn-iron-anim,
+    :root:not([data-burn-forzado]) .burn-hierro,
+    :root:not([data-burn-forzado]) .llamas,
+    :root:not([data-burn-forzado]) .llama,
+    :root:not([data-burn-forzado]) .cara,
+    :root:not([data-burn-forzado]) .calor,
+    :root:not([data-burn-forzado]) .burn-flash,
+    :root:not([data-burn-forzado]) .burn-chispa,
+    :root:not([data-burn-forzado]) .burn-humo,
+    :root:not([data-burn-forzado]) .burn-letra {
       animation: none !important;
     }
     /* Sin movimiento, la marca está: no hay ceremonia que ver */
-    :root.has-burn #brand-burn {
+    :root.has-burn:not([data-burn-forzado]) #brand-burn {
       display: none;
     }
   }
