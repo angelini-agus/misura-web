@@ -86,6 +86,14 @@
        sobre la cara del taco sin que se vea una costura y por eso el masazo no
        tiene que cambiar ningún color. */
     --tinta: var(--color-green);
+    /* Las duraciones de la ceremonia. Viven en variables por un solo motivo: la
+       regla global de movimiento reducido de `global.css` (`* {
+       animation-duration: .01ms !important }`) también alcanza a la ceremonia
+       forzada por `?burn=1` y la colapsa a un cuadro, así que el camino forzado
+       tiene que reponerlas y no queremos las duraciones escritas dos veces. */
+    --burn-total: 2750ms;
+    --burn-golpe: 190ms;
+    --burn-retiro: 420ms;
     /* Las sombras son de la tinta, nunca grises: lo único que cambia es el
        alpha. */
     --tinta-0: color-mix(in srgb, var(--tinta) 0%, transparent);
@@ -128,7 +136,7 @@
   .golpe {
     position: absolute;
     inset: 0;
-    animation: golpe-lino 190ms cubic-bezier(0.3, 0, 0.4, 1) both;
+    animation: golpe-lino var(--burn-golpe) cubic-bezier(0.3, 0, 0.4, 1) both;
     animation-delay: 980ms;
   }
 
@@ -182,7 +190,7 @@
        la ventana. Así la carga y el masazo escalan las dos piezas como si fueran
        una sola. */
     will-change: clip-path, opacity, transform;
-    animation: masa-plato 2750ms both;
+    animation: masa-plato var(--burn-total) both;
   }
 
   /* 0 → 450ms      verde pleno: la ventana entera es tinta y no pasa nada
@@ -258,7 +266,7 @@
       0 40px 60px var(--tinta-34),
       0 8px 18px var(--tinta-22);
     will-change: transform, box-shadow, opacity, filter;
-    animation: taco-golpe 2750ms both;
+    animation: taco-golpe var(--burn-total) both;
   }
 
   /* El borde del bloque, para que la cara no sea un rectángulo plano sin nada */
@@ -379,7 +387,7 @@
   /* El retiro: la hoja se enrolla hacia arriba y deja a la vista el hero, con la
      marca ya en su lugar. `clip-path` y no `opacity`: el lino se descubre. */
   :root.has-burn #brand-burn.is-running {
-    animation: retirar 420ms cubic-bezier(0.62, 0, 0.34, 1) both;
+    animation: retirar var(--burn-retiro) cubic-bezier(0.62, 0, 0.34, 1) both;
     animation-delay: 2300ms;
   }
 
@@ -406,6 +414,25 @@
     /* Sin movimiento, la marca está donde va y no hay ceremonia que ver */
     :root.has-burn:not([data-burn-forzado]) #brand-burn {
       display: none;
+    }
+
+    /* La ceremonia forzada corre a velocidad real. Hay que decirlo acá porque el
+       `!important` de global.css pisa a TODA animación de la página, incluida
+       esta: dos `!important` los desempata la especificidad, y estos selectores
+       son bastante más específicos que un `*`. Sin esto, el autor que revisa con
+       movimiento reducido (el caso más común en Windows) ve la ceremonia entera
+       pasar en un cuadro y el overlay retirarse solo. */
+    :root[data-burn-forzado] .taco,
+    :root[data-burn-forzado] .masa {
+      animation-duration: var(--burn-total) !important;
+    }
+
+    :root[data-burn-forzado] .golpe {
+      animation-duration: var(--burn-golpe) !important;
+    }
+
+    :root[data-burn-forzado] #brand-burn.is-running {
+      animation-duration: var(--burn-retiro) !important;
     }
   }
 </style>

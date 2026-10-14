@@ -113,6 +113,7 @@ son de la tinta (`color-mix` sobre `--tinta`): nunca grises.
 | Los cuadros | 18 fases en `%TEMP%/hero-shot/preload2/` (montaje `fases-preload2.png`) capturadas con la ceremonia **congelada** por la Web Animations API (`pause()` + `currentTime`): cuadro exacto, sin sondear. Arnés: `%TEMP%/hero-shot/preload2.cjs` |
 | Los cuatro casos de skip | Segunda visita, hash y movimiento reducido: `has-burn` ausente. Recarga con scroll restaurado, con una recarga real a 2152px (`reload2.cjs`): `has-burn` ausente |
 | `?burn=1` y `?burn=lento` | Sin cambios: el forzado ignora las cuatro condiciones y no escribe la marca de sesión |
+| Movimiento reducido + `?burn=1` | Corre a velocidad real: las cuatro animaciones con `currentTime` real (~1117ms) y el taco en opacidad 1 a los ~1,1s. **Era un defecto previo**, no de este cambio |
 
 ## La trampa que nos comió TRES veces
 
@@ -134,6 +135,17 @@ rotateY() scale() translate()`, aunque al principio valgan la identidad.
 sobre todo el velo de 215ms del despegue) hay que congelar la animación: `pause()`
 + `currentTime` por la Web Animations API da el cuadro exacto. Los sondeos de
 puppeteer caen cada ~100ms y lo que se ve en la captura puede ser otro cuadro.
+
+**La regla global de movimiento reducido pisa la ceremonia forzada.**
+`global.css` tiene `*, *::before, *::after { animation-duration: 0.01ms !important }`
+para el sistema con movimiento reducido, y ese `!important` alcanza también a la
+ceremonia forzada por `?burn=1`: **toda la escena pasaba en un cuadro** y el
+overlay se retiraba solo (el taco quedaba en su cuadro final, opacidad 0). El
+doc lo daba por verificado con un arnés viejo que solo miraba el `display`.
+Se arregla en el componente reponiendo la duración de cada pieza con un
+`!important` **más específico** que el universal (entre dos `!important` desempata
+la especificidad) y con las duraciones en `--burn-total`, `--burn-golpe` y
+`--burn-retiro`, para no escribirlas dos veces.
 
 ## Abiertos
 
