@@ -9,9 +9,11 @@
 // sitio): por eso el plato puede aterrizar sobre el taco sin que se vea una
 // costura y por eso, al destaparse, la marca no cambia ni de color ni de lugar.
 //
-// La vista es cenital (primera persona): el taco es un rectángulo visto desde
-// arriba y su altura se cuenta con dos cosas y nada más: la escala (1 abajo,
-// 1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura.
+// La vista es cenital (primera persona): el taco es un bloque de madera visto
+// desde arriba y su altura se cuenta con dos cosas y nada más: la escala (1 abajo,
+// 1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La madera
+// no es una superficie lisa: lleva su veta (dos pasadas de ruido) y el agarre
+// torneado con el que la mano la sostiene y la golpea.
 //
 // La impresión ES el wordmark del hero: mismas clases de la marca, mismo glifo,
 // mismo tamaño, sin marco y sin filtros. El script solo la corre hasta la caja del
@@ -23,7 +25,7 @@
 //
 // Secuencia, medidas y verificación: odd/tasks/brand-burn-intro.md
 
-// El golpe cae a los 0.98s: es el momento que sincroniza el resto (el shake del
+// El golpe cae a los 1.28s: es el momento que sincroniza el resto (el shake del
 // lino, la salida del plato, la tinta que se asienta y el destape del taco).
 // Todos esos tiempos viven en los animation-delay de la hoja de abajo, no en el
 // script.
@@ -64,10 +66,113 @@
       <span class="wordmark wordmark-hero">bottega</span>
     </div>
 
-    <!-- El taco: un bloque sólido visto desde arriba. Su altura es la escala y la
-         sombra; no hay ni una pieza de dibujo adentro. -->
+    <!-- El taco: una pieza de madera cortada de un tronco, vista desde arriba. Su
+         altura son la escala y la sombra; el contorno NO es una caja (es un tronco
+         con la corteza en dos de sus lados) y encima lleva la veta, las costuras y
+         el agarre torneado con el que la mano lo sostiene.
+         El plato de tinta copia este contorno: el script lee el `d` del `clipPath`
+         y arma con él su `clip-path`, así que la tinta aterriza sobre la madera y
+         no sobre una caja. -->
     <div class="taco" data-taco>
-      <div class="taco-cara"></div>
+      <svg
+        class="taco-madera"
+        viewBox="0 0 1000 338"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <clipPath id="taco-corte">
+            <path
+              d="M 14 30 L 252 6 L 520 14 L 758 4 L 946 22 L 984 40 L 992 300 L 758 332 L 428 320 L 138 336 L 10 296 L 5 118 Z"
+            />
+          </clipPath>
+          <filter id="veta-madera" x="0" y="0" width="100%" height="100%">
+            <!-- Dos pasadas de ruido: la fina es la veta y la ancha la ondula. Una
+                 veta recta y pareja es un cepillado, no madera. -->
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.004 0.9"
+              numOctaves="2"
+              seed="11"
+              result="fina"
+            />
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.0022 0.14"
+              numOctaves="1"
+              seed="4"
+              result="ancha"
+            />
+            <feDisplacementMap
+              in="fina"
+              in2="ancha"
+              scale="34"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="ondulada"
+            />
+            <feColorMatrix
+              in="ondulada"
+              type="matrix"
+              values="0 0 0 0 0.72
+                      0 0 0 0 0.68
+                      0 0 0 0 0.56
+                      0 0 0 0.8 0"
+              result="grano"
+            />
+            <feColorMatrix
+              in="ancha"
+              type="matrix"
+              values="0 0 0 0 0.42
+                      0 0 0 0 0.4
+                      0 0 0 0 0.32
+                      0 0 0 0.9 0"
+              result="manchas"
+            />
+            <feMerge>
+              <feMergeNode in="manchas" />
+              <feMergeNode in="grano" />
+            </feMerge>
+          </filter>
+        </defs>
+        <g clip-path="url(#taco-corte)">
+          <rect class="taco-cara" width="1000" height="338" />
+          <rect
+            class="taco-veta"
+            width="1000"
+            height="338"
+            filter="url(#veta-madera)"
+          />
+          <!-- La corteza: las dos bandas del lado del tronco (la de arriba y la de
+               la izquierda), con sus costuras. -->
+          <path
+            class="taco-corteza"
+            d="M 14 30 L 252 6 L 520 14 L 758 4 L 946 22 L 984 40 L 962 66 L 720 48 L 470 58 L 210 52 L 40 74 L 30 46 Z"
+          />
+          <path
+            class="taco-corteza"
+            d="M 14 30 L 30 46 L 40 74 L 32 170 L 38 286 L 14 302 L 5 118 Z"
+          />
+          <g class="taco-costuras">
+            <path d="M 70 38 L 300 22" />
+            <path d="M 540 26 L 820 16" />
+            <path d="M 24 96 L 30 150" />
+            <path d="M 26 196 L 32 258" />
+          </g>
+          <!-- La sombra del agarre es otra elipse (y no un `drop-shadow`): son dos
+               pasadas de filtro menos en el primer pintado, que es donde se paga. -->
+          <ellipse
+            class="taco-agarre-sombra"
+            cx="500"
+            cy="184"
+            rx="146"
+            ry="60"
+          />
+          <ellipse class="taco-agarre" cx="500" cy="172" rx="132" ry="54" />
+          <ellipse class="taco-agarre-tapa" cx="500" cy="169" rx="100" ry="38" />
+        </g>
+      </svg>
     </div>
 
     <!-- La masa de tinta: arranca cubriendo la ventana entera y baja hasta la cara
@@ -91,7 +196,7 @@
        animation-duration: .01ms !important }`) también alcanza a la ceremonia
        forzada por `?burn=1` y la colapsa a un cuadro, así que el camino forzado
        tiene que reponerlas y no queremos las duraciones escritas dos veces. */
-    --burn-total: 2750ms;
+    --burn-total: 3000ms;
     --burn-golpe: 190ms;
     --burn-retiro: 420ms;
     /* Las sombras son de la tinta, nunca grises: lo único que cambia es el
@@ -137,7 +242,7 @@
     position: absolute;
     inset: 0;
     animation: golpe-lino var(--burn-golpe) cubic-bezier(0.3, 0, 0.4, 1) both;
-    animation-delay: 980ms;
+    animation-delay: 1280ms;
   }
 
   /* El golpe del mazo sobre el taco: un sacudón seco de 1.5px y se asienta */
@@ -184,6 +289,9 @@
     inset: 0;
     z-index: 3;
     background: var(--tinta);
+    /* `contain: paint` acota el repintado de la contracción (el plato se recorta
+       con un `path()` que se mueve cuadro a cuadro). */
+    contain: paint;
     border-radius: 3px;
     /* El pivote lo escribe el script: es el mismo punto físico que el
        `transform-origin` del taco (18% 88% de su caja), medido en el espacio de
@@ -194,99 +302,146 @@
   }
 
   /* 0 → 450ms      verde pleno: la ventana entera es tinta y no pasa nada
-     450 → 850ms    la contracción: el plato baja a la cara del taco
-     850 → 980ms    la carga, en sincronía con el taco que se levanta
-     980 → 1100ms   el masazo: la tinta deja la cara del taco y pasa a la fibra
+     450 → 850ms    la contracción: el plato baja hasta el contorno del taco
+     850 → 1150ms   la pausa: la tinta ya está sobre la madera y no pasa nada más
+     1150 → 1280ms  la carga, en sincronía con el taco que se levanta
+     1280 → 1400ms  el masazo: la tinta deja la cara del taco y pasa a la fibra
                     (el mismo cuadro en el que el taco toca el lino)
+
+     El recorte no es un rectángulo: son dos `path()` con el MISMO contorno del
+     tronco (el `d` del `clipPath` del taco, leído y reescalado por el script), así
+     que la tinta aterriza sobre la madera y la pausa la muestra pegada a su forma.
+     Uno está escalado para tapar la ventana (el arranque) y el otro es el contorno
+     en su tamaño: entre los dos, el plato se contrae y se vuelve tronco.
+
+     La escala del plato tiene un cuadro propio en la pausa (38.3%) aunque valga
+     lo mismo que el anterior: si no estuviera, el tramo 28.3% → 42.7% interpola la
+     escala de una sola vez y el plato empezaría a crecer durante la pausa, cuando
+     el taco todavía está abajo. Se vería un canto verde afuera del bloque.
 
      La opacidad se declara en cada cuadro a propósito: es la trampa del cuadro
      implícito que ya nos comió tres veces en esta escena. */
   @keyframes masa-plato {
     0% {
-      clip-path: inset(0px 0px 0px 0px);
+      clip-path: var(--masa-cubre);
       opacity: 1;
       transform: scale(1);
     }
-    16.4% {
-      clip-path: inset(0px 0px 0px 0px);
+    15% {
+      clip-path: var(--masa-cubre);
       opacity: 1;
       transform: scale(1);
       animation-timing-function: cubic-bezier(0.35, 0, 0.2, 1);
     }
-    30.9% {
-      clip-path: inset(
-        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
-          var(--masa-izquierda)
-      );
+    28.3% {
+      clip-path: var(--masa-forma);
+      opacity: 1;
+      transform: scale(1);
+    }
+    38.3% {
+      clip-path: var(--masa-forma);
       opacity: 1;
       transform: scale(1);
       animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.6);
     }
-    35.6% {
-      clip-path: inset(
-        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
-          var(--masa-izquierda)
-      );
+    42.7% {
+      clip-path: var(--masa-forma);
       opacity: 1;
       transform: scale(1.42);
       animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.7);
     }
-    40% {
-      clip-path: inset(
-        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
-          var(--masa-izquierda)
-      );
+    46.7% {
+      clip-path: var(--masa-forma);
       opacity: 0;
       transform: scale(1);
     }
     100% {
-      clip-path: inset(
-        var(--masa-arriba) var(--masa-derecha) var(--masa-abajo)
-          var(--masa-izquierda)
-      );
+      clip-path: var(--masa-forma);
       opacity: 0;
       transform: scale(1);
     }
   }
 
-  /* ── El taco de madera ───────────────────────────────────────────────────── */
+  /* ── El taco: una pieza de madera ───────────────────────────────────────── */
 
   .taco {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 2;
-    display: grid;
-    place-items: center;
-    background: var(--tinta);
-    border-radius: 3px;
-    /* La sombra es la altura: ancha y difusa arriba, pegada y dura abajo. El
-       keyframe la interpola entera. */
-    box-shadow:
-      0 40px 60px var(--tinta-34),
-      0 8px 18px var(--tinta-22);
-    will-change: transform, box-shadow, opacity, filter;
+    /* Sin fondo propio: la madera la pinta el SVG, que tiene el contorno del
+       tronco. El rectángulo no existe en ninguna parte, así que la sombra es un
+       `drop-shadow` (sigue el contorno) y no un `box-shadow` (seguiría la caja). */
+    will-change: transform, filter, opacity;
+    filter: drop-shadow(0 0 0 var(--tinta-0)) drop-shadow(0 0 0 var(--tinta-0))
+      blur(0px);
     animation: taco-golpe var(--burn-total) both;
   }
 
-  /* El borde del bloque, para que la cara no sea un rectángulo plano sin nada */
+  .taco-madera {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* La cara: la madera cepillada, del color de la tinta (la pieza está entintada). */
   .taco-cara {
-    position: absolute;
-    inset: 5px;
-    border: 1px solid rgba(242, 236, 225, 0.22);
-    border-radius: 2px;
+    fill: var(--tinta);
+  }
+
+  /* El agarre: el mango torneado, visto en escorzo. Dos planos y una elipse de
+     sombra alcanzan para que se lea el volumen, sin degradado y sin filtro. */
+  .taco-agarre {
+    fill: color-mix(in srgb, var(--tinta) 78%, var(--lino));
+  }
+
+  .taco-agarre-sombra {
+    fill: color-mix(in srgb, var(--tinta) 45%, transparent);
+  }
+
+  .taco-agarre-tapa {
+    fill: color-mix(in srgb, var(--tinta) 62%, var(--lino));
+  }
+
+  /* La corteza: la parte del tronco que no se cepilló. Va un punto más oscura que
+     la cara (el verde oscuro de la casa) y sus costuras son cuatro trazos, no una
+     textura: así no cuesta un filtro más por cuadro en la carga y el masazo. */
+  .taco-corteza {
+    fill: var(--color-green-dark);
+  }
+
+  .taco-costuras {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-green-dark) 55%, var(--tinta));
+    stroke-width: 3.5;
+    stroke-linecap: round;
+  }
+
+  /* La veta de la madera: la pasada fina ondulada por la ancha, más los manchones
+     de la ancha (el tono desparejo de una tabla), todo con `screen` sobre el verde.
+     Es de la misma familia que la fibra del lino, así que la escena sigue siendo de
+     un solo color, y va arriba del agarre porque la madera es una sola pieza. */
+  .taco-veta {
+    opacity: 0.26;
+    mix-blend-mode: screen;
   }
 
   /* Los tramos, con su curva cada uno:
      0 → 0.85s   abajo, a escala 1, esperando debajo del plato de tinta
-     0.85 → 0.98 se levanta (1 → 1,42): la carga, con la sombra que se abre
-     0.98 → 1.1  el masazo (1,42 → 1) en 120ms, con curva de impacto seco
-     1.1 → 1.55  presiona contra el lino (1 → 0,995), sin rebotar
-     1.55 → 1.87 se despega inclinándose, todavía SÓLIDO
-     1.87 → 2.25 se disuelve y se va; el lino queda con la impresión
-     2.25 → 2.75 ya no está
+     0.85 → 1.15 la pausa: el plato ya está sobre la cara y no pasa nada más
+     1.15 → 1.28 se levanta (1 → 1,42): la carga, con la sombra que se abre
+     1.28 → 1.4  el masazo (1,42 → 1) en 120ms, con curva de impacto seco
+     1.4 → 1.85  presiona contra el lino (1 → 0,995), sin rebotar
+     1.85 → 2.33 se despega inclinándose, todavía SÓLIDO
+     2.33 → 2.55 se disuelve y se va; el lino queda con la impresión
+     2.55 → 3.0  ya no está
 
-     El despegue se sostiene opaco hasta los 2,03s a propósito: con el taco del
+     La pausa de la 0,85 a la 1,15 es la que pidió el autor: la contracción llega
+     a la cara del taco y la escena se queda quieta un cachito antes del masazo.
+     Es el único tramo en el que no se mueve nada, y es lo que hace que el golpe
+     se sienta como un golpe.
+
+     El despegue se sostiene opaco hasta los 2,33s a propósito: con el taco del
      MISMO verde que la impresión, un desvanecido temprano se lee como un velo
      lechoso sobre la marca (un gris verdoso translúcido, que además no es de la
      paleta) en vez de un bloque que se levanta. Sólido casi hasta el final y
@@ -307,80 +462,64 @@
   @keyframes taco-golpe {
     0% {
       opacity: 1;
-      filter: blur(0px);
+      filter: drop-shadow(0 0 0 var(--tinta-0))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(0px);
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
         translate(0px, 0px);
-      box-shadow:
-        0 0 0 var(--tinta-0),
-        0 0 0 var(--tinta-0);
     }
-    30.9% {
+    38.3% {
       opacity: 1;
-      filter: blur(0px);
+      filter: drop-shadow(0 0 0 var(--tinta-0))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(0px);
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
         translate(0px, 0px);
-      box-shadow:
-        0 0 0 var(--tinta-0),
-        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.6);
     }
-    35.6% {
+    42.7% {
       opacity: 1;
-      filter: blur(0px);
+      filter: drop-shadow(0 52px 80px var(--tinta-38))
+        drop-shadow(0 12px 26px var(--tinta-22)) blur(0px);
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.42)
         translate(0px, 0px);
-      box-shadow:
-        0 52px 80px var(--tinta-38),
-        0 12px 26px var(--tinta-22);
       animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.7);
     }
-    40% {
+    46.7% {
       opacity: 1;
-      filter: blur(0px);
+      filter: drop-shadow(0 2px 3px var(--tinta-50))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(0px);
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)
         translate(0px, 0px);
-      box-shadow:
-        0 2px 3px var(--tinta-50),
-        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
     }
-    56.4% {
+    61.7% {
       opacity: 1;
-      filter: blur(0px);
+      filter: drop-shadow(0 2px 3px var(--tinta-50))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(0px);
       transform: perspective(900px) rotateX(0deg) rotateY(0deg) scale(0.995)
         translate(0px, 0px);
-      box-shadow:
-        0 2px 3px var(--tinta-50),
-        0 0 0 var(--tinta-0);
       animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
     }
-    74% {
+    77.7% {
       opacity: 1;
-      filter: blur(1px);
+      filter: drop-shadow(0 26px 44px var(--tinta-22))
+        drop-shadow(0 4px 10px var(--tinta-10)) blur(1px);
       transform: perspective(900px) rotateX(5deg) rotateY(-7.5deg) scale(1.18)
         translate(-9%, -3.5%);
-      box-shadow:
-        0 26px 44px var(--tinta-22),
-        0 4px 10px var(--tinta-10);
       animation-timing-function: cubic-bezier(0.45, 0, 0.7, 1);
     }
-    81.8% {
+    85% {
       opacity: 0;
-      filter: blur(6px);
+      filter: drop-shadow(0 18px 30px var(--tinta-10))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(6px);
       transform: perspective(900px) rotateX(9deg) rotateY(-6deg) scale(1.24)
         translate(-30%, -15%);
-      box-shadow:
-        0 18px 30px var(--tinta-10),
-        0 0 0 var(--tinta-0);
     }
     100% {
       opacity: 0;
-      filter: blur(6px);
+      filter: drop-shadow(0 18px 30px var(--tinta-10))
+        drop-shadow(0 0 0 var(--tinta-0)) blur(6px);
       transform: perspective(900px) rotateX(9deg) rotateY(-6deg) scale(1.24)
         translate(-30%, -15%);
-      box-shadow:
-        0 18px 30px var(--tinta-10),
-        0 0 0 var(--tinta-0);
     }
   }
 
@@ -388,7 +527,7 @@
      marca ya en su lugar. `clip-path` y no `opacity`: el lino se descubre. */
   :root.has-burn #brand-burn.is-running {
     animation: retirar var(--burn-retiro) cubic-bezier(0.62, 0, 0.34, 1) both;
-    animation-delay: 2300ms;
+    animation-delay: 2600ms;
   }
 
   @keyframes retirar {
@@ -439,7 +578,7 @@
 
 <script>
   const CLAVE_SESION = "bottega-burn";
-  const DURACION = 2900;
+  const DURACION = 3200;
 
   const raiz = document.documentElement;
   const overlay = document.getElementById("brand-burn");
@@ -457,9 +596,11 @@
       const tinta = overlay.querySelector<HTMLElement>("[data-tinta]");
       const taco = overlay.querySelector<HTMLElement>("[data-taco]");
       const masa = overlay.querySelector<HTMLElement>("[data-masa]");
+      // El contorno de la madera: el plato de tinta lo copia (ver `aForma`).
+      const corte = overlay.querySelector<SVGPathElement>("#taco-corte path");
       const marca = document.querySelector<HTMLElement>("[data-brand-wordmark]");
 
-      if (!tinta || !taco || !masa || !marca) {
+      if (!tinta || !taco || !masa || !corte || !marca) {
         raiz.classList.remove("has-burn");
       } else {
         // Posición en el documento por suma de offsetTop/offsetLeft: es inmune a
@@ -501,23 +642,42 @@
           // levanta desde un borde, como se despega un bloque de madera.
           taco.style.transformOrigin = "18% 88%";
 
-          // El plato de tinta aterriza sobre la caja del taco: las cuatro medidas
-          // del `clip-path` van en el espacio del plato, que es la ventana entera
-          // (el overlay es `fixed; inset: 0`) y contra el ancho y alto de layout
-          // (`clientWidth`/`clientHeight`), que son los que no cuentan la barra de
-          // scroll nativa.
+          // El plato de tinta tiene que aterrizar sobre el CONTORNO del taco y no
+          // sobre su caja, así que su recorte se arma con el mismo `d` que dibuja
+          // la madera. El camino tiene un solo subcamino de líneas rectas (M, L, Z),
+          // así que se lee como pares de números en el espacio del viewBox.
+          const numeros = corte?.getAttribute("d")?.match(/-?\d+(?:\.\d+)?/g);
+          const forma = numeros ? numeros.map(Number) : [];
           const anchoVentana = document.documentElement.clientWidth;
           const altoVentana = document.documentElement.clientHeight;
-          masa.style.setProperty("--masa-arriba", `${arribaTaco}px`);
-          masa.style.setProperty(
-            "--masa-derecha",
-            `${anchoVentana - (izquierdaTaco + anchoTaco)}px`,
-          );
-          masa.style.setProperty(
-            "--masa-abajo",
-            `${altoVentana - (arribaTaco + altoTaco)}px`,
-          );
-          masa.style.setProperty("--masa-izquierda", `${izquierdaTaco}px`);
+
+          // El mismo contorno en píxeles, en el espacio del plato (que es la ventana
+          // entera: el overlay es `fixed; inset: 0`). Con `escala` 1 cae en la caja
+          // del taco; con la de cobertura, escalado sobre su propio centro, la
+          // ventana queda tapada y el primer pintado es verde liso.
+          const aForma = (escala: number) => {
+            const puntos: string[] = [];
+            for (let i = 0; i < forma.length; i += 2) {
+              const x = izquierdaTaco + (forma[i] / 1000) * anchoTaco;
+              const y = arribaTaco + (forma[i + 1] / 338) * altoTaco;
+              puntos.push(
+                `${(centroX + (x - centroX) * escala).toFixed(1)} ${(
+                  centroY +
+                  (y - centroY) * escala
+                ).toFixed(1)}`,
+              );
+            }
+            return `path("M ${puntos.join(" L ")} Z")`;
+          };
+          const cobertura =
+            Math.max(
+              (centroX * 2) / anchoTaco,
+              ((anchoVentana - centroX) * 2) / anchoTaco,
+              (centroY * 2) / altoTaco,
+              ((altoVentana - centroY) * 2) / altoTaco,
+            ) + 0.02;
+          masa.style.setProperty("--masa-forma", aForma(1));
+          masa.style.setProperty("--masa-cubre", aForma(cobertura));
           // El mismo pivote físico que el `18% 88%` del taco, medido en la
           // ventana: así la carga y el masazo escalan las dos piezas juntas.
           masa.style.transformOrigin = `${
