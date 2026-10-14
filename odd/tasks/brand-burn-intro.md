@@ -13,14 +13,14 @@ todo y no se entiende lo de las llamas"). La referencia histórica es una botteg
 italiana del siglo XV/XVI: estampado artesanal con taco de madera sobre papel de
 lino.
 
-**La vista es cenital y en primera persona**: el taco es una tabla de madera curada
-vista desde arriba y su altura se cuenta con dos cosas, nada más: la escala (1 abajo,
-1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La tabla es
-un rectángulo con los extremos chaflanados (como un listón): adentro va la madera
-con su veta longitudinal, los arcos de catedral alrededor de los nudos, dos nudos y
-sus vetas oscuras. Sin corteza, sin mango, sin texturas (todo son trazos). No hay dibujo: el
-taco es un bloque sólido y toda la información la dan las sombras de altura, la
-física del golpe y la textura de la tinta.
+**La vista es cenital y en primera persona**: el taco es una tabla plana vista
+desde arriba y su altura se cuenta con dos cosas, nada más: la escala (1 abajo, 1,42
+arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La tabla es un
+rectángulo con los extremos chaflanados (como un listón): la cara es plana, del
+verde de la marca calentado con un poco de lino, sin veta, sin nudos, sin catedral,
+sin vetas oscuras. Sin corteza, sin mango, sin texturas. No hay dibujo: el taco es un
+bloque sólido y toda la información la dan las sombras de altura, la física
+del golpe y la textura de la tinta.
 
 ## Paleta
 
@@ -28,17 +28,14 @@ física del golpe y la textura de la tinta.
 | --- | --- |
 | Lino | `#F2ECE1` (a tres puntos del crema del sitio: invisible en el relevo) |
 | Plato (la tinta) e impresión | `var(--color-green)` = **`#0E3B33`**, el verde de la marca |
-| Tabla (la madera curada) | `color-mix` del verde de la marca con el lino al 80/20: el lino le saca el frío al verde puro y lo hace leerse como madera, no como un verde plano |
-| Veta y catedral | `color-mix` del verde de la marca con el lino al 60/40: un verde más claro, como la luz sobre la madera |
-| Nudos y vetas oscuras | `var(--color-green-dark)` = **`#0A2D27`** |
+| Tabla (la cara del taco) | `color-mix` del verde de la marca con el lino al 80/20: un verde cálido y plano, sin veta ni nudos |
 
 **Una sola tinta.** El plato que cubre la pantalla al arranque y la palabra impresa
 son el mismo verde. Es la decisión que ordena la escena: el plato aterriza sobre el
 contorno de la tabla sin que se vea una costura, el masazo no tiene que cambiar ningún
 color de tinta y el relevo conserva el verde del hero. La tabla es un escalón más
-clara (es lo que aparece cuando la tinta se va) y los nudos y vetas oscuras son el
-verde oscuro de la casa. Las sombras también son de la tinta (`color-mix` sobre
-`--tinta`): nunca grises.
+clara (un verde cálido y plano), sin nudos ni vetas. Las sombras también son de la
+tinta (`color-mix` sobre `--tinta`): nunca grises.
 
 ## Decisiones
 
@@ -92,17 +89,17 @@ verde oscuro de la casa. Las sombras también son de la tinta (`color-mix` sobre
     recargando; `?burn=lento` la corre a 0,3x con `updatePlaybackRate`, que es la
     única forma de medir con precisión una línea de tiempos con un golpe de 120ms.
     El corte por movimiento reducido **no** aplica cuando viene forzada.
-11. **La pieza es una tabla de madera curada, no un tronco** (pedido del autor con
-    una foto de un listón de madera como referencia: "hacélo más facha el tronco...
-    sacale la crosta todo, pero que quede algo más realista, madera curada pero que
-    se entienda que es madera, que se vean las betas y eso, pero no exagerado"). El
-    taco es un SVG con el contorno en un `clipPath` de ocho vértices: un rectángulo
-    con los cuatro extremos chaflanados en 45° (sin `A`, así el script puede leer el
-    contorno como una lista de pares). La cara de la tabla es la madera: la veta
-    longitudinal son diez trazos que corren paralelos al largo, los arcos de
-    catedral cierran arriba y abajo de los nudos, dos nudos (uno chico a la
-    izquierda, uno grande a la derecha con su anillo y su corazón) y tres vetas
-    oscuras. Sin corteza, sin mango, sin anillos, sin filtros.
+11. **La pieza es una tabla plana, no un tronco** (pedido del autor con una foto de
+    un listón de madera como referencia: "hacélo más facha el tronco... sacale la
+    crosta todo, pero que quede algo más realista, madera curada"; y después
+    "después de pegar el masazo el taco se transforma en madera, no quiero, que
+    quede siempre liso"). El taco es un SVG con el contorno en un `clipPath` de ocho
+    vértices: un rectángulo con los cuatro extremos chaflanados en 45° (los "bordes
+    redondeados"). La cara de la tabla es plana: un solo `rect` del verde de la
+    marca calentado con un poco de lino, sin veta, sin nudos, sin catedral, sin
+    vetas oscuras. Sin corteza, sin mango, sin anillos, sin filtros. Así el taco
+    no "se transforma en madera" después del masazo: antes y después es el mismo
+    rectángulo plano.
 12. **El plato copia el contorno.** El script lee el `d` del `clipPath` y arma con él
     dos `clip-path: path()`: el que tapa la ventana (el contorno escalado sobre su
     propio centro hasta pasar los cuatro bordes) y el que cae sobre la madera. Entre

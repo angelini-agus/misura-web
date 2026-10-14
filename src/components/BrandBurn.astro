@@ -9,11 +9,12 @@
 // sitio): por eso el plato puede aterrizar sobre el taco sin que se vea una
 // costura y por eso, al destaparse, la marca no cambia ni de color ni de lugar.
 //
-// La vista es cenital (primera persona): el taco es un bloque de madera visto
+// La vista es cenital (primera persona): el taco es una tabla plana vista
 // desde arriba y su altura se cuenta con dos cosas y nada más: la escala (1 abajo,
 // 1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La madera
-// no es una superficie lisa: lleva su veta (dos pasadas de ruido) y el agarre
-// torneado con el que la mano la sostiene y la golpea.
+// es un rectángulo con los extremos chaflanados (los "bordes redondeados"), del
+// verde de la marca calentado con un poco de lino, sin veta, sin nudos, sin
+// catedral, sin bisel: el taco no se transforma en madera después del masazo.
 //
 // La impresión ES el wordmark del hero: mismas clases de la marca, mismo glifo,
 // mismo tamaño, sin marco y sin filtros. El script solo la corre hasta la caja del
@@ -66,14 +67,13 @@
       <span class="wordmark wordmark-hero">bottega</span>
     </div>
 
-    <!-- El taco: una tabla de madera curada vista desde arriba (referencia del
-         autor: un listón de madera con su veta longitudinal, nudos, sin corteza).
-         La forma es un rectángulo con los extremos chaflanados (no hay `A` en el
-         `d`, así que el script puede leer el contorno como una lista de pares) y
-         la cara es la madera: vetas longitudinales, catedral alrededor de los nudos
-         y dos nudos. Sin corteza, sin anillos, sin mango, sin filtros (todo son
-         trazos: la tabla se lee a cualquier escala y el primer pintado se paga una
-         sola vez).
+    <!-- El taco: una tabla plana vista desde arriba (referencia del autor: un
+         listón de madera, sin corteza, sin mango, sin veta, sin nudos). La forma
+         es un rectángulo con los extremos chaflanados (no hay `A` en el `d`, así
+         que el script puede leer el contorno como una lista de pares) y la cara es
+         plana: un solo `rect` del verde de la marca calentado con un poco de lino.
+         Sin corteza, sin mango, sin anillos, sin filtros, sin texturas. El primer
+         pintado se paga una sola vez.
          El plato de tinta copia este contorno: el script lee el `d` del `clipPath`
          y arma con él su `clip-path`, así que la tinta aterriza sobre la madera y
          no sobre una caja. -->
@@ -93,65 +93,9 @@
           </clipPath>
         </defs>
         <g clip-path="url(#taco-corte)">
-          <!-- La cara: la madera. La base es el verde de la marca calentado con un
-               poco de lino para que se lea como madera curada y no como un verde
-               frío. -->
+          <!-- La cara, plana: la base es el verde de la marca calentado con un
+               poco de lino. Sin veta, sin nudos, sin catedral, sin vetas oscuras. -->
           <rect class="taco-cara" width="1000" height="338" />
-          <!-- La veta longitudinal: la fibra corre paralela al largo, con ondulaciones
-               suaves. Trazos, no texturas. -->
-          <g class="taco-veta">
-            <path d="M -10 68 C 260 58, 740 80, 1010 72" />
-            <path d="M -10 100 C 240 86, 760 114, 1010 100" />
-            <path d="M -10 132 C 280 144, 720 118, 1010 134" />
-            <path d="M -10 162 C 250 148, 750 180, 1010 160" />
-            <path d="M -10 192 C 270 206, 730 176, 1010 194" />
-            <path d="M -10 222 C 250 208, 750 240, 1010 222" />
-            <path d="M -10 252 C 280 266, 720 238, 1010 254" />
-            <path d="M -10 282 C 260 266, 740 298, 1010 282" />
-            <path d="M -10 308 C 270 294, 730 322, 1010 308" />
-            <path d="M -10 328 C 250 318, 750 336, 1010 328" />
-          </g>
-          <!-- La catedral de los nudos: arcos que se cierran sobre y bajo el nudo. -->
-          <g class="taco-catedral">
-            <path d="M 168 150 C 190 136, 230 136, 252 150" />
-            <path d="M 168 208 C 190 224, 230 224, 252 208" />
-            <path d="M 594 122 C 634 104, 686 104, 716 122" />
-            <path d="M 584 198 C 626 222, 696 222, 716 198" />
-          </g>
-          <!-- Las vetas oscuras: las betas más visibles de la madera. -->
-          <g class="taco-veta-oscura">
-            <path d="M 40 152 C 300 148, 500 156, 760 150" />
-            <path d="M 176 196 C 218 194, 258 200, 282 196" />
-            <path d="M 552 142 C 596 140, 686 146, 720 142" />
-          </g>
-          <!-- Los nudos: el chico a la izquierda, el grande a la derecha. El
-               grande lleva un anillo como trazo para que se lea el ojo del nudo. -->
-          <g class="taco-nudo">
-            <ellipse cx="210" cy="178" rx="13" ry="8" />
-            <ellipse
-              class="taco-nudo-corazon"
-              cx="210"
-              cy="178"
-              rx="6"
-              ry="4"
-            />
-            <ellipse
-              class="taco-nudo-anillo"
-              cx="650"
-              cy="162"
-              rx="28"
-              ry="17"
-              fill="none"
-            />
-            <ellipse cx="650" cy="162" rx="22" ry="13" />
-            <ellipse
-              class="taco-nudo-corazon"
-              cx="650"
-              cy="162"
-              rx="7"
-              ry="4"
-            />
-          </g>
         </g>
       </svg>
     </div>
@@ -372,50 +316,6 @@
     fill: color-mix(in srgb, var(--tinta) 80%, var(--lino));
   }
 
-  /* La veta longitudinal: la fibra de la tabla corre paralela al largo, con
-     ondulaciones suaves. Es un verde un punto más claro, como la luz que agarra
-     la madera en su veta. Trazos, no texturas. */
-  .taco-veta {
-    fill: none;
-    stroke: color-mix(in srgb, var(--tinta) 60%, var(--lino));
-    stroke-width: 2;
-    stroke-linecap: round;
-    opacity: 0.7;
-  }
-
-  /* La catedral de los nudos: arcos que se cierran sobre y bajo el nudo. Un
-     escalón más visibles que la veta para que se note el nudo. */
-  .taco-catedral {
-    fill: none;
-    stroke: color-mix(in srgb, var(--tinta) 70%, var(--lino));
-    stroke-width: 2.4;
-    stroke-linecap: round;
-  }
-
-  /* Las vetas oscuras: las betas más visibles de la madera, las que se ven
-     incluso en una tabla lijada. Van del verde oscuro de la casa. */
-  .taco-veta-oscura {
-    fill: none;
-    stroke: var(--color-green-dark);
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    opacity: 0.85;
-  }
-
-  /* Los nudos: el verde oscuro de la casa con un corazón un punto más oscuro
-     todavía. El anillo del nudo grande va como trazo, no como relleno, para
-     que se lea el ojo del nudo. */
-  .taco-nudo {
-    fill: var(--color-green-dark);
-  }
-  .taco-nudo-corazon {
-    fill: color-mix(in srgb, var(--color-green-dark) 55%, var(--tinta));
-  }
-  .taco-nudo-anillo {
-    fill: none;
-    stroke: var(--color-green-dark);
-    stroke-width: 1.4;
-  }
 
 
 
