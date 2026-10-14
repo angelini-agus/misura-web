@@ -66,12 +66,15 @@ rueda.
 | pausa antes del lápiz | `PAUSA_PX` | 156 | 108 |
 | garabato de cada ítem | `TACHADO_PX` | 416 | 287 |
 | paso del tachado | `TACHADO_PASO_PX` = `TACHADO_PX` | 416 | 287 |
-| pausa antes de la goma | `PAUSA_FINAL_PX` | 104 | 72 |
-| barrido de goma | `BORRADO_PX` | 468 | 323 |
-| marca | `BOTTEGA_PX` | 312 | 215 |
-| subtítulo | desde 260, dura `SUBTITULO_PX` | 260 | 179 |
-| botones | desde 468, dura `BOTONES_PX` | 208 | 144 |
-| **largo total** | la suma de los tramos | **6916** | **4770** |
+| pausa antes del paso de hoja | `PAUSA_FINAL_PX` | 104 | 72 |
+| paso de hoja | `HOJA_PX` | 640 | 442 |
+| botones | desde 448, dura `BOTONES_PX` | 220 | 152 |
+| **largo total** | la suma de los tramos | **6440** | **4441** |
+
+El paso de hoja no es un tramo más de la lista: es el **giro entero** de la
+página (`GIRO_GRADOS 180`) con `PERSPECTIVA_PX 1600` y el doblez de la punta de
+arriba a la derecha (`DOBLEZ_FRACCION 0.26` del ancho de la hoja, en su punto más
+alto a `DOBLEZ_PICO 0.28` del paso).
 
 El paso del tachado es igual a su duración **a propósito**: es la definición de
 "de a uno por vez". No hay que corregirlo a un solape "lindo" entre vecinos.
@@ -97,17 +100,24 @@ por debajo del dedo.
 | pausa | 2184 – 2340 | 1504 – 1612 | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
 | tachado | 2340 – 5668 | 1612 – 3908 | 8 garabatos de 416px, **uno por vez**; cada ítem baja a 0,45 al cerrarse |
 | pausa | 5668 – 5772 | 3908 – 3980 | todo quieto, la lista completa y tachada |
-| borrado | 5772 – 6240 | 3980 – 4303 | barrido de máscara de izquierda a derecha, opacity a 0 y blur creciente. Queda un resto de grafito al 6% que se desvanece |
-| bottega | 6240 – 6552 | 4303 – 4518 | entra entintándose: opacity, blur de 6px a 0 y un asentamiento leve |
-| subtítulo | 6500 – 6760 | 4482 – 4661 | el mismo tratamiento, encadenado |
-| botones | 6708 – 6916 | 4626 – 4770 | los últimos |
+| paso de hoja | 5772 – 6412 | 3980 – 4422 | la hoja se levanta del lomo, se dobla en la punta de arriba a la derecha, pasa el canto y se va del otro lado. Del otro lado ya está bottega impreso, así que se revela solo |
+| botones | 6220 – 6440 | 4289 – 4441 | el CTA llega encadenado al final del giro (opacity, blur y 10px de asentamiento) |
+
+**El giro va de 0 a 180 grados y la hoja no se funde.** Hasta los 90 grados se ve
+la cara de la hoja (la lista tachada) creciendo hacia el lector por la
+perspectiva; en el canto queda una astilla de unos 30px y a partir de ahí
+`backface-visibility: hidden` la deja invisible, que es lo que hace una hoja de
+verdad cuando ya está del otro lado. Por eso no hay ningún `opacity` en la hoja:
+el relevo es geométrico.
 
 **El hero se alargó con el tachado de a uno.** Antes el recorrido era 5200px
 (escritorio) y 3600px (mobile) con los trazos pisados: cada garabato tenía 416px
 y ocho garabatos entraban en 1612px. Ahora cada uno sigue teniendo sus 416px,
-pero al no pisarse ocupan 3328px, así que el recorrido pasó a **6916px
-(escritorio) y 4770px (mobile)**, un tercio más. Ningún tramo se acortó: lo que
-creció es el largo del hero, y ese fue el pedido ("si el de abajo tiene que
+pero al no pisarse ocupan 3328px. El paso de hoja reemplazó al barrido de goma y
+a la entrada de la marca (468 + 312 = 780px) por 640px, así que el recorrido
+quedó en **6440px (escritorio) y 4441px (mobile)**: un 23% más largo que el hero
+original, y 476px más corto que la versión con goma. Ningún tramo se acortó: lo
+que creció es el largo del hero, y ese fue el pedido ("si el de abajo tiene que
 esperar al de arriba tarda más sí o sí").
 
 ## Los trazos
@@ -165,12 +175,55 @@ texto. Una sola fuente de verdad.
 - La fase de borrado se lleva el trazo junto con el texto: el SVG es parte del
   contenedor de la lista, así que el barrido de goma lo barre igual.
 
-## La libretita
+## El cuaderno
 
-`.hero-pad` es el objeto: `background: var(--color-cream-light)`, borde verde de
+`.hero-pad` es el objeto: papel `var(--color-cream-light)`, borde verde de
 1.5px, `border-radius: 0.375rem` y `box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09)`.
 Los renglones salen del `border-bottom` de cada ítem (así siguen al texto cuando
 tipa o envuelve) y la línea de margen es un `::before` de 1px al 20%.
+
+Adentro del cuaderno hay tres cosas, y quién está arriba de quién es lo que
+sostiene el paso de hoja:
+
+1. **`.hero-hoja` (z-index 1)** — la hoja de arriba, con la lista adentro. Es la
+   que gira. Da el alto del cuaderno (es la que tiene contenido en el flujo), y
+   con JS lleva ella el aire del papel y el borde, para poder llegar hasta el
+   borde del marco. `transform-origin: left center` y
+   `backface-visibility: hidden`.
+2. **`.hero-final` (absolute, inset 0)** — la página de abajo, con bottega. Está
+   ahí desde el principio y no se anima: la revela el giro.
+3. **`.hero-anillado` (z-index 4)** — el anillado, sobre el lomo. Una vuelta cada
+   26px, centrada en el borde izquierdo, dibujada con un SVG de un anillo en
+   `background-image` repetido en Y. Es del cuaderno, así que **no gira con la
+   hoja**, y la hoja pasa por debajo de los anillos.
+
+El marco del cuaderno lo dibuja `.hero-pad::after` (z-index 3), **por encima de
+todo**: así la hoja gira por debajo y el borde no se corta nunca, ni siquiera
+cuando el doblez se come la esquina de la hoja.
+
+En el fallback (sin JS) no hay capas: la hoja es un bloque más, la página de
+abajo cae debajo con el aire de la mesa en el medio, y el cuaderno mide lo que
+miden los dos juntos (687px a 1440x900 contra 423px en modo vivo).
+
+### El doblez
+
+El cuadrado de la esquina se parte en dos mitades con la misma diagonal de 45
+grados, y la diagonal es la línea del pliegue:
+
+- **`.hero-doblez-corte`** tapa la esquina que ya no está (la hoja se fue con el
+  pliegue) con el papel del cuaderno, para que no se vea el texto cortado. Tiene
+  el radio de la esquina de arriba a la derecha.
+- **`.hero-doblez-papel`** es el reverso del papel, caído del otro lado de la
+  línea: triángulo `--color-cream-dark` con los dos cantos libres de la hoja
+  (borde verde de 1.5px a la izquierda y abajo) y la marca del pliegue, una barra
+  de 3px rotada 45 grados sobre la diagonal.
+
+Los dos miden 100px de base y el scroll los **escala desde la esquina**
+(`transform-origin: top right`) en vez de cambiarles el ancho: así el cuadro solo
+cambia de transform y el navegador no tiene que volver a dibujar la hoja entera
+(adentro hay ocho filtros de crayón) en cada paso del scroll. Están en
+`opacity: 0` con `will-change: transform` para que la capa ya esté dibujada
+cuando el scroll las prende.
 
 La opacidad de aparición va en `.hero-item-label`, no en el `<li>` ni en el
 `<span>` que envuelve al texto y al SVG: así el renglón de la libretita se ve
@@ -180,12 +233,15 @@ mientras el label entra.
 ## Fallback
 
 Sin JavaScript o con `prefers-reduced-motion`: sin sticky y sin la altura larga.
-Queda el layout corto y estático: el H1, la lista con el tachado de la
-tipografía (`text-decoration: line-through` a 0,16em en verde de marca, que es lo
-que pide el sistema cuando no hay garabato animado), el SVG oculto y debajo el
-estado final con bottega, el subtítulo y los botones. Medido en los dos casos:
-`is-live` ausente, decoración `line-through` de 4,32px en `rgb(14, 59, 51)`,
-SVG en `display: none` y el estado final visible.
+Queda el layout corto y estático: el H1, el cuaderno con la lista tachada, el
+anillado, y debajo (adentro del mismo cuaderno) el estado final con bottega, el
+subtítulo y los botones. El tachado es de la tipografía
+(`text-decoration: line-through` a 0,16em en verde de marca, que es lo que pide
+el sistema cuando no hay garabato animado) y el SVG está oculto. Medido en los
+dos casos: `is-live` ausente, decoración `line-through` de 4,32px en
+`rgb(14, 59, 51)`, SVG en `display: none`, el estado final visible (los botones a
+opacidad 1, que no los toca ningún JS) y el anillado presente igual
+(`20x661`, `repeat-y`).
 
 ## Verificación
 
@@ -207,17 +263,44 @@ SVG en `display: none` y el estado final visible.
   5700px los ocho están cerrados y la lista sigue a opacidad plena. Idéntico en
   mobile. Capturas en `%TEMP%/hero-shot/` (tira por posición en
   `tira-1440x900.png`, muestras en `shots/`).
+- **El paso de hoja.** Medido a 1440x900 y 390x844, con el giro y el doblez
+  leídos del DOM: `rotateY` va de 0 a -180 grados con la curva suave (en
+  escritorio -9,8° a 5828px, -44,2° a 5957, -87,9° a 6086, -132° a 6215, -180° a
+  6440), y el doblez mide 0 a 5699px, 67px a 5828, **141px en su punto más alto a
+  5957** (26% del ancho de la hoja), 54px a 6086 y 0 desde 6215. La proyección de
+  la hoja pasa de 544x423 (plana) a 511x554 (-44°), 30x640 en el canto y 544x423
+  plana del otro lado: la hoja no se funde, la deja de ver el canto. En
+  escritorio y mobile el doblez es la misma fracción del ancho (141px sobre 544 y
+  93px sobre 358).
+- **La geometría del cuaderno no se movió** con la reestructuración: a 1440x900
+  el cuaderno sigue en 544x423 con la esquina en (448, 359), la lista en (501,
+  387) de 454x367, y en mobile el cuaderno en 358x458 con la lista en (45, 339).
+  El anillado mide 20x661 en escritorio (20x434 en mobile) con `repeat-y`.
+- **Frame rate del pase completo** scrolleando todo el hero a 12px por cuadro
+  (586 cuadros, 1440x900): mediana 16,7ms = **59,9 fps**, p95 17,3ms, y solo 2
+  cuadros por encima de 25ms en la primera vuelta (82ms en -388px, antes de que
+  empiece el hero, y **44ms justo en el cruce del canto a 6080px**); la segunda
+  vuelta ya no tiene ninguno. El doblez escalado por transform y sus capas
+  pre-dibujadas dejan el paso en 60fps: lo único que queda es ese cuadro del
+  cruce en la primera vuelta, y se va cuando las capas ya están calientes.
+- **Fallback medido en los dos casos** (sin JS y con movimiento reducido): un
+  solo cuaderno (544x687 a 1440x900) con la lista tachada tipográficamente y el
+  estado final adentro, el anillado presente y ningún transform aplicado.
+- **El paso de hoja reemplazó al barrido de goma**: ya no hay máscara ni blur en
+  la lista, la lista no se desvanece (sigue a opacidad plena hasta que la hoja se
+  la lleva) y la marca y el subtítulo no tienen entrada propia (los revela el
+  giro). Lo único que llega encadenado son los botones, de 6220px a 6440px.
 - Capturas a 1440x900 y 390x844 en 0%, 50% y 100% del trazo del ítem 0 (2360px,
-  2548px y 2756px del recorrido), más la lista completa tachada (5700px), el
-  barrido de borrado (6000px) y el estado final (6916px). El avance real coincide
-  con el pedido y el `dashoffset` medido del primer ítem es 1 hasta 2340px, 0,5
-  en 2548px y 0 en 2756px.
+  2548px y 2756px del recorrido), más la lista completa tachada (5700px), el paso
+  de hoja (5828 / 5957 / 6086 / 6215px) y el estado final (6440px). El avance real
+  coincide con el pedido y el `dashoffset` medido del primer ítem es 1 hasta
+  2340px, 0,5 en 2548px y 0 en 2756px.
 - **Frame rate scrolleando de verdad sobre el tramo de tachado: 60,1 fps con el
   filtro y 60,8 sin él** (1440x900), 63 fps en 390x844. El filtro no cuesta
   frame rate, así que no hizo falta el plan B de la máscara con textura horneada.
 - Los 8 ítems quedan en una sola línea en 1440x900 (fuente 27px, caja 32,4px de
   alto): no hay ítems de dos líneas en escritorio, como pide el pedido.
-- El ítem de dos líneas se verificó forzando la libretita a 170px de ancho: 2 y 3
+- El ítem de dos líneas se verificó forzando el cuaderno a 170px de ancho: 2 y 3
   líneas por ítem, una sola trayectoria, caja del garabato de 84px de alto en el
   ítem de 3 líneas y la transición diagonal entre líneas en el `d` del path.
 - La tinta queda dentro del renglón: el garabato del ítem 0 mide 25px de alto

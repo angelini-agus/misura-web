@@ -78,11 +78,10 @@ const tachados = heroProblems.map((_, i) =>
   <div class="hero-stage" data-stage>
     <h1 class="hero-title" data-reveal>{hero.title}</h1>
 
-    <!-- La libretita: un objeto con su propio marco, y adentro van saliendo los
-         items. La lista y el estado final comparten la misma celda para que el
-         final reemplace a la lista sin mover nada. -->
+    <!-- El cuaderno: el marco, el anillado y la hoja de abajo (bottega). Adentro
+         esta la hoja de arriba, que es la que gira y se lleva los items. -->
     <div class="hero-pad" data-pad>
-      <div class="hero-swap">
+      <div class="hero-hoja" data-hoja>
         <ul class="hero-list" data-list>
           {
             heroProblems.map((problema, i) => (
@@ -115,17 +114,28 @@ const tachados = heroProblems.map((_, i) =>
           }
         </ul>
 
-        <div class="hero-final" data-final>
-          <span class="hero-final-brand">bottega</span>
-          <p class="hero-final-sub">{hero.subtitle}</p>
-          <div class="hero-final-actions">
-            <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
-            <Button href={hero.ctaSecondary.href} variant="outline">
-              Ver el caso de éxito
-            </Button>
-          </div>
+        <!-- El doblez de la punta de arriba a la derecha, en dos mitades: el
+             corte (la esquina que ya no esta, tapada con el papel del cuaderno)
+             y el reverso del papel que quedo doblado del otro lado de la linea,
+             con los dos cantos libres y la marca del pliegue. -->
+        <span class="hero-doblez-corte" aria-hidden="true" data-doblez-corte></span>
+        <span class="hero-doblez-papel" aria-hidden="true" data-doblez-papel></span>
+      </div>
+
+      <div class="hero-final" data-final>
+        <span class="hero-final-brand">bottega</span>
+        <p class="hero-final-sub">{hero.subtitle}</p>
+        <div class="hero-final-actions">
+          <Button href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</Button>
+          <Button href={hero.ctaSecondary.href} variant="outline">
+            Ver el caso de éxito
+          </Button>
         </div>
       </div>
+
+      <!-- El anillado de la carpeta: vive en el lomo, asi que no gira con la
+           hoja. Una vuelta cada 26px, centrada en el borde izquierdo. -->
+      <div class="hero-anillado" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -163,15 +173,18 @@ const tachados = heroProblems.map((_, i) =>
     line-height: 1.15;
     letter-spacing: -0.01em;
   }
-
+  /* El cuaderno. `--pad-aire` es el aire de adentro del papel: en el fallback lo
+     pone el cuaderno y en modo vivo lo llevan la hoja y la pagina de abajo, para
+     que la hoja pueda llegar hasta el borde del marco. */
   .hero-pad {
+    --pad-aire: clamp(1rem, 3svh, 2.25rem) clamp(1.25rem, 5vw, 2.25rem)
+      clamp(1rem, 3svh, 2.25rem) clamp(1.75rem, 7vw, 3.25rem);
     position: relative;
     width: 100%;
     max-width: 34rem;
     margin-inline: auto;
-    padding: clamp(1rem, 3svh, 2.25rem) clamp(1.25rem, 5vw, 2.25rem) clamp(1rem, 3svh, 2.25rem)
-      clamp(1.75rem, 7vw, 3.25rem);
-    /* Papel apenas mas claro que el fondo, y el borde + la sombra corrida la
+    padding: var(--pad-aire);
+    /* Papel apenas mas claro que el fondo, y el borde + la sombra corrida lo
        despegan como objeto */
     background: var(--color-cream-light);
     border: 1.5px solid var(--color-green);
@@ -180,14 +193,82 @@ const tachados = heroProblems.map((_, i) =>
     text-align: left;
   }
 
-  /* La linea del margen, como en un cuaderno */
-  .hero-pad::before {
+  /* La linea del margen, como en un cuaderno. La tiene el cuaderno y la hoja: en
+     modo vivo quedan una encima de la otra, alineadas. */
+  .hero-pad::before,
+  .hero-hoja::before {
     content: "";
     position: absolute;
     inset-block: 0;
     left: clamp(0.9rem, 4vw, 1.6rem);
     width: 1px;
     background: color-mix(in srgb, var(--color-green) 20%, transparent);
+  }
+
+  /* El anillado de la carpeta: vive en el lomo, asi que no gira con la hoja. Una
+     vuelta cada 26px, centrada en el borde izquierdo. */
+  .hero-anillado {
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+    z-index: 4;
+    width: 20px;
+    transform: translateX(-50%);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='26' viewBox='0 0 20 26'%3E%3Cellipse cx='10' cy='13' rx='8' ry='10' fill='none' stroke='%230E3B33' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: repeat-y;
+    background-size: 20px 26px;
+    pointer-events: none;
+  }
+
+  /* El doblez de la punta de arriba a la derecha, en dos mitades del mismo
+     cuadrado. El cuadrado mide 100px y el scroll lo escala desde la esquina: asi
+     el cuadro solo cambia de transform y no hay que rehacer el dibujo de la hoja
+     en cada paso del scroll (adentro hay ocho filtros de crayon). */
+  .hero-doblez-corte,
+  .hero-doblez-papel {
+    position: absolute;
+    top: -1.5px;
+    right: -1.5px;
+    width: 100px;
+    height: 100px;
+    transform-origin: top right;
+    /* Apagadas y ya promovidas a capa propia: cuando el scroll las prende, el
+       cuadro ya esta dibujado y no se paga el costo de rasterizar la hoja con los
+       ocho filtros de crayon adentro en el primer cuadro del paso. */
+    opacity: 0;
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* La esquina que ya no esta: se tapa con el papel del cuaderno de abajo */
+  .hero-doblez-corte {
+    background: var(--color-cream-light);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    border-top-right-radius: 0.375rem;
+    z-index: 1;
+  }
+
+  /* El reverso del papel, caido del otro lado de la linea, con los dos cantos
+     libres del borde de la hoja */
+  .hero-doblez-papel {
+    background: var(--color-cream-dark);
+    clip-path: polygon(0 0, 0 100%, 100% 100%);
+    border-left: 1.5px solid var(--color-green);
+    border-bottom: 1.5px solid var(--color-green);
+    z-index: 2;
+  }
+
+  /* La marca del pliegue, sobre la diagonal del cuadrado */
+  .hero-doblez-papel::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 141.4214%;
+    height: 3px;
+    background: color-mix(in srgb, var(--color-green) 22%, transparent);
+    transform-origin: top left;
+    transform: rotate(45deg);
   }
 
   .hero-list {
@@ -256,8 +337,13 @@ const tachados = heroProblems.map((_, i) =>
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: clamp(0.75rem, 2svh, 1.5rem);
-    margin-top: clamp(1.5rem, 4svh, 2.5rem);
+    width: 100%;
+    max-width: 34rem;
+    /* En el fallback estatico la pagina de abajo cae debajo de la hoja, con el
+       aire de la mesa en el medio: en modo vivo las dos van una sobre la otra. */
+    margin: clamp(1.5rem, 4svh, 2.5rem) auto 0;
     text-align: center;
   }
 
@@ -296,9 +382,9 @@ const tachados = heroProblems.map((_, i) =>
      --------------------------------------------------------------------------- */
   .hero-scroll.is-live {
     /* El recorrido del scroll mas el alto del escenario: asi el sticky se
-       despega justo cuando el progreso llega a 1. Los 6916 son el plan de
+       despega justo cuando el progreso llega a 1. Los 6440 son el plan de
        escritorio con 8 items, que con JS se reemplaza por la medida real. */
-    height: calc(var(--scroll-length, 6916px) + 100svh - var(--hero-top));
+    height: calc(var(--scroll-length, 6440px) + 100svh - var(--hero-top));
   }
 
   .hero-scroll.is-live .hero-stage {
@@ -309,23 +395,49 @@ const tachados = heroProblems.map((_, i) =>
     overflow: hidden;
   }
 
-  /* La lista y el final en la misma celda: el final reemplaza a la lista en el
-     mismo lugar, y el contenedor mide el mas alto de los dos */
-  .hero-scroll.is-live .hero-swap {
-    display: grid;
-    align-content: center;
-    min-height: 0;
+  /* En modo vivo el aire del papel lo llevan la hoja y la pagina de abajo, y el
+     marco lo dibuja el cuaderno por encima de todo: asi la hoja llega hasta el
+     borde, puede girar por debajo, y el borde del cuaderno no se corta nunca. */
+  .hero-scroll.is-live .hero-pad {
+    padding: 0;
+    border-width: 0;
   }
 
-  .hero-scroll.is-live .hero-list,
-  .hero-scroll.is-live .hero-final {
-    grid-area: 1 / 1;
+  .hero-scroll.is-live .hero-pad::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border: 1.5px solid var(--color-green);
+    border-radius: 0.375rem;
+    pointer-events: none;
   }
 
-  /* El final se centra en la celda, que mide lo que mide la lista */
+  /* La hoja de arriba: la que gira. Es la que da el alto del cuaderno, porque es
+     la que tiene la lista adentro. */
+  .hero-scroll.is-live .hero-hoja {
+    position: relative;
+    z-index: 1;
+    padding: var(--pad-aire);
+    background: var(--color-cream-light);
+    border: 1.5px solid var(--color-green);
+    border-radius: 0.375rem;
+    box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09);
+    /* El lomo es el borde izquierdo: de ahi cuelga la hoja cuando da vuelta la
+       pagina, y ahi queda cuando pasa el canto. */
+    transform-origin: left center;
+    /* El papel no tiene reverso dibujado: cuando la hoja pasa el canto deja de
+       verse, que es exactamente lo que hace una hoja de verdad. */
+    backface-visibility: hidden;
+    will-change: transform, box-shadow;
+  }
+
+  /* La pagina de abajo: ya esta impresa y espera tapada */
   .hero-scroll.is-live .hero-final {
-    margin-top: 0;
-    justify-content: center;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: var(--pad-aire);
   }
 
   /* Con JS el trazo se dibuja con el progreso del scroll: `pathLength="1"` deja
@@ -363,14 +475,24 @@ const tachados = heroProblems.map((_, i) =>
   const PAUSA_PX = 156; // la lista entera y limpia, quieta, antes del lapiz
   const TACHADO_PX = 416; // lo que tarda el garabato de cada item
   const TACHADO_PASO_PX = TACHADO_PX; // y cuando arranca el siguiente
-  const PAUSA_FINAL_PX = 104; // todo tachado, quieto, antes de la goma
-  const BORRADO_PX = 468; // el barrido de goma, de izquierda a derecha
-  const BOTTEGA_PX = 312; // la marca entra entintandose
-  const SUBTITULO_DESDE_PX = 260; // los dos encadenados desde el fin del barrido
-  const SUBTITULO_PX = 260;
-  const BOTONES_DESDE_PX = 468;
-  const BOTONES_PX = 208;
+  const PAUSA_FINAL_PX = 104; // todo tachado, quieto, antes del paso de hoja
+  const HOJA_PX = 640; // el paso de hoja: la hoja gira y da vuelta la pagina
+  const BOTONES_DESDE_PX = 448; // el CTA llega encadenado al final del giro
+  const BOTONES_PX = 220;
   const ESCALA_MOBILE = 0.69;
+
+  // El paso de hoja. El lomo es el borde izquierdo de la hoja y el giro es entero:
+  // la pagina pasa el canto y se va del otro lado, sin fundido. La perspectiva
+  // chica (1600) hace que el borde libre se agrande al levantarse, como en la
+  // transicion de hoja del sitio.
+  const PERSPECTIVA_PX = 1600;
+  const GIRO_GRADOS = 180;
+  // El doblez de la punta de arriba a la derecha: cuanto mide el cuadrado de la
+  // esquina (fraccion del ancho de la hoja), donde llega a su punto mas alto, y el
+  // lado de base con el que se escala (tiene que ser el mismo de la CSS).
+  const DOBLEZ_FRACCION = 0.26;
+  const DOBLEZ_PICO = 0.28;
+  const DOBLEZ_BASE_PX = 100;
 
   let cleanup: (() => void) | undefined;
 
@@ -384,13 +506,24 @@ const tachados = heroProblems.map((_, i) =>
 
     const seccion = document.querySelector<HTMLElement>("[data-hero]");
     const escenario = seccion?.querySelector<HTMLElement>("[data-stage]");
+    const hoja = seccion?.querySelector<HTMLElement>("[data-hoja]");
     const lista = seccion?.querySelector<HTMLElement>("[data-list]");
     const final = seccion?.querySelector<HTMLElement>("[data-final]");
+    const doblezCorte = seccion?.querySelector<HTMLElement>("[data-doblez-corte]");
+    const doblezPapel = seccion?.querySelector<HTMLElement>("[data-doblez-papel]");
     const items = [...(seccion?.querySelectorAll<HTMLElement>("[data-item]") ?? [])];
-    if (!seccion || !escenario || !lista || !final || !items.length) return;
+    if (
+      !seccion ||
+      !escenario ||
+      !hoja ||
+      !lista ||
+      !final ||
+      !doblezCorte ||
+      !doblezPapel ||
+      !items.length
+    )
+      return;
 
-    const marca = final.querySelector<HTMLElement>(".hero-final-brand");
-    const subtitulo = final.querySelector<HTMLElement>(".hero-final-sub");
     const botones = final.querySelector<HTMLElement>(".hero-final-actions");
 
     // Los tramos, medidos en pixeles para este ancho y esta cantidad de items. El
@@ -405,9 +538,8 @@ const tachados = heroProblems.map((_, i) =>
       const tachadoPx = px(TACHADO_PX);
       const entradaTotalPx = entradaPx + Math.max(0, items.length - 1) * entradaPasoPx;
       const tachadoInicioPx = entradaTotalPx + px(PAUSA_PX);
-      const borradoInicioPx =
+      const hojaInicioPx =
         tachadoInicioPx + items.length * tachadoPx + px(PAUSA_FINAL_PX);
-      const finalInicioPx = borradoInicioPx + px(BORRADO_PX);
 
       return {
         entradaPx,
@@ -415,15 +547,11 @@ const tachados = heroProblems.map((_, i) =>
         tachadoPx,
         tachadoPasoPx: px(TACHADO_PASO_PX),
         tachadoInicioPx,
-        borradoInicioPx,
-        borradoPx: px(BORRADO_PX),
-        finalInicioPx,
-        bottegaPx: px(BOTTEGA_PX),
-        subtituloDesdePx: px(SUBTITULO_DESDE_PX),
-        subtituloPx: px(SUBTITULO_PX),
-        botonesDesdePx: px(BOTONES_DESDE_PX),
+        hojaInicioPx,
+        hojaPx: px(HOJA_PX),
+        botonesDesdePx: hojaInicioPx + px(BOTONES_DESDE_PX),
         botonesPx: px(BOTONES_PX),
-        scrollLength: finalInicioPx + px(BOTONES_DESDE_PX) + px(BOTONES_PX),
+        scrollLength: hojaInicioPx + px(BOTONES_DESDE_PX) + px(BOTONES_PX),
       };
     };
     let plan = armarPlan();
@@ -431,6 +559,7 @@ const tachados = heroProblems.map((_, i) =>
     seccion.classList.add("is-live");
 
     let topSticky = 0;
+    let anchoHoja = 0;
     let ultimo = -1;
 
     // El path de cada item y la firma de la medida con la que se genero, para
@@ -439,6 +568,8 @@ const tachados = heroProblems.map((_, i) =>
 
     const medir = () => {
       plan = armarPlan();
+      // El ancho de la hoja sin transformar: es la medida del doblez
+      anchoHoja = hoja.offsetWidth;
       seccion.style.setProperty("--scroll-length", `${plan.scrollLength}px`);
       topSticky = parseFloat(getComputedStyle(escenario).top) || 0;
       ultimo = -1;
@@ -501,6 +632,9 @@ const tachados = heroProblems.map((_, i) =>
     const tramo = (p: number, desde: number, hasta: number) =>
       Math.min(1, Math.max(0, (p - desde) / (hasta - desde)));
 
+    // Arranca y frena: ni la mano ni la hoja cortan de golpe.
+    const suave = (t: number) => 0.5 * (t + t * t * (3 - 2 * t));
+
     const actualizar = () => {
       // El avance sale de la seccion, nunca de la altura de la ventana: asi el
       // mismo scroll da el mismo avance en cualquier alto. Va en pixeles, que es
@@ -529,63 +663,49 @@ const tachados = heroProblems.map((_, i) =>
 
         const guardado = trazosPorItem[i];
         if (!guardado) return;
-        // El garabato se dibuja con el progreso local del item, con un ease suave
-        // en las puntas: la mano arranca y frena, no corta de golpe.
-        const avance = 0.5 * (tacha + tacha * tacha * (3 - 2 * tacha));
-        guardado.path.style.strokeDashoffset = (1 - avance).toFixed(4);
+        // El garabato se dibuja con el avance local del item
+        guardado.path.style.strokeDashoffset = (1 - suave(tacha)).toFixed(4);
       });
 
-      // --- el borrado: barrido de goma de izquierda a derecha ---
-      const borrado = tramo(
-        recorrido,
-        plan.borradoInicioPx,
-        plan.borradoInicioPx + plan.borradoPx,
-      );
-      const finalAparece = tramo(
-        recorrido,
-        plan.finalInicioPx,
-        plan.finalInicioPx + plan.bottegaPx,
-      );
+      // --- el paso de hoja: la hoja de arriba se levanta del lomo y da vuelta la
+      // pagina entera. Lo que la hace papel es el doblez de la punta de arriba a
+      // la derecha: de ahi se agarra, el canto se dobla y el resto acompana. No
+      // hay fundido: cuando pasa el canto, la hoja ya esta del otro lado. ---
+      const paso = tramo(recorrido, plan.hojaInicioPx, plan.hojaInicioPx + plan.hojaPx);
 
-      if (borrado > 0) {
-        const avance = borrado * 120 - 10;
-        const mascara = `linear-gradient(to right, transparent ${avance.toFixed(1)}%, black ${(avance + 12).toFixed(1)}%, black 100%)`;
-        lista.style.maskImage = mascara;
-        lista.style.filter = `blur(${(borrado * 6).toFixed(2)}px)`;
-      } else {
-        lista.style.maskImage = "";
-        lista.style.filter = "";
+      if (paso > 0) {
+        const giro = suave(paso);
+        hoja.style.transform =
+          `perspective(${PERSPECTIVA_PX}px) rotateY(${(-GIRO_GRADOS * giro).toFixed(2)}deg)`;
+
+        // El doblez crece al agarrar la punta y se afloja cuando la hoja ya paso
+        // el canto, asi llega plana del otro lado.
+        const doblez = Math.sin(Math.PI * Math.min(1, paso / (2 * DOBLEZ_PICO)));
+        const escala = (anchoHoja * DOBLEZ_FRACCION * doblez) / DOBLEZ_BASE_PX;
+        const tamano = `scale(${escala.toFixed(4)})`;
+        doblezCorte.style.transform = tamano;
+        doblezPapel.style.transform = tamano;
+        doblezCorte.style.opacity = "1";
+        doblezPapel.style.opacity = "1";
+      } else if (hoja.style.transform) {
+        hoja.style.transform = "";
+        doblezCorte.style.transform = "";
+        doblezPapel.style.transform = "";
+        doblezCorte.style.opacity = "0";
+        doblezPapel.style.opacity = "0";
       }
 
-      // Del 100% al 6% durante el borrado, y despues el resto de grafito se va
-      // del todo cuando aparece el wordmark final.
-      const opacidadLista =
-        borrado < 1 ? 1 - borrado * 0.94 : 0.06 * (1 - finalAparece);
-      lista.style.opacity = opacidadLista.toFixed(3);
-
-      // --- el estado final: entra entintandose, encadenado ---
+      // --- el estado final: la hoja de abajo se revela con el giro, ya impresa.
+      // Lo unico que llega despues es el CTA, encadenado al final del paso. ---
       const entintar = (el: HTMLElement | null, p: number) => {
         if (!el) return;
         el.style.opacity = p.toFixed(3);
         el.style.filter = p < 1 ? `blur(${((1 - p) * 6).toFixed(2)}px)` : "";
         el.style.transform = `translateY(${((1 - p) * 10).toFixed(2)}px)`;
       };
-      entintar(marca, finalAparece);
-      entintar(
-        subtitulo,
-        tramo(
-          recorrido,
-          plan.finalInicioPx + plan.subtituloDesdePx,
-          plan.finalInicioPx + plan.subtituloDesdePx + plan.subtituloPx,
-        ),
-      );
       entintar(
         botones,
-        tramo(
-          recorrido,
-          plan.finalInicioPx + plan.botonesDesdePx,
-          plan.finalInicioPx + plan.botonesDesdePx + plan.botonesPx,
-        ),
+        tramo(recorrido, plan.botonesDesdePx, plan.botonesDesdePx + plan.botonesPx),
       );
     };
 
