@@ -141,8 +141,11 @@ const tachados = heroProblems.map((_, i) =>
       </div>
 
       <!-- El anillado de la carpeta: vive en el lomo, asi que no gira con la
-           hoja. Una vuelta cada 26px, centrada en el borde izquierdo. -->
+           hoja. Una vuelta cada 26px, centrada en el borde izquierdo, en dos
+           mitades hermanas: la que cae sobre el papel (adelante de todo) y la que
+           rodea el canto (que en modo vivo se guarda detras de la hoja). -->
       <div class="hero-anillado" aria-hidden="true"></div>
+      <div class="hero-anillado-costado" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -222,24 +225,48 @@ const tachados = heroProblems.map((_, i) =>
   }
 
   /* El anillado de la carpeta: vive en el lomo, asi que no gira con la hoja. Una
-     vuelta cada 26px, centrada en el borde izquierdo (el centro de la caja cae
-     sobre el canto del papel). */
-  .hero-anillado {
+     vuelta cada 26px, centrada en el borde izquierdo del papel, en DOS mitades
+     hermanas de 20px: cada una muestra la mitad que le toca del dibujo. Son dos
+     cajas y no una porque necesitan distinto orden de pintado. */
+  .hero-anillado,
+  .hero-anillado-costado {
     position: absolute;
     top: 8px;
     bottom: 8px;
     left: 0;
     z-index: 4;
-    width: 40px;
-    transform: translateX(-50%);
+    width: 20px;
     /* Una vuelta de alambre: el arco sale del agujero, rodea el canto del papel y
        vuelve a entrar, con la sombra que deja sobre el papel y un brillo a lo
        largo del metal para que se lea el volumen. El agujero se dibuja encima, asi
-       que el alambre parece entrar en el papel. */
+       que el alambre parece entrar en el papel. El dibujo mide 40px de ancho y las
+       dos mitades reparten su fase en X: la de adentro arranca en el pixel 20 del
+       dibujo (el canto del papel), la de afuera en el 0. */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='26' viewBox='0 0 40 26'%3E%3Cdefs%3E%3ClinearGradient id='m' x1='0' y1='0' x2='1' y2='.35'%3E%3Cstop offset='0' stop-color='%230E3B33'/%3E%3Cstop offset='.4' stop-color='%23528e7e'/%3E%3Cstop offset='.72' stop-color='%23164a41'/%3E%3Cstop offset='1' stop-color='%230E3B33'/%3E%3C/linearGradient%3E%3Cfilter id='s' x='-30%25' y='-30%25' width='160%25' height='160%25'%3E%3CfeGaussianBlur stdDeviation='1.3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M28 10.5C17 3 7 5 6 13s11 9 22 2.5' fill='none' stroke='%230E3B33' stroke-opacity='.14' stroke-width='2.6' stroke-linecap='round' transform='translate(2.6 3.2)' filter='url(%23s)'/%3E%3Cpath d='M28 10.5C17 3 7 5 6 13s11 9 22 2.5' fill='none' stroke='url(%23m)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cellipse cx='28' cy='13' rx='2.9' ry='4.2' fill='%230E3B33'/%3E%3C/svg%3E");
     background-repeat: repeat-y;
     background-size: 40px 26px;
     pointer-events: none;
+  }
+
+  /* La mitad de adentro del papel: el agujero y el alambre saliendo de el. Va
+     arriba de todo, porque es la cara de adelante del cuaderno. */
+  .hero-anillado {
+    background-position: -20px 0;
+  }
+
+  /* La mitad de afuera del canto: el alambre rodeando el papel. En modo vivo va
+     ABAJO de la hoja que gira (que en el tramo de guardarse baja a z-index -1,
+     por debajo del papel del cuaderno), asi que cuando la hoja pasa para atras el
+     resorte se ve por detras de ella y desde el frente esa parte no existe: la
+     hoja se la come. Sin JavaScript la hoja no gira y no hay nada que la tape:
+     ahi la mitad de afuera va arriba, con el resto del anillado. */
+  .hero-anillado-costado {
+    transform: translateX(-100%);
+    background-position: 0 0;
+  }
+
+  .hero-scroll.is-live .hero-anillado-costado {
+    z-index: -2;
   }
 
   /* El doblez de la punta de arriba a la derecha, en dos mitades del mismo

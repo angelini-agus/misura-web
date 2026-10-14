@@ -233,8 +233,12 @@ dibuja; después del canto el giro de adentro cancela el de afuera y es la cara
 que queda a la vista, plana y opaca, del otro lado del lomo.
 3. **`.hero-final` (absolute, inset 0)** — la página de abajo, con bottega. Está
    ahí desde el principio y no se anima: la revela el giro.
-4. **`.hero-anillado` (z-index 4)** — el anillado, sobre el lomo. Es del cuaderno,
-   así que **no gira con la hoja**: la hoja pasa por debajo de los alambres.
+4. **`.hero-anillado` y `.hero-anillado-costado` (z-index 4 y -2)** — el
+   anillado, sobre el lomo, en **dos mitades hermanas**. Es del cuaderno, así que
+   **no gira con la hoja**: la hoja pasa por debajo de los alambres. La mitad de
+   adentro del papel va arriba de todo; la de afuera del canto va debajo de la
+   hoja que gira, para que el resorte se guarde detrás de ella (ver «El
+   anillado»).
 
 ### El anillado
 
@@ -251,6 +255,36 @@ agujero, rodea el canto y vuelve a entrar, con tres cosas que le dan volumen:
 
 Todo eso viaja dentro del mismo `data:image/svg+xml` repetido en Y, así que es
 una sola imagen estática por vuelta (no cuesta nada por cuadro).
+
+**El anillado son dos cajas, no una.** La vuelta mide 40px y el canto del papel
+cae justo en el medio, así que el dibujo se reparte en dos mitades de 20px: la de
+adentro del papel (el agujero y el alambre saliendo de él) y la de afuera del
+canto (el alambre rodeando el papel). Cada mitad muestra su mitad del mismo
+`background-size: 40px 26px`, con la fase en X corrida 20px en la de adentro
+(`background-position: -20px 0`), así que las dos quedan alineadas al píxel:
+medido con capturas del lomo a escala 3, la partición cambia **9 píxeles en
+612.000** (delta máximo 2/255, todos en la columna del canto, que además lleva la
+línea del marco) y **1 píxel en 138.600** (delta 1/255) contra la caja única de
+antes.
+
+Son dos cajas porque necesitan distinto orden de pintado, y ahí está el arreglo
+pedido por el autor (*«el resorte debería meterse detrás de la hoja cuando va para
+atrás: no debería verse esa porción si lo ves desde una vista frontal»*):
+
+- **La de adentro va arriba de todo (z-index 4)**: es la cara de adelante del
+  cuaderno, así que el alambre sigue saliendo del agujero sobre la página de abajo
+  después de la vuelta.
+- **La de afuera va en z-index -2 en modo vivo**: por debajo de la hoja que gira,
+  que en el tramo de guardarse baja a z-index -1 (el mismo plano con el que se
+  esconde detrás del papel del cuaderno). Apenas la hoja pasa el canto, la hoja le
+  come la mitad de afuera al resorte: desde el frente esa parte no existe. Antes
+  el anillado entero iba a z-index 4 y los aros se veían **encima** de la hoja ya
+  volcada del otro lado del lomo.
+
+En el fallback la mitad de afuera se queda en z-index 4 con el resto del anillado:
+ahí la hoja no gira y no hay nada que la tape, y con un z-index negativo se iría
+debajo del fondo de la sección, porque sin sticky el escenario no arma contexto de
+apilado.
 
 El marco del cuaderno lo dibuja `.hero-pad::after` (z-index 3), **por encima de
 todo**: así la hoja gira por debajo y el borde no se corta nunca, ni siquiera
@@ -313,10 +347,28 @@ subtítulo y los botones. El tachado es de la tipografía
 el sistema cuando no hay garabato animado) y el SVG está oculto. Medido en los
 dos casos: `is-live` ausente, decoración `line-through` de 4,32px en
 `rgb(14, 59, 51)`, SVG en `display: none`, el estado final visible (los botones a
-opacidad 1, que no los toca ningún JS) y el anillado presente igual
-(`20x661`, `repeat-y`).
+opacidad 1, que no los toca ningún JS) y el anillado presente igual, **con sus
+dos mitades** (en el fallback la de afuera también va adelante: sin hoja que gire
+no hay nada que la tape, que es lo que deja la captura del lomo: los aros
+completos a los dos lados del canto).
 
 ## Verificación
+
+- **El resorte se guarda detrás de la hoja.** Contando el brillo del metal del
+alambre (R 55..115 con G-R ≥ 40, que es el tono claro del tubo) a la izquierda
+del canto en las capturas a 1440x900: **448px en reposo y en el tramo de
+adelante** (idénticos antes y después de partir la caja en dos), **0px pasado el
+canto** (-103°, -117°, -142° y -168°) contra 474/461/460/460 de la caja única, y
+**448px otra vez con la vuelta terminada**. Es decir: la mitad de afuera del
+anillado existe cuando la hoja no está encima y no existe desde el frente
+mientras la hoja está volcada del otro lado del lomo.
+- **La partición del anillado no cambia el reposo.** Capturas del lomo a escala 3
+  (330x420) contra la caja única de antes: **1 píxel distinto en 138.600** (delta
+  1/255). En el cuadro completo (1020x600): **9 píxeles en 612.000**, todos en la
+  columna del canto (delta máximo 2/255), que además es donde corre la línea del
+  marco. Medido del DOM en modo vivo: la mitad de adentro es `20x363` con su
+  origen en el canto del papel, la de afuera `20x363` 20px a la izquierda, con
+  `z-index` 4 y -2 y las fases en X `-20px 0` y `0 0`.
 
 - **El tachado es de a uno por vez.** Recorriendo el tramo entero en pasos de
   20px de scroll (346 muestras en escritorio, 239 en mobile, con el `dashoffset`
