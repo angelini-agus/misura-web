@@ -1,18 +1,20 @@
 ---
 import { hero, heroProblems } from "../lib/content";
 import Button from "./ui/Button.astro";
-import { trazoDeTachado } from "../lib/pencil";
+import { garabatoDeTachado } from "../lib/pencil";
 
 // ---------------------------------------------------------------------------
-// El SVG del build: sin JavaScript los tachones tienen que existir igual. Se
-// generan con un ancho y un alto tipicos y el `preserveAspectRatio="none"` los
-// estira al tamano real; el script del cliente los regenera con la medida exacta.
-// La linea de tiempo vive solo en el script: el frontmatter no la necesita.
+// El SVG del build: sin JavaScript el tachado tiene que existir igual. Se genera
+// con un ancho, un alto y un tamano de fuente tipicos, y el script del cliente
+// lo regenera con la medida exacta de cada texto. La linea de tiempo vive solo
+// en el script: el frontmatter no la necesita.
 // ---------------------------------------------------------------------------
 const ANCHO_BASE = 220;
 const ALTO_BASE = 26;
+// 1.875rem: el tope del clamp de los items. De aca salen la banda y el grosor.
+const FUENTE_BASE = 30;
 const tachados = heroProblems.map((_, i) =>
-  trazoDeTachado(1000 + i * 97, ANCHO_BASE, ALTO_BASE),
+  garabatoDeTachado(1000 + i * 97, ANCHO_BASE, ALTO_BASE, FUENTE_BASE),
 );
 ---
 
@@ -30,15 +32,24 @@ const tachados = heroProblems.map((_, i) =>
   class="hero-scroll [--hero-top:6.4375rem] min-[23rem]:max-sm:[--hero-top:7.4375rem] max-[23rem]:[--hero-top:8.4375rem] md:[--hero-top:7.0625rem]"
   data-hero
 >
-  // El filtro del lapiz: se define una sola vez y se aplica al grupo de cada
-  // item, no a cada trazo. El desplazamiento es chico a proposito, solo para
-  // que el borde no salga perfecto.
+  <!-- La textura del crayon: un filtro estatico que se define una sola vez y se
+       aplica al grupo de cada item, no a cada trazo. El desplazamiento contra el
+       ruido rompe el borde recto, y el umbral de alfa sobre el mismo ruido deja
+       huecos chicos por donde se ve el papel. No se anima: solo se recompone
+       cuando cambia el dibujado. -->
   <svg class="hero-defs" aria-hidden="true" focusable="false">
     <defs>
-      <filter id="lapiz" x="-20%" y="-150%" width="140%" height="400%">
+      <filter
+        id="lapiz"
+        x="-10%"
+        y="-40%"
+        width="120%"
+        height="180%"
+        color-interpolation-filters="sRGB"
+      >
         <feTurbulence
           type="fractalNoise"
-          baseFrequency="0.9"
+          baseFrequency="1"
           numOctaves="2"
           seed="7"
           result="grano"
@@ -46,10 +57,20 @@ const tachados = heroProblems.map((_, i) =>
         <feDisplacementMap
           in="SourceGraphic"
           in2="grano"
-          scale="0.5"
+          scale="3.5"
           xChannelSelector="R"
           yChannelSelector="G"
+          result="rugoso"
         />
+        <!-- El umbral: del ruido solo sobrevive la cola alta del alfa -->
+        <feColorMatrix
+          in="grano"
+          type="matrix"
+          values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 -0.62"
+          result="huecos"
+        />
+        <!-- `out` recorta del trazo lo que tapa el umbral: los huecos del papel -->
+        <feComposite in="rugoso" in2="huecos" operator="out" />
       </filter>
     </defs>
   </svg>
@@ -67,7 +88,9 @@ const tachados = heroProblems.map((_, i) =>
             heroProblems.map((problema, i) => (
               <li class="hero-item" data-item={i}>
                 <span class="hero-item-text" data-item-text>
-                  {problema}
+                  <!-- El label es lo unico que se apaga cuando el item ya esta
+                       tachado: el trazo se queda como esta. -->
+                  <span class="hero-item-label" data-item-label>{problema}</span>
                   <svg
                     class="hero-item-pencil"
                     viewBox={`0 0 ${ANCHO_BASE} ${ALTO_BASE}`}
@@ -77,7 +100,13 @@ const tachados = heroProblems.map((_, i) =>
                     data-pencil
                   >
                     <g filter="url(#lapiz)">
-                      <path d={tachados[i].d} fill-opacity={tachados[i].opacidad} />
+                      <path
+                        d={tachados[i].d}
+                        pathLength="1"
+                        stroke-dasharray="1"
+                        stroke-width={tachados[i].grosor}
+                        stroke-opacity={tachados[i].opacidad}
+                      />
                     </g>
                   </svg>
                 </span>
@@ -192,7 +221,17 @@ const tachados = heroProblems.map((_, i) =>
     letter-spacing: -0.01em;
   }
 
+  .hero-item-label {
+    /* Sin JavaScript, y con movimiento reducido, el tachado es una linea de
+       texto: no hay garabato animado, pero el item se lee tachado igual. */
+    text-decoration: line-through;
+    text-decoration-color: var(--color-green);
+    text-decoration-thickness: 0.16em;
+  }
+
   .hero-item-pencil {
+    /* Con el tachado de la tipografia, el dibujo no hace falta */
+    display: none;
     position: absolute;
     inset: 0;
     width: 100%;
@@ -204,11 +243,13 @@ const tachados = heroProblems.map((_, i) =>
   }
 
   .hero-item-pencil path {
-    /* Es el contorno relleno, no una linea: asi el grosor puede variar a lo
-       largo del trazo, como cuando un lapiz apoya y levanta. */
-    fill: var(--color-green);
-    /* Sin JS los tachones ya estan dibujados */
-    clip-path: none;
+    /* Es una linea, no un contorno relleno: el grosor sale del atributo
+       `stroke-width` (0.16em del texto) y los giros son redondeados, como el
+       codo de una mano que pinta rapido. */
+    fill: none;
+    stroke: var(--color-green);
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
 
   .hero-final {
@@ -286,18 +327,26 @@ const tachados = heroProblems.map((_, i) =>
     justify-content: center;
   }
 
-  /* Con JS el revelado lo maneja el script en cada frame */
-  .hero-scroll.is-live .hero-item-pencil path {
-    clip-path: inset(0 100% 0 0);
+  /* Con JS el trazo se dibuja con el progreso del scroll: `pathLength="1"` deja
+     el dashoffset en la misma escala que el progreso del item (1 = sin dibujar,
+     0 = el garabato entero). */
+  .hero-scroll.is-live .hero-item-pencil {
+    display: block;
   }
 
-  .hero-scroll.is-live .hero-item-text {
+  .hero-scroll.is-live .hero-item-pencil path {
+    stroke-dashoffset: 1;
+  }
+
+  /* El label es lo unico que aparece y se apaga; el trazo no se mueve con el */
+  .hero-scroll.is-live .hero-item-label {
+    text-decoration: none;
     will-change: opacity, transform;
   }
 </style>
 
 <script>
-  import { trazoDeTachado } from "../lib/pencil";
+  import { garabatoDeTachado } from "../lib/pencil";
 
   // La linea de tiempo. El progreso va de 0 (el escenario se acaba de pegar) a 1
   // (se despega). Cada item tiene su tramo de aparicion y su tramo de tachado, y
@@ -343,9 +392,9 @@ const tachados = heroProblems.map((_, i) =>
     let topSticky = 0;
     let ultimo = -1;
 
-    // El path de cada item, y su ancho y alto reales, para regenerar el trazo
-    // cuando cambia el tamano.
-    const trazosPorItem: Array<{ path: SVGPathElement; ancho: number; alto: number }> = [];
+    // El path de cada item y la firma de la medida con la que se genero, para
+    // regenerar el garabato solo cuando el texto cambia de tamano o de lineas.
+    const trazosPorItem: Array<{ path: SVGPathElement; firma: string }> = [];
 
     const medir = () => {
       scrollLength = document.documentElement.clientWidth >= 768 ? SCROLL_DESKTOP : SCROLL_MOBILE;
@@ -356,29 +405,55 @@ const tachados = heroProblems.map((_, i) =>
       actualizar();
     };
 
-    // El trazo se genera con el ancho y el alto REALES del texto. En el build se
-    // genero con una medida tipica, asi que sin JS el tachon se estira con
-    // `preserveAspectRatio` y se ve bien; con JS queda con la medida exacta.
+    // El garabato se genera con la medida REAL del texto. En el build se genero
+    // con una medida tipica, asi que aca se reemplaza por el dibujo exacto.
     const regenerarTrazos = () => {
       items.forEach((item, i) => {
         const span = item.querySelector<HTMLElement>("[data-item-text]");
+        const label = item.querySelector<HTMLElement>("[data-item-label]");
         const svg = item.querySelector<SVGSVGElement>("[data-pencil]");
-        if (!span || !svg) return;
+        if (!span || !label || !svg) return;
+
         const caja = span.getBoundingClientRect();
         const ancho = Math.round(caja.width);
         const alto = Math.round(caja.height);
         if (!ancho || !alto) return;
 
-        const guardado = trazosPorItem[i];
-        if (guardado && guardado.ancho === ancho && guardado.alto === alto) return;
+        // Una caja por linea del texto: si el item se parte en dos, el garabato
+        // sigue siendo uno solo y baja de una linea a la otra en diagonal.
+        const rango = document.createRange();
+        rango.selectNodeContents(label);
+        const lineas = [...rango.getClientRects()]
+          .filter((rect) => rect.width > 0.5 && rect.height > 0.5)
+          .map((rect) => ({
+            x: rect.left - caja.left,
+            y: rect.top - caja.top,
+            ancho: rect.width,
+            alto: rect.height,
+          }));
 
-        const trazo = trazoDeTachado(1000 + i * 97, ancho, alto);
+        // La banda y el grosor salen del tamano de fuente, no de la caja
+        const fuente = parseFloat(getComputedStyle(label).fontSize) || 16;
+        const firma = [
+          ancho,
+          alto,
+          fuente.toFixed(1),
+          lineas
+            .map((l) => `${l.x.toFixed(1)},${l.y.toFixed(1)},${l.ancho.toFixed(1)}`)
+            .join(";"),
+        ].join("|");
+
+        const guardado = trazosPorItem[i];
+        if (guardado && guardado.firma === firma) return;
+
+        const trazo = garabatoDeTachado(1000 + i * 97, ancho, alto, fuente, lineas);
         svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
         const path = svg.querySelector<SVGPathElement>("path");
         if (!path) return;
         path.setAttribute("d", trazo.d);
-        path.setAttribute("fill-opacity", String(trazo.opacidad));
-        trazosPorItem[i] = { path, ancho, alto };
+        path.setAttribute("stroke-width", String(trazo.grosor));
+        path.setAttribute("stroke-opacity", String(trazo.opacidad));
+        trazosPorItem[i] = { path, firma };
       });
     };
 
@@ -403,20 +478,22 @@ const tachados = heroProblems.map((_, i) =>
           inicio + DESFASE_TACHADO + TACHADO,
         );
 
-        // Entra con un desplazamiento chico. La opacidad va en el TEXTO, no en el
-        // li: asi el renglon de la libretita se ve siempre, aunque el item
-        // todavia no haya aparecido. Y una vez tachado se queda como esta: el
-        // item ya cerrado no se apaga.
-        const span = item.querySelector<HTMLElement>("[data-item-text]");
-        if (span) {
-          span.style.opacity = aparece.toFixed(3);
-          span.style.transform = `translateY(${((1 - aparece) * 8).toFixed(2)}px)`;
+        // El label entra con un desplazamiento chico y, cuando el garabato lo
+        // termina de tachar, baja a 0.45: el item ya cerrado se apaga, el trazo
+        // se queda. La opacidad va en el label y no en el li: asi el renglon de
+        // la libretita se ve siempre, aunque el item no haya aparecido todavia.
+        const label = item.querySelector<HTMLElement>("[data-item-label]");
+        if (label) {
+          label.style.opacity = (aparece * (1 - 0.55 * tacha)).toFixed(3);
+          label.style.transform = `translateY(${((1 - aparece) * 8).toFixed(2)}px)`;
         }
 
         const guardado = trazosPorItem[i];
         if (!guardado) return;
-        // Un solo trazo de ida y vuelta: se revela de izquierda a derecha
-        guardado.path.style.clipPath = `inset(0 ${((1 - tacha) * 100).toFixed(2)}% 0 0)`;
+        // El garabato se dibuja con el progreso local del item, con un ease suave
+        // en las puntas: la mano arranca y frena, no corta de golpe.
+        const avance = 0.5 * (tacha + tacha * tacha * (3 - 2 * tacha));
+        guardado.path.style.strokeDashoffset = (1 - avance).toFixed(4);
       });
 
       // --- el borrado: barrido de goma de izquierda a derecha ---
