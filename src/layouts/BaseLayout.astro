@@ -135,7 +135,13 @@ gtag('config', '${gaId}');`
           const quieto = window.matchMedia(
             "(prefers-reduced-motion: reduce)",
           ).matches;
-          if (!visto && !quieto && !window.location.hash) {
+          // `?burn=1` lo fuerza para poder revisarlo las veces que haga falta: la
+          // marca de sesion, el hash y el movimiento reducido no cuentan.
+          const forzado = new URLSearchParams(window.location.search).has("burn");
+          if (forzado) {
+            document.documentElement.dataset.burnForzado = "1";
+          }
+          if (forzado || (!visto && !quieto && !window.location.hash)) {
             document.documentElement.classList.add("has-burn");
           }
         } catch {

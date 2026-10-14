@@ -52,6 +52,12 @@ librerías, sin canvas, sin imágenes.
 8. **Sin flash en la segunda visita**: la decisión vive en el `<head>`
    (`BaseLayout.astro`, clase `has-burn` en el `<html>`), igual que `has-rail`.
    Decidirlo en el componente mostraría un frame de pantalla crema.
+9. **Se revisa por URL**: `?burn=1` fuerza la ceremonia (ignora la marca de
+   sesión, el hash y el movimiento reducido) y **no escribe la marca**, así que se
+   puede repetir recargando. `?burn=lento` la corre a 0,3x con
+   `updatePlaybackRate` sobre `document.getAnimations()`: a velocidad real el
+   masazo dura 80ms y se pierde. Los dos son para el autor; en producción nadie
+   escribe ese parámetro.
 
 ## Línea de tiempo (2.400ms)
 
@@ -81,6 +87,8 @@ librerías, sin canvas, sin imágenes.
 | `prefers-reduced-motion: reduce` | No corre |
 | Recarga con scroll restaurado | Con el navegador restaurando 2142px, no corre |
 | El final | `has-burn` fuera, `display: none`, el `overflow` restaurado y la marca de sesión escrita |
+| `?burn=1` (el forzado de revisión) | Dos pasadas seguidas en la misma pestaña arrancan las dos, la marca de sesión queda **vacía** y el `<html>` sale con `data-burn-forzado="1"` |
+| `?burn=lento` | Se verifica que a los 4000ms las letras todavía están en opacidad 0: a 0,3x el quemado arranca a los 5000ms |
 | Capturas de las fases | 10 cuadros en `%TEMP%/hero-shot/preload/`, montaje en `fases-preload.png` y el zoom del hierro en `zoom-hierro.png` |
 
 ## Lo que costó (aprendido en la implementación)

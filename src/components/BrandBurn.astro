@@ -675,12 +675,18 @@ const LETRAS = [
 
   const raiz = document.documentElement;
   const overlay = document.getElementById("brand-burn");
+  // `?burn=lento` corre la ceremonia a un tercio de velocidad, para revisarla sin
+  // perderse los tramos cortos (el masazo dura 80ms). Es solo para el autor: en
+  // produccion nadie escribe ese parametro.
 
   // El <head> ya decidió (sesión, hash, movimiento reducido). Acá solo se resuelve
   // el caso que el <head> no puede saber: una recarga a mitad de página, donde el
   // navegador restaura el scroll y el preload sobra.
   if (overlay && raiz.classList.contains("has-burn")) {
-    if (window.scrollY > 2) {
+    const forzado = raiz.dataset.burnForzado === "1";
+    // Una recarga a mitad de pagina no es una entrada: el preload sobra. Con
+    // `?burn=1` no se pregunta nada, que es para lo que existe el forzado.
+    if (!forzado && window.scrollY > 2) {
       raiz.classList.remove("has-burn");
     } else {
       const palabra = overlay.querySelector<HTMLElement>("[data-palabra]");
@@ -721,10 +727,14 @@ const LETRAS = [
         const terminar = () => {
           raiz.classList.remove("has-burn");
           raiz.style.overflow = "";
-          try {
-            sessionStorage.setItem(CLAVE_SESION, "1");
-          } catch {
-            /* modo privado: el preload se repetirá, es lo menos malo */
+          // Con el forzado no se marca la sesion: asi se puede repetir cuantas
+          // veces haga falta sin cerrar la pestaña.
+          if (!forzado) {
+            try {
+              sessionStorage.setItem(CLAVE_SESION, "1");
+            } catch {
+              /* modo privado: el preload se repetira, es lo menos malo */
+            }
           }
         };
 
@@ -732,6 +742,16 @@ const LETRAS = [
           plantarLaPalabra();
           raiz.style.overflow = "hidden";
           overlay.classList.add("is-running");
+          // El ritmo de revision se aplica despues de prender la clase, que es
+          // cuando las animaciones existen.
+          const ritmo = new URLSearchParams(window.location.search).get("burn") === "lento" ? 0.3 : 1;
+          if (ritmo !== 1) {
+            window.requestAnimationFrame(() => {
+              document.getAnimations().forEach((animacion) => {
+                animacion.updatePlaybackRate(ritmo);
+              });
+            });
+          }
           overlay.addEventListener("animationend", (evento) => {
             if ((evento as AnimationEvent).animationName === "retirar") {
               terminar();
@@ -739,7 +759,7 @@ const LETRAS = [
           });
           // Red de seguridad: si el evento de animación no llega (pestaña de fondo,
           // preferencia cambiada a mitad de camino), el overlay se saca igual.
-          window.setTimeout(terminar, DURACION + 400);
+          window.setTimeout(terminar, DURACION / ritmo + 400);
         };
 
         // La palabra tiene que estar en Lora antes de quemarse: si la fuente tarda,
