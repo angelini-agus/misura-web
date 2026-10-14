@@ -33,27 +33,6 @@
 ---
 
 <div id="brand-burn" aria-hidden="true">
-  <!-- El lienzo: una textura de fibra quieta, hecha con ruido, encima del crema -->
-  <svg class="lino" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <filter id="lino-fibra" x="0" y="0" width="100%" height="100%">
-      <feTurbulence
-        type="fractalNoise"
-        baseFrequency="0.012 0.42"
-        numOctaves="3"
-        seed="5"
-        result="hebra"
-      />
-      <feColorMatrix
-        in="hebra"
-        type="matrix"
-        values="0 0 0 0 0.32
-                0 0 0 0 0.30
-                0 0 0 0 0.24
-                0 0 0 0.5 0"
-      />
-    </filter>
-    <rect width="100%" height="100%" filter="url(#lino-fibra)" />
-  </svg>
 
   <!-- Todo lo que tiembla con el golpe: el lienzo, la tinta y el taco -->
   <div class="golpe">
@@ -154,15 +133,6 @@
   }
 
   /* El lienzo: la fibra quieta, apenas marcada, con multiply para que no lave */
-  .lino {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.2;
-    mix-blend-mode: multiply;
-  }
-
   .golpe {
     position: absolute;
     inset: 0;

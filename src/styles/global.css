@@ -191,12 +191,7 @@ body {
      ese ancestro es el body. Sin esto la pista se resuelve contra el viewport y
      el riel no puede viajar con el scroll. */
   position: relative;
-  /* Fondo de papel de calcar: la crema de la casa y una textura de arrugas
-     suaves (un `feTurbulence` de baja frecuencia, casi isotrópico) en gris
-     cálido, `fixed` para que no se mueva al scrollear. La cabecera y el anuncio
-     la tapan con sus fondos sólidos, así que la textura queda en el fondo de la
-     página y no se ve en el navbar. */
-  background: var(--color-cream) url("/textura-papel.svg") repeat fixed;
+  background: var(--color-cream);
   color: var(--color-green);
   font-family: var(--font-sans);
 }
