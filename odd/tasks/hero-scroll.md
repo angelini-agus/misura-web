@@ -211,10 +211,13 @@ texto. Una sola fuente de verdad.
 
 ## El cuaderno
 
-`.hero-pad` es el objeto: papel `var(--color-cream-light)`, borde verde de
-1.5px, `border-radius: 0.375rem` y `box-shadow: 6px 6px 0 rgba(14, 59, 51, 0.09)`.
-Los renglones salen del `border-bottom` de cada ítem (así siguen al texto cuando
-tipa o envuelve) y la línea de margen es un `::before` de 1px al 20%.
+`.hero-pad` es el objeto: papel `--papel` (`#f6f0e3`), borde verde de 1.5px y
+`border-radius: 0.375rem`. **La hoja es blanca**: no tiene renglones (los traía
+el `border-bottom` de cada ítem) ni línea de margen (un `::before` de 1px al 20%
+que tenían el cuaderno y la hoja). Lo que ordena la lista es el **punto** de cada
+ítem, dibujado a mano, y el aire de la izquierda: el `padding-left` de
+`--pad-aire` no baja de `2.6rem` porque ahí cuelgan los puntos (y los primeros
+14px del papel los pisa el anillado).
 
 Adentro del cuaderno hay cuatro cosas, y quién está arriba de quién es lo que
 sostiene el paso de hoja:
@@ -239,6 +242,34 @@ que queda a la vista, plana y opaca, del otro lado del lomo.
    adentro del papel va arriba de todo; la de afuera del canto va debajo de la
    hoja que gira, para que el resorte se guarde detrás de ella (ver «El
    anillado»).
+
+### El punto de cada ítem
+
+El ítem es una fila de dos cosas: el punto y el texto (`display: flex` en el
+`.hero-item`, con un `gap` de `--bala-aire` y todo el aire del punto en el margen
+negativo de su caja). El punto no es un símbolo ni un icono: es **la punta del
+lápiz apoyada en el papel**, y vive en `src/lib/pencil.ts` (`balaDeItem`), la
+misma fuente que el garabato.
+
+- **El contorno** se traza de una vuelta larga (1,08 a 1,28 vueltas, así el trazo
+  se pisa al cerrar) sobre 13 puntos, y el interior se rellena: la marca es una
+  mancha con el borde irregular y no un aro. El borde ondula con **dos ondas de
+  baja frecuencia** (10% y 3,5% del radio) y no con ruido punto a punto: con ruido
+  por punto la mancha se lee como un polígono (el primer intento salía con caras
+  planas en las capturas a escala 3).
+- **Cada ítem lo tiene distinto**: el radio (2,9 a 4,1 sobre una caja de 24), el
+  estirado (hasta 42% más ancho), la caída (hasta ±20°), la presión (opacidad 0,74
+  a 0,96) y el grosor (2,9 a 3,6) salen de la semilla del índice. Son ocho puntos
+  distintos para ocho ítems, y el mismo ítem repite el suyo en cada carga.
+- **La caja mide `clamp(0.85rem, 1.05svh, 1.05rem)`** (13,6px en cualquier alto de
+  ventana hasta 1295px) y el punto va **colgando**:
+  `margin-left: calc(-1 * var(--sangria))`, con `--sangria` = la caja más el aire,
+  así el texto se queda exactamente donde estaba y el punto vive en el aire de la
+  hoja. En celular ese aire sube de 28px a 41,6px para que el punto entre sin
+  pisar el anillado.
+- **El punto entra y se apaga con el label**: el script le aplica la misma cuenta
+  que al texto (`aparece * (1 - 0,55 * tacha)`). El garabato, en cambio, se queda
+  con el ítem ya cerrado.
 
 ### El anillado
 
@@ -333,9 +364,10 @@ scroll. Los tres están en `opacity: 0` con `will-change: transform` para que la
 capa ya esté dibujada cuando el scroll las prende.
 
 La opacidad de aparición va en `.hero-item-label`, no en el `<li>` ni en el
-`<span>` que envuelve al texto y al SVG: así el renglón de la libretita se ve
-siempre, el trazo no se apaga con el texto y el garabato puede seguir dibujándose
-mientras el label entra.
+`<span>` que envuelve al texto y al SVG: así el trazo no se apaga con el texto y
+el garabato puede seguir dibujándose mientras el label entra. El **punto** lleva
+la misma opacidad que el label, pero en su propio `span` (`.hero-item-bala`): es
+de la línea del ítem, no del cuaderno.
 
 ## Fallback
 
@@ -344,9 +376,12 @@ Queda el layout corto y estático: el H1, el cuaderno con la lista tachada, el
 anillado, y debajo (adentro del mismo cuaderno) el estado final con bottega, el
 subtítulo y los botones. El tachado es de la tipografía
 (`text-decoration: line-through` a 0,16em en verde de marca, que es lo que pide
-el sistema cuando no hay garabato animado) y el SVG está oculto. Medido en los
-dos casos: `is-live` ausente, decoración `line-through` de 4,32px en
-`rgb(14, 59, 51)`, SVG en `display: none`, el estado final visible (los botones a
+el sistema cuando no hay garabato animado) y el SVG del garabato está oculto. El
+**punto** no se oculta: es la marca de la lista, así que sus SVG se ven igual
+(con su opacidad de 0,74 a 0,96) y el `text-decoration` no los toca. Medido en
+los dos casos: `is-live` ausente, decoración `line-through` de 4,32px en
+`rgb(14, 59, 51)`, el SVG del garabato en `display: none`, el estado final
+visible (los botones a
 opacidad 1, que no los toca ningún JS) y el anillado presente igual, **con sus
 dos mitades** (en el fallback la de afuera también va adelante: sin hoja que gire
 no hay nada que la tape, que es lo que deja la captura del lomo: los aros
@@ -369,6 +404,26 @@ mientras la hoja está volcada del otro lado del lomo.
   marco. Medido del DOM en modo vivo: la mitad de adentro es `20x363` con su
   origen en el canto del papel, la de afuera `20x363` 20px a la izquierda, con
   `z-index` 4 y -2 y las fases en X `-20px 0` y `0 0`.
+
+- **La hoja en blanco.** Leído del DOM en escritorio y mobile, con y sin JS: los
+  dos `::before` de la línea de margen ya no existen (sin `content`) y ningún
+  `.hero-item` tiene `border-bottom`. El cuaderno mide 1px menos por ítem de una
+  línea (el renglón que se fue): 40,2px por ítem contra 41,2. La lista se lee por
+  los puntos.
+- **El punto no mueve el texto.** A 1424x805 el texto arranca en x=53 y el punto
+  en x=33, con 6,4px de aire entre los dos, y su centro cae en la mitad de la
+  primera línea (7,69px desde el tope del texto, contra 14,49 del centro de la
+  línea). En 390x844: texto en 42,6, punto en 22,6, el mismo aire y el mismo
+  centrado (8,39). En el fallback, idénticos.
+- **El punto no cambia los cortes de línea en celular.** Medido con un `Range`
+  sobre cada label: **los mismos tres ítems que ya se partían en dos líneas se
+  siguen partiendo** (los ítems 1, 6 y 7, con 72,6px de alto contra 42,2 de los de
+  una línea) y en escritorio los ocho siguen en una sola línea. Con la versión
+  anterior (28px de aire a la izquierda y una caja de 310px) se partían los mismos
+  tres.
+- **El punto baja con el ítem, no antes.** Las dos opacidades (label y punto)
+  leídas juntas del DOM en cuatro momentos del recorrido: 1/1 con la lista lista
+  para tachar, 0,9/0,9 y 0,2/0,2 entrando, y 0,45/0,45 con el ítem cerrado.
 
 - **El tachado es de a uno por vez.** Recorriendo el tramo entero en pasos de
   20px de scroll (346 muestras en escritorio, 239 en mobile, con el `dashoffset`

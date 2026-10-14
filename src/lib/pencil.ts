@@ -227,3 +227,96 @@ export function garabatoDeTachado(
     pasadas: total,
   };
 }
+
+// ---------------------------------------------------------------------------
+// La bala de la lista: el punto que abre cada item del cuaderno.
+//
+// No es un simbolo ni un icono: es la punta del lapiz apoyada en el papel. El
+// contorno se traza de una vuelta larga (1,1 vueltas, asi el trazo se pisa al
+// cerrar) con los puntos corridos al azar, y el interior se rellena, asi que la
+// marca es una mancha con el borde irregular y no un aro. Cada item lo tiene
+// distinto: el radio, el estirado, la caida y la presion (el grosor y la
+// opacidad) salen de la semilla del indice. Todos los puntos se parecen y
+// ninguno es igual a otro.
+// ---------------------------------------------------------------------------
+
+/** Lado de la caja de dibujo de un punto, en px. El CSS la escala. */
+export const BALA_BASE = 24;
+
+/** Radio del punto, en la caja de `BALA_BASE`: la punta apoyada, ni chica ni enorme. */
+export const BALA_RADIO_MIN = 2.9;
+export const BALA_RADIO_MAX = 4.1;
+
+/** Grosor del contorno, en la caja de `BALA_BASE`. */
+export const BALA_GROSOR_MIN = 2.9;
+export const BALA_GROSOR_MAX = 3.6;
+
+/** Cuanto se corre cada punto del contorno, en la caja de `BALA_BASE`. */
+export const BALA_JITTER = 0.25;
+
+/**
+ * Cuanto ondula el borde, en tanto por uno del radio. Son dos ondas de baja
+ * frecuencia (una vuelta y vuelta y media) en vez de ruido punto a punto: un
+ * borde con ruido punto a punto se lee como un poligono, no como un apoyo de
+ * lapiz.
+ */
+export const BALA_ONDA = 0.1;
+export const BALA_ONDA_FINA = 0.035;
+
+/** Puntos del contorno: los suficientes para que el borde sea redondo. */
+export const BALA_LADOS = 13;
+
+/** Cuanto cae el punto, en grados (mas o menos): ninguno cae derecho. */
+export const BALA_GIRO = 20;
+
+export interface Bala {
+  /** El `d` del path, en la caja de `BALA_BASE`. */
+  d: string;
+  /** Grosor del contorno, en la caja de `BALA_BASE`. */
+  grosor: number;
+  /** El angulo con el que cae el punto, en grados. */
+  giro: number;
+  /** Presion del lapiz, de 0.74 a 0.96. */
+  opacidad: number;
+}
+
+/**
+ * El punto de un item. La semilla sale del indice: el mismo item tiene siempre
+ * el mismo punto y dos items distintos nunca lo comparten.
+ */
+export function balaDeItem(indice: number): Bala {
+  const rnd = prng(7000 + indice * 131);
+
+  const radio = BALA_RADIO_MIN + rnd() * (BALA_RADIO_MAX - BALA_RADIO_MIN);
+  // Algunos puntos salen redondos y otros ovalados: la punta no apoya siempre igual
+  const estiradoX = 1 + rnd() * 0.42;
+  const estiradoY = 1 + rnd() * 0.18;
+  // La vuelta se pasa un poco del cierre: el trazo se pisa, como cuando la mano
+  // no vuelve exactamente al mismo lugar
+  const vueltas = 1.08 + rnd() * 0.2;
+  const lados = BALA_LADOS;
+  // La fase de las dos ondas del borde: con esto el punto de cada item tiene su
+  // propia forma (alguno mas redondo, alguno mas ovalado) y ninguno repite
+  const fase = rnd() * Math.PI * 2;
+  const faseFina = rnd() * Math.PI * 2;
+
+  const puntos: string[] = [];
+  for (let i = 0; i <= lados; i++) {
+    const angulo = (i / lados) * Math.PI * 2 * vueltas;
+    const borde =
+      1 + BALA_ONDA * Math.sin(angulo * 2 + fase) + BALA_ONDA_FINA * Math.sin(angulo * 3 + faseFina);
+    const r = radio * borde;
+    const x =
+      BALA_BASE / 2 + Math.cos(angulo) * r * estiradoX + (rnd() * 2 - 1) * BALA_JITTER;
+    const y =
+      BALA_BASE / 2 + Math.sin(angulo) * r * estiradoY + (rnd() * 2 - 1) * BALA_JITTER;
+    puntos.push(`${i === 0 ? "M" : "L"}${num(x)} ${num(y)}`);
+  }
+
+  return {
+    d: `${puntos.join(" ")} Z`,
+    grosor: +(BALA_GROSOR_MIN + rnd() * (BALA_GROSOR_MAX - BALA_GROSOR_MIN)).toFixed(2),
+    giro: +((rnd() * 2 - 1) * BALA_GIRO).toFixed(1),
+    opacidad: +(0.74 + rnd() * 0.22).toFixed(2),
+  };
+}

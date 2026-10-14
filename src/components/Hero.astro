@@ -1,7 +1,7 @@
 ---
 import { hero, heroProblems, site } from "../lib/content";
 import Button from "./ui/Button.astro";
-import { garabatoDeTachado } from "../lib/pencil";
+import { BALA_BASE, balaDeItem, garabatoDeTachado } from "../lib/pencil";
 
 // ---------------------------------------------------------------------------
 // El SVG del build: sin JavaScript el tachado tiene que existir igual. Se genera
@@ -16,6 +16,9 @@ const FUENTE_BASE = 30;
 const tachados = heroProblems.map((_, i) =>
   garabatoDeTachado(1000 + i * 97, ANCHO_BASE, ALTO_BASE, FUENTE_BASE),
 );
+// La bala de cada item: el punto hecho con lapiz que abre la linea. Los ocho
+// salen distintos (radio, estirado, caida y presion), y todos son un punto.
+const balas = heroProblems.map((_, i) => balaDeItem(i));
 ---
 
 <!--
@@ -86,6 +89,23 @@ const tachados = heroProblems.map((_, i) =>
           {
             heroProblems.map((problema, i) => (
               <li class="hero-item" data-item={i}>
+                <!-- La bala: el punto que abre el item, hecho con lapiz. Es
+                     decorativa (el item ya se lee por el texto), asi que va con
+                     `aria-hidden`. -->
+                <span class="hero-item-bala" aria-hidden="true" data-bala>
+                  <svg
+                    viewBox={`0 0 ${BALA_BASE} ${BALA_BASE}`}
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d={balas[i].d}
+                      opacity={balas[i].opacidad}
+                      stroke-width={balas[i].grosor}
+                      transform={`rotate(${balas[i].giro} ${BALA_BASE / 2} ${BALA_BASE / 2})`}
+                    />
+                  </svg>
+                </span>
                 <span class="hero-item-text" data-item-text>
                   <!-- El label es lo unico que se apaga cuando el item ya esta
                        tachado: el trazo se queda como esta. -->
@@ -185,11 +205,14 @@ const tachados = heroProblems.map((_, i) =>
   }
   /* El cuaderno. `--pad-aire` es el aire de adentro del papel: en el fallback lo
      pone el cuaderno y en modo vivo lo llevan la hoja y la pagina de abajo, para
-     que la hoja pueda llegar hasta el borde del marco. `--cara-reverso` es el
-     tono de la cara de atras de una hoja: apenas mas apagado que el frente. */
+     que la hoja pueda llegar hasta el borde del marco. El aire de la izquierda
+     es el mas ancho: ahi cuelgan las balas de la lista (y por eso no baja de
+     2.6rem, que es lo que necesitan la bala y su aire en celular, mas el anillado
+     que pisa los primeros 14px del papel). `--cara-reverso` es el tono de la cara
+     de atras de una hoja: apenas mas apagado que el frente. */
   .hero-pad {
     --pad-aire: clamp(1rem, 3svh, 2.25rem) clamp(1.25rem, 5vw, 2.25rem)
-      clamp(1rem, 3svh, 2.25rem) clamp(1.75rem, 7vw, 3.25rem);
+      clamp(1rem, 3svh, 2.25rem) clamp(2.6rem, 7vw, 3.25rem);
     /* El papel de la carpeta. Un paso apenas mas claro que el fondo de la pagina
        (`--color-cream`) y no el blanco crema del resto del sitio
        (`--color-cream-light`): con el borde y la sombra corrida alcanza para que
@@ -212,18 +235,6 @@ const tachados = heroProblems.map((_, i) =>
     text-align: left;
   }
 
-  /* La linea del margen, como en un cuaderno. La tiene el cuaderno y la hoja: en
-     modo vivo quedan una encima de la otra, alineadas. */
-  .hero-pad::before,
-  .hero-hoja::before {
-    content: "";
-    position: absolute;
-    inset-block: 0;
-    left: clamp(0.9rem, 4vw, 1.6rem);
-    width: 1px;
-    background: color-mix(in srgb, var(--color-green) 20%, transparent);
-  }
-
   /* El anillado de la carpeta: vive en el lomo, asi que no gira con la hoja. Una
      vuelta cada 26px, centrada en el borde izquierdo del papel, en DOS mitades
      hermanas de 20px: cada una muestra la mitad que le toca del dibujo. Son dos
@@ -235,8 +246,7 @@ const tachados = heroProblems.map((_, i) =>
     bottom: 8px;
     left: 0;
     z-index: 4;
-    width: 20px;
-    /* Una vuelta de alambre: el arco sale del agujero, rodea el canto del papel y
+    width: 20px;    /* Una vuelta de alambre: el arco sale del agujero, rodea el canto del papel y
        vuelve a entrar, con la sombra que deja sobre el papel y un brillo a lo
        largo del metal para que se lea el volumen. El agujero se dibuja encima, asi
        que el alambre parece entrar en el papel. El dibujo mide 40px de ancho y las
@@ -359,15 +369,54 @@ const tachados = heroProblems.map((_, i) =>
   }
 
   .hero-item {
-    /* El li no recorta: el tachon sobresale a los costados del texto */
+    /* La fuente del item la comparten el texto y la bala: de ahi tambien sale
+       donde cae la bala en la primera linea. */
+    --fuente-item: clamp(1.1rem, 3svh, 1.9rem);
+    /* La bala: el lado de su caja, el aire que la separa del texto y la sangria
+       que cuelga para afuera (el ancho de la caja mas el aire). */
+    --bala: clamp(0.85rem, 1.05svh, 1.05rem);
+    --bala-aire: clamp(0.4rem, 0.55svh, 0.5rem);
+    --sangria: calc(var(--bala) + var(--bala-aire));
+    /* La hoja es blanca: no hay renglon ni linea de margen, el item es la fila
+       de la bala y el texto. El li no recorta: el tachon sobresale a los
+       costados del texto y la bala cuelga a la izquierda. El `gap` es el aire
+       entre la bala y el texto: junto con el margen negativo de la bala (su caja
+       mas ese mismo aire), el texto se queda exactamente donde estaba. */
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bala-aire);
     padding-block: clamp(0.15rem, 0.7svh, 0.45rem);
-    /* El renglon de la libretita */
-    border-bottom: 1px solid color-mix(in srgb, var(--color-green) 15%, transparent);
     line-height: 1;
   }
 
-  .hero-item:last-child {
-    border-bottom: 0;
+  /* La bala: una marquita hecha a mano, distinta en cada item. El margen
+     negativo del ancho de su caja mas el aire la saca del flujo hacia la
+     izquierda, asi el texto se queda donde estaba y la bala vive en el aire de
+     la hoja. */
+  .hero-item-bala {
+    flex: none;
+    width: var(--bala);
+    height: var(--bala);
+    margin-left: calc(-1 * var(--sangria));
+    /* Centrada en la primera linea, tambien cuando el item se parte en dos */
+    margin-top: calc((var(--fuente-item) * 1.2 - var(--bala)) / 2);
+  }
+
+  .hero-item-bala svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* El trazo se pasa un poco de la caja: es un dibujo, no un icono */
+    overflow: visible;
+  }
+
+  .hero-item-bala path {
+    /* Mancha y no aro: el contorno se traza y el interior se rellena, que es lo
+       que deja la punta del lapiz cuando se apoya */
+    fill: var(--color-green);
+    stroke: var(--color-green);
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .hero-item-text {
@@ -375,7 +424,7 @@ const tachados = heroProblems.map((_, i) =>
     display: inline-block;
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(1.1rem, 3svh, 1.9rem);
+    font-size: var(--fuente-item);
     line-height: 1.2;
     letter-spacing: -0.01em;
   }
@@ -573,6 +622,13 @@ const tachados = heroProblems.map((_, i) =>
   /* El label es lo unico que aparece y se apaga; el trazo no se mueve con el */
   .hero-scroll.is-live .hero-item-label {
     text-decoration: none;
+    will-change: opacity, transform;
+  }
+
+  /* La bala entra y se apaga con el label (es de la misma linea): las dos capas
+     van promovidas, como el label, para que el primer cuadro del item no pague
+     la rasterizada. */
+  .hero-scroll.is-live .hero-item-bala {
     will-change: opacity, transform;
   }
 </style>
@@ -798,6 +854,14 @@ const tachados = heroProblems.map((_, i) =>
         if (label) {
           label.style.opacity = (aparece * (1 - 0.55 * tacha)).toFixed(3);
           label.style.transform = `translateY(${((1 - aparece) * 8).toFixed(2)}px)`;
+        }
+
+        // La bala es de la misma linea que el texto: entra y se apaga con el. El
+        // garabato, en cambio, se queda con el item ya cerrado.
+        const bala = item.querySelector<HTMLElement>("[data-bala]");
+        if (bala) {
+          bala.style.opacity = (aparece * (1 - 0.55 * tacha)).toFixed(3);
+          bala.style.transform = `translateY(${((1 - aparece) * 8).toFixed(2)}px)`;
         }
 
         const guardado = trazosPorItem[i];
