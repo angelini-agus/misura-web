@@ -3,8 +3,14 @@ import { dictionaryEntry } from "../lib/content";
 
 // La entrada del diccionario: la fonetica con su categoria y la definicion
 // (las acepciones de `dictionaryEntry`), que alternan solas con un desenfoque
-// y se pausan al pasar el cursor. Lo usan la apertura de la home y el
-// diccionario de /nosotros, asi que vive aca y no duplicado en los dos.
+// y se pausan al pasar el cursor. Hoy la usa solo la apertura de la home, pero
+// vive aparte porque no es del wordmark sino un bloque con vida propia.
+//
+// Tamano: en celular y tablet manda la escala de siempre (16/18px). Desde `md`
+// las dos lineas pasan a 1.75rem y la definicion suelta su tope de 512px (ver el
+// `<style>`): en la apertura el contenedor mide lo que el wordmark (`md:w-min` en
+// BrandOpening), y con ese tamano las dos lineas de la definicion llenan el ancho
+// de la palabra en vez de quedarse cortas.
 ---
 
 <div data-senses-card>
@@ -22,7 +28,7 @@ import { dictionaryEntry } from "../lib/content";
       data-slide="0"
       aria-hidden="false"
     >
-      <p class="font-typewriter mt-1 text-base text-green/90 tracking-wide sm:text-lg md:text-xl">
+      <p class="font-typewriter mt-1 text-base text-green/90 tracking-wide sm:text-lg">
         {dictionaryEntry.phonetic} /{dictionaryEntry.category}.
       </p>
     </div>
@@ -33,7 +39,7 @@ import { dictionaryEntry } from "../lib/content";
       data-slide="1"
       aria-hidden="true"
     >
-      <p class="font-typewriter max-w-lg text-base text-green/90 leading-relaxed tracking-wide sm:text-lg md:text-xl">
+      <p class="font-typewriter max-w-lg text-base text-green/90 leading-relaxed tracking-wide sm:text-lg">
         {dictionaryEntry.senses[0]}
       </p>
     </div>
@@ -41,6 +47,25 @@ import { dictionaryEntry } from "../lib/content";
 </div>
 
 <style>
+  /* Escala de escritorio de la entrada. No es un escalon de Tailwind porque no se
+     eligio a ojo: el tamano tiene que ser el que hace que las dos lineas de la
+     definicion llenen el ancho del bloque, que en la apertura es el ancho del
+     wordmark. Medido con la definicion actual: con 1.5rem las lineas quedaban en
+     570 y 585px contra los 669 de tinta del wordmark (se veian cortas), y con
+     1.75rem llenan los 685px del bloque. El interlineado no se toca: el de la
+     definicion es relativo (`leading-relaxed`), asi que sigue al tamano. */
+  @media (min-width: 48rem) {
+    [data-senses-card] p {
+      font-size: 1.75rem;
+    }
+
+    /* La definicion suelta el tope de 512px: el contenedor ya mide lo que el
+       wordmark, asi que el bloque de texto queda de ese ancho. */
+    [data-slide="1"] p {
+      max-width: none;
+    }
+  }
+
   .dict-slide {
     opacity: 0;
     filter: blur(8px);

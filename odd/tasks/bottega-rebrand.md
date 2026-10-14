@@ -33,8 +33,13 @@ wordmark vectorial y pasa a ser texto, la apertura de marca se muda de
    a gran escala con su fonética, que era lo primero de `/nosotros`, pasa a ser
    lo primero de la home en su propia sección (no dentro del hero), y
    **conserva la animación**: al scrollear viaja y se acomoda en el navbar. El
-   wordmark se queda en su tamaño máximo, los ~620px de ancho que tenía el logo
-   de misure en `/nosotros`, sin compactarse por alto de ventana.
+   wordmark va en su tamaño máximo, los 12rem del tope (685px de caja, 960px de
+   ancho de ventana para arriba).
+   *Actualizado después (14-10):* en **pantallas horizontales** el anuncio, el
+   navbar y la apertura se quedan con la primera ventana entera, y el grupo
+   wordmark + entrada del diccionario se centra **en la ventana**. Lo único que
+   se compacta por alto de ventana es el aire, nunca el wordmark ni la entrada.
+   El detalle está en "Apertura que ocupa la primera ventana", más abajo.
 7. **`/nosotros` arranca directo en la fonética y la definición**, sin el
    wordmark (que ahora se ve al entrar al sitio).
 8. **El email de contacto NO cambia**: sigue `contacto@misure.dev`, que hoy
@@ -72,8 +77,8 @@ wordmark vectorial y pasa a ser texto, la apertura de marca se muda de
   quedaba 16px abajo. Ahora mide por `offsetTop`/`offsetLeft` acumulados, que es
   la posición de flujo y no depende de cuándo se mida.
 - **La proporción del wordmark no es la del logo viejo**: la caja de texto de
-  "bottega" en Lora tiene proporción 628/176 = 3.57, y la tinta mide 181px de
-  alto sobre una caja de 176. El logo de imagen medía 4.17. Por eso la caja del
+  "bottega" en Lora tiene proporción 685/192 = 3.57, y la tinta mide 197px de
+  alto sobre una caja de 192. El logo de imagen medía 4.17. Por eso la caja del
   link del navbar pasó de 133x32 a **115x32**: llenando los 32px de alto, el
   ancho da 115. Con el ancho viejo el texto escalaba al ancho y su tinta medía
   38px sobre una caja de 32, que es lo que se veía desproporcionado y
@@ -101,7 +106,9 @@ JSON-LD de Organization, el favicon apuntando a `/icono.svg`).
 `MisureWord.astro` → `BrandWord.astro` y sus 11 puntos de uso;
 `window.__misureShareDelegated` → `__brandShareDelegated`; `Header` con el
 wordmark de texto y la caja del link en 115x32; **`BrandOpening.astro`** (nuevo)
-con la sección de la apertura y el script del viaje; `Hero` sin la apertura, con
+con la sección de la apertura, el script del viaje y la franja de pantalla
+horizontal; **`BrandSenses.astro`** con la entrada del diccionario (16/18px en
+celular y tablet, 1.75rem desde `md`) ; `Hero` sin la apertura, con
 sus cinco umbrales de compactación originales; `Dictionary` sin el wordmark y
 sin el script; `Footer` con el copyright en `site.legalName`.
 
@@ -138,21 +145,88 @@ conserva.
   del hero (delta medido 0.0 en x e y, a 1440x970 y a 390x844); en reposo
   coincide con la caja del link (delta 0.0 de ancho, 0.2 de alto, 0.1 de
   centrado).
-- **Medición por alto de ventana** (regla del usuario):
+- **Medición por alto de ventana** (regla del usuario), en 1440 (y 1366x668),
+  con la definición del diccionario activa y escaneando el píxel de la captura:
 
-  | ventana | 1080 | 970 | 900 | 880 | 776 | 720 | 668 | 647 | 600 | 540 |
-  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-  | Apertura entra en la primera pantalla (1440) | sí | sí | sí | sí | sí | sí | sí | sí | sí | no, +13px |
-  | Hero entra en la suya (1440) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
-  | Apertura entra (390) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
-  | Hero entra en la suya (390) | sí | sí | sí | sí | sí | sí | sí | sí | sí | sí |
+  | ventana | 1080 | 970 | 900 | 880 | 776 | 720 | 668 | 647 | 600 | 540 | 507 |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | anuncio + navbar + apertura − ventana | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | +9px | +42px |
+  | centro de la tinta − centro de la ventana | +5 | +5 | +5 | +5 | +5 | +5 | +5 | +5 | +5 | +9 | +26 |
 
-  El wordmark mide **628x176px en escritorio y 343x96px en mobile en todas las
-  alturas**, fijo en su tamaño máximo. Antes de separar la apertura se achicaba
-  hasta 40px de tipo en ventanas bajas, y al no achicarse más el hero recuperó
-  su piso propio: **entra en su pantalla en todas las alturas medidas**, con el
-  CTA dentro de la sección y entre 87 y 177px de sobra. La apertura entra en la
-  primera pantalla desde 600px; a 540px (un 1080p al 200%) sobra por 13px.
+  De 507px de alto para arriba la cuenta da **exacta** en todo ancho de escritorio
+  horizontal (el hero arranca justo en el pliegue) y el grupo queda centrado en
+  la ventana, con la tinta 5px abajo del centro geométrico (el óptico). Abajo de
+  507 la sección crece hasta los 436px del contenido y el grupo se corre debajo
+  del header: a 540px sobran 9px y a 507px, 42px. Por debajo de 452px vuelve el
+  alto natural de siempre, así que **el celular y el celular acostado quedan
+  idénticos**: 342px de sección en 390x844 y en 360x640, lo mismo que antes de
+  este cambio, y 844x390 sin la franja de pantalla.
+
+  El wordmark mide **685x192px de 960px de ancho para arriba y 343x96px en
+  celular** (el tope subió de 11rem a 12rem). El hero conserva su piso propio:
+  **entra en su pantalla en todas las alturas medidas**, con el CTA dentro de la
+  sección y entre 87 y 177px de sobra.
+
+## Apertura que ocupa la primera ventana (14-10)
+
+**Pedido**: en pantallas horizontales, anuncio + navbar + apertura tienen que
+sumar los primeros 100vh (el hero empieza recién abajo del pliegue), el wordmark
+un poco más grande, la entrada del diccionario más grande y del mismo ancho que
+la palabra, y el conjunto centrado **en la página** (no la palabra centrada y la
+entrada cayendo muy abajo). En celular, nada.
+
+**Cómo se resolvió, y por qué:**
+
+1. **La franja la decide la orientación, no el ancho solo**:
+   `(orientation: landscape) and (min-width: 48rem) and (min-height: 507px)`. El
+   ancho deja afuera celular y tablet vertical; el alto deja afuera al celular
+   acostado (430px o menos) y a una ventana de escritorio más alta que ancha.
+   Una ventana horizontal de escritorio más baja que el piso no entra en la
+   franja y conserva el alto de siempre.
+2. **El piso de 507px está medido, no elegido**: el contenido de la apertura son
+   323px (wordmark 192 de caja + hueco 40 + entrada 91) y arriba hay 113px. Con
+   el contenido centrado en la ventana, la **tinta** del wordmark queda justo
+   debajo del header cuando `507/2 − 323/2 + 21 = 113` (esos 21px son lo que la
+   caja del wordmark arranca antes que su tinta, medidos). No hace falta que la
+   caja entre: su parte de arriba es aire y puede quedar tapada por el header sin
+   que se vea nada.
+3. **El centrado es en la ventana, no en la franja de abajo.** La sección mide
+   `100svh` menos el bloque de arriba, y su relleno de abajo mide exactamente ese
+   bloque (`padding-bottom: calc(--announcement-h + --nav-h)`): así el centrado
+   reparte el aire simétricamente respecto del centro de la ventana. Sin ese
+   relleno el wordmark queda centrado solo, con la entrada 130px más abajo del
+   centro: es exactamente el síntoma que reportó el usuario.
+4. **El aire se pone en cero adentro de la franja** (`--apertura-aire: 0`), porque
+   el centrado ya lo reparte. Dejarlo en los 7rem de `md` inflaba el alto natural
+   (contenido + 224) y el piso subía otros 224px.
+5. **Un nivel compacto abajo del piso** (452 a 506px de alto, aire a 1rem) para
+   que la entrada no quede cortada por el pliegue en ventanas bajas. El rango
+   arranca en 452 a propósito: más abajo manda el alto natural, que es lo que deja
+   intacto al celular acostado.
+6. **El wordmark sube su tope de 11rem a 12rem** (628 → 685px de caja), que solo
+   alcanza de 960px de ancho para arriba. `.wordmark-nav` sube igual y su
+   `scale` por defecto pasa a 0.1664 (= 114/685) para que el logo del navbar
+   mida lo mismo que antes (114x32) y el viaje nunca agrande nada.
+7. **El ancho del grupo lo fija el wordmark**: el envoltorio de la apertura pasa a
+   `md:w-min`, así que la entrada se estira a esa misma medida (`[data-slide="1"] p`
+   suelta su `max-w-lg`) y las dos líneas de la definición quedan del ancho de la
+   palabra. Medido: **665 y 683px de tinta contra los 674 del wordmark**; con
+   1.5rem quedaban en 570 y 585 y se veían cortas.
+8. **Consecuencia fuera de escritorio**: desde `md` la entrada también es más
+   grande en tablet (768x1024 pasa de 483 a 554px de apertura, porque la
+   definición pasa de 2 a 3 líneas) y en celular acostado. El celular vertical no
+   cambia: ahí manda la escala de 16/18px de siempre.
+
+**Archivos**: `src/components/BrandOpening.astro` (franja, centrado, niveles de
+-aire y `md:w-min`), `src/components/BrandSenses.astro` (1.75rem y el tope de la
+definición), `src/styles/global.css` (`.wordmark-hero` y `.wordmark-nav` a
+12rem) y `src/components/Header.astro` (la `scale` por defecto del wordmark del
+navbar).
+
+**Verificación**: `npx astro check` 0 errores / 0 warnings / 0 hints; build de 11
+páginas; la tabla de arriba y las capturas del viaje del logo (al scroll 0 el
+gemelo del navbar coincide con el wordmark de la apertura, y al terminar el viaje
+queda en 115.04x32.24 dentro del link de 115x32, lo mismo que antes).
 
 ## Pendientes que esta feature deja abiertos
 

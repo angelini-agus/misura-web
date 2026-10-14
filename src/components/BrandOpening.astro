@@ -7,15 +7,27 @@ import BrandSenses from "./BrandSenses.astro";
 // si misma, arriba del hero, y no un bloque adentro: el hero mide una pantalla
 // con su propio piso por alto de ventana y la apertura tiene el suyo.
 //
-// El wordmark se queda en su tamano maximo (los 11rem del tope, unos 620px de
-// ancho, el mismo que tenia el logo de misure en /nosotros) sin importar el
-// alto de la ventana.
+// En pantallas horizontales la apertura se queda con lo que sobra de la primera
+// ventana despues del anuncio y el navbar, asi que los tres bloques juntos suman
+// `100svh` exactos y el hero empieza recien abajo del pliegue. En vertical (y en
+// las ventanas bajas, donde el piso no se alcanza) la seccion mide lo que mide su
+// contenido, como siempre.
+//
+// El wordmark se queda en su tamano maximo (los 12rem del tope, unos 685px de
+// caja) sin importar el alto de la ventana: lo unico que se compacta por alto es
+// el aire (ver el `<style>` de abajo).
 ---
 
 <section class="brand-opening scroll-mt-24">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:py-20 md:px-6 md:py-28">
+  <div class="mx-auto max-w-6xl px-4 py-[var(--apertura-aire)] md:px-6">
+    {/* `md:w-min`: en escritorio el ancho del grupo lo fija el wordmark y la
+        entrada del diccionario se estira a esa misma medida, asi que el bloque de
+        texto queda del ancho de la palabra y no de los 1104px del contenedor. En
+        celular y tablet sigue en `w-full` (el `min-content` del envoltorio mediria
+        lo que el wordmark, mas angosto que el contenedor) para no cambiar nada de
+        lo que ya habia. */}
     <div
-      class="mx-auto flex w-full flex-col items-center text-center"
+      class="mx-auto flex w-full flex-col items-center text-center md:w-min"
       data-reveal="blur"
     >
       {/* Sin `select-none`: el wordmark es texto y se tiene que poder seleccionar.
@@ -31,12 +43,85 @@ import BrandSenses from "./BrandSenses.astro";
           caja y el hueco real entre la letra y la entrada es siempre menor que
           el margen. Medido: con 12px quedaba en 9,5px (se veian pegadas), con
           24px en 21,5px, y con 40px queda en 37,5px. */}
-      <div class="mt-10 w-full">
+      <div class="mt-[var(--apertura-gap)] w-full">
         <BrandSenses />
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* El aire de la apertura sale de variables y no de un `py` fijo: la franja de
+     pantalla se queda con la ventana entera en las pantallas horizontales, y ahi
+     el aire lo reparte el centrado, asi que el unico tramo que necesita un numero
+     es el de abajo (vertical y ventanas bajas), donde la seccion mide lo que mide
+     su contenido. El valor de cada breakpoint es el que daba la escala de
+     Tailwind (`py-16` / `sm:py-20` / `md:py-28`) y el hueco entre el wordmark y
+     la entrada va por la misma via (40px, el `mt-10` de antes). */
+  .brand-opening {
+    --apertura-aire: 4rem;
+    --apertura-gap: 2.5rem;
+  }
+
+  @media (min-width: 40rem) {
+    .brand-opening {
+      --apertura-aire: 5rem;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .brand-opening {
+      --apertura-aire: 7rem;
+    }
+  }
+
+  /* Pantallas horizontales: el anuncio, el navbar y la apertura se quedan con la
+     primera ventana entera. La seccion mide `100svh` menos el bloque de arriba
+     (los mismos `--announcement-h` + `--nav-h` que usa el resto del sitio) y su
+     contenido se centra EN LA VENTANA, no en la franja que queda debajo del
+     header: por eso el relleno de abajo es exactamente el alto del bloque de
+     arriba, que es el que corre el centro hacia arriba. Sin ese relleno el
+     wordmark queda centrado el solo y la entrada del diccionario cae muy abajo.
+
+     El aire de la entrada se pone en cero adentro de esta franja porque el
+     centrado ya lo reparte: sumarle los 7rem de abajo inflaria el alto natural de
+     la seccion (contenido + 224) y el piso subiria otros 224px.
+
+     `min-height` y no `height`: si el contenido no entra, la seccion crece y la
+     pagina scrollea como siempre, en vez de recortar o pisar el header.
+
+     Los numeros estan medidos. El contenido son 323px (wordmark 192 de caja +
+     hueco 40 + entrada 91) y el bloque de arriba 113px (anuncio 36 + navbar 77).
+     El piso de 507px es donde el contenido, centrado en la ventana, deja la TINTA
+     del wordmark justo debajo del header: la caja arranca 21px antes que su tinta
+     (medido), asi que la cuenta es `507/2 - 323/2 + 21 = 113`. Con ventanas mas
+     bajas la seccion crece (el grupo se corre para abajo del header en vez de
+     meterse atras) y la pagina scrollea los pixeles que sobren: a 540 son 9px.
+
+     El ancho de celular y tablet queda afuera por la condicion de ancho, y una
+     ventana de escritorio mas alta que ancha tambien. */
+  @media (orientation: landscape) and (min-width: 48rem) and (min-height: 507px) {
+    .brand-opening {
+      --apertura-aire: 0;
+      display: grid;
+      min-height: calc(100svh - var(--announcement-h) - var(--nav-h));
+      padding-bottom: calc(var(--announcement-h) + var(--nav-h));
+      align-content: center;
+    }
+  }
+
+  /* Ventanas horizontales bajas, por debajo del piso de arriba: ahi vuelve el
+     alto natural (el aire de la escala) y lo unico que se recorta es ese aire,
+     para que la entrada no quede cortada por el pliegue. El corte esta medido
+     contra el alto del contenido, que es lo que no se toca: los 1rem entran desde
+     `16 + 323 + 113 = 452`. El rango arranca ahi a proposito: mas abajo manda el
+     alto de siempre, que es lo que deja intacto al celular acostado (390px). */
+  @media (orientation: landscape) and (min-width: 48rem) and (min-height: 452px) and (max-height: 506px) {
+    .brand-opening {
+      --apertura-aire: 1rem;
+    }
+  }
+</style>
 
 <script>
   let cleanupMorph: (() => void) | undefined;

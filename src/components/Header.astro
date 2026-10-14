@@ -35,18 +35,18 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
       class="relative inline-flex h-8 w-[7.1875rem] items-center"
       data-header-logo-link
     >
-      {/* El wordmark mide 620px de layout (los 11rem de `.wordmark-nav`, el
-          mismo tope que alcanza en el hero de la home) y el navbar lo muestra
-          achicado con el transform: el navegador nunca agranda nada, y la
-          interpolacion del viaje se mide contra la caja del hero.
+      {/* El wordmark mide 685px de layout (los 12rem de `.wordmark-nav`, el
+          mismo tope que alcanza en el wordmark de la apertura de la home) y el
+          navbar lo muestra achicado con el transform: el navegador nunca agranda
+          nada, y la interpolacion del viaje se mide contra la caja del hero.
 
-          La caja del enlace mide 115x32 y no los 133x32 de antes: con "bottega"
-          en Lora la caja del texto tiene proporcion 628/176 = 3.57, asi que
-          llenando los 32px de alto el ancho da 115. Con el ancho viejo el texto
-          escalaba al ancho y su tinta medía 38px sobre una caja de 32 (medido),
-          que es lo que lo hacia ver desproporcionado y desalineado hacia abajo.
-          El transform por defecto deja el wordmark ya escalado, para que sin JS
-          o con movimiento reducido el header se vea igual. */}
+          La caja del enlace mide 115x32: con "bottega" en Lora la caja del texto
+          tiene proporcion 685/192 = 3.57, asi que llenando los 32px de alto el
+          ancho da 114. Con el ancho viejo el texto escalaba al ancho y su tinta
+          medía 38px sobre una caja de 32 (medido), que es lo que lo hacia ver
+          desproporcionado y desalineado hacia abajo. El transform por defecto
+          deja el wordmark ya escalado (0.1664 = 114/685), para que sin JS o con
+          movimiento reducido el header se vea igual. */}
       {/* Sin `pointer-events-none`: el wordmark tiene que poder seleccionarse con
           el mouse tambien cuando esta en el navbar. Su caja interactiva es la
           transformada (115x32), no los 628px de layout, asi que no le tapa nada
@@ -54,7 +54,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
           el script le pone `pointer-events: none` para que el arrastre llegue al
           grande. */}
       <span
-        class="wordmark wordmark-nav select-text absolute left-0 top-0 origin-top-left [transform:scale(0.1815)]"
+        class="wordmark wordmark-nav select-text absolute left-0 top-0 origin-top-left [transform:scale(0.1664)]"
         data-header-logo
       >{site.name}</span>
     </a>

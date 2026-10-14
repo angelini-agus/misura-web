@@ -35,20 +35,21 @@
   white-space: nowrap;
 }
 
-/* El wordmark a gran escala, el de la apertura de la home. Un solo tamano: el
-   tope, que es el mismo que tenia el logo de misure en /nosotros (unos 620px de
-   ancho). La apertura es una seccion en si misma y no comparte el alto de la
-   ventana con el hero, asi que no hace falta compactarlo. */
+/* El wordmark a gran escala, el de la apertura de la home. El tope son los 12rem
+   (unos 685px de ancho de caja): mas abajo de 960px de ventana el `20vw` todavia
+   manda y el tamano sigue al ancho. En las pantallas horizontales la apertura se
+   queda con la ventana entera, pero lo que se compacta por alto es el aire, no
+   el wordmark. */
 .wordmark-hero {
-  font-size: clamp(6rem, 20vw, 11rem);
+  font-size: clamp(6rem, 20vw, 12rem);
 }
 
-/* El del navbar. Su caja mide a proposito lo mismo que la del hero (los 11rem
-   del tope de `.wordmark-hero`, unos 628px de layout): el navegador siempre lo
+/* El del navbar. Su caja mide a proposito lo mismo que el tope del hero (los
+   12rem de `.wordmark-hero`, unos 685px de layout): el navegador siempre lo
    achica con el transform y nunca agranda nada, y asi la interpolacion del
    viaje se mide contra una caja del mismo tamano en los dos extremos. */
 .wordmark-nav {
-  font-size: 11rem;
+  font-size: 12rem;
 }
 
 /* El del footer: el equivalente al `h-10` (40px) que media el logo de imagen. */
