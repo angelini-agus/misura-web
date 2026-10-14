@@ -66,10 +66,14 @@
       <span class="wordmark wordmark-hero">bottega</span>
     </div>
 
-    <!-- El taco: una rebanada de tronco vista desde arriba, recortada en forma
-         rectangular (referencia del autor: un taco de estampado real, sin mango).
-         La corteza es el ANILLO del tronco y va por todo el contorno; adentro está
-         la cara del corte, la madera, con sus anillos y sus radios.
+    <!-- El taco: una tabla de madera curada vista desde arriba (referencia del
+         autor: un listón de madera con su veta longitudinal, nudos, sin corteza).
+         La forma es un rectángulo con los extremos chaflanados (no hay `A` en el
+         `d`, así que el script puede leer el contorno como una lista de pares) y
+         la cara es la madera: vetas longitudinales, catedral alrededor de los nudos
+         y dos nudos. Sin corteza, sin anillos, sin mango, sin filtros (todo son
+         trazos: la tabla se lee a cualquier escala y el primer pintado se paga una
+         sola vez).
          El plato de tinta copia este contorno: el script lee el `d` del `clipPath`
          y arma con él su `clip-path`, así que la tinta aterriza sobre la madera y
          no sobre una caja. -->
@@ -84,80 +88,74 @@
         <defs>
           <clipPath id="taco-corte">
             <path
-              d="M 14 30 L 252 6 L 520 14 L 758 4 L 946 22 L 984 40 L 992 300 L 758 332 L 428 320 L 138 336 L 10 296 L 5 118 Z"
+              d="M 18 0 L 982 0 L 1000 18 L 1000 320 L 984 338 L 18 338 L 0 320 L 0 16 Z"
             />
           </clipPath>
-          <!-- La línea del corte: entre este contorno y el de afuera queda el anillo
-               de corteza, con el grosor desparejo que tiene un tronco de verdad. -->
-          <clipPath id="taco-cara-corte">
-            <path
-              d="M 48 64 L 248 34 L 520 40 L 752 32 L 926 48 L 952 70 L 958 286 L 750 302 L 430 290 L 154 306 L 44 270 L 38 138 Z"
-            />
-          </clipPath>
-          <filter id="poro-madera" x="0" y="0" width="100%" height="100%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.02 0.7"
-              numOctaves="2"
-              seed="7"
-            />
-            <feColorMatrix
-              type="matrix"
-              values="0 0 0 0 0.62
-                      0 0 0 0 0.58
-                      0 0 0 0 0.46
-                      0 0 0 0.5 0"
-            />
-          </filter>
         </defs>
         <g clip-path="url(#taco-corte)">
-          <!-- La corteza de punta a punta: el anillo del tronco -->
-          <rect class="taco-corteza" width="1000" height="338" />
-          <g class="taco-grietas">
-            <path d="M 62 44 L 210 28" />
-            <path d="M 600 20 L 866 30" />
-            <path d="M 22 138 L 30 244" />
-            <path d="M 300 322 L 640 312" />
+          <!-- La cara: la madera. La base es el verde de la marca calentado con un
+               poco de lino para que se lea como madera curada y no como un verde
+               frío. -->
+          <rect class="taco-cara" width="1000" height="338" />
+          <!-- La veta longitudinal: la fibra corre paralela al largo, con ondulaciones
+               suaves. Trazos, no texturas. -->
+          <g class="taco-veta">
+            <path d="M -10 68 C 260 58, 740 80, 1010 72" />
+            <path d="M -10 100 C 240 86, 760 114, 1010 100" />
+            <path d="M -10 132 C 280 144, 720 118, 1010 134" />
+            <path d="M -10 162 C 250 148, 750 180, 1010 160" />
+            <path d="M -10 192 C 270 206, 730 176, 1010 194" />
+            <path d="M -10 222 C 250 208, 750 240, 1010 222" />
+            <path d="M -10 252 C 280 266, 720 238, 1010 254" />
+            <path d="M -10 282 C 260 266, 740 298, 1010 282" />
+            <path d="M -10 308 C 270 294, 730 322, 1010 308" />
+            <path d="M -10 328 C 250 318, 750 336, 1010 328" />
           </g>
-
-          <!-- La cara del corte: la madera con los anillos y los radios -->
-          <g clip-path="url(#taco-cara-corte)">
-            <rect class="taco-cara" width="1000" height="338" />
-            <g class="taco-radios">
-              <path d="M 300 192 L 990 60" />
-              <path d="M 300 192 L 1010 150" />
-              <path d="M 300 192 L 1000 244" />
-              <path d="M 300 192 L 930 350" />
-              <path d="M 300 192 L 690 372" />
-              <path d="M 300 192 L 430 384" />
-              <path d="M 300 192 L 170 382" />
-              <path d="M 300 192 L 30 330" />
-              <path d="M 300 192 L -30 200" />
-              <path d="M 300 192 L 20 60" />
-              <path d="M 300 192 L 400 -30" />
-            </g>
-            <!-- Los anillos, con el centro y el paso desparejos: unos anillos
-                 concéntricos y parejos son una diana, no un tronco. -->
-            <g class="taco-anillos">
-              <ellipse cx="300" cy="192" rx="62" ry="57" />
-              <ellipse cx="292" cy="188" rx="152" ry="141" />
-              <ellipse cx="308" cy="196" rx="252" ry="236" />
-              <ellipse cx="288" cy="200" rx="352" ry="324" />
-              <ellipse cx="316" cy="186" rx="462" ry="418" />
-              <ellipse cx="296" cy="204" rx="572" ry="528" />
-              <ellipse cx="322" cy="190" rx="688" ry="622" />
-            </g>
-            <!-- La grieta que sale de la médula: es lo primero que hace una
-                 rebanada cuando se seca. -->
-            <path class="taco-grieta-medula" d="M 302 194 L 250 262 L 214 318" />
-            <ellipse class="taco-medula" cx="300" cy="192" rx="11" ry="9" />
-            <rect
-              class="taco-poro"
-              width="1000"
-              height="338"
-              filter="url(#poro-madera)"
+          <!-- La catedral de los nudos: arcos que se cierran sobre y bajo el nudo. -->
+          <g class="taco-catedral">
+            <path d="M 168 150 C 190 136, 230 136, 252 150" />
+            <path d="M 168 208 C 190 224, 230 224, 252 208" />
+            <path d="M 594 122 C 634 104, 686 104, 716 122" />
+            <path d="M 584 198 C 626 222, 696 222, 716 198" />
+          </g>
+          <!-- Las vetas oscuras: las betas más visibles de la madera. -->
+          <g class="taco-veta-oscura">
+            <path d="M 40 152 C 300 148, 500 156, 760 150" />
+            <path d="M 176 196 C 218 194, 258 200, 282 196" />
+            <path d="M 552 142 C 596 140, 686 146, 720 142" />
+          </g>
+          <!-- Los nudos: el chico a la izquierda, el grande a la derecha. El
+               grande lleva un anillo como trazo para que se lea el ojo del nudo. -->
+          <g class="taco-nudo">
+            <ellipse cx="210" cy="178" rx="13" ry="8" />
+            <ellipse
+              class="taco-nudo-corazon"
+              cx="210"
+              cy="178"
+              rx="6"
+              ry="4"
+            />
+            <ellipse
+              class="taco-nudo-anillo"
+              cx="650"
+              cy="162"
+              rx="28"
+              ry="17"
+              fill="none"
+            />
+            <ellipse cx="650" cy="162" rx="22" ry="13" />
+            <ellipse
+              class="taco-nudo-corazon"
+              cx="650"
+              cy="162"
+              rx="7"
+              ry="4"
             />
           </g>
+          <!-- El bisel: la luz del borde de arriba y la sombra del de abajo. Es lo
+               que hace que la tabla se lea como un volumen. -->
+          <path class="taco-bisel" d="M 24 8 L 976 8" />
+          <path class="taco-bisel-oscuro" d="M 24 330 L 976 330" />
         </g>
       </svg>
     </div>
@@ -371,61 +369,73 @@
     height: 100%;
   }
 
-  /* La cara del corte: la madera. Va un punto más clara que la tinta porque la
-     madera sin entintar es más clara que la entintada: el plato (la tinta) la tapa
-     en la pausa y el golpe la descubre, así que el paso de tono es la transferencia. */
+  /* La cara: la madera curada. La base es el verde de la marca calentado con un
+     poco de lino (80/20): un toque del amarillo del lino le saca el frío de
+     verde puro y le da el tono de madera curada. */
   .taco-cara {
-    fill: color-mix(in srgb, var(--tinta) 88%, var(--lino));
+    fill: color-mix(in srgb, var(--tinta) 80%, var(--lino));
   }
 
-  /* La corteza: el anillo del tronco, que en un corte transversal va por TODO el
-     contorno. Es el verde oscuro de la casa y lleva cuatro grietas: trazos, no una
-     textura (cada filtro de más se paga en el primer pintado). */
-  .taco-corteza {
-    fill: var(--color-green-dark);
-  }
-
-  .taco-grietas {
+  /* La veta longitudinal: la fibra de la tabla corre paralela al largo, con
+     ondulaciones suaves. Es un verde un punto más claro, como la luz que agarra
+     la madera en su veta. Trazos, no texturas. */
+  .taco-veta {
     fill: none;
-    stroke: color-mix(in srgb, var(--color-green-dark) 62%, var(--lino));
-    stroke-width: 3;
+    stroke: color-mix(in srgb, var(--tinta) 60%, var(--lino));
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.7;
+  }
+
+  /* La catedral de los nudos: arcos que se cierran sobre y bajo el nudo. Un
+     escalón más visibles que la veta para que se note el nudo. */
+  .taco-catedral {
+    fill: none;
+    stroke: color-mix(in srgb, var(--tinta) 70%, var(--lino));
+    stroke-width: 2.4;
     stroke-linecap: round;
   }
 
-  /* Los anillos y los radios: son trazos, no filtros. Una rebanada transversal se
-     lee por estas dos cosas (la madera creció en anillos y tiene radios medulares),
-     que es justo lo que una veta longitudinal no tiene. */
-  .taco-anillos {
-    fill: none;
-    stroke: color-mix(in srgb, var(--tinta) 74%, var(--lino));
-    stroke-width: 3.4;
-  }
-
-  .taco-radios {
-    fill: none;
-    stroke: color-mix(in srgb, var(--tinta) 86%, var(--lino));
-    stroke-width: 2.2;
-    opacity: 0.65;
-  }
-
-  /* La médula, corrida del centro: es lo que hace que los anillos se lean como
-     anillos y no como círculos concéntricos de una diana. */
-  .taco-medula {
-    fill: color-mix(in srgb, var(--tinta) 58%, var(--lino));
-  }
-
-  /* La grieta de la médula: se dibuja con el verde de la corteza. */
-  .taco-grieta-medula {
+  /* Las vetas oscuras: las betas más visibles de la madera, las que se ven
+     incluso en una tabla lijada. Van del verde oscuro de la casa. */
+  .taco-veta-oscura {
     fill: none;
     stroke: var(--color-green-dark);
-    stroke-width: 3;
+    stroke-width: 1.6;
     stroke-linecap: round;
+    opacity: 0.85;
   }
 
-  /* El poro de la madera: un ruido suave y lo único que queda con filtro. */
-  .taco-poro {
-    opacity: 0.16;
-    mix-blend-mode: screen;
+  /* Los nudos: el verde oscuro de la casa con un corazón un punto más oscuro
+     todavía. El anillo del nudo grande va como trazo, no como relleno, para
+     que se lea el ojo del nudo. */
+  .taco-nudo {
+    fill: var(--color-green-dark);
+  }
+  .taco-nudo-corazon {
+    fill: color-mix(in srgb, var(--color-green-dark) 55%, var(--tinta));
+  }
+  .taco-nudo-anillo {
+    fill: none;
+    stroke: var(--color-green-dark);
+    stroke-width: 1.4;
+  }
+
+  /* El bisel: la luz del borde de arriba y la sombra del de abajo. Es lo que
+     hace que la tabla se lea como un volumen y no como una pegatina. */
+  .taco-bisel {
+    fill: none;
+    stroke: color-mix(in srgb, var(--lino) 70%, var(--color-green-dark));
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+  .taco-bisel-oscuro {
+    fill: none;
+    stroke: var(--color-green-dark);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: 0.5;
   }
 
   /* Los tramos, con su curva cada uno:

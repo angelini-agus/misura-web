@@ -13,12 +13,12 @@ todo y no se entiende lo de las llamas"). La referencia histórica es una botteg
 italiana del siglo XV/XVI: estampado artesanal con taco de madera sobre papel de
 lino.
 
-**La vista es cenital y en primera persona**: el taco es una rebanada de tronco vista
-desde arriba y su altura se cuenta con dos cosas, nada más: la escala (1 abajo, 1,42
-arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La pieza es un corte
-TRANSVERSAL recortado en forma rectangular: la corteza es el anillo del tronco y va
-por todo el contorno, y adentro está la cara del corte, la madera, con sus anillos de
-crecimiento, sus radios y la médula corrida del centro. Sin mango. No hay dibujo: el
+**La vista es cenital y en primera persona**: el taco es una tabla de madera curada
+vista desde arriba y su altura se cuenta con dos cosas, nada más: la escala (1 abajo,
+1,42 arriba) y la sombra, que pasa de ancha y difusa a pegada y dura. La tabla es
+un rectángulo con los extremos chaflanados (como un listón): adentro va la madera
+con su veta longitudinal, los arcos de catedral alrededor de los nudos, dos nudos y
+sus vetas oscuras. Sin corteza, sin mango, sin texturas (todo son trazos). No hay dibujo: el
 taco es un bloque sólido y toda la información la dan las sombras de altura, la
 física del golpe y la textura de la tinta.
 
@@ -28,16 +28,17 @@ física del golpe y la textura de la tinta.
 | --- | --- |
 | Lino | `#F2ECE1` (a tres puntos del crema del sitio: invisible en el relevo) |
 | Plato (la tinta) e impresión | `var(--color-green)` = **`#0E3B33`**, el verde de la marca |
-| Corteza | `var(--color-green-dark)` = **`#0A2D27`** |
-| Cara del corte (la madera) | `color-mix` del verde de la marca con el lino al 88/12: la madera sin entintar es más clara que la tinta |
-| Anillos, radios y médula | `color-mix` del verde de la marca con el lino, cada vez más claro |
+| Tabla (la madera curada) | `color-mix` del verde de la marca con el lino al 80/20: el lino le saca el frío al verde puro y lo hace leerse como madera, no como un verde plano |
+| Veta y catedral | `color-mix` del verde de la marca con el lino al 60/40: un verde más claro, como la luz sobre la madera |
+| Nudos y vetas oscuras | `var(--color-green-dark)` = **`#0A2D27`** |
 
 **Una sola tinta.** El plato que cubre la pantalla al arranque y la palabra impresa
 son el mismo verde. Es la decisión que ordena la escena: el plato aterriza sobre el
-contorno del taco sin que se vea una costura, el masazo no tiene que cambiar ningún
-color de tinta y el relevo conserva el verde del hero. La madera es un escalón más
-clara (es lo que aparece cuando la tinta se va) y la corteza es el verde oscuro de la
-casa. Las sombras también son de la tinta (`color-mix` sobre `--tinta`): nunca grises.
+contorno de la tabla sin que se vea una costura, el masazo no tiene que cambiar ningún
+color de tinta y el relevo conserva el verde del hero. La tabla es un escalón más
+clara (es lo que aparece cuando la tinta se va) y los nudos y vetas oscuras son el
+verde oscuro de la casa. Las sombras también son de la tinta (`color-mix` sobre
+`--tinta`): nunca grises.
 
 ## Decisiones
 
@@ -91,29 +92,30 @@ casa. Las sombras también son de la tinta (`color-mix` sobre `--tinta`): nunca 
     recargando; `?burn=lento` la corre a 0,3x con `updatePlaybackRate`, que es la
     única forma de medir con precisión una línea de tiempos con un golpe de 120ms.
     El corte por movimiento reducido **no** aplica cuando viene forzada.
-11. **La pieza es un tronco cortado al medio, no una caja** (pedido del autor con una
-    foto de un taco de estampado real como referencia: "un coso así debería ser la
-    madera que pega el masazo, sin el mango que tiene arriba; que sea un tronco
-    recortado transversalmente y de forma rectangular; la parte de adentro no es
-    corteza, es la parte cortada, se ve la madera"). El taco es un SVG: el contorno
-    vive en un `clipPath` de doce vértices (ninguno a 90°), y el corte transversal se
-    cuenta con tres cosas: la corteza como **anillo** en todo el contorno (dos
-    contornos y un `clipPath` anidado: el anillo es el verde oscuro que queda entre
-    los dos, con el grosor desparejo de un tronco de verdad), la cara del corte (la
-    madera, un escalón más clara) con los anillos de crecimiento y los radios
-    medulares, y la médula corrida del centro con su grieta de secado. Sin mango.
+11. **La pieza es una tabla de madera curada, no un tronco** (pedido del autor con
+    una foto de un listón de madera como referencia: "hacélo más facha el tronco...
+    sacale la crosta todo, pero que quede algo más realista, madera curada pero que
+    se entienda que es madera, que se vean las betas y eso, pero no exagerado"). El
+    taco es un SVG con el contorno en un `clipPath` de ocho vértices: un rectángulo
+    con los cuatro extremos chaflanados en 45° (sin `A`, así el script puede leer el
+    contorno como una lista de pares). La cara de la tabla es la madera: la veta
+    longitudinal son diez trazos que corren paralelos al largo, los arcos de
+    catedral cierran arriba y abajo de los nudos, dos nudos (uno chico a la
+    izquierda, uno grande a la derecha con su anillo y su corazón) y tres vetas
+    oscuras. Un bisel sutil en el borde de arriba y el de abajo la hace leer como un
+    volumen. Sin corteza, sin mango, sin anillos, sin filtros.
 12. **El plato copia el contorno.** El script lee el `d` del `clipPath` y arma con él
     dos `clip-path: path()`: el que tapa la ventana (el contorno escalado sobre su
     propio centro hasta pasar los cuatro bordes) y el que cae sobre la madera. Entre
     los dos, el plato se contrae y se vuelve tronco.
-13. **Los anillos son trazos, no texturas.** Los anillos (siete elipses con el centro
-    y el paso desparejos: concéntricos y parejos serían una diana, no un tronco), los
-    radios, la médula y las cuatro grietas de la corteza son trazos de SVG: cuestan
-    cero filtros por cuadro. Lo único que queda con filtro es el poro de la madera
-    (un `feTurbulence` suave en `screen`). Con la veta anterior (dos turbulencias más
-    un `feDisplacementMap`, que era la lectura de una tabla y no la de un corte
-    transversal) el primer pintado costaba exactamente lo mismo: el filtro no era el
-    costo, ver Verificación.
+13. **La madera son trazos, no texturas.** La veta (diez cúbicas con ondulaciones
+    suaves), la catedral (cuatro arcos), los nudos (cuatro elipses y un anillo) y
+    las vetas oscuras (tres trazos) son todos paths y elipses de SVG: cero filtros
+    por cuadro, cero turbulencias, cero `feDisplacementMap`. Con el cambio
+    desaparecieron el `feTurbulence` del poro y el `clipPath` anidado del corte
+    transversal, y el primer pintado de la ceremonia bajó de ~340 a **~260ms**:
+    la madera **era** parte del costo, a diferencia del rediseño anterior donde no
+    lo era. Ver Verificación.
 14. **La pausa (1,3).** La contracción llega a la madera y la escena se queda quieta
     300ms antes de la carga. Es el único tramo en el que no se mueve nada, y es lo
     que hace que el golpe se sienta como un golpe.
@@ -140,13 +142,13 @@ casa. Las sombras también son de la tinta (`color-mix` sobre `--tinta`): nunca 
 | `npx astro check` | 0 errores, 0 warnings, 0 hints (67 archivos) |
 | `npm run build` | 11 páginas, limpio |
 | La impresión contra el wordmark del hero | **Idénticas**: 377,289 · 685×192 las dos (la caja del hero medida por offset acumulado) |
-| Los tonos | Leídos del DOM: el plato (la tinta) `rgb(14, 59, 51)`, la corteza `rgb(10, 45, 39)` y la cara del corte `(41, 80, 72)`. La impresión sigue siendo el verde de la marca |
+| Los tonos | Leídos del DOM: el plato (la tinta) `rgb(14, 59, 51)`, la tabla `(60, 94, 86)` y los nudos y vetas oscuras `rgb(10, 45, 39)`. La impresión sigue siendo el verde de la marca |
 | El arranque | Cinco píxeles del cuadro 0 (720,120 · 120,450 · 1320,450 · 720,780 · 720,450): los cinco `14,59,51`. Ni un borde de lino |
 | El aterrizaje sobre el CONTORNO | A 1000ms (la pausa), a 10px de la línea real del tronco y en tres puntos de la arista de arriba: afuera lino (237,231,220), adentro tinta (14,59,51). El plato no es un rectángulo en ninguna parte |
-| La corteza a la vista | A 1400ms (después del masazo), los mismos puntos: `10,45,39` = `#0A2D27`, el verde oscuro de la corteza; y 14px más adentro, `44,83,75` = la madera del corte |
+| La madera a la vista | A 1400ms (después del masazo), muestreado en los mismos puntos: `60, 94, 86` = la madera curada de la tabla. Y 14px más adentro, un punto más oscuro, donde cae la sombra de un trazo de la veta |
 | La sincronía de la carga | A 1280ms, la escala del plato y la del taco leídas del DOM: **1,41574 las dos**, y los dos pivotes resuelven al mismo punto (481,1 · 480,76) |
 | Los cuadros | 18 fases en `%TEMP%/hero-shot/preload2/` (montaje `fases-preload2.png`) capturadas con la ceremonia **congelada** por la Web Animations API (`pause()` + `currentTime`): cuadro exacto, sin sondear. Arnés: `%TEMP%/hero-shot/preload2.cjs` |
-| El costo | Medido con `%TEMP%/hero-shot/fps-burn.cjs` (3400ms de rAF a velocidad real): el primer pintado de la ceremonia cuesta ~300-340ms y después corre a p95 19-24ms. Con el lino oculto baja a 218ms, así que la fibra del lino se lleva ~125ms y el resto es el armado del overlay. **La madera no es el costo**: al cambiar la veta con filtros por los anillos de trazos el número no se movió |
+| El costo | Medido con `%TEMP%/hero-shot/fps-burn.cjs` (3400ms de rAF a velocidad real): el primer pintado de la ceremonia cuesta **~260ms** y después corre a p95 20ms. Con el lino oculto baja a 218ms, así que la fibra del lino se lleva ~125ms y el resto es el armado del overlay. **La madera era parte del costo**: al pasar la madera de `feTurbulence` a trazos el primer pintado bajó de ~340 a ~260ms |
 | Los cuatro casos de skip | Segunda visita, hash y movimiento reducido: `has-burn` ausente. Recarga con scroll restaurado, con una recarga real a 2152px (`reload2.cjs`): `has-burn` ausente |
 | `?burn=1` y `?burn=lento` | Sin cambios: el forzado ignora las cuatro condiciones y no escribe la marca de sesión |
 | Movimiento reducido + `?burn=1` | Corre a velocidad real: las cuatro animaciones con `currentTime` real (~1117ms) y el taco en opacidad 1 a los ~1,1s. **Era un defecto previo**, no de este cambio |
@@ -186,10 +188,11 @@ la especificidad) y con las duraciones en `--burn-total`, `--burn-golpe` y
 ## Abiertos
 
 - **El costo**: 3s de ceremonia por sesión, sin salteo. La primera pintura es el
-  plato (verde pleno, 0,45s) y cuesta ~300-340ms: la fibra del lino se lleva ~125ms
+  plato (verde pleno, 0,45s) y cuesta ~260ms: la fibra del lino se lleva ~125ms
   (medido con el lino oculto: 218 contra 344) y el resto es el armado del overlay.
-  La madera no aporta: con la veta de filtros y con los anillos de trazos el número
-  es el mismo. Después de eso la ceremonia corre a p95 19-24ms.
+  Al pasar la madera de `feTurbulence` a trazos el primer pintado bajó de ~340 a
+  ~260ms, así que la madera sí era parte del costo. Después de eso la ceremonia
+  corre a p95 20ms.
 - **El velo del despegue**: con el taco del mismo verde que la impresión, cualquier
   opacidad parcial sobre el crema da un verde lechoso que no es de la paleta. Se
   acota a los últimos 215ms. Si el autor quiere cero velo, la salida es correr el
