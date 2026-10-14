@@ -218,14 +218,14 @@
      implícito que ya nos comió tres veces en esta escena. */
   @keyframes masa-plato {
     0% {
-      clip-path: var(--masa-cubre);
+      clip-path: var(--masa-forma);
       opacity: 1;
-      transform: scale(1);
+      transform: scale(var(--masa-cubre));
     }
     15% {
-      clip-path: var(--masa-cubre);
+      clip-path: var(--masa-forma);
       opacity: 1;
-      transform: scale(1);
+      transform: scale(var(--masa-cubre));
       animation-timing-function: cubic-bezier(0.35, 0, 0.2, 1);
     }
     28.3% {
@@ -576,8 +576,14 @@
               (centroY * 2) / altoTaco,
               ((altoVentana - centroY) * 2) / altoTaco,
             ) + 0.02;
+          // `--masa-cubre` ahora es la escala de la cobertura (un número), no el
+          // path: la placa hace `transform: scale(var(--masa-cubre))` desde el
+          // verde pleno (escala grande, cubre la ventana) hasta 1 (la tabla).
+          // El clip-path es siempre el de la tabla (var(--masa-forma)), así la
+          // transición es un escalado uniforme del rectángulo redondeado, sin
+          // interpolación de path() que pueda cortar la animación.
           masa.style.setProperty("--masa-forma", aForma(1));
-          masa.style.setProperty("--masa-cubre", aForma(cobertura));
+          masa.style.setProperty("--masa-cubre", String(cobertura));
           // El mismo pivote físico que el `18% 88%` del taco, medido en la
           // ventana: así la carga y el masazo escalan las dos piezas juntas.
           masa.style.transformOrigin = `${
