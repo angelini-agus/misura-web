@@ -66,10 +66,10 @@
       <span class="wordmark wordmark-hero">bottega</span>
     </div>
 
-    <!-- El taco: una pieza de madera cortada de un tronco, vista desde arriba. Su
-         altura son la escala y la sombra; el contorno NO es una caja (es un tronco
-         con la corteza en dos de sus lados) y encima lleva la veta, las costuras y
-         el agarre torneado con el que la mano lo sostiene.
+    <!-- El taco: una rebanada de tronco vista desde arriba, recortada en forma
+         rectangular (referencia del autor: un taco de estampado real, sin mango).
+         La corteza es el ANILLO del tronco y va por todo el contorno; adentro está
+         la cara del corte, la madera, con sus anillos y sus radios.
          El plato de tinta copia este contorno: el script lee el `d` del `clipPath`
          y arma con él su `clip-path`, así que la tinta aterriza sobre la madera y
          no sobre una caja. -->
@@ -87,90 +87,77 @@
               d="M 14 30 L 252 6 L 520 14 L 758 4 L 946 22 L 984 40 L 992 300 L 758 332 L 428 320 L 138 336 L 10 296 L 5 118 Z"
             />
           </clipPath>
-          <filter id="veta-madera" x="0" y="0" width="100%" height="100%">
-            <!-- Dos pasadas de ruido: la fina es la veta y la ancha la ondula. Una
-                 veta recta y pareja es un cepillado, no madera. -->
+          <!-- La línea del corte: entre este contorno y el de afuera queda el anillo
+               de corteza, con el grosor desparejo que tiene un tronco de verdad. -->
+          <clipPath id="taco-cara-corte">
+            <path
+              d="M 48 64 L 248 34 L 520 40 L 752 32 L 926 48 L 952 70 L 958 286 L 750 302 L 430 290 L 154 306 L 44 270 L 38 138 Z"
+            />
+          </clipPath>
+          <filter id="poro-madera" x="0" y="0" width="100%" height="100%">
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.004 0.9"
+              baseFrequency="0.02 0.7"
               numOctaves="2"
-              seed="11"
-              result="fina"
-            />
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.0022 0.14"
-              numOctaves="1"
-              seed="4"
-              result="ancha"
-            />
-            <feDisplacementMap
-              in="fina"
-              in2="ancha"
-              scale="34"
-              xChannelSelector="R"
-              yChannelSelector="G"
-              result="ondulada"
+              seed="7"
             />
             <feColorMatrix
-              in="ondulada"
               type="matrix"
-              values="0 0 0 0 0.72
-                      0 0 0 0 0.68
-                      0 0 0 0 0.56
-                      0 0 0 0.8 0"
-              result="grano"
+              values="0 0 0 0 0.62
+                      0 0 0 0 0.58
+                      0 0 0 0 0.46
+                      0 0 0 0.5 0"
             />
-            <feColorMatrix
-              in="ancha"
-              type="matrix"
-              values="0 0 0 0 0.42
-                      0 0 0 0 0.4
-                      0 0 0 0 0.32
-                      0 0 0 0.9 0"
-              result="manchas"
-            />
-            <feMerge>
-              <feMergeNode in="manchas" />
-              <feMergeNode in="grano" />
-            </feMerge>
           </filter>
         </defs>
         <g clip-path="url(#taco-corte)">
-          <rect class="taco-cara" width="1000" height="338" />
-          <rect
-            class="taco-veta"
-            width="1000"
-            height="338"
-            filter="url(#veta-madera)"
-          />
-          <!-- La corteza: las dos bandas del lado del tronco (la de arriba y la de
-               la izquierda), con sus costuras. -->
-          <path
-            class="taco-corteza"
-            d="M 14 30 L 252 6 L 520 14 L 758 4 L 946 22 L 984 40 L 962 66 L 720 48 L 470 58 L 210 52 L 40 74 L 30 46 Z"
-          />
-          <path
-            class="taco-corteza"
-            d="M 14 30 L 30 46 L 40 74 L 32 170 L 38 286 L 14 302 L 5 118 Z"
-          />
-          <g class="taco-costuras">
-            <path d="M 70 38 L 300 22" />
-            <path d="M 540 26 L 820 16" />
-            <path d="M 24 96 L 30 150" />
-            <path d="M 26 196 L 32 258" />
+          <!-- La corteza de punta a punta: el anillo del tronco -->
+          <rect class="taco-corteza" width="1000" height="338" />
+          <g class="taco-grietas">
+            <path d="M 62 44 L 210 28" />
+            <path d="M 600 20 L 866 30" />
+            <path d="M 22 138 L 30 244" />
+            <path d="M 300 322 L 640 312" />
           </g>
-          <!-- La sombra del agarre es otra elipse (y no un `drop-shadow`): son dos
-               pasadas de filtro menos en el primer pintado, que es donde se paga. -->
-          <ellipse
-            class="taco-agarre-sombra"
-            cx="500"
-            cy="184"
-            rx="146"
-            ry="60"
-          />
-          <ellipse class="taco-agarre" cx="500" cy="172" rx="132" ry="54" />
-          <ellipse class="taco-agarre-tapa" cx="500" cy="169" rx="100" ry="38" />
+
+          <!-- La cara del corte: la madera con los anillos y los radios -->
+          <g clip-path="url(#taco-cara-corte)">
+            <rect class="taco-cara" width="1000" height="338" />
+            <g class="taco-radios">
+              <path d="M 300 192 L 990 60" />
+              <path d="M 300 192 L 1010 150" />
+              <path d="M 300 192 L 1000 244" />
+              <path d="M 300 192 L 930 350" />
+              <path d="M 300 192 L 690 372" />
+              <path d="M 300 192 L 430 384" />
+              <path d="M 300 192 L 170 382" />
+              <path d="M 300 192 L 30 330" />
+              <path d="M 300 192 L -30 200" />
+              <path d="M 300 192 L 20 60" />
+              <path d="M 300 192 L 400 -30" />
+            </g>
+            <!-- Los anillos, con el centro y el paso desparejos: unos anillos
+                 concéntricos y parejos son una diana, no un tronco. -->
+            <g class="taco-anillos">
+              <ellipse cx="300" cy="192" rx="62" ry="57" />
+              <ellipse cx="292" cy="188" rx="152" ry="141" />
+              <ellipse cx="308" cy="196" rx="252" ry="236" />
+              <ellipse cx="288" cy="200" rx="352" ry="324" />
+              <ellipse cx="316" cy="186" rx="462" ry="418" />
+              <ellipse cx="296" cy="204" rx="572" ry="528" />
+              <ellipse cx="322" cy="190" rx="688" ry="622" />
+            </g>
+            <!-- La grieta que sale de la médula: es lo primero que hace una
+                 rebanada cuando se seca. -->
+            <path class="taco-grieta-medula" d="M 302 194 L 250 262 L 214 318" />
+            <ellipse class="taco-medula" cx="300" cy="192" rx="11" ry="9" />
+            <rect
+              class="taco-poro"
+              width="1000"
+              height="338"
+              filter="url(#poro-madera)"
+            />
+          </g>
         </g>
       </svg>
     </div>
@@ -384,45 +371,60 @@
     height: 100%;
   }
 
-  /* La cara: la madera cepillada, del color de la tinta (la pieza está entintada). */
+  /* La cara del corte: la madera. Va un punto más clara que la tinta porque la
+     madera sin entintar es más clara que la entintada: el plato (la tinta) la tapa
+     en la pausa y el golpe la descubre, así que el paso de tono es la transferencia. */
   .taco-cara {
-    fill: var(--tinta);
+    fill: color-mix(in srgb, var(--tinta) 88%, var(--lino));
   }
 
-  /* El agarre: el mango torneado, visto en escorzo. Dos planos y una elipse de
-     sombra alcanzan para que se lea el volumen, sin degradado y sin filtro. */
-  .taco-agarre {
-    fill: color-mix(in srgb, var(--tinta) 78%, var(--lino));
-  }
-
-  .taco-agarre-sombra {
-    fill: color-mix(in srgb, var(--tinta) 45%, transparent);
-  }
-
-  .taco-agarre-tapa {
-    fill: color-mix(in srgb, var(--tinta) 62%, var(--lino));
-  }
-
-  /* La corteza: la parte del tronco que no se cepilló. Va un punto más oscura que
-     la cara (el verde oscuro de la casa) y sus costuras son cuatro trazos, no una
-     textura: así no cuesta un filtro más por cuadro en la carga y el masazo. */
+  /* La corteza: el anillo del tronco, que en un corte transversal va por TODO el
+     contorno. Es el verde oscuro de la casa y lleva cuatro grietas: trazos, no una
+     textura (cada filtro de más se paga en el primer pintado). */
   .taco-corteza {
     fill: var(--color-green-dark);
   }
 
-  .taco-costuras {
+  .taco-grietas {
     fill: none;
-    stroke: color-mix(in srgb, var(--color-green-dark) 55%, var(--tinta));
-    stroke-width: 3.5;
+    stroke: color-mix(in srgb, var(--color-green-dark) 62%, var(--lino));
+    stroke-width: 3;
     stroke-linecap: round;
   }
 
-  /* La veta de la madera: la pasada fina ondulada por la ancha, más los manchones
-     de la ancha (el tono desparejo de una tabla), todo con `screen` sobre el verde.
-     Es de la misma familia que la fibra del lino, así que la escena sigue siendo de
-     un solo color, y va arriba del agarre porque la madera es una sola pieza. */
-  .taco-veta {
-    opacity: 0.26;
+  /* Los anillos y los radios: son trazos, no filtros. Una rebanada transversal se
+     lee por estas dos cosas (la madera creció en anillos y tiene radios medulares),
+     que es justo lo que una veta longitudinal no tiene. */
+  .taco-anillos {
+    fill: none;
+    stroke: color-mix(in srgb, var(--tinta) 74%, var(--lino));
+    stroke-width: 3.4;
+  }
+
+  .taco-radios {
+    fill: none;
+    stroke: color-mix(in srgb, var(--tinta) 86%, var(--lino));
+    stroke-width: 2.2;
+    opacity: 0.65;
+  }
+
+  /* La médula, corrida del centro: es lo que hace que los anillos se lean como
+     anillos y no como círculos concéntricos de una diana. */
+  .taco-medula {
+    fill: color-mix(in srgb, var(--tinta) 58%, var(--lino));
+  }
+
+  /* La grieta de la médula: se dibuja con el verde de la corteza. */
+  .taco-grieta-medula {
+    fill: none;
+    stroke: var(--color-green-dark);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  /* El poro de la madera: un ruido suave y lo único que queda con filtro. */
+  .taco-poro {
+    opacity: 0.16;
     mix-blend-mode: screen;
   }
 
