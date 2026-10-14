@@ -131,7 +131,18 @@ gtag('config', '${gaId}');`
       // ceremonia sobra: una preload sin movimiento es solo una espera.
       (() => {
         try {
-          const visto = window.sessionStorage.getItem("bottega-burn");
+          // En un reload del navegador la marca de sesion se ignora a proposito:
+          // el pedido es que el burn corra en cada F5, no solo en la primera
+          // visita de la tab. La sesion sigue mandando en la carga inicial
+          // (para que un refresh de cache no la re-muestre si ya se vio) y en
+          // cualquier navegacion cliente que termine re-ejecutando este script
+          // (Astro View Transitions normalmente NO lo re-ejecuta, asi que
+          // "volver a Inicio" no dispara el burn aunque la sesion este fresca).
+          const navEntry = performance.getEntriesByType("navigation")[0];
+          const esReload = navEntry ? navEntry.type === "reload" : false;
+          const visto = esReload
+            ? null
+            : window.sessionStorage.getItem("bottega-burn");
           const quieto = window.matchMedia(
             "(prefers-reduced-motion: reduce)",
           ).matches;
