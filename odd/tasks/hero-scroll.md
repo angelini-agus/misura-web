@@ -194,20 +194,41 @@ texto. Una sola fuente de verdad.
 Los renglones salen del `border-bottom` de cada ítem (así siguen al texto cuando
 tipa o envuelve) y la línea de margen es un `::before` de 1px al 20%.
 
-Adentro del cuaderno hay tres cosas, y quién está arriba de quién es lo que
+Adentro del cuaderno hay cuatro cosas, y quién está arriba de quién es lo que
 sostiene el paso de hoja:
 
 1. **`.hero-hoja` (z-index 1)** — la hoja de arriba, con la lista adentro. Es la
    que gira. Da el alto del cuaderno (es la que tiene contenido en el flujo), y
    con JS lleva ella el aire del papel y el borde, para poder llegar hasta el
    borde del marco. `transform-origin: left center` y
-   `backface-visibility: hidden`.
-2. **`.hero-final` (absolute, inset 0)** — la página de abajo, con bottega. Está
+   `backface-visibility: hidden` (con eso, pasando el canto la cara de adelante
+   deja de dibujarse sola, sin ningún `opacity`).
+2. **`.hero-hoja-reverso` (z-index -1, pasa a 0 pasado el canto)** — la cara de
+   atrás de esa misma hoja: un `span` con `transform: rotateY(180deg)` y
+   `backface-visibility: hidden` adentro de un contenedor que recibe la misma
+   transformación que la hoja. Antes del canto mira para el otro lado y no se
+dibuja; después del canto el giro de adentro cancela el de afuera y es la cara
+que queda a la vista, plana y opaca, del otro lado del lomo.
+3. **`.hero-final` (absolute, inset 0)** — la página de abajo, con bottega. Está
    ahí desde el principio y no se anima: la revela el giro.
-3. **`.hero-anillado` (z-index 4)** — el anillado, sobre el lomo. Una vuelta cada
-   26px, centrada en el borde izquierdo, dibujada con un SVG de un anillo en
-   `background-image` repetido en Y. Es del cuaderno, así que **no gira con la
-   hoja**, y la hoja pasa por debajo de los anillos.
+4. **`.hero-anillado` (z-index 4)** — el anillado, sobre el lomo. Es del cuaderno,
+   así que **no gira con la hoja**: la hoja pasa por debajo de los alambres.
+
+### El anillado
+
+Una vuelta cada 26px, centrada en el canto del papel (el centro de la caja cae
+sobre el borde izquierdo). Cada vuelta es **un alambre dibujado**: sale del
+agujero, rodea el canto y vuelve a entrar, con tres cosas que le dan volumen:
+
+- **El agujero** se dibuja encima de las puntas del alambre, así que el alambre
+  parece entrar en el papel (y no queda un pico raro donde se juntan las puntas).
+- **El brillo del metal**: el trazo lleva un `linearGradient` (verde oscuro,
+  claro al 40%, oscuro al 72%) que recorre el alambre.
+- **La sombra sobre el papel**: una copia del mismo trazo, corrida 2,6px a la
+  derecha y 3,2px abajo, con `feGaussianBlur 1,3` y opacidad 0,14.
+
+Todo eso viaja dentro del mismo `data:image/svg+xml` repetido en Y, así que es
+una sola imagen estática por vuelta (no cuesta nada por cuadro).
 
 El marco del cuaderno lo dibuja `.hero-pad::after` (z-index 3), **por encima de
 todo**: así la hoja gira por debajo y el borde no se corta nunca, ni siquiera
@@ -226,25 +247,34 @@ cuaderno arrancaba a 359px y el aire se repartía entre arriba y abajo. Esa
 diferencia es también la que hace que el cuaderno entre entero en ventanas bajas:
 el recorte, si lo hay, es solo del lado de abajo.
 
-### El doblez
+### El pliegue y el rollo
 
-El cuadrado de la esquina se parte en dos mitades con la misma diagonal de 45
-grados, y la diagonal es la línea del pliegue:
+El doblez son **tres piezas** del mismo cuadrado de la esquina (`DOBLEZ_FRACCION`
+del ancho de la hoja), con la diagonal de 45 grados como línea del pliegue:
 
 - **`.hero-doblez-corte`** tapa la esquina que ya no está (la hoja se fue con el
   pliegue) con el papel del cuaderno, para que no se vea el texto cortado. Tiene
   el radio de la esquina de arriba a la derecha.
-- **`.hero-doblez-papel`** es el reverso del papel, caído del otro lado de la
-  línea: triángulo `--color-cream-dark` con los dos cantos libres de la hoja
-  (borde verde de 1.5px a la izquierda y abajo) y la marca del pliegue, una barra
-  de 3px rotada 45 grados sobre la diagonal.
+- **`.hero-doblez-papel`** es el reverso del papel, caído encima de la hoja del
+  otro lado de la línea: triángulo con los dos cantos libres (borde verde de
+  1,5px a la izquierda y abajo), tono `--cara-reverso` y un degradado desde el
+  pliegue (verde al 26% que se apaga al 36%) que es la sombra del rollo sobre el
+  papel doblado.
+- **`.hero-curl`** es el rollo: el papel curvado en la lomita que une la hoja
+  plana con el reverso. Una banda de **24px** (media vuelta de papel, radio 12)
+centrada en la línea del pliegue, con el sombreado del tubo: oscura donde toca
+(el 16% del borde), luz en la cresta (`#fdfaf1` al 42%) y oscura otra vez donde
+se apoya en el reverso. Y la sombra que tira sobre la hoja de abajo:
+`box-shadow: 0 -7px 7px rgba(14, 59, 51, .24)`, que en el sistema del rollo cae
+perpendicular al pliegue, del lado de la hoja plana.
 
-Los dos miden 100px de base y el scroll los **escala desde la esquina**
-(`transform-origin: top right`) en vez de cambiarles el ancho: así el cuadro solo
-cambia de transform y el navegador no tiene que volver a dibujar la hoja entera
-(adentro hay ocho filtros de crayón) en cada paso del scroll. Están en
-`opacity: 0` con `will-change: transform` para que la capa ya esté dibujada
-cuando el scroll las prende.
+El rollo **no se escala con el doblez**: es del papel, no de la esquina. Se
+mueve con `transform` (una banda de 141,42px de base a la que el scroll le pone
+el largo con `scaleX` y la posición con `translate` y `rotate(45deg)`), así que
+no cambia el ancho ni el alto de la caja y el navegador no tiene que volver a
+dibujar la hoja entera (adentro hay ocho filtros de crayón) en cada paso del
+scroll. Los tres están en `opacity: 0` con `will-change: transform` para que la
+capa ya esté dibujada cuando el scroll las prende.
 
 La opacidad de aparición va en `.hero-item-label`, no en el `<li>` ni en el
 `<span>` que envuelve al texto y al SVG: así el renglón de la libretita se ve
@@ -298,6 +328,30 @@ opacidad 1, que no los toca ningún JS) y el anillado presente igual
   `overflow: hidden`), y no se arregla recortando aire porque a esa altura el
   cuaderno ya está en el mínimo de su contenido. Por debajo de 500px de ventana
   el hero muestra el cuaderno cortado abajo.
+- **El paso de hoja.** Medido a 1440x900 y 390x844, con el giro y el doblez
+  leídos del DOM: `rotateY` va de 0 a -180 grados con la curva suave (en
+  escritorio -9,8° a 5828px, -44,2° a 5957, -87,9° a 6086, -132° a 6215, -180° a
+  6440), y el doblez mide 0 a 5699px, 83px a 5828, **125px en su punto más alto a
+  5957** (26% del ancho de la hoja), y 0 desde 6086 (antes del cruce del canto, que
+  cae en 5890: por eso no hay ningún salto cuando la cara de adelante se apaga).
+  La proyección de la hoja pasa de 544x423 (plana) a 511x554 (-44°), 30x640 en el
+  canto y 544x423 plana del otro lado. En mobile es la misma fracción del ancho
+  (82px sobre 358 contra 125 sobre 544).
+- **El rollo no se deforma**: mide 24px de grueso siempre (banda de 141,42px que
+  el scroll estira con `scaleX`), y la pieza que se ve después del canto es la
+  cara de atrás (`--cara-reverso`, 84% papel y 16% crema oscura), opaca, con su
+  borde y su sombra. La hoja aterriza **detrás del cuaderno**: el marco (z-index
+  3), el anillado (z-index 4) y la escritura de la página de abajo quedan
+  adelante. A 1440x900 la hoja aterrizada mide 544px y el lomo está a 448 del
+  borde de la ventana, así que se ven 448px (el resto queda fuera de cuadro); en
+  mobile (390) sólo asoma una franja de 16px.
+- **Frame rate con el rollo y la cara de atrás**, pase completo a 1440x900 (586
+  cuadros): mediana 16,7ms = **59,9 fps**, p95 17,3ms. En la primera vuelta hay 3
+  cuadros por encima de 25ms (71ms antes del hero, 37ms en el arranque del paso de
+  hoja y 26ms antes del hero), y en la segunda uno solo (30ms en el cruce del
+  canto). El rollo y el reverso se mueven solo con `transform`.
+- **El anillado** mide 40px de ancho (20px de cada lado del canto) con
+  `background-size: 40px 26px` y `repeat-y`: 15 vueltas en un cuaderno de 423px.
 - **El paso de hoja.** Medido a 1440x900 y 390x844, con el giro y el doblez
   leídos del DOM: `rotateY` va de 0 a -180 grados con la curva suave (en
   escritorio -9,8° a 5828px, -44,2° a 5957, -87,9° a 6086, -132° a 6215, -180° a
