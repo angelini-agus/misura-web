@@ -26,9 +26,9 @@ diccionario), el header, la barra de anuncio y el logo viajero.
    de componentes que hoy funcionan, y queda fuera de este cambio.
 3. **`svh` y no `dvh`** para el alto del escenario: así la barra del navegador
    móvil no mueve el progreso mientras se scrollea.
-4. **El progreso sale de la sección, no de la ventana.** Es la posición de la
-   sección contra `SCROLL_LENGTH` en píxeles, así que el mismo scroll da el mismo
-   progreso en cualquier alto de ventana.
+4. **El avance sale de la sección, no de la ventana.** Es la posición de la
+   sección contra el recorrido del plan en píxeles, así que el mismo scroll da el
+   mismo avance en cualquier alto de ventana.
 5. **El wordmark final es un `<span>` de texto**, no el componente del logo ni el
    logo viajero: tiene que seguir existiendo un solo logo lógico en la página.
 6. **`CodePanel.astro` se elimina**: solo lo usaba el hero viejo.
@@ -49,47 +49,66 @@ diccionario), el header, la barra de anuncio y el logo viajero.
 ## Línea de tiempo
 
 Dos fases **seguidas**, nunca superpuestas: primero entran todos los ítems y
-recién con la lista completa el lápiz empieza a cruzar, de nuevo del primero al
-último. Constantes editables al inicio del script de `Hero.astro`. Con N = 8:
+recién con la lista completa el lápiz empieza a cruzar, del primero al último. Y
+el tachado es **de a uno por vez**: cada garabato termina antes de que arranque
+el siguiente, así que en cualquier instante hay un solo trazo dibujándose.
 
-`APARICION_FIN 0.42`, `APARICION_DUR 0.07`, `TACHADO_INICIO 0.45`,
-`TACHADO_FIN 0.76`, `TACHADO_DUR 0.08`, `BORRADO_INICIO 0.78`.
+La línea de tiempo está en **píxeles de scroll**, no en fracciones. Cada paso
+dura lo que tiene que durar y el **largo del hero sale de la suma**: no hay un
+número aparte que mantener en sincronía con los tramos. En mobile todo se escala
+por `ESCALA_MOBILE 0.69`, porque un gesto del dedo recorre más que un giro de
+rueda.
 
-Los dos pasos no son constantes: salen de la cantidad de ítems, así que la lista
-puede crecer o acortarse sin tocar los números de arriba.
+| tramo | constante | px escritorio | px mobile |
+| --- | --- | --- | --- |
+| entrada de cada ítem | `ENTRADA_PX` | 364 | 251 |
+| paso de la entrada | `ENTRADA_PASO_PX` | 260 | 179 |
+| pausa antes del lápiz | `PAUSA_PX` | 156 | 108 |
+| garabato de cada ítem | `TACHADO_PX` | 416 | 287 |
+| paso del tachado | `TACHADO_PASO_PX` = `TACHADO_PX` | 416 | 287 |
+| pausa antes de la goma | `PAUSA_FINAL_PX` | 104 | 72 |
+| barrido de goma | `BORRADO_PX` | 468 | 323 |
+| marca | `BOTTEGA_PX` | 312 | 215 |
+| subtítulo | desde 260, dura `SUBTITULO_PX` | 260 | 179 |
+| botones | desde 468, dura `BOTONES_PX` | 208 | 144 |
+| **largo total** | la suma de los tramos | **6916** | **4770** |
+
+El paso del tachado es igual a su duración **a propósito**: es la definición de
+"de a uno por vez". No hay que corregirlo a un solape "lindo" entre vecinos.
 
 | # | problema | entra | se tacha |
 | --- | --- | --- | --- |
-| 1 | Planillas de Excel | 0.0000 – 0.0700 | 0.4500 – 0.5300 |
-| 2 | Carga de datos a mano | 0.0500 – 0.1200 | 0.4829 – 0.5629 |
-| 3 | Grupos de WhatsApp | 0.1000 – 0.1700 | 0.5157 – 0.5957 |
-| 4 | Datos sin comprobar | 0.1500 – 0.2200 | 0.5486 – 0.6286 |
-| 5 | Horas sin control | 0.2000 – 0.2700 | 0.5814 – 0.6614 |
-| 6 | Papeles sueltos | 0.2500 – 0.3200 | 0.6143 – 0.6943 |
-| 7 | Sueldos calculados a mano | 0.3000 – 0.3700 | 0.6471 – 0.7271 |
-| 8 | Stock anotado en un cuaderno | 0.3500 – 0.4200 | 0.6800 – 0.7600 |
+| 1 | Planillas de Excel | 0 – 364 | 2340 – 2756 |
+| 2 | Carga de datos a mano | 260 – 624 | 2756 – 3172 |
+| 3 | Grupos de WhatsApp | 520 – 884 | 3172 – 3588 |
+| 4 | Datos sin comprobar | 780 – 1144 | 3588 – 4004 |
+| 5 | Horas sin control | 1040 – 1404 | 4004 – 4420 |
+| 6 | Papeles sueltos | 1300 – 1664 | 4420 – 4836 |
+| 7 | Sueldos calculados a mano | 1560 – 1924 | 4836 – 5252 |
+| 8 | Stock anotado en un cuaderno | 1820 – 2184 | 5252 – 5668 |
 
-Los tachados se pisan entre vecinos (el paso es 0,0329 y cada garabato tarda
-0,08): en cualquier momento hay dos o tres trazos en vuelo, pero el arranque de
-cada uno siempre es posterior al del anterior. La entrada, en cambio, no se pisa
-con el tachado de nadie: la lista está completa antes de la primera raya.
+En mobile los mismos números por 0,69 (ítem i entra en `179i` y se tacha en
+`1612 + 287i`), así que los dos entran y los dos se tachan con el mismo recorrido
+por debajo del dedo.
 
-| fase | rango | scroll (escritorio / mobile) | qué hace |
+| fase | escritorio | mobile | qué hace |
 | --- | --- | --- | --- |
-| entrada | 0.000 – 0.420 | 2184px / 1512px | los 8 ítems entran uno atrás del otro, con 8px de desplazamiento y opacidad 0 a 1. Nada tachado |
-| pausa | 0.420 – 0.450 | 156px / 108px | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
-| tachado | 0.450 – 0.760 | 1612px / 1116px | los garabatos se dibujan de primero a último; cada ítem baja a 0,45 al cerrarse |
-| pausa | 0.760 – 0.780 | 104px / 72px | todo quieto, la lista completa y tachada |
-| borrado | 0.780 – 0.870 | 468px / 324px | barrido de máscara de izquierda a derecha, opacity a 0 y blur creciente. Queda un resto de grafito al 6% que se desvanece |
-| bottega | 0.870 – 0.930 | 312px / 216px | entra entintándose: opacity, blur de 6px a 0 y un asentamiento leve |
-| subtítulo | 0.920 – 0.970 | 260px / 180px | el mismo tratamiento, encadenado |
-| botones | 0.960 – 1.000 | 208px / 144px | los últimos |
+| entrada | 0 – 2184 | 0 – 1504 | los 8 ítems entran uno atrás del otro, con 8px de desplazamiento y opacidad 0 a 1. Nada tachado, y los vecinos se pisan (dos entrando a la vez) |
+| pausa | 2184 – 2340 | 1504 – 1612 | la lista entera, limpia y quieta: se lee completa antes de que el lápiz la toque |
+| tachado | 2340 – 5668 | 1612 – 3908 | 8 garabatos de 416px, **uno por vez**; cada ítem baja a 0,45 al cerrarse |
+| pausa | 5668 – 5772 | 3908 – 3980 | todo quieto, la lista completa y tachada |
+| borrado | 5772 – 6240 | 3980 – 4303 | barrido de máscara de izquierda a derecha, opacity a 0 y blur creciente. Queda un resto de grafito al 6% que se desvanece |
+| bottega | 6240 – 6552 | 4303 – 4518 | entra entintándose: opacity, blur de 6px a 0 y un asentamiento leve |
+| subtítulo | 6500 – 6760 | 4482 – 4661 | el mismo tratamiento, encadenado |
+| botones | 6708 – 6916 | 4626 – 4770 | los últimos |
 
-El largo del scroll no cambió con las dos fases (`SCROLL_DESKTOP` 5200,
-`SCROLL_MOBILE` 3600). Antes los tramos se pisaban y el último ítem cerraba en
-0,718; ahora la escalera termina en 0,76, así que cada ítem tiene más scroll
-encima que antes (entrada 364px contra 312; tachado 416 contra 390) y el pedido
-no cuesta recorrido.
+**El hero se alargó con el tachado de a uno.** Antes el recorrido era 5200px
+(escritorio) y 3600px (mobile) con los trazos pisados: cada garabato tenía 416px
+y ocho garabatos entraban en 1612px. Ahora cada uno sigue teniendo sus 416px,
+pero al no pisarse ocupan 3328px, así que el recorrido pasó a **6916px
+(escritorio) y 4770px (mobile)**, un tercio más. Ningún tramo se acortó: lo que
+creció es el largo del hero, y ese fue el pedido ("si el de abajo tiene que
+esperar al de arriba tarda más sí o sí").
 
 ## Los trazos
 
@@ -170,20 +189,29 @@ SVG en `display: none` y el estado final visible.
 
 ## Verificación
 
-- **Las dos fases son dos fases.** Medido por CDP con puppeteer-core a 1440x900
-  (largo 5200) y 390x844 (largo 3600), en 9 progresos con el `dashoffset` y la
-  opacidad del label de los 8 ítems leídos del DOM. En 0,42 y en 0,45 los ocho
-  labels están en opacidad 1,00 y los ocho `dashoffset` en 1,0 (lista completa,
-  ninguna raya). Recién en 0,55 hay trazos y son los primeros: `0.0 0.1 0.6` con
-  el resto en 1,0. En 0,65 van cinco y en 0,76 los ocho están cerrados
-  (`dashoffset` 0,0) con la lista todavía a opacidad plena. Idéntico en mobile.
-  Capturas en `%TEMP%/hero-shot/shots/` (montaje en `montaje.png` y
-  `montaje-mobile.png`).
-- Capturas a 1440x900 y 390x844 en progreso 0%, 50% y 100% del trazo del ítem 0
-  (0,45 / 0,49 / 0,53), más la lista completa tachada (0,76), el barrido de
-  borrado (0,85) y el estado final (1). El progreso real coincide con el pedido y
-  el `dashoffset` medido del primer ítem es 1 hasta 0,45, 0,5 en 0,49 y 0 en
-  0,53.
+- **El tachado es de a uno por vez.** Recorriendo el tramo entero en pasos de
+  20px de scroll (346 muestras en escritorio, 239 en mobile, con el `dashoffset`
+  de los 8 ítems leído del DOM en cada una): **el máximo de garabatos a medio
+  dibujar es 1** y no hay un solo solape entre vecinos. Los arranques y cierres
+  medidos (escritorio, malla de 20px): ítem 0 de 2360 a 2740, ítem 1 de 2760 a
+  3160, ítem 2 de 3180 a 3580, ítem 3 de 3600 a 4000, ítem 4 de 4020 a 4400,
+  ítem 5 de 4440 a 4820, ítem 6 de 4840 a 5240, ítem 7 de 5260 a 5660. Los
+  límites exactos del plan son `2340 + 416i` a `2340 + 416(i+1)`. En mobile
+  (largo 4770): 1620/1880, 1900/2180, 2200/2460, 2480/2740, 2780/3040, 3060/3320,
+  3340/3620, 3640/3900, sobre `1612 + 287i`.
+- **Las dos fases son dos fases.** En 2200px los ocho labels están en opacidad
+  1,00 y los ocho `dashoffset` en 1,0 (lista completa, ninguna raya): el primer
+  trazo aparece en 2340px. En 2500px el único a medio dibujar es el ítem 0
+  (`0.6 1 1 1 1 1 1 1`), en 2900px el único es el 1 (`0 0.7 1 1 1 1 1 1`), en
+  3900px el 3 (`0 0 0 0.2 1 1 1 1`) y en 5500px el 7 (`0 0 0 0 0 0 0 0.4`). En
+  5700px los ocho están cerrados y la lista sigue a opacidad plena. Idéntico en
+  mobile. Capturas en `%TEMP%/hero-shot/` (tira por posición en
+  `tira-1440x900.png`, muestras en `shots/`).
+- Capturas a 1440x900 y 390x844 en 0%, 50% y 100% del trazo del ítem 0 (2360px,
+  2548px y 2756px del recorrido), más la lista completa tachada (5700px), el
+  barrido de borrado (6000px) y el estado final (6916px). El avance real coincide
+  con el pedido y el `dashoffset` medido del primer ítem es 1 hasta 2340px, 0,5
+  en 2548px y 0 en 2756px.
 - **Frame rate scrolleando de verdad sobre el tramo de tachado: 60,1 fps con el
   filtro y 60,8 sin él** (1440x900), 63 fps en 390x844. El filtro no cuesta
   frame rate, así que no hizo falta el plan B de la máscara con textura horneada.

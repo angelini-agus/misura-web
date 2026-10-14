@@ -296,8 +296,9 @@ const tachados = heroProblems.map((_, i) =>
      --------------------------------------------------------------------------- */
   .hero-scroll.is-live {
     /* El recorrido del scroll mas el alto del escenario: asi el sticky se
-       despega justo cuando el progreso llega a 1 */
-    height: calc(var(--scroll-length, 5200px) + 100svh - var(--hero-top));
+       despega justo cuando el progreso llega a 1. Los 6916 son el plan de
+       escritorio con 8 items, que con JS se reemplaza por la medida real. */
+    height: calc(var(--scroll-length, 6916px) + 100svh - var(--hero-top));
   }
 
   .hero-scroll.is-live .hero-stage {
@@ -348,23 +349,28 @@ const tachados = heroProblems.map((_, i) =>
 <script>
   import { garabatoDeTachado } from "../lib/pencil";
 
-  // La linea de tiempo. El progreso va de 0 (el escenario se acaba de pegar) a 1
-  // (se despega). Son dos fases SEGUIDAS, no superpuestas: primero entran todos
-  // los items, uno atras del otro, y recien con la lista completa el lapiz
-  // empieza a cruzar, otra vez del primero al ultimo.
-  const APARICION_FIN = 0.42; // el ultimo item termina de entrar aca
-  const APARICION_DUR = 0.07; // lo que tarda en entrar cada item
-  const TACHADO_INICIO = 0.45; // el lapiz arranca con la lista ya completa
-  const TACHADO_FIN = 0.76; // el ultimo item termina de tacharse aca
-  const TACHADO_DUR = 0.08; // lo que tarda el garabato de cada item
-  const BORRADO_INICIO = 0.78;
-  const BORRADO_FIN = 0.87;
-  const BOTTEGA_INICIO = 0.87;
-  const SUBTITULO_INICIO = 0.92;
-  const BOTONES_INICIO = 0.96;
-
-  const SCROLL_DESKTOP = 5200;
-  const SCROLL_MOBILE = 3600;
+  // La linea de tiempo, en PIXELES de scroll. Cada paso dura lo que tiene que
+  // durar y el largo del hero sale de la suma: no hay fracciones que cuadrar
+  // cuando la lista crece o se acorta. En mobile todo se escala por ESCALA_MOBILE,
+  // porque un gesto del dedo recorre mas que un giro de rueda.
+  //
+  // Son dos fases SEGUIDAS, no superpuestas: primero entran todos los items, uno
+  // atras del otro, y recien con la lista completa el lapiz empieza a cruzar. Cada
+  // garabato TERMINA antes de que arranque el siguiente, y por eso el paso del
+  // tachado es igual a su duracion: de a uno por vez.
+  const ENTRADA_PX = 364; // lo que tarda en entrar cada item
+  const ENTRADA_PASO_PX = 260; // y cuando arranca el siguiente
+  const PAUSA_PX = 156; // la lista entera y limpia, quieta, antes del lapiz
+  const TACHADO_PX = 416; // lo que tarda el garabato de cada item
+  const TACHADO_PASO_PX = TACHADO_PX; // y cuando arranca el siguiente
+  const PAUSA_FINAL_PX = 104; // todo tachado, quieto, antes de la goma
+  const BORRADO_PX = 468; // el barrido de goma, de izquierda a derecha
+  const BOTTEGA_PX = 312; // la marca entra entintandose
+  const SUBTITULO_DESDE_PX = 260; // los dos encadenados desde el fin del barrido
+  const SUBTITULO_PX = 260;
+  const BOTONES_DESDE_PX = 468;
+  const BOTONES_PX = 208;
+  const ESCALA_MOBILE = 0.69;
 
   let cleanup: (() => void) | undefined;
 
@@ -387,15 +393,43 @@ const tachados = heroProblems.map((_, i) =>
     const subtitulo = final.querySelector<HTMLElement>(".hero-final-sub");
     const botones = final.querySelector<HTMLElement>(".hero-final-actions");
 
-    // Los pasos salen de la cantidad de items: si la lista crece o se acorta,
-    // las dos fases se reparten solas sin tocar los numeros de arriba.
-    const ultimoIndice = Math.max(1, items.length - 1);
-    const pasoAparicion = (APARICION_FIN - APARICION_DUR) / ultimoIndice;
-    const pasoTachado = (TACHADO_FIN - TACHADO_INICIO - TACHADO_DUR) / ultimoIndice;
+    // Los tramos, medidos en pixeles para este ancho y esta cantidad de items. El
+    // largo del recorrido es la suma de todos: no hay un numero aparte que
+    // mantener en sincronia con el plan.
+    const armarPlan = () => {
+      const escala = document.documentElement.clientWidth >= 768 ? 1 : ESCALA_MOBILE;
+      const px = (v: number) => Math.round(v * escala);
+
+      const entradaPx = px(ENTRADA_PX);
+      const entradaPasoPx = px(ENTRADA_PASO_PX);
+      const tachadoPx = px(TACHADO_PX);
+      const entradaTotalPx = entradaPx + Math.max(0, items.length - 1) * entradaPasoPx;
+      const tachadoInicioPx = entradaTotalPx + px(PAUSA_PX);
+      const borradoInicioPx =
+        tachadoInicioPx + items.length * tachadoPx + px(PAUSA_FINAL_PX);
+      const finalInicioPx = borradoInicioPx + px(BORRADO_PX);
+
+      return {
+        entradaPx,
+        entradaPasoPx,
+        tachadoPx,
+        tachadoPasoPx: px(TACHADO_PASO_PX),
+        tachadoInicioPx,
+        borradoInicioPx,
+        borradoPx: px(BORRADO_PX),
+        finalInicioPx,
+        bottegaPx: px(BOTTEGA_PX),
+        subtituloDesdePx: px(SUBTITULO_DESDE_PX),
+        subtituloPx: px(SUBTITULO_PX),
+        botonesDesdePx: px(BOTONES_DESDE_PX),
+        botonesPx: px(BOTONES_PX),
+        scrollLength: finalInicioPx + px(BOTONES_DESDE_PX) + px(BOTONES_PX),
+      };
+    };
+    let plan = armarPlan();
 
     seccion.classList.add("is-live");
 
-    let scrollLength = 0;
     let topSticky = 0;
     let ultimo = -1;
 
@@ -404,8 +438,8 @@ const tachados = heroProblems.map((_, i) =>
     const trazosPorItem: Array<{ path: SVGPathElement; firma: string }> = [];
 
     const medir = () => {
-      scrollLength = document.documentElement.clientWidth >= 768 ? SCROLL_DESKTOP : SCROLL_MOBILE;
-      seccion.style.setProperty("--scroll-length", `${scrollLength}px`);
+      plan = armarPlan();
+      seccion.style.setProperty("--scroll-length", `${plan.scrollLength}px`);
       topSticky = parseFloat(getComputedStyle(escenario).top) || 0;
       ultimo = -1;
       regenerarTrazos();
@@ -468,19 +502,20 @@ const tachados = heroProblems.map((_, i) =>
       Math.min(1, Math.max(0, (p - desde) / (hasta - desde)));
 
     const actualizar = () => {
-      // El progreso sale de la seccion contra SCROLL_LENGTH, nunca de la altura
-      // de la ventana: asi el mismo scroll da el mismo progreso en cualquier alto.
+      // El avance sale de la seccion, nunca de la altura de la ventana: asi el
+      // mismo scroll da el mismo avance en cualquier alto. Va en pixeles, que es
+      // como esta pensada la linea de tiempo.
       const top = seccion.getBoundingClientRect().top;
-      const progreso = Math.min(1, Math.max(0, (topSticky - top) / scrollLength));
-      if (progreso === ultimo) return;
-      ultimo = progreso;
+      const recorrido = Math.min(plan.scrollLength, Math.max(0, topSticky - top));
+      if (recorrido === ultimo) return;
+      ultimo = recorrido;
 
-      // --- los items: primero entran todos, despues se tachan en orden ---
+      // --- los items: primero entran todos, despues se tachan de a uno ---
       items.forEach((item, i) => {
-        const entrada = i * pasoAparicion;
-        const aparece = tramo(progreso, entrada, entrada + APARICION_DUR);
-        const desdeTachado = TACHADO_INICIO + i * pasoTachado;
-        const tacha = tramo(progreso, desdeTachado, desdeTachado + TACHADO_DUR);
+        const entrada = i * plan.entradaPasoPx;
+        const aparece = tramo(recorrido, entrada, entrada + plan.entradaPx);
+        const desdeTachado = plan.tachadoInicioPx + i * plan.tachadoPasoPx;
+        const tacha = tramo(recorrido, desdeTachado, desdeTachado + plan.tachadoPx);
 
         // El label entra con un desplazamiento chico y, cuando el garabato lo
         // termina de tachar, baja a 0.45: el item ya cerrado se apaga, el trazo
@@ -501,8 +536,16 @@ const tachados = heroProblems.map((_, i) =>
       });
 
       // --- el borrado: barrido de goma de izquierda a derecha ---
-      const borrado = tramo(progreso, BORRADO_INICIO, BORRADO_FIN);
-      const finalAparece = tramo(progreso, BOTTEGA_INICIO, 0.93);
+      const borrado = tramo(
+        recorrido,
+        plan.borradoInicioPx,
+        plan.borradoInicioPx + plan.borradoPx,
+      );
+      const finalAparece = tramo(
+        recorrido,
+        plan.finalInicioPx,
+        plan.finalInicioPx + plan.bottegaPx,
+      );
 
       if (borrado > 0) {
         const avance = borrado * 120 - 10;
@@ -528,8 +571,22 @@ const tachados = heroProblems.map((_, i) =>
         el.style.transform = `translateY(${((1 - p) * 10).toFixed(2)}px)`;
       };
       entintar(marca, finalAparece);
-      entintar(subtitulo, tramo(progreso, SUBTITULO_INICIO, 0.97));
-      entintar(botones, tramo(progreso, BOTONES_INICIO, 1));
+      entintar(
+        subtitulo,
+        tramo(
+          recorrido,
+          plan.finalInicioPx + plan.subtituloDesdePx,
+          plan.finalInicioPx + plan.subtituloDesdePx + plan.subtituloPx,
+        ),
+      );
+      entintar(
+        botones,
+        tramo(
+          recorrido,
+          plan.finalInicioPx + plan.botonesDesdePx,
+          plan.finalInicioPx + plan.botonesDesdePx + plan.botonesPx,
+        ),
+      );
     };
 
     // --- un solo listener, con coalescing por rAF ---
