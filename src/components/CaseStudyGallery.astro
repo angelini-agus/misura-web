@@ -668,4 +668,11 @@ const total = images.length;
 
   init();
   document.addEventListener("astro:page-load", init);
+
+  // Restaurado desde bfcache: el visor queda abierto con el scroll bloqueado.
+  window.addEventListener("pageshow", (event) => {
+    if ((event as PageTransitionEvent).persisted && document.documentElement.style.overflow === "hidden") {
+      document.documentElement.style.overflow = "";
+    }
+  });
 </script>
