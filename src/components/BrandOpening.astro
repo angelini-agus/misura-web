@@ -19,7 +19,7 @@ import BrandSenses from "./BrandSenses.astro";
 ---
 
 <section class="brand-opening scroll-mt-24">
-  <div class="mx-auto max-w-6xl px-4 py-[var(--apertura-aire)] md:px-6">
+  <div class="mx-auto max-w-6xl mt-[var(--apertura-bajada)] px-4 py-[var(--apertura-aire)] md:px-6">
     {/* `md:w-min`: en escritorio el ancho del grupo lo fija el wordmark y la
         entrada del diccionario se estira a esa misma medida, asi que el bloque de
         texto queda del ancho de la palabra y no de los 1104px del contenedor. En
@@ -61,6 +61,8 @@ import BrandSenses from "./BrandSenses.astro";
   .brand-opening {
     --apertura-aire: 4rem;
     --apertura-gap: 2.5rem;
+    /* El descenso del grupo: 0 fuera de la franja centrada de escritorio. */
+    --apertura-bajada: 0;
   }
 
   @media (min-width: 40rem) {
@@ -119,6 +121,23 @@ import BrandSenses from "./BrandSenses.astro";
   @media (orientation: landscape) and (min-width: 48rem) and (min-height: 452px) and (max-height: 506px) {
     .brand-opening {
       --apertura-aire: 1rem;
+    }
+  }
+
+  /* El descenso del grupo (pedido del autor: el wordmark baja un poco de su
+     centro exacto). Solo en la franja centrada de escritorio y con holgura
+     comprobada: en un grid con `align-content: center` un margin extra del
+     contenido hace que el contenido baje LA MITAD del margin (el track crece y
+     el centrado reparte el resto), asi que 3rem de margin son 1.5rem netos
+     (24px). El umbral de 540px (un escalon de la matriz de alturas del sitio)
+     deja 28px de aire arriba y abajo del contenido en el piso del tramo: mas
+     abajo no baja, porque entre 507 y 539 la entrada ya queda pegada al
+     pliegue. El viaje al navbar y la impresion del preload miden el wordmark
+     por offsetTop (posicion de layout), asi que siguen el descenso sin cambios
+     en sus scripts: el relevo y la impresion no saltan ni un pixel. */
+  @media (orientation: landscape) and (min-width: 48rem) and (min-height: 540px) {
+    .brand-opening {
+      --apertura-bajada: 3rem;
     }
   }
 </style>
