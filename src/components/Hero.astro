@@ -160,12 +160,13 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
         </div>
       </div>
 
-      <!-- El anillado de la carpeta: vive en el lomo, asi que no gira con la
-           hoja. Una vuelta cada 26px, centrada en el borde izquierdo, en dos
-           mitades hermanas: la que cae sobre el papel (adelante de todo) y la que
-           rodea el canto (que en modo vivo se guarda detras de la hoja). -->
-      <div class="hero-anillado" aria-hidden="true"></div>
-      <div class="hero-anillado-costado" aria-hidden="true"></div>
+<!-- El wire-o: hijo del paper (no de la hoja), asi NO rota con ella. La hoja
+           viaja a traves de las 2 lineas (el binding) cuando se gira, igual que
+           en un wire-o de verdad. Las lineas se quedan fijas y la hoja se
+           "esconde" atras de ellas cuando pasa el canto. Una unidad = 1 cuadro +
+           2 anillos paralelos horizontales, repetida verticalmente solo si
+           entra entera: lo que sobra es margen contra el borde de abajo. -->
+      <div class="hero-binding" aria-hidden="true" data-binding></div>
     </div>
   </div>
 </section>
@@ -235,60 +236,49 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     text-align: left;
   }
 
-  /* El anillado de la carpeta: vive en el lomo, asi que no gira con la hoja. Una
-     vuelta cada 26px, centrada en el borde izquierdo del papel, en DOS mitades
-     hermanas de 20px: cada una muestra la mitad que le toca del dibujo. Son dos
-     cajas y no una porque necesitan distinto orden de pintado. */
-  .hero-anillado,
-  .hero-anillado-costado {
+  /* El wire-o: hijo del paper, NO de la hoja, asi no rota con ella. Las lineas
+     quedan fijas en el canto del papel y la hoja "viaja" a traves de ellas
+     cuando se gira, escondiendose atras. El tile mide 32x26: las 2 lineas
+     paralelas horizontales (los anillos) llegan hasta el centro del cuadro
+     solido a la derecha (asi no se pasan del cuadrado), el cuadro (6x8) es
+     el "agujero" del que parecen salir. Las lineas llevan gradiente vertical
+     sutil (centro mas claro) para el volumen del alambre. La altura la
+     calcula el script en runtime para que entren SOLO unidades enteras y el
+     remanente quede como margen contra el borde de abajo de la hoja. */
+  .hero-binding {
     position: absolute;
     top: 8px;
     bottom: 8px;
-    left: 0;
-    z-index: 4;
-    width: 20px;    /* Una vuelta de alambre: el arco sale del agujero, rodea el canto del papel y
-       vuelve a entrar, con la sombra que deja sobre el papel y un brillo a lo
-       largo del metal para que se lea el volumen. El agujero se dibuja encima, asi
-       que el alambre parece entrar en el papel. El dibujo mide 40px de ancho y las
-       dos mitades reparten su fase en X: la de adentro arranca en el pixel 20 del
-       dibujo (el canto del papel), la de afuera en el 0. */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='26' viewBox='0 0 40 26'%3E%3Cdefs%3E%3ClinearGradient id='m' x1='0' y1='0' x2='1' y2='.35'%3E%3Cstop offset='0' stop-color='%230E3B33'/%3E%3Cstop offset='.4' stop-color='%23528e7e'/%3E%3Cstop offset='.72' stop-color='%23164a41'/%3E%3Cstop offset='1' stop-color='%230E3B33'/%3E%3C/linearGradient%3E%3Cfilter id='s' x='-30%25' y='-30%25' width='160%25' height='160%25'%3E%3CfeGaussianBlur stdDeviation='1.3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M28 10.5C17 3 7 5 6 13s11 9 22 2.5' fill='none' stroke='%230E3B33' stroke-opacity='.14' stroke-width='2.6' stroke-linecap='round' transform='translate(2.6 3.2)' filter='url(%23s)'/%3E%3Cpath d='M28 10.5C17 3 7 5 6 13s11 9 22 2.5' fill='none' stroke='url(%23m)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cellipse cx='28' cy='13' rx='2.9' ry='4.2' fill='%230E3B33'/%3E%3C/svg%3E");
-    background-repeat: repeat-y;
-    background-size: 40px 26px;
+    left: -24px;
+    width: 32px;
+    /* El alto lo cuantiza el script a unidades enteras (--binding-height).
+       El fallback es `auto` y no un numero: sin JS (y con movimiento reducido,
+       donde el script no llega a vivir) el alambre se estira con el top/bottom
+       como hacia el anillado viejo; con el fallback de 100px quedaba un tocho
+       corto arriba del papel en el fallback entero. */
+    height: var(--binding-height, auto);
+    z-index: 2;
     pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='26' viewBox='0 0 32 26'%3E%3Cdefs%3E%3ClinearGradient id='r' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23051F14'/%3E%3Cstop offset='.5' stop-color='%233a7058'/%3E%3Cstop offset='1' stop-color='%23051F14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='0' y='10' width='27' height='2' fill='url(%23r)'/%3E%3Crect x='0' y='14' width='27' height='2' fill='url(%23r)'/%3E%3Crect x='24' y='9' width='6' height='8' fill='%23051F14' rx='.5'/%3E%3C/svg%3E");
+    background-repeat: repeat-y;
+    background-size: 32px 26px;
   }
 
-  /* La mitad de adentro del papel: el agujero y el alambre saliendo de el. Va
-     arriba de todo, porque es la cara de adelante del cuaderno. */
-  .hero-anillado {
-    background-position: -20px 0;
-  }
-
-  /* La mitad de afuera del canto: el alambre rodeando el papel. En modo vivo va
-     ABAJO de la hoja que gira (que en el tramo de guardarse baja a z-index -1,
-     por debajo del papel del cuaderno), asi que cuando la hoja pasa para atras el
-     resorte se ve por detras de ella y desde el frente esa parte no existe: la
-     hoja se la come. Sin JavaScript la hoja no gira y no hay nada que la tape:
-     ahi la mitad de afuera va arriba, con el resto del anillado. */
-  .hero-anillado-costado {
-    transform: translateX(-100%);
-    background-position: 0 0;
-  }
-
-  /* En modo vivo la banda muere EN EL BORDE de abajo del papel, sobre la linea del
-     marco, y el aire de arriba lo pone el script cuantizado a la grilla de la
-     vuelta (26px) mas media vuelta: asi la primera vuelta queda entera, la ultima
-     se corta por la mitad justo contra el borde de la hoja y el alambre se lee
-     entrando atras del papel. Antes moria 8px antes del borde, en el medio del
-     papel, y con algunos altos de ventana la ultima vuelta salia entera. */
-  .hero-scroll.is-live .hero-anillado,
-  .hero-scroll.is-live .hero-anillado-costado {
-    top: var(--anillado-arriba, 8px);
-    bottom: 1.5px;
-  }
-
-  .hero-scroll.is-live .hero-anillado-costado {
-    z-index: -2;
+  /* En ventanas de menos de 592px de ancho el cuaderno queda a 16px del borde
+     (el padding horizontal del escenario) y el poke de 24px del alambre se
+     saldria de la pantalla: se cortaria contra el borde izquierdo. Ahi el
+     alambre asoma 16px, que es justo el padding: el tile se aplasta en X a 24px
+     (0,75x) para que el agujero siga cayendo sobre el borde del papel. El paso
+     vertical no cambia (26px), asi que la cuantizacion del script sirve igual
+     en los dos regimenes. El umbral sale de la geometria: el poke completo
+     entra cuando el cuaderno queda a 24px o mas del borde, y eso pasa desde
+     592px de ancho (16 + (ancho - 32 - 544)/2 >= 24). */
+  @media (max-width: 591px) {
+    .hero-binding {
+      left: -16px;
+      width: 24px;
+      background-size: 24px 26px;
+    }
   }
 
   /* El doblez de la punta de arriba a la derecha, en dos mitades del mismo
@@ -695,15 +685,11 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
   // ancho. Es del papel, no del tamano del doblez: no se escala con la esquina.
   const ROLLO_PX = 24;
 
-  // El paso de la vuelta del anillado y media vuelta: son el `background-size`
-  // de la imagen del alambre (una vuelta cada 26px) y lo que se ve de la ultima
-  // vuelta cuando el papel la corta. La banda tiene que medir un numero entero de
-  // vueltas MAS media, asi la primera queda entera y la ultima cortada justo
-  // contra el borde de abajo de la hoja.
-  const ANILLADO_PASO_PX = 26;
-  const ANILLADO_CORTE_PX = 13;
-  // La linea del marco: la banda muere sobre ella, no antes.
-  const ANILLADO_BORDE_PX = 1.5;
+  // El paso del wire-o y su aire arriba/abajo: una unidad (cuadro + 2 anillos)
+  // cada 26px y 8px de margen arriba y abajo para que la primera y la ultima unidad
+  // no se peguen a los bordes de la hoja.
+  const BINDING_PASO_PX = 26;
+  const BINDING_MARGEN_PX = 8;
 
   let cleanup: (() => void) | undefined;
 
@@ -725,6 +711,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     const doblezPapel = seccion?.querySelector<HTMLElement>("[data-doblez-papel]");
     const curl = seccion?.querySelector<HTMLElement>("[data-curl]");
     const reverso = seccion?.querySelector<HTMLElement>("[data-reverso]");
+    const binding = seccion?.querySelector<HTMLElement>("[data-binding]");
     const items = [...(seccion?.querySelectorAll<HTMLElement>("[data-item]") ?? [])];
     if (
       !seccion ||
@@ -737,6 +724,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
       !doblezPapel ||
       !curl ||
       !reverso ||
+      !binding ||
       !items.length
     )
       return;
@@ -788,22 +776,18 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
       plan = armarPlan();
       // El ancho de la hoja sin transformar: es la medida del doblez
       anchoHoja = hoja.offsetWidth;
-      // El anillado: la banda muere en el borde de abajo del papel y el alto se
-      // cuantiza a la grilla de la vuelta mas media vuelta. Lo que sobra se va al
-      // aire de arriba, asi que la banda arranca mas arriba o mas abajo segun el
-      // alto de la ventana, pero la ultima vuelta siempre queda cortada por la
-      // mitad contra el borde de la hoja.
-      const altoPad = pad.getBoundingClientRect().height;
-      const vueltas = Math.max(
+      // El wire-o: el alto del binding se cuantiza a la grilla de la unidad. Solo
+      // entran unidades ENTERAS (si sobra alto, queda como margen contra el borde
+      // de abajo de la hoja, que es lo que pidio el autor).
+      const altoHoja = hoja.getBoundingClientRect().height;
+      const altoDisponible = Math.max(0, altoHoja - BINDING_MARGEN_PX * 2);
+      const unidadesCompletas = Math.max(
         1,
-        Math.floor(
-          (altoPad - ANILLADO_BORDE_PX - ANILLADO_CORTE_PX) / ANILLADO_PASO_PX,
-        ),
+        Math.floor(altoDisponible / BINDING_PASO_PX),
       );
-      const altoBanda = vueltas * ANILLADO_PASO_PX + ANILLADO_CORTE_PX;
-      seccion.style.setProperty(
-        "--anillado-arriba",
-        `${(altoPad - ANILLADO_BORDE_PX - altoBanda).toFixed(2)}px`,
+      binding.style.setProperty(
+        "--binding-height",
+        `${unidadesCompletas * BINDING_PASO_PX}px`,
       );
       seccion.style.setProperty("--scroll-length", `${plan.scrollLength}px`);
       seccion.style.setProperty("--remate", `${plan.rematePx}px`);

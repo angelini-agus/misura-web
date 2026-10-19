@@ -273,6 +273,19 @@ misma fuente que el garabato.
 
 ### El anillado
 
+> **2026-10-18: esta sección describe el anillado VIEJO (dos mitades de 40px),
+> que ya no está.** El cuaderno ahora lleva un **wire-o** (`.hero-binding`,
+> hijo del papel): un tile de 32x26 con dos líneas horizontales de alambre y
+> el cuadrado-agujero a la derecha, hijo del papel y no de la hoja, así la
+> hoja viaja a través de las líneas al girar y se esconde detrás de ellas al
+> pasar el canto. El alto lo cuantiza el script a unidades enteras de 26px
+> (`--binding-height`); sin JS y con movimiento reducido se estira con el
+> cuaderno (`height: var(--binding-height, auto)`). En ventanas de menos de
+> 592px el poke baja de 24px a 16px (el tile se aplasta en X a 0,75x) porque
+> el cuaderno queda a 16px del borde y el alambre se cortaría contra la
+> pantalla. Cobertura medida en 360x740, 390x844, 768x1024, 1440x900,
+> 1440x776, 1440x647 y 1920x1080.
+
 Una vuelta cada 26px, centrada en el canto del papel (el centro de la caja cae
 sobre el borde izquierdo). Cada vuelta es **un alambre dibujado**: sale del
 agujero, rodea el canto y vuelve a entrar, con tres cosas que le dan volumen:
