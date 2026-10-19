@@ -134,13 +134,11 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
           }
         </ul>
 
-        <!-- El doblez de la punta de arriba a la derecha, en tres piezas: el
-             corte (la esquina que ya no esta, tapada con el papel del cuaderno),
-             el reverso que quedo doblado encima de la hoja, y el rollo del
-             pliegue, que es la lomita del papel entre las dos. -->
-        <span class="hero-doblez-corte" aria-hidden="true" data-doblez-corte></span>
+        <!-- El doblez de la punta de arriba a la derecha: el reverso que quedo
+             doblado encima de la hoja. La esquina que falta se recorta con
+             clip-path directamente sobre la hoja, dejando ver limpiamente
+             la pagina de abajo o el fondo. -->
         <span class="hero-doblez-papel" aria-hidden="true" data-doblez-papel></span>
-        <span class="hero-curl" aria-hidden="true" data-curl></span>
       </div>
 
       <!-- La cara de atras de la hoja. Antes de pasar el canto mira para el otro
@@ -280,11 +278,11 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     }
   }
 
-  /* El doblez de la punta de arriba a la derecha, en dos mitades del mismo
-     cuadrado. El cuadrado mide 100px y el scroll lo escala desde la esquina: asi
-     el cuadro solo cambia de transform y no hay que rehacer el dibujo de la hoja
-     en cada paso del scroll (adentro hay ocho filtros de crayon). */
-  .hero-doblez-corte,
+  /* El doblez de la punta de arriba a la derecha. El cuadrado mide 100px y el scroll
+     lo escala desde la esquina: asi el cuadro solo cambia de transform.
+     El reverso del papel, caido encima de la hoja del otro lado de la linea: los
+     dos cantos libres del borde de la hoja y la sombra sutil metiendose
+     desde el pliegue. */
   .hero-doblez-papel {
     position: absolute;
     top: -1.5px;
@@ -292,26 +290,12 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     width: 100px;
     height: 100px;
     transform-origin: top right;
-    /* Apagadas y ya promovidas a capa propia: cuando el scroll las prende, el
+    /* Apagada y ya promovida a capa propia: cuando el scroll la prende, el
        cuadro ya esta dibujado y no se paga el costo de rasterizar la hoja con los
        ocho filtros de crayon adentro en el primer cuadro del paso. */
     opacity: 0;
     will-change: transform;
     pointer-events: none;
-  }
-
-  /* La esquina que ya no esta: se tapa con el papel del cuaderno de abajo */
-  .hero-doblez-corte {
-    background: var(--papel);
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
-    border-top-right-radius: 0.375rem;
-    z-index: 1;
-  }
-
-  /* El reverso del papel, caido encima de la hoja del otro lado de la linea: los
-     dos cantos libres del borde de la hoja y la sombra del rollo metiendose
-     desde el pliegue. */
-  .hero-doblez-papel {
     background:
       linear-gradient(225deg, rgba(14, 59, 51, 0.26) 0%, rgba(14, 59, 51, 0) 36%),
       var(--cara-reverso);
@@ -319,33 +303,6 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     border-left: 1.5px solid var(--color-green);
     border-bottom: 1.5px solid var(--color-green);
     z-index: 2;
-  }
-
-  /* El rollo del pliegue: el papel curvado en la lomita que une la hoja plana con
-     el reverso doblado. Es una banda de 24px centrada en la linea del doblez; el
-     degradado es el sombreado del tubo (oscuro donde toca el papel, claro en la
-     cresta) y todo se mueve con transform: el largo lo estira scaleX y la posicion
-     la pone el scroll. Sin `box-shadow`: la sombra corrida que tenia repintaba una
-     copia suave de la banda (se veia por duplicado, y como un fantasma
-     transparente sobre el papel). */
-  .hero-curl {
-    position: absolute;
-    top: -1.5px;
-    left: calc(100% + 1.5px);
-    width: 141.42px;
-    height: 24px;
-    transform-origin: 0 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(14, 59, 51, 0.16) 0%,
-      var(--cara-reverso) 16%,
-      color-mix(in srgb, var(--papel) 80%, white) 42%,
-      var(--cara-reverso) 78%,
-      rgba(14, 59, 51, 0.22) 100%
-    );
-    opacity: 0;
-    will-change: transform;
-    pointer-events: none;
   }
 
   /* La marca del pliegue, sobre la diagonal del cuadrado */
@@ -536,22 +493,12 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     overflow: hidden;
   }
 
-  /* En modo vivo el aire del papel lo llevan la hoja y la pagina de abajo, y el
-     marco lo dibuja el cuaderno por encima de todo: asi la hoja llega hasta el
-     borde, puede girar por debajo, y el borde del cuaderno no se corta nunca. */
+  /* En modo vivo el aire del papel lo llevan la hoja y la pagina de abajo.
+     Cada una dibuja su propio borde verde: la hoja gira por encima y revela
+     la pagina de abajo limpia, sin marcos flotantes ni dobles lineas. */
   .hero-scroll.is-live .hero-pad {
     padding: 0;
     border-width: 0;
-  }
-
-  .hero-scroll.is-live .hero-pad::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    border: 1.5px solid var(--color-green);
-    border-radius: 0.375rem;
-    pointer-events: none;
   }
 
   /* La hoja de arriba: la que gira. Es la que da el alto del cuaderno, porque es
@@ -569,7 +516,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     /* El papel no tiene reverso dibujado: cuando la hoja pasa el canto deja de
        verse, que es exactamente lo que hace una hoja de verdad. */
     backface-visibility: hidden;
-    will-change: transform;
+    will-change: transform, clip-path;
   }
 
   /* La pagina de abajo: ya esta impresa y espera tapada. El fondo es opaco y del
@@ -581,6 +528,8 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     margin: 0;
     padding: var(--pad-aire);
     background: var(--papel);
+    border: 1.5px solid var(--color-green);
+    border-radius: 0.375rem;
   }
 
   /* El reverso de la hoja que gira. Va abajo de todo: cuando la hoja pasa el
@@ -680,9 +629,6 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
   const DOBLEZ_FRACCION = 0.26;
   const DOBLEZ_PICO = 0.22;
   const DOBLEZ_BASE_PX = 100;
-  // El rollo del pliegue: media vuelta de papel de 12px de radio, o sea 24px de
-  // ancho. Es del papel, no del tamano del doblez: no se escala con la esquina.
-  const ROLLO_PX = 24;
 
   // El paso del wire-o y su aire arriba/abajo: una unidad (cuadro + 2 anillos)
   // cada 26px y 8px de margen arriba y abajo para que la primera y la ultima unidad
@@ -706,9 +652,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
     const hoja = seccion?.querySelector<HTMLElement>("[data-hoja]");
     const lista = seccion?.querySelector<HTMLElement>("[data-list]");
     const final = seccion?.querySelector<HTMLElement>("[data-final]");
-    const doblezCorte = seccion?.querySelector<HTMLElement>("[data-doblez-corte]");
     const doblezPapel = seccion?.querySelector<HTMLElement>("[data-doblez-papel]");
-    const curl = seccion?.querySelector<HTMLElement>("[data-curl]");
     const reverso = seccion?.querySelector<HTMLElement>("[data-reverso]");
     const binding = seccion?.querySelector<HTMLElement>("[data-binding]");
     const items = [...(seccion?.querySelectorAll<HTMLElement>("[data-item]") ?? [])];
@@ -719,9 +663,7 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
       !hoja ||
       !lista ||
       !final ||
-      !doblezCorte ||
       !doblezPapel ||
-      !curl ||
       !reverso ||
       !binding ||
       !items.length
@@ -928,36 +870,28 @@ const balas = heroProblems.map((_, i) => balaDeItem(i));
         // hoja llega plana (y la cara de atras aparece) sin ningun salto.
         const doblez = Math.sin(Math.PI * Math.min(1, paso / (2 * DOBLEZ_PICO)));
         const ladoPx = anchoHoja * DOBLEZ_FRACCION * doblez;
-        const escala = ladoPx / DOBLEZ_BASE_PX;
-        const tamano = `scale(${escala.toFixed(4)})`;
-        doblezCorte.style.transform = tamano;
-        doblezPapel.style.transform = tamano;
-        // El doblez vive solo mientras la hoja se levanta: pasado el pico se
-        // aplana (su escala llega a 0) y ahi se apaga del todo. No es cosmetico:
-        // el rollo aplastado a ancho 0 igual pintaba su sombra difusa, y esa
-        // mancha quedaba afuera del cuaderno cuando la hoja ya estaba guardada.
-        const vivoDoblez = paso < 2 * DOBLEZ_PICO ? "1" : "0";
-        doblezCorte.style.opacity = vivoDoblez;
-        doblezPapel.style.opacity = vivoDoblez;
+        const vivoDoblez = paso < 2 * DOBLEZ_PICO && ladoPx > 0.5;
 
-        // El rollo: la banda centrada en la linea del doblez, del largo del
-        // doblez y siempre de 24px de grosor (es el radio del papel).
-        const mitad = ROLLO_PX / 2;
-        curl.style.transform =
-          `translate(${(-ladoPx).toFixed(1)}px, 0) rotate(45deg) ` +
-          `translateY(${-mitad}px) scaleX(${escala.toFixed(4)})`;
-        curl.style.opacity = vivoDoblez;
+        if (vivoDoblez) {
+          const escala = ladoPx / DOBLEZ_BASE_PX;
+          doblezPapel.style.transform = `scale(${escala.toFixed(4)})`;
+          doblezPapel.style.opacity = "1";
+          // La hoja se recorta limpiamente en la esquina: la punta doblada deja
+          // ver claro para atras (la pagina de abajo) sin parches ni fantasmas.
+          hoja.style.clipPath = `polygon(0 0, calc(100% - ${ladoPx.toFixed(1)}px) 0, 100% ${ladoPx.toFixed(1)}px, 100% 100%, 0 100%)`;
+        } else {
+          doblezPapel.style.transform = "";
+          doblezPapel.style.opacity = "0";
+          hoja.style.clipPath = "";
+        }
       } else if (hoja.style.transform) {
         hoja.style.transform = "";
         hoja.style.zIndex = "";
+        hoja.style.clipPath = "";
         reverso.style.transform = "";
         reverso.style.zIndex = "";
-        doblezCorte.style.transform = "";
         doblezPapel.style.transform = "";
-        doblezCorte.style.opacity = "0";
         doblezPapel.style.opacity = "0";
-        curl.style.transform = "";
-        curl.style.opacity = "0";
       }
 
       // --- el estado final: la hoja de abajo se revela con el giro, ya impresa.
