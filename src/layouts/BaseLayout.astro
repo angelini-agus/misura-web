@@ -79,7 +79,7 @@ gtag('config', '${gaId}');`
     <meta property="og:description" content={description} />
     <meta property="og:locale" content="es_AR" />
     {ogUrl && <meta property="og:url" content={ogUrl} />}
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image" content={new URL(ogImage, siteOrigin).toString()} />}
     <meta name="twitter:card" content="summary_large_image" />
 
     {gaId && (
@@ -411,7 +411,7 @@ gtag('config', '${gaId}');`
       };
       document.addEventListener("astro:page-load", alignHashTarget);
       const initCtaScroll = () => {
-        document.querySelectorAll('a[href*="#"]').forEach((link) => {
+        document.querySelectorAll('a[href*="#"]:not([href="#contenido"])').forEach((link) => {
           link.removeEventListener("click", onCtaClick, true);
           link.addEventListener("click", onCtaClick, true);
         });
