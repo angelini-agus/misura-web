@@ -173,7 +173,7 @@ export const privacy = {
 };
 
 export const clients = {
-  eyebrow: "Validación social",
+  eyebrow: "Gente que confía",
   title: "No prometemos resultados. Los mostramos.",
   description:
     "Un sistema de gestión a medida corre hoy en más de 30 sucursales de una empresa de limpieza en Rosario. Eliminó un puesto administrativo completo y llevó las quejas por inasistencias de 4-6 por mes a prácticamente 0.",
@@ -279,7 +279,7 @@ export const dictionaryEntry: {
 // se ve: se tachan de arriba abajo.
 export const heroProblems: string[] = [
   "Planillas de Excel",
-  "Carga de datos a mano",
+  "Sistemas que dejan huecos",
   "Grupos de WhatsApp",
   "Datos sin comprobar",
   "Horas sin control",
