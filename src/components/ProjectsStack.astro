@@ -30,7 +30,7 @@ const projectCount = projects.length;
 
 <section
   id="portfolio"
-  class="projects-stack scroll-mt-24"
+  class="projects-stack"
   style={`--flip-count: ${projectCount}`}
 >
   <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 md:px-6 md:pt-24 md:pb-10">
@@ -336,7 +336,7 @@ const projectCount = projects.length;
   }
 
   .folder__client {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-mono);
     font-size: 0.65rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -356,7 +356,7 @@ const projectCount = projects.length;
   }
 
   .folder__tag {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-mono);
     /* floor del spec: tags >= 10px. Antes 0.6rem (9.6px). */
     font-size: 0.625rem;
     letter-spacing: 0.12em;

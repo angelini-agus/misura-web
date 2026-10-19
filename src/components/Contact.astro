@@ -34,7 +34,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
     class="mx-auto flex min-h-[calc(100dvh-var(--contact-nav-h))] max-w-6xl flex-col px-4 py-[var(--contact-air-section,4rem)] md:px-6"
   >
     <div
-      class="grid w-full flex-1 overflow-hidden rounded-lg border border-green md:grid-cols-2"
+      class="grid w-full flex-1 overflow-hidden rounded-md border border-green md:grid-cols-2"
       data-reveal
       data-scroll-card
     >
@@ -58,7 +58,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
             {emailHref ? (
               <a
                 href={emailHref}
-                class="text-cream transition-[color,transform] duration-150 ease-out hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+                class="text-cream transition-[color,transform] duration-150 ease-out hover:text-cream-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
               >
                 {contact.email}
               </a>
@@ -82,7 +82,7 @@ const emailHref = isPending(contact.email) ? null : `mailto:${contact.email}`;
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="flex items-center gap-3 text-cream transition-[color,transform] duration-150 ease-out hover:text-cream active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
+                  class="flex items-center gap-3 text-cream transition-[color,transform] duration-150 ease-out hover:text-cream-dark active:translate-x-[-4px] active:translate-y-[4px] active:duration-75"
                 >
                   {social.label === "LinkedIn" ? (
                     <LinkedinIcon class="social-icon h-5 w-5 shrink-0 text-cream" />
