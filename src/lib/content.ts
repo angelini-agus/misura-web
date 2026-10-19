@@ -1131,6 +1131,10 @@ export const caseStudies: {
     title: "Landing page de conversión para empresa de limpieza",
     client: "Empresa de limpieza",
     location: "Rosario, Santa Fe",
+    liveUrl: {
+      href: "https://azserviciosdelimpieza.com",
+      label: "azserviciosdelimpieza.com",
+    },
     category: "Página Web",
     technologies: ["Astro", "TypeScript", "Tailwind CSS", "Lenis", "Vercel"],
     gallery: [
@@ -1249,6 +1253,10 @@ export const caseStudies: {
     title: "Página web para clínica pediátrica",
     client: "Clínica pediátrica",
     location: "Pueblo Esther, Santa Fe",
+    liveUrl: {
+      href: "https://dramartinangelio.com",
+      label: "dramartinangelio.com",
+    },
     category: "Página Web",
     technologies: ["Astro", "React", "Tailwind CSS", "TypeScript"],
     gallery: [

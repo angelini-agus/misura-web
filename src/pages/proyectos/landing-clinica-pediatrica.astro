@@ -46,6 +46,21 @@ const cs = caseStudies.pediatricLanding;
             </p>
             <p class="text-sm font-semibold text-green">{cs.location}</p>
           </div>
+          {cs.liveUrl && (
+            <div class="flex flex-col gap-1">
+              <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/75">
+                Sitio
+              </p>
+              <a
+                href={cs.liveUrl.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-semibold text-green transition-colors duration-150 ease-out hover:text-green-dark"
+              >
+                {cs.liveUrl.label}
+              </a>
+            </div>
+          )}
           <div class="flex flex-col gap-1">
             <p class="font-mono text-xs uppercase tracking-[0.2em] text-green/75">
               Tecnologías

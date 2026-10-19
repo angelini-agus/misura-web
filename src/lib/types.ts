@@ -44,6 +44,9 @@ export type CaseStudy = {
   title: string;
   client: string;
   location: string;
+  // Solo los casos con sitio público: las landings de clientes. Los sistemas
+  // internos no exponen la URL por privacidad.
+  liveUrl?: { href: string; label: string };
   category: string;
   technologies: string[];
   gallery?: CaseStudyCover[];
