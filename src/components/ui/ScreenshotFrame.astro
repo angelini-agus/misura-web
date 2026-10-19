@@ -2,11 +2,13 @@
 interface Props {
   compact?: boolean;
   class?: string;
+  style?: string;
 }
 
 const {
   compact = false,
   class: className = "",
+  style = "",
 } = Astro.props;
 ---
 
@@ -20,6 +22,7 @@ const {
     compact && "screenshot-frame--compact",
     className,
   ]}
+  style={style || undefined}
 >
   <div class="screenshot-frame-bar" aria-hidden="true">
     <span></span><span></span><span></span>
