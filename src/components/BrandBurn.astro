@@ -569,21 +569,27 @@
             }
             return `path("${partes.join(" ")}")`;
           };
-          // El path de la tabla es un rectángulo redondeado con bordes en x = 347 y
-          // 1092, y = 259 y 511 (los del debug). El transform-origin de la placa es
-          // el centro del wordmark (centroX, centroY), que NO coincide con el centro
-          // del path (el path vive corrido a un lado). Por eso la fórmula vieja
-          // (2*dist/anchoTaco) no era suficiente: el extremo más lejano del path
-          // desde el origen es el fondo (centroY = 481 vs 511, solo 30 unidades de
-          // holgura) y necesita factor ≈ 14 para llegar al borde inferior de la
-          // ventana. La fórmula correcta es la distancia al borde de la ventana
-          // dividida por la mitad del extent del path desde el origen.
+          // La escala con la que el plato tapa la ventana. El plato escala sobre
+          // su transform-origin (el pivote del taco, 18%/88% de su caja) y NO
+          // sobre el centro del wordmark, así que la escala que pide cada borde
+          // es la distancia del borde de la ventana al pivote dividida por la
+          // distancia del borde del taco al pivote en ese mismo eje.
+          //
+          // Con los divisores fijos de antes (calibrados a la caja del taco de
+          // escritorio: 134/611/222/30 eran esas distancias a 1440x900) el plato
+          // quedaba corto apenas cambiaba la geometría: a 390x844 cubría hasta
+          // los 672px y dejaba 172px de lino abajo, y a 768x1024 faltaban 22px.
+          // Medido con el arnés de cuadros congelados (burn-res.cjs).
+          const pivoteX = izquierdaTaco + anchoTaco * 0.18;
+          const pivoteY = arribaTaco + altoTaco * 0.88;
           const cobertura =
             Math.max(
-              centroX / 134,
-              (anchoVentana - centroX) / 611,
-              centroY / 222,
-              (altoVentana - centroY) / 30,
+              pivoteX / Math.max(1, pivoteX - izquierdaTaco),
+              (anchoVentana - pivoteX) /
+                Math.max(1, izquierdaTaco + anchoTaco - pivoteX),
+              pivoteY / Math.max(1, pivoteY - arribaTaco),
+              (altoVentana - pivoteY) /
+                Math.max(1, arribaTaco + altoTaco - pivoteY),
             ) + 0.02;
           // `--masa-cubre` ahora es la escala de la cobertura (un número), no el
           // path: la placa hace `transform: scale(var(--masa-cubre))` desde el

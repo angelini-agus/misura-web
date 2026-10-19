@@ -150,6 +150,7 @@ el mismo verde plano. Las sombras también son de la tinta (`color-mix` sobre
 | Los cuatro casos de skip | Segunda visita, hash y movimiento reducido: `has-burn` ausente. Recarga con scroll restaurado, con una recarga real a 2152px (`reload2.cjs`): `has-burn` ausente |
 | `?burn=1` y `?burn=lento` | Sin cambios: el forzado ignora las cuatro condiciones y no escribe la marca de sesión |
 | Movimiento reducido + `?burn=1` | Corre a velocidad real: las cuatro animaciones con `currentTime` real (~1117ms) y el taco en opacidad 1 a los ~1,1s. **Era un defecto previo**, no de este cambio |
+| **Cobertura del plato por resolución (2026-10-18)** | La escala del plato pasó a salir del PIVOTE (18%/88% del taco) contra la geometría real de cada ventana, y no de divisores fijos calibrados al taco de escritorio: a 390x844 el plato cubría hasta 672px (172px de lino abajo) y a 768x1024 faltaban 22px. Ahora los cuatro bordes quedan tapados en 360x740, 390x844, 768x1024, 1440x900, 1440x776, 1440x647 y 1920x1080 (muestreo `elementFromPoint` en las cuatro esquinas + centro del cuadro 0, arnés `burn-cover-check.cjs`) |
 
 ## La trampa que nos comió TRES veces
 
