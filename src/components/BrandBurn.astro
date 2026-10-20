@@ -127,7 +127,15 @@
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: var(--lino);
+    /* La superficie de papel del overlay es la propia página: mismo color
+       base y la misma máscara --degrade-papel con attachment fijo. El
+       destape no cambia un píxel de tono: el overlay y la página comparten
+       máscara, y el grano del body::after (z 9999, orden del DOM posterior a
+       los hijos del body) queda encima también de esta capa. Solo cambia el
+       momento en el que entra la marca impresa. */
+    background: var(--color-cream);
+    background-image: var(--degrade-papel);
+    background-attachment: fixed;
     overflow: hidden;
   }
 
