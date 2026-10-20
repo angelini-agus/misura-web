@@ -56,7 +56,7 @@ export const site = {
   announcement:
     "Software a medida en Rosario. Prototipo gratis antes de contratar.",
   menuLabel: "Menú",
-  metaTitle: "BottegaDevs | Software a medida para pymes de Rosario y alrededores",
+  metaTitle: "BottegaDevs | Software a medida para pymes de Rosario",
   metaDescription:
     "BottegaDevs desarrolla sistemas de gestión, CRM y páginas web a medida para pymes de Rosario y alrededores. Prototipo gratis antes de firmar.",
   tagline: "Software a medida para pequeñas y medianas empresas de Argentina.",
@@ -769,7 +769,7 @@ export const caseStudies: {
     slug: "empresa-limpieza-rosario",
     seo: {
       title:
-        "Sistema de gestión para empresa de limpieza en Rosario | BottegaDevs",
+        "Sistema de gestión para empresa de limpieza | BottegaDevs",
       description:
         "Eliminamos un puesto administrativo completo y bajamos las quejas por inasistencias a 0, con un sistema de geolocalización y sueldos automáticos.",
     },
@@ -879,7 +879,7 @@ export const caseStudies: {
     seo: {
       title: "CRM de leads para concesionaria en Rosario | BottegaDevs",
       description:
-        "CRM a medida para una concesionaria de autos de Rosario: centraliza los leads de WhatsApp, Instagram, Facebook y Mercado Libre, con filtros por marca/modelo, cliente y teléfono y asignación a asesores. Reemplaza la planilla de Excel manual.",
+        "CRM a medida para una concesionaria de autos de Rosario: centraliza los leads de WhatsApp, Instagram, Facebook y Mercado Libre y reemplaza la planilla manual.",
     },
     eyebrow: "Caso de estudio",
     title: "CRM de leads para concesionaria",
@@ -1009,7 +1009,7 @@ export const caseStudies: {
     seo: {
       title: "Sistema de gestión jurídica integral | BottegaDevs",
       description:
-        "Plataforma integral para administrar un estudio jurídico con jurisdicción en Argentina y Paraguay: clientes, expedientes judiciales y extrajudiciales, agenda, control financiero y biblioteca jurídica con verificación de fuentes oficiales asistida por IA.",
+        "Plataforma para un estudio jurídico con jurisdicción en Argentina y Paraguay: clientes, expedientes, agenda, control financiero y biblioteca jurídica.",
     },
     eyebrow: "Caso de estudio",
     title: "Sistema de gestión jurídica integral",
@@ -1123,9 +1123,9 @@ export const caseStudies: {
     slug: "landing-empresa-limpieza",
     seo: {
       title:
-        "Landing page para empresa de limpieza en Rosario | BottegaDevs",
+        "Landing page para empresa de limpieza | BottegaDevs",
       description:
-        "Diseñamos y desarrollamos el sitio oficial de una empresa de limpieza de Rosario: propuesta de valor clara, captación de consultas calificada e integración con su ERP interno.",
+        "Diseñamos y desarrollamos el sitio de una empresa de limpieza de Rosario: propuesta de valor clara, consultas calificadas e integración con su ERP interno.",
     },
     eyebrow: "Caso de éxito",
     title: "Landing page de conversión para empresa de limpieza",
@@ -1247,7 +1247,7 @@ export const caseStudies: {
     seo: {
       title: "Página web para clínica pediátrica | BottegaDevs",
       description:
-        "Sitio público de una clínica pediátrica: la trayectoria de la profesional, las etapas del cuidado, los testimonios de las familias y el turno como cierre, con el contenido renderizado en el servidor.",
+        "Sitio público de una clínica pediátrica: trayectoria de la profesional, etapas del cuidado, testimonios de las familias y el turno como cierre.",
     },
     eyebrow: "Caso de estudio",
     title: "Página web para clínica pediátrica",
@@ -1369,7 +1369,7 @@ export const caseStudies: {
     seo: {
       title: "Sistema de gestión clínica pediátrica | BottegaDevs",
       description:
-        "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica trazable conforme a la Ley 26.529, turnos que se confirman en una cola, recetas en PDF y accesos por rol.",
+        "ERP clínico y portal de pacientes para una clínica pediátrica: historia clínica trazable conforme a la Ley 26.529, turnos confirmados y recetas en PDF.",
     },
     eyebrow: "Caso de estudio",
     title: "ERP clínico y portal de pacientes para clínica pediátrica",
