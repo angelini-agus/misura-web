@@ -21,15 +21,22 @@ Creado: 2026-10-20 · Rama: `feat/bottega-rebrand` · Fuente: `AUDITORIA.md` (se
 
 | ID | Hallazgo | Épica | Descripción | Estado | Commit |
 | --- | --- | --- | --- | --- | --- |
-| T1 | F02 | 404 | Crear `src/pages/404.astro` con el layout marca; copy sobrio, link a `/` y `/contacto`; Astro emite `404.html` | pending | — |
-| T2 | F04 | preload | `link rel=preload as=font crossorigin` de los 2 woff2 latin en `BaseLayout.astro`, con las URLs reales que emite el CSS | pending | — |
-| T3 | F05 | contraste | `text-green/60` → `text-green/75` en `CaseContrast.astro` (F23 de ClientQuote queda en tanda 3) | pending | — |
-| T4 | F06 | aria-live | Anunciar el estado de envío en `ContactForm.astro` (`aria-live` + `aria-busy`), patrón mínimo sin reestructurar | pending | — |
-| T5 | F08 | seo | Acortar en `content.ts`: titles de index (67c), empresa-limpieza-rosario (68c) y landing-empresa-limpieza (62c) a ≤60c; descripciones de crm-concesionaria (240c), gestion-legal (254c) y landing-empresa-limpieza (175c) a ≤160c. Sin inventar datos | pending | — |
-| T6 | F01 | headers | `vercel.json`: CSP + los 5 headers de seguridad (bloqueada por T8: la CSP depende de si GA4 queda) | blocked | — |
-| T7 | F03 | perf | CSS blocking 760ms: analizar y decidir inline de crítico vs split/footer (máximo impacto de perf pendiente) | pending | — |
-| T8 | F24 | compliance | GA4 vs política: decisión del autor entre (a) quitar GA4, (b) banner de consentimiento, (c) analítica sin cookies + corregir la política al estado real + declarar Web3Forms como procesador (con F11) | blocked | — |
-| T9 | cierre | docs | Actualizar `AUDITORIA.md` (estados de los hallazgos de tanda 1) al cerrar la tanda | pending | — |
+| T1 | F02 | 404 | Crear `src/pages/404.astro` con el layout marca; copy sobrio, link a `/` y `/contacto`; Astro emite `404.html` | done | 63c92cf |
+| T2 | F04 | preload | `link rel=preload as=font crossorigin` de los 2 woff2 latin en `BaseLayout.astro`, con las URLs reales que emite el CSS | done | f368666 |
+| T3 | F05 | contraste | `text-green/60` → `text-green/75` en `CaseContrast.astro` (F23 de ClientQuote queda en tanda 3) | done | abebc5f |
+| T4 | F06 | aria-live | Anunciar el estado de envío en `ContactForm.astro` (`aria-live` + `aria-busy`), patrón mínimo sin reestructurar | done | abebc5f |
+| T5 | F08 | seo | Acortar en `content.ts`: titles de index (67c), empresa-limpieza-rosario (68c) y landing-empresa-limpieza (62c) a ≤60c; descripciones de crm-concesionaria (240c), gestion-legal (254c) y landing-empresa-limpieza (175c) a ≤160c. Sin inventar datos. Extra decidido el 20-10: el barrido del dist detectó 2 descripciones más >160c (landing-clinica-pediatrica 199c, sistema-clinica-pediatrica 185c) y se acortaron con el mismo criterio | done | 7e3eb85 |
+| T6 | F01 | headers | `vercel.json`: CSP (allowlist scripts inline + web3forms) + nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy y cache immutable `/​_astro/*`; HSTS queda el default de Vercel. Verificación en vivo pendiente del deploy | done | 2a25786 |
+| T7 | F03 | perf | CSS blocking 760ms: analizar y decidir inline de crítico vs split/footer (máximo impacto de perf pendiente) | pending (análisis a presentar) | — |
+| T8 | F24 | compliance | Decisión del autor: analítica sin cookies (C). GA4 fuera (`417d440` con `@vercel/analytics` v2.0.1), política actualizada al estado real (`9c0c269`, octubre 2026). Sin banner por pedido del autor. Lado Vercel pendiente: Enable de Analytics + borrar la env `PUBLIC_GA_ID` | done | 417d440 + 9c0c269 |
+| T9 | cierre | docs | §8.1 de `AUDITORIA.md` escrito con los estados de tanda 1 (F03 sigue abierto con su fila propia); queda solo cerrarlo cuando F03 se decida | in_progress | — |
+
+## Notas de ejecución (20-10)
+
+- Worker (gentle-ai-worker) cerró T1-T4 con gates verdes: `astro check` 0/0/0, build 12 páginas, `dist/404.html` existe, 2 preloads verificados en `dist/index.html` con href existente en `dist/_astro`, sin duplicados de woff2 (dedupe de Vite confirmado, hash de lora sin cambia).
+- `aria-busy` va en el botón, no en el form: en el form sería ancestro del live region y podría suprimir el anuncio en algunos lectores de pantalla.
+- El eyebrow de la 404 usa `text-green/70`: coincide con el patrón de `PageHeader.astro:17`; el barrido de /70 es F23 (tanda 3).
+- Dist final: 0 titles >60c, 0 descs >160c.
 
 ## Evidencia de concepto (hallazgos verificados ayer)
 

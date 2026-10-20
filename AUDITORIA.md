@@ -99,7 +99,22 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 
 ## 8. Uso de modelos
 
+
+
 - El runtime no ofrece `deepseek-v4.1-flash`, `mimo-v2.6-flash`, `glm-5.3-flash` ni `kimi-k3` como subagentes; se usó el roster real con los roles equivalentes: `gentle-ai-verify` ×4 (A tests, B seguridad ×2, C rendimiento, E accesibilidad), `gentle-ai-explore` ×3 (D SEO, F UX, G congruencia), `jd-judge-a` ×1 (FASE 3 verificación cruzada).
 - Dispatches: 11 en total (2 fallidos y relanzados: `review-risk` rechazó el formato de dispatch; B v1 abortó por un error de assistant; v2 completó). kimi-k3: no existe en el roster; la FASE 4 corrió con `jd-judge-b` (segundo juez adversarial, distinto del verificador de FASE 3) tras decisión del usuario.
 - Verificación cruzada (FASE 3, `jd-judge-a`): 12 hallazgos revisados → 8 verificados, 2 falsos positivos, 1 falso positivo parcial (H3 a favor del segundo reporte), 1 con números corregidos (H9: 3/3, no 2/5).
 - Revisión crítica (FASE 4, `jd-judge-b`, 8 comandos, read-only): reclasificó F01 Alta→Media y F12 Baja→Info, subió F11 por la faceta legal (Web3Forms no declarado como procesador), confirmó el abuso del form (botcheck bypaseable con curl, sin CAPTCHA/rate-limit, sin exfil ni redirect abierto ni adjuntos) y descubrió **F24**: GA4 corriendo sin consentimiento contra la promesa textual de `content.ts:153-156` — lo más grave que quedó fuera de las fases 1-3.
+
+### 8.1 Ejecución de la tanda 1 (2026-10-20)
+
+| Hallazgo | Estado | Evidencia |
+| --- | --- | --- |
+| F02 404 | Resuelto | `63c92cf`: `src/pages/404.astro` + doc odd; `dist/404.html` generado |
+| F04 preload | Resuelto | `f368666`: preloads de los woff2 latin via import `?url` de fontsource; verificado en dist sin duplicados |
+| F05 + F06 | Resuelto | `abebc5f`: `text-green/60→75` en CaseContrast; live region + `aria-busy` en ContactForm (patrón ShareButton) |
+| F08 | Resuelto | `7e3eb85`: 3 titles + 3 descripciones del informe acortados; el barrido del dist detectó y acortó además 2 descripciones pediátricas (199c→143c, 185c→151c); 0 excesos finales |
+| F01 headers | Resuelto (pendiente de verificar en vivo) | `2a25786`: `vercel.json` con CSP (scripts inline del sitio + web3forms en connect/form-action, GA4 ya no figura) + nosniff, X-Frame-Options, Referrer-Policy y Permissions-Policy + cache immutable para `/_astro/*`. HSTS deja el default de Vercel. Verificación con `curl` contra producción cuando se despliegue |
+| F24 GA4 | Resuelto — decisión C | `417d440`: GA4 fuera, `<Analytics />` de `@vercel/analytics` v2.0.1 (script mismo dominio `/_vercel/insights/script.js`, sin cookies); `9c0c269`: política actualizada al estado real (octubre 2026). El usuario pidió métricas sin banner → analítica agregada sin cookies. Pendiente del lado del autor: Enable de Analytics en el panel de Vercel tras el deploy |
+| F03 CSS blocking | Pendiente de decisión | El análisis de estrategia (inline de crítico vs split) queda abierto; se cierra la tanda con su propia decisión |
+| F11 (nota) | Sin cambio de código | La política actual ya declaraba a Web3Forms como intermediario ("Con quién se comparten") — la frase de FASE 4 quedaba obsoleta con el texto existente; sigue pendiente limitar la key por dominio en el dashboard (tanda 2, acción del autor) |
