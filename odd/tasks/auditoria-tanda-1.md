@@ -27,9 +27,9 @@ Creado: 2026-10-20 · Rama: `feat/bottega-rebrand` · Fuente: `AUDITORIA.md` (se
 | T4 | F06 | aria-live | Anunciar el estado de envío en `ContactForm.astro` (`aria-live` + `aria-busy`), patrón mínimo sin reestructurar | done | abebc5f |
 | T5 | F08 | seo | Acortar en `content.ts`: titles de index (67c), empresa-limpieza-rosario (68c) y landing-empresa-limpieza (62c) a ≤60c; descripciones de crm-concesionaria (240c), gestion-legal (254c) y landing-empresa-limpieza (175c) a ≤160c. Sin inventar datos. Extra decidido el 20-10: el barrido del dist detectó 2 descripciones más >160c (landing-clinica-pediatrica 199c, sistema-clinica-pediatrica 185c) y se acortaron con el mismo criterio | done | 7e3eb85 |
 | T6 | F01 | headers | `vercel.json`: CSP (allowlist scripts inline + web3forms) + nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy y cache immutable `/​_astro/*`; HSTS queda el default de Vercel. Verificación en vivo pendiente del deploy | done | 2a25786 |
-| T7 | F03 | perf | CSS blocking 760ms: analizar y decidir inline de crítico vs split/footer (máximo impacto de perf pendiente) | pending (análisis a presentar) | — |
+| T7 | F03 | perf | Análisis: del chunk de 55KB, 13% (7.6KB) era @font-face de todos los subsets de fontsource. Decisión: autohost latin (fonts.css + 2 woff2 en src/assets/fonts) en vez de inline crítico (caro de mantener con LH 99-100). Medición LH móvil antes/después: bloqueo Footer.css 456→305ms, TBT 70→50ms, chunk 55.0→48.2 KiB, assets woff2 8→2. Paquetes fontsource desinstalados | done | 2658460 |
 | T8 | F24 | compliance | Decisión del autor: analítica sin cookies (C). GA4 fuera (`417d440` con `@vercel/analytics` v2.0.1), política actualizada al estado real (`9c0c269`, octubre 2026). Sin banner por pedido del autor. Lado Vercel pendiente: Enable de Analytics + borrar la env `PUBLIC_GA_ID` | done | 417d440 + 9c0c269 |
-| T9 | cierre | docs | §8.1 de `AUDITORIA.md` escrito con los estados de tanda 1 (F03 sigue abierto con su fila propia); queda solo cerrarlo cuando F03 se decida | in_progress | — |
+| T9 | cierre | docs | Tanda 1 completa y cerrada: §8.1 de `AUDITORIA.md` con todos los estados resueltos. Solo quedan las verificaciones post-deploy (headers CSP en vivo, 404 en runtime, cookie `_ga` ausente, Enable de Analytics) | done | — |
 
 ## Notas de ejecución (20-10)
 
