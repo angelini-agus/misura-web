@@ -9,7 +9,7 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 | Área | Nota |
 | --- | --- |
 | Tests | 2/10 — no existe suite ni CI; build y check verdes verificados a mano |
-| Seguridad | 6.5/10 — superficie mínima ✓, headers de seguridad ausentes ✗ |
+| Seguridad | 6/10 — superficie mínima ✓, headers ausentes ✗, GA4 corriendo contra la propia política de privacidad ✗ |
 | Rendimiento | 8/10 — LH mobile 97-100, TBT 0, CLS ≤0.054; CSS blocking + fuentes sin preload |
 | SEO | 7.5/10 — base sólida; 3 titles/descriptions fuera de rango, sin 404 |
 | Accesibilidad | 8/10 — LH 98-100; 2 fallos AA de contraste/status, 1 riesgo de modal |
@@ -17,13 +17,13 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 | Congruencia | 8/10 — tokens limpios y voseo uniforme; terminología y Title Case con drift |
 | Buenas prácticas | 8/10 — check 0 errores, deps 100% usadas, errores casi todos manejados |
 
-**Top 5 urgentes:** F01 headers de seguridad en Vercel · F02 404 estilizada · F04 preload de fuentes · F05 contraste `text-green/60` (AA fail) · F06 estado de envío sin `aria-live`.
+**Top 5 urgentes:** F24 GA4 corriendo contra la política de privacidad (compliance) · F02 404 estilizada · F05 contraste `text-green/60` (AA fail) · F06 estado de envío sin `aria-live` · F04 preload de fuentes.
 
 ## 2. Tabla de hallazgos
 
 | ID | Área | Sev | Título | Evidencia | Impacto | Cómo arreglarlo | Esf | Estado |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| F01 | Seguridad | Alta | Sin CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy en producción | `curl -sI https://bottegadevs.com` (B + FASE 3): solo HSTS (`max-age=63072000`, sin includeSubDomains) y Server: Vercel | Si algo inyecta HTML/JS, nada lo mitiga; sniffing y clickjacking sin freno | `vercel.json` con `headers` (CSP base `default-src 'self'` + los 5 headers) | S | Verificado |
+| F01 | Seguridad | Media | Sin CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy en producción | `curl -sI https://bottegadevs.com` (B + FASE 3): solo HSTS (`max-age=63072000`, sin includeSubDomains) y Server: Vercel | Mitigaciones ausentes si algo inyecta HTML/JS; en SSG sin input renderizado no hay exploit directo (FASE 4: sobreestimada, reclasificada) | `vercel.json` con `headers` (CSP base `default-src 'self'` + los 5 headers) | S | Verificado |
 | F02 | SEO/UX | Alta | No hay página 404 propia | `ls dist/404.html` → ENOENT; `src/pages/404.astro` inexistente; en vivo `/pagina-inexistente-xyz` → 404 genérica de Vercel | Cada URL mal escrita o link roto aterriza en página ajena a la marca, sin vuelta al sitio | Crear `src/pages/404.astro` (Astro lo emite como `404.html`); contenido + link a home/contacto | S | Verificado |
 | F03 | Rendimiento | Media | CSS render-blocking ~760 ms | Lighthouse `render-blocking-insight`: Footer.css 54.7 KiB (456 ms) + index css (306 ms) | Demora el primer pintado en todas las páginas | Inline del CSS crítico o split por página / media queries | M | Verificado |
 | F04 | Rendimiento | Media | Fuentes woff2 sin preload (cadena doc→css→font) | LH `network-dependency-tree`; `grep rel="preload" dist/index.html` → 0; preload comentado en `BaseLayout.astro:127-131` no aterriza | LCP retrasado (~2 s home, texto de marca dependiente de la fuente) | `link rel="preload" as="font" crossorigin` de los 2 woff2 latin (37+27 KiB) | S | Verificado |
@@ -33,8 +33,8 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 | F08 | SEO | Media | 3 titles >60c y 3 descriptions >160c | dist (FASE 3): titles index 67c, empresa-limpieza-rosario 68c, landing-empresa-limpieza 62c; descs crm-concesionaria 240c, gestion-legal 254c, landing-empresa-limpieza 175c | Truncado en SERP: pérdida de CTR y de mensaje | Acortar copy en `src/lib/content.ts` (targets: title ≤60, desc 120-160) | S | Verificado |
 | F09 | A11y | Baja | Fallback del modal sin trampa de foco (2.1.2/2.4.3) | `ContactForm.astro:507-510` usa `showModal()` (top layer ✓) pero la rama sin soporte `:478-479` hace `setAttribute("open")` sin Escape/inert/trap (grep Escape/inert → 0 en el archivo) | En navegadores viejos el foco escapa al fondo del diálogo | Añadir trap + Escape + return focus en la rama fallback, o decidir sin-fallback | S | Verificado |
 | F10 | A11y | Baja | Touch targets 32-36px (2.5.5 AAA; pasan AA 2.5.8 de 24px) | `Header.astro:80` burger ~32-34px, `:92` links móvil ~36px; CTA `:99` sí llega | Áreas táctiles incómodas en móvil | `min-h/min-w` 44px en burger y links del menú | S | Verificado |
-| F11 | Seguridad | Info | Web3Forms `accessKey` público en repo y bundle | `src/lib/content.ts:756` (`a6e7…`) + `ContactForm.astro:52-53` + historia git; es público por diseño de Web3Forms | Cualquiera puede gastar la cuota de envíos de la cuenta | Limitar el key por dominio en el dashboard de Web3Forms; rotarlo si hay abuso | S | Verificado |
-| F12 | Seguridad | Baja | Deps vulnerables solo build-time | `npm audit`: undici 8.0.0-8.10.1 (high, transitiva de `unifont`, package-lock:4998), devalue ≤5.9.2, http-cache-semantics ≤4.2.0 | Sin ruta de explotación en SSG productivo (corren en build); hygiene pendiente | `npm audit fix` + audit con umbral en CI | S | Verificado |
+| F11 | Seguridad | Media | Web3Forms `accessKey` público en repo y bundle, y la política no lo declara como procesador | `src/lib/content.ts:756` (`a6e7…`) + `ContactForm.astro:52-53` + historia git; público por diseño de Web3Forms | Cuota/spam (mitigado por `botcheck`) y faceta legal: Web3Forms procesa los datos de contacto y la política no lo declara (FASE 4) | Limitar el key por dominio en el dashboard; declarar Web3Forms como procesador en la política | S | Verificado |
+| F12 | Seguridad | Info | Deps vulnerables solo build-time | `npm audit`: undici 8.0.0-8.10.1 (high, via `unifont`), devalue ≤5.9.2, http-cache-semantics ≤4.2.0, sharp <0.35.5 (librsvg), smol-toml (moderate) — FASE 4 confirmó: build-time, nada embarca en runtime | Sin ruta de explotación en SSG productivo (corren en build); hygiene pendiente | `npm audit fix` + audit con umbral en CI | S | Verificado |
 | F13 | Calidad | Baja | `.then()` sin `.catch` en 2 lugares | `BrandBurn.astro:653` (`fuenteALista.then(...)`) y `Faq.astro:208` (`document.fonts?.ready.then(...)`) | Rechazo no manejado (low: fuentes no suelen rechazar); inconsistente con `Hero.astro:938`, `BrandOpening.astro:386`, `ScrollRail.astro:659` que sí llevan `.catch` | Agregar `.catch(() => {})` como en el resto | S | Verificado |
 | F14 | DevOps | Media | Sin CI: no existe `.github/` | `ls .github` → no existe | El build/chequeo/audit dependen de ejecución manual | Workflow con `astro check` + `npm run build` + `npm audit --omit=dev` + test de links de dist | S-M | Verificado |
 | F15 | Congruencia | Media | Terminología y Title Case con drift | `content.ts:326` "Sistemas de Gestión (ERP)" vs `:610` "sistema de gestión (ERP)"; "página web/sitio/landing" para lo mismo (`types.ts:14`, `content.ts:543,559`); "bottega" (`:225,259`) vs "BottegaDevs" (`:61,89,95`) | Mensaje de marca desalineado entre páginas | Glossario en content.ts + pasada de unificación | S-M | Verificado |
@@ -45,6 +45,8 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 | F20 | SEO | Info | JSON-LD sin WebSite/BreadcrumbList | `BaseLayout.astro:41` Organization ✓, `Faq.astro:8` FAQPage ✓ | Enhancements opcionales de SERP | Agregar WebSite + BreadcrumbList si se quiere | S | Verificado |
 | F21 | Calidad | Baja | Falta script `check` en package.json | package.json scripts: dev/build/preview/astro; `@astrojs/check` presente en devDeps | El check verde depende de recordar el comando | `"check": "astro check"` + usarlo en CI | S | Verificado |
 | F22 | Repo | Info | Working tree sucio + masters PNG ~3.7 MB versionados | `git status`: `image.png` borrado (cambio del autor, sin commitear) + 3 PNG de diseño untracked (`anillado.png`, `image preload.png`, `preload reference.jpg`); masters en `src/assets/proyectos/` 520-744K c/u (necesarios como source de Astro) | Ruido de estado; masters pesan en el clone (size-pack 8.4 MiB) | Decidir destino de los 3 untracked (gitignore) y limpiar `image.png` | S | Verificado |
+| F23 | A11y | Baja | Contraste marginal: `text-green/70` = 4.53:1 | `ClientQuote.astro:26,38,41` (`text-xs`) | Pasa AA por 0.03: cualquier redondeo de fuente lo tira | Subir a `/75` (5.20:1) | S | Verificado |
+| F24 | Privacidad/Compliance | Alta | GA4 carga sin consentimiento mientras la política de privacidad afirma que el sitio no usa cookies ni analítica | `BaseLayout.astro:58-60` carga `googletagmanager.com/gtag/js` + `:88` `gtag('config',…)` vía `set:html`; `content.ts:153-156` dice textual: "Este sitio no usa cookies, ni de seguimiento ni de publicidad, ni analítica de terceros. Si en algún momento sumamos analítica, va a ser con tu consentimiento previo" | Violación activa de la propia política (cookies `_ga` sin opt-in, sin banner, sin CMP); riesgo Ley 25.326/DNPDP (AAIP); el juez de FASE 4 lo marcó como lo más grave omitido | Decisión del autor: (a) quitar GA4, (b) banner de consentimiento previo (JS propio, sin librería), (c) analítica sin cookies; corregir la política al estado real y declarar Web3Forms (F11) | S-M | Verificado |
 
 **Falsos positivos descartados en FASE 3:** ancla muerta `#pregunta-costo-mio` (el id existe: `Faq.astro:69`) · doble `<h1>` en la home (`index.astro:2-17` no incluye About; Hero es el único h1) · "sin honeypot" (existe: `botcheck` en `ContactForm.astro:57`).
 
@@ -76,12 +78,13 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 6. Acortar 3 titles y 3 descriptions (F08) — 15 min.
 7. `npm audit fix` (F12) — 5 min.
 8. Script `check` en package.json (F21) — 2 min.
+9. **Decisión GA4 (F24):** quitar el snippet de `BaseLayout` (15 min) o banner de consentimiento (30 min) + corregir la política. Es decisión de producto: hoy el sitio promete algo que no cumple.
 
 ## 6. Plan de acción
 
-**Tanda 1 — esta semana:** F01 (headers), F02 (404), F04 (preload fuentes), F05 (contraste), F06 (aria-live), F08 (titles/descriptions), F03 (CSS blocking: decidir inline vs split — máximo impacto de perf pendiente).
+**Tanda 1 — esta semana:** F24 (GA4 vs política: decisión + arreglo), F02 (404), F05 (contraste), F06 (aria-live), F08 (titles/descriptions), F01 (headers, ahora Media pero de 15 min), F04 (preload fuentes), F03 (CSS blocking: decidir inline vs split — máximo impacto de perf pendiente).
 
-**Tanda 2 — este mes:** F14 (CI: check + build + audit + links), F07 (PNG muertos del deploy), F09 (modal fallback), F17 (prev/next en casos), F13 (`.catch`), F21 (script check), F11 (limitar key por dominio).
+**Tanda 2 — este mes:** F14 (CI: check + build + audit + links), F07 (PNG muertos del deploy), F09 (modal fallback), F17 (prev/next en casos), F13 (`.catch`), F21 (script check), F11 (limitar key por dominio + declarar Web3Forms en la política).
 
 **Tanda 3 — después:** F15 (glossario/terminología), F20 (WebSite/BreadcrumbList), F10 (targets 44px), F16 (manifest), F18 (salida de privacidad), F22 (higiene del working tree), medición desktop/INP de la sección 4.
 
@@ -97,5 +100,6 @@ Sitio estático Astro 7.3.2 SSG + Tailwind 4.3.3 (vite), Node 24, deploy Vercel,
 ## 8. Uso de modelos
 
 - El runtime no ofrece `deepseek-v4.1-flash`, `mimo-v2.6-flash`, `glm-5.3-flash` ni `kimi-k3` como subagentes; se usó el roster real con los roles equivalentes: `gentle-ai-verify` ×4 (A tests, B seguridad ×2, C rendimiento, E accesibilidad), `gentle-ai-explore` ×3 (D SEO, F UX, G congruencia), `jd-judge-a` ×1 (FASE 3 verificación cruzada).
-- Dispatches: 10 en total (2 fallidos y relanzados: `review-risk` rechazó el formato de dispatch; B v1 abortó por un error de assistant; v2 completó). kimi-k3: **0 usos** — no hay hallazgos críticos de seguridad/datos que lo justifiquen.
-- Verificación cruzada: 12 hallazgos revisados por agente distinto → 8 verificados, 2 falsos positivos, 1 falso positivo parcial (H3 a favor del segundo reporte), 1 con números corregidos (H9: 3/3, no 2/5).
+- Dispatches: 11 en total (2 fallidos y relanzados: `review-risk` rechazó el formato de dispatch; B v1 abortó por un error de assistant; v2 completó). kimi-k3: no existe en el roster; la FASE 4 corrió con `jd-judge-b` (segundo juez adversarial, distinto del verificador de FASE 3) tras decisión del usuario.
+- Verificación cruzada (FASE 3, `jd-judge-a`): 12 hallazgos revisados → 8 verificados, 2 falsos positivos, 1 falso positivo parcial (H3 a favor del segundo reporte), 1 con números corregidos (H9: 3/3, no 2/5).
+- Revisión crítica (FASE 4, `jd-judge-b`, 8 comandos, read-only): reclasificó F01 Alta→Media y F12 Baja→Info, subió F11 por la faceta legal (Web3Forms no declarado como procesador), confirmó el abuso del form (botcheck bypaseable con curl, sin CAPTCHA/rate-limit, sin exfil ni redirect abierto ni adjuntos) y descubrió **F24**: GA4 corriendo sin consentimiento contra la promesa textual de `content.ts:153-156` — lo más grave que quedó fuera de las fases 1-3.
