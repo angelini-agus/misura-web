@@ -18,20 +18,20 @@ npm run preview    # previsualizar el build
 
 ## Variables de entorno
 
-### GA4 (analytics)
+### Web Analytics (Vercel)
 
-El script de Google Analytics 4 está preparado en `src/layouts/BaseLayout.astro`
-y solo se incluye cuando existe la variable `PUBLIC_GA_ID`. Para activarlo,
-creá un archivo `.env` en la raíz del proyecto (o setea la variable en el
-deploy) con tu Measurement ID:
+El sitio mide uso con Vercel Web Analytics: analítica propia, agregada y sin
+cookies, con el script servido desde el mismo dominio
+(`/_vercel/insights/script.js`). La variable `PUBLIC_GA_ID` quedó obsoleta
+con la salida de GA4 y ya no tiene ningún efecto.
 
-```bash
-PUBLIC_GA_ID=G-XXXXXXXXXX
-```
+No requiere configuración: el componente `<Analytics />` (importado de
+`@vercel/analytics/astro` en `src/layouts/BaseLayout.astro`) carga el script
+solo en producción.
 
-Sin esa variable, el sitio se compila sin analytics ni terceros. El Measurement
-ID se obtiene en Google Analytics → Admin → Data Streams → tu stream → el ID
-que empieza con `G-`.
+Para ver los datos: panel de Vercel → proyecto `misura-web` → pestaña
+**Analytics** → **Enable**. A partir de la siguiente deployment las visitas
+quedan registradas en esa pestaña.
 
 ### Verificación en Google Search Console (GSC)
 

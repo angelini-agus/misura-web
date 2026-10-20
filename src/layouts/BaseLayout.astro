@@ -7,6 +7,9 @@ import "@fontsource-variable/lora";
 import pjsLatinWoff2 from "@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url";
 import loraLatinWoff2 from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
 import { ClientRouter } from "astro:transitions";
+// Analítica propia sin cookies (Vercel Web Analytics): el script vive en
+// /_vercel/insights/script.js y la plataforma lo inyecta en el deploy.
+import Analytics from "@vercel/analytics/astro";
 import "../styles/global.css";
 import { contact, site } from "../lib/content";
 
@@ -56,13 +59,6 @@ const organizationSchema = {
   },
 };
 
-const gaId = import.meta.env.PUBLIC_GA_ID;
-const gaConfigScript = gaId
-  ? `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${gaId}');`
-  : null;
 ---
 
 <!doctype html>
@@ -74,6 +70,7 @@ gtag('config', '${gaId}');`
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
+    <Analytics />
     <link rel="preload" as="font" type="font/woff2" crossorigin href={pjsLatinWoff2} />
     <link rel="preload" as="font" type="font/woff2" crossorigin href={loraLatinWoff2} />
     <link rel="icon" type="image/svg+xml" href="/icono.svg" />
@@ -87,14 +84,6 @@ gtag('config', '${gaId}');`
     {ogUrl && <meta property="og:url" content={ogUrl} />}
     {ogImage && <meta property="og:image" content={new URL(ogImage, siteOrigin).toString()} />}
     <meta name="twitter:card" content="summary_large_image" />
-
-    {gaId && (
-      <script
-        is:inline
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-      />
-    )}
-    {gaConfigScript && <script is:inline set:html={gaConfigScript} />}
 
     <script
       type="application/ld+json"
