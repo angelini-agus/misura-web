@@ -112,7 +112,7 @@ export const privacy = {
   eyebrow: "Legal",
   h1: "Privacidad",
   intro: "Qué hacemos con los datos que nos dejás y qué no hacemos nunca.",
-  updatedAt: "Última actualización: septiembre de 2026",
+  updatedAt: "Última actualización: octubre de 2026",
   sections: [
     {
       title: "Qué datos pedimos",
@@ -152,8 +152,9 @@ export const privacy = {
     {
       title: "Cookies y analítica",
       body: [
-        "Este sitio no usa cookies, ni de seguimiento ni de publicidad, ni analítica de terceros.",
-        "Si en algún momento sumamos analítica, va a ser con tu consentimiento previo y vas a poder rechazarla.",
+        "Este sitio no usa cookies de rastreo ni publicidad.",
+        "Medimos el uso general del sitio con Web Analytics de Vercel: analítica propia, sin cookies, con datos agregados como visitas, páginas vistas, origen y dispositivo. No te identifica personalmente, no sigue tu navegación a través de otros sitios web y no se cruza con los datos del formulario.",
+        "Si algún día cambiamos la forma de medir, lo anunciamos primero en esta página.",
       ],
     },
     {
