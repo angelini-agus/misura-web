@@ -2,6 +2,10 @@
 import ScrollRail from "../components/ScrollRail.astro";
 import "@fontsource-variable/plus-jakarta-sans";
 import "@fontsource-variable/lora";
+// URLs reales que emite el CSS de cada variable font, para precargar el
+// subconjunto latin (la variante que realmente renderiza el texto del sitio).
+import pjsLatinWoff2 from "@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url";
+import loraLatinWoff2 from "@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url";
 import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import { contact, site } from "../lib/content";
@@ -70,6 +74,8 @@ gtag('config', '${gaId}');`
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={pjsLatinWoff2} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={loraLatinWoff2} />
     <link rel="icon" type="image/svg+xml" href="/icono.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {canonical && <link rel="canonical" href={canonical} />}
