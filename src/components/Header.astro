@@ -19,7 +19,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
 </div>
 <header
   transition:name="site-header"
-  class="sticky top-0 z-50 border-b border-green bg-[var(--crema-banda)]"
+  class="degrade-papel sticky top-0 z-50 border-b border-green"
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6">
     {/* `draggable="false"` en el enlace y `select-text` en el wordmark, los dos
@@ -82,7 +82,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
           <MenuIcon class="h-4 w-4" />
         </summary>
         <nav
-          class="absolute inset-x-4 top-full z-50 mt-2 flex flex-col gap-4 rounded-md border border-green bg-[var(--crema-banda)] p-4"
+          class="degrade-papel absolute inset-x-4 top-full z-50 mt-2 flex flex-col gap-4 rounded-md border border-green p-4"
           aria-label="Navegación móvil"
         >
           {nav.map((item) => (

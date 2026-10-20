@@ -28,15 +28,34 @@
 :root {
   --papel: #f6f0e3;
   --lino: #f2ece1;
-  /* Las bandas del borde (navbar pegajosa, menú móvil y footer) comparten una
-     crema más oscuro que la franja clara del centro del body: el degradé del
-     papel se lee como en una hoja real — centro iluminado, bordes apagados —
-     y el corte entre bandas y centro queda marcado por el borde verde de 1px
-     que ya traen los dos extremos. */
-  --crema-banda: color-mix(in srgb, var(--color-cream) 62%, var(--color-cream-dark));
+  /* Un solo degradé de papel para toda la página: centro iluminado, bordes
+     apagados, como una hoja real vista bajo una luz cenital. Se define UNA
+     vez acá; el body la pinta completa y el navbar, el menú móvil y el footer
+     la pintan con background-attachment: fixed, así cada pieza muestra el
+     recorte do mismo degradé que le toca por ubicación en pantalla — no es
+     un color replicado, es la misma máscara vista por sus ventanas, y la
+     propia luz queda clavada al viewport acompañe el scroll donde
+     acompañe. Geometría de viñeta: elipse centrada al medio-alto para que
+     todo el borde (arriba, abajo, izquierda, derecha y esquinas, todos) caiga
+     en la zona oscura de la máscara. */
+  --degrade-papel: radial-gradient(
+    85% 80% at 50% 45%,
+    color-mix(in srgb, var(--color-cream-light) 55%, var(--color-cream)) 0%,
+    var(--color-cream) 22%,
+    color-mix(in srgb, var(--color-cream-dark) 32%, var(--color-cream)) 46%,
+    color-mix(in srgb, var(--color-cream-dark) 80%, var(--color-cream)) 100%
+  );
   --hero-anillo-oscuro: #051F14;
   --hero-anillo-medio: #3a7058;
   --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.05' numOctaves='4' result='pulp' stitchTiles='stitch'/%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2 0.08' numOctaves='3' result='fiber' stitchTiles='stitch'/%3E%3CfeComposite in='pulp' in2='fiber' operator='arithmetic' k1='0' k2='0.6' k3='0.4' k4='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E");
+}
+
+/* El recorte de la máscara: la misma variable --degrade-papel que pinta el
+   body, con attachment fijo para que la pieza muestre la franja del viewport
+   que le toca (navbar: arriba; footer: abajo; menú: justo bajo el navbar). */
+.degrade-papel {
+  background-image: var(--degrade-papel);
+  background-attachment: fixed;
 }
 
 /* El wordmark de la marca: texto, no imagen. Lo comparten los tres lugares
@@ -213,11 +232,9 @@ body {
   position: relative;
   isolation: isolate;
   background-color: var(--color-cream);
-  background-image: radial-gradient(
-    circle at 50% 35%,
-    color-mix(in srgb, var(--color-cream-light) 50%, var(--color-cream)) 0%,
-    color-mix(in srgb, var(--color-cream-dark) 40%, var(--color-cream)) 100%
-  );
+  /* La máscara se define una vez (arriba) y se comparte: body, navbar,
+     menú y footer pintan el mismo degradé viewport-fijo. */
+  background-image: var(--degrade-papel);
   background-attachment: fixed;
   color: var(--color-green);
   font-family: var(--font-sans);
