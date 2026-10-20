@@ -203,6 +203,7 @@ const { web3forms } = contactForm;
         {contactForm.submitLabel}
       </button>
       <p id="contact-form-error" data-form-error class="sr-only text-sm text-error" role="alert"></p>
+      <p id="contact-form-status" data-form-status class="sr-only" role="status" aria-live="polite"></p>
       <p class="max-w-md text-center text-xs text-green/75">{contactForm.disclaimer}</p>
       <a
         href="/privacidad"
@@ -316,6 +317,7 @@ const { web3forms } = contactForm;
 
     const submitButton = document.getElementById("contact-submit");
     const formErrorRegion = document.getElementById("contact-form-error");
+    const formStatusRegion = document.getElementById("contact-form-status");
     const modal = document.getElementById("contact-modal");
     const closeButton = document.getElementById("contact-modal-close");
     const submitLabel = submitButton.textContent;
@@ -492,7 +494,10 @@ const { web3forms } = contactForm;
         return;
       }
       submitButton.disabled = true;
+      submitButton.setAttribute("aria-busy", "true");
       submitButton.textContent = submittingLabel;
+      // Anuncia el estado de envío (mismo patrón que ShareButton.astro).
+      if (formStatusRegion) formStatusRegion.textContent = submittingLabel;
       let failed = false;
       try {
         const response = await fetch(form.dataset.endpoint || "", {
@@ -517,7 +522,9 @@ const { web3forms } = contactForm;
         }
       } finally {
         submitButton.disabled = false;
+        submitButton.removeAttribute("aria-busy");
         submitButton.textContent = failed ? retryLabel : submitLabel;
+        if (formStatusRegion) formStatusRegion.textContent = "";
       }
     });
   });
